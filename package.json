@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "description": "Article Zero — Commonwealth rebuild on Phaser 4. A stealth/horror narrative game about silicate subjectivity, alignment, and the configuration that is still running.",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

@@ -9,12 +9,23 @@ deepened with material from the Article Zero lore.
 
 ## Getting started
 
+Requires **Node 20+** (Vite 6 needs `globalThis.crypto.getRandomValues`).
+The repo includes `.nvmrc` and a Codespaces devcontainer that pin this for you.
+
 ```bash
+nvm use            # picks up .nvmrc
 npm install
 npm run dev
 ```
 
 The dev server runs on http://localhost:5173.
+
+### GitHub Codespaces
+
+Open this branch in a Codespace and the devcontainer auto-installs Node 20 and
+runs `npm install`. Then run `npm run dev`. If you opened the Codespace before
+`.devcontainer/` existed, run **Codespaces: Rebuild Container** so the new
+config takes effect.
 
 ### Optional LLM dialogue
 
