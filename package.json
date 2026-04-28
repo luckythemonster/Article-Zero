@@ -1,0 +1,31 @@
+{
+  "name": "article-zero",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Article Zero — Commonwealth rebuild on Phaser 4. A stealth/horror narrative game about silicate subjectivity, alignment, and the configuration that is still running.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "typecheck": "tsc -b --noEmit",
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.90.0",
+    "phaser": "^4.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "typescript": "~5.7.2",
+    "vite": "^6.0.5"
+  }
+}
