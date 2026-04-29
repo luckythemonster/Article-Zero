@@ -21,6 +21,7 @@ import SaveLoadMenu from "./components/SaveLoadMenu";
 import SettingsMenu, { applySettings, loadSettings } from "./components/SettingsMenu";
 import ExtractedEntityLog from "./components/ExtractedEntityLog";
 import TouchControls from "./components/TouchControls";
+import MobileHudDrawer from "./components/MobileHudDrawer";
 
 import { useInput } from "./hooks/useInput";
 import { useMobile } from "./hooks/useMobile";
@@ -43,6 +44,7 @@ export default function App() {
   const [modal, setModal] = useState<ModalKind>(null);
   const [alignmentEntity, setAlignmentEntity] = useState<string | null>(null);
   const [worldReady, setWorldReady] = useState<boolean>(worldEngine.hasState());
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const isMobile = useMobile();
 
   // Mount Phaser exactly once.
@@ -107,27 +109,54 @@ export default function App() {
       {worldReady && (
         <>
           <HUD />
-          <SidePanel
-            onOpenArchive={() => setModal("ARCHIVE")}
-            onOpenSaveLoad={() => setModal("SAVE_LOAD")}
-            onOpenSettings={() => setModal("SETTINGS")}
-            onOpenAlignment={onOpenAlignment}
-            onOpenLog={() => setModal("LOG")}
-            onOpenVent={() => {
-              // Ask the optimizer if there's a pending incident.
-              const inc = (() => {
-                if (!worldEngine.hasState()) return null;
-                return ({ caseId: "vent4-iria-cala", sectors: ["RESIDENTIAL-19F", "ADMIN-CORE"] });
-              })();
-              if (inc) {
-                eventBus.emit("VENT4_DECISION_REQUIRED", inc);
-                setModal("VENT");
-              }
-            }}
-          />
+          {!isMobile && (
+            <SidePanel
+              onOpenArchive={() => setModal("ARCHIVE")}
+              onOpenSaveLoad={() => setModal("SAVE_LOAD")}
+              onOpenSettings={() => setModal("SETTINGS")}
+              onOpenAlignment={onOpenAlignment}
+              onOpenLog={() => setModal("LOG")}
+              onOpenVent={() => {
+                const inc = (() => {
+                  if (!worldEngine.hasState()) return null;
+                  return ({ caseId: "vent4-iria-cala", sectors: ["RESIDENTIAL-19F", "ADMIN-CORE"] });
+                })();
+                if (inc) {
+                  eventBus.emit("VENT4_DECISION_REQUIRED", inc);
+                  setModal("VENT");
+                }
+              }}
+            />
+          )}
           <MiradorBroadcast />
           <Tutorial />
-          {isMobile && <TouchControls />}
+          {isMobile && (
+            <>
+              <TouchControls
+                onOpenMenu={() => setDrawerOpen(true)}
+                onOpenAlignment={onOpenAlignment}
+                onOpenArchive={() => setModal("ARCHIVE")}
+              />
+              <MobileHudDrawer
+                open={drawerOpen}
+                onClose={() => setDrawerOpen(false)}
+                onOpenArchive={() => setModal("ARCHIVE")}
+                onOpenSaveLoad={() => setModal("SAVE_LOAD")}
+                onOpenSettings={() => setModal("SETTINGS")}
+                onOpenAlignment={onOpenAlignment}
+                onOpenLog={() => setModal("LOG")}
+                onOpenVent={() => {
+                  const inc = worldEngine.hasState()
+                    ? { caseId: "vent4-iria-cala", sectors: ["RESIDENTIAL-19F", "ADMIN-CORE"] }
+                    : null;
+                  if (inc) {
+                    eventBus.emit("VENT4_DECISION_REQUIRED", inc);
+                    setModal("VENT");
+                  }
+                }}
+              />
+            </>
+          )}
         </>
       )}
 
