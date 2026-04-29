@@ -127,6 +127,43 @@ a { color: #7fc7d4; }
 }
 .az-tutorial .speaker { color: #7fa1a8; font-size: 11px; letter-spacing: 0.08em; margin-bottom: 4px; }
 
+.az-run01-backdrop {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(220, 232, 240, 0.18), rgba(2, 4, 6, 0.92) 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  animation: az-run01-pulse 4s ease-in-out infinite;
+}
+@keyframes az-run01-pulse {
+  0%, 100% { backdrop-filter: blur(0.5px); }
+  50%      { backdrop-filter: blur(2px); }
+}
+.az-run01 {
+  width: min(680px, 92vw);
+  background: rgba(8, 12, 14, 0.96);
+  border: 1px solid #2a4a52;
+  padding: 18px 22px;
+}
+.az-run01-tag {
+  color: #6fdbe6; font-size: 11px; letter-spacing: 0.18em;
+  margin-bottom: 8px;
+}
+.az-run01-progress {
+  position: absolute; right: 24px; top: 18px;
+  color: #7fa1a8; font-size: 11px;
+}
+.az-run01-body {
+  background: #04080a; padding: 12px; border: 1px solid #14222a;
+  color: #cfe9ee; white-space: pre-wrap; line-height: 1.55;
+}
+.az-run01-body .speaker { color: #6fdbe6; font-size: 11px; letter-spacing: 0.08em; }
+.az-run01-body .raw { color: #ff9577; }
+.az-run01-body .corrected { color: #7fc7d4; }
+.az-run01-actions { margin-top: 14px; text-align: right; }
+
 .az-broadcast {
   position: fixed;
   top: 60px;
@@ -138,6 +175,20 @@ a { color: #7fc7d4; }
   font-size: 12px;
   color: #f4d1d1;
   z-index: 22;
+}
+
+.az-witness {
+  position: fixed;
+  top: 100px;
+  left: 12px;
+  max-width: 320px;
+  background: rgba(8, 22, 26, 0.92);
+  border-left: 3px solid #6fdbe6;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #cfe9ee;
+  z-index: 22;
+  font-style: italic;
 }
 
 .az-archive .case {

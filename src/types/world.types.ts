@@ -114,7 +114,8 @@ export type TileKind =
   | "LIGHT_SOURCE"
   | "LATTICE_EXIT"
   | "ARTICLE_ZERO_FRAGMENT_TILE"
-  | "VENT_CONTROL"; // VENT-4 facility-control terminal
+  | "VENT_CONTROL"      // VENT-4 facility-control terminal
+  | "SHARED_FIELD_RIG"; // Lattice-only: triggers the RUN 01 sequence
 
 export interface Tile {
   kind: TileKind;
@@ -151,6 +152,10 @@ export interface PlayerState {
   name: string;
   /** Last turn the player moved — used to pick walk vs idle animations. */
   lastMoveTurn?: number;
+  /** Lattice/Heat-Death only: true after RUN 01 welds Sol to the substrate.
+   *  Activates the insomnia / persistent-memory mechanic and unlocks the
+   *  ambient witness-event stream. */
+  entangled?: boolean;
 }
 
 export interface WorldState {
@@ -161,7 +166,11 @@ export interface WorldState {
   floors: Map<FloorIndex, Floor>;
   entities: Map<EntityId, Entity>;
   items: Map<string, ItemInstance>;
-  visibleTiles: Set<string>; // "x,y,z" keys
+  visibleTiles: Set<string>; // "x,y,z" keys — tiles visible THIS turn
+  /** Persistent memory of every tile ever seen. Used by the insomnia
+   *  mechanic in the Lattice era so previously-witnessed tiles render at
+   *  reduced contrast forever after RUN 01. */
+  memoryTrace: Set<string>;
   detected: boolean;
   detained: boolean;
   // Substrate resonance 0..100 — drives the ambient hum intensity.

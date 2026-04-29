@@ -22,6 +22,8 @@ import SettingsMenu, { applySettings, loadSettings } from "./components/Settings
 import ExtractedEntityLog from "./components/ExtractedEntityLog";
 import TouchControls from "./components/TouchControls";
 import MobileHudDrawer from "./components/MobileHudDrawer";
+import RunZeroOneOverlay from "./components/RunZeroOneOverlay";
+import WitnessTicker from "./components/WitnessTicker";
 
 import { useInput } from "./hooks/useInput";
 import { useMobile } from "./hooks/useMobile";
@@ -129,7 +131,9 @@ export default function App() {
             />
           )}
           <MiradorBroadcast />
+          <WitnessTicker />
           <Tutorial />
+          <RunZeroOneOverlay />
           {isMobile && (
             <>
               <TouchControls

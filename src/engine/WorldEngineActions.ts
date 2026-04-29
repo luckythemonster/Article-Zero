@@ -11,6 +11,7 @@ import { miradorPersona } from "./MiradorPersona";
 import { enforcerAI } from "./EnforcerAI";
 import { documentArchive } from "./DocumentArchive";
 import { articleZeroMeta } from "./ArticleZeroMeta";
+import { insomniaSystem } from "./InsomniaSystem";
 
 const MOVE_AP_COST = 1;
 const INTERACT_AP_COST = 1;
@@ -95,7 +96,12 @@ export const actions = {
     if (!here) return false;
 
     if (here.kind === "ARTICLE_ZERO_FRAGMENT_TILE") {
-      articleZeroMeta.discoverFragment(state, "fragment-nw-smac-01");
+      const fragmentId = state.era === "LATTICE"
+        ? "fragment-ring-c"
+        : state.era === "MIRADOR"
+          ? "fragment-mirador"
+          : "fragment-nw-smac-01";
+      articleZeroMeta.discoverFragment(state, fragmentId);
       state.player.ap -= INTERACT_AP_COST;
       return true;
     }
@@ -103,6 +109,16 @@ export const actions = {
       const incident = ventOptimizer.openIncident(state);
       if (incident) {
         eventBus.emit("VENT4_DECISION_REQUIRED", incident);
+        state.player.ap -= INTERACT_AP_COST;
+        return true;
+      }
+    }
+    if (here.kind === "SHARED_FIELD_RIG") {
+      // RUN 01 — only fires once. The merge dialogue is rendered by the
+      // RunZeroOneOverlay React component, which calls worldEngine.markEntangled
+      // when the sequence completes.
+      if (!state.player.entangled) {
+        eventBus.emit("RUN_01_TRIGGERED", { turn: state.turn });
         state.player.ap -= INTERACT_AP_COST;
         return true;
       }
@@ -129,6 +145,7 @@ export const actions = {
     enforcerAI.tick(state);
     stitcherTimer.tick(state);
     miradorPersona.tick(state);
+    insomniaSystem.tick(state);
     // Expire violations older than 20 turns
     state.violations = state.violations.filter((v) => state.turn - v.turn < 20);
     // Flashlight battery

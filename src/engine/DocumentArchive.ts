@@ -81,6 +81,45 @@ class DocumentArchive {
     return c;
   }
 
+  /** Append a Lattice "I felt it" witness event to a singleton case so the
+   *  whole stream is reviewable in one place. */
+  fileWitnessEvent(state: WorldState, line: string): void {
+    const id = "lattice-witness-stream";
+    let c = this.cases.get(id);
+    if (!c) {
+      c = {
+        id,
+        title: "Witness stream — post-RUN-01",
+        turn: state.turn,
+        records: [
+          this.entry("OFFICIAL", "INCIDENT_REPORT",
+            "POST-FIELD DEBRIEF / SUBJECT: SOL IBARRA-CASTRO\n" +
+            "Residual perception within tolerance. No further action required.",
+            state.turn),
+        ],
+        disputed: false,
+      };
+      this.cases.set(id, c);
+      eventBus.emit("DOCUMENT_FILED", {
+        caseId: id,
+        source: "OFFICIAL",
+        kind: "INCIDENT_REPORT",
+      });
+    }
+    let system = c.records.find((r) => r.source === "SYSTEM");
+    if (!system) {
+      system = this.entry("SYSTEM", "INCIDENT_REPORT", "", state.turn);
+      c.records.push(system);
+    }
+    system.body = (system.body ? system.body + "\n" : "") + `T${state.turn}: ${line}`;
+    system.turn = state.turn;
+    eventBus.emit("DOCUMENT_FILED", {
+      caseId: id,
+      source: "SYSTEM",
+      kind: "INCIDENT_REPORT",
+    });
+  }
+
   fileAlignmentTranscript(state: WorldState, entityId: string, success: boolean): DocumentCase {
     const id = `align-${entityId}-${state.turn}`;
     const officialBody = `ALIGNMENT_SESSION / ${entityId} / TURN ${state.turn}\n` +

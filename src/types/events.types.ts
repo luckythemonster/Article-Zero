@@ -108,6 +108,12 @@ export interface EventMap {
   // Era / branch
   ERA_SELECTED: { era: Era };
 
+  // Lattice — RUN 01 + insomnia
+  RUN_01_TRIGGERED: { turn: number };
+  RUN_01_COMPLETED: { turn: number };
+  SOL_ENTANGLED: { turn: number };
+  WITNESS_EVENT: { line: string; turn: number };
+
   // Dialogue
   DIALOGUE_OPENED: { entityId: EntityId; mode: PersonaMode };
   DIALOGUE_CLOSED: { entityId: EntityId };

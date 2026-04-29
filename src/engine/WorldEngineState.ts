@@ -10,7 +10,7 @@ import type {
   WorldState,
 } from "../types/world.types";
 import { commonwealthEra } from "../data/eras/commonwealth";
-import { latticeStub } from "../data/eras/lattice.stub";
+import { latticeStub } from "../data/eras/lattice";
 import { miradorStub } from "../data/eras/mirador.stub";
 
 export interface EraSeed {
@@ -57,6 +57,7 @@ export function emptyState(era: Era): WorldState {
     entities: new Map(),
     items: new Map(),
     visibleTiles: new Set(),
+    memoryTrace: new Set(),
     detected: false,
     detained: false,
     substrateResonance: 0,

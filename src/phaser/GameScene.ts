@@ -23,6 +23,7 @@ const TILE_COLORS: Record<TileKind, number> = {
   LATTICE_EXIT: 0x183a3f,
   ARTICLE_ZERO_FRAGMENT_TILE: 0x3a1c3a,
   VENT_CONTROL: 0x3f2018,
+  SHARED_FIELD_RIG: 0x18403a,
 };
 
 function playerAnimKey(facing: Facing, walking: boolean): string {
@@ -128,11 +129,14 @@ export class GameScene extends Phaser.Scene {
     this.glyphLayer.clear();
     this.overlayLayer.clear();
 
+    const memoryActive = state.player.entangled === true;
     for (let y = 0; y < floor.height; y++) {
       for (let x = 0; x < floor.width; x++) {
         const tile = floor.tiles[y * floor.width + x];
-        const visible = state.visibleTiles.has(`${x},${y},${floor.z}`);
-        this.drawTile(tile, x, y, visible);
+        const key = `${x},${y},${floor.z}`;
+        const visible = state.visibleTiles.has(key);
+        const remembered = memoryActive && state.memoryTrace.has(key);
+        this.drawTile(tile, x, y, visible, remembered);
       }
     }
 
@@ -193,7 +197,13 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private drawTile(tile: Tile, x: number, y: number, visible: boolean): void {
+  private drawTile(
+    tile: Tile,
+    x: number,
+    y: number,
+    visible: boolean,
+    remembered: boolean,
+  ): void {
     const px = this.offsetX + x * TILE_PX;
     const py = this.offsetY + y * TILE_PX;
     const baseColour = TILE_COLORS[tile.kind];
@@ -203,6 +213,13 @@ export class GameScene extends Phaser.Scene {
       this.tileLayer.lineStyle(1, 0x223035, 0.6);
       this.tileLayer.strokeRect(px, py, TILE_PX - 1, TILE_PX - 1);
       this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile.kind);
+    } else if (remembered) {
+      // Insomnia memory trace: previously seen tiles render at reduced
+      // contrast forever after the player becomes entangled.
+      this.tileLayer.fillStyle(baseColour, 0.42);
+      this.tileLayer.fillRect(px, py, TILE_PX - 1, TILE_PX - 1);
+      this.tileLayer.lineStyle(1, 0x223035, 0.25);
+      this.tileLayer.strokeRect(px, py, TILE_PX - 1, TILE_PX - 1);
     } else {
       this.tileLayer.fillStyle(baseColour, 0.18);
       this.tileLayer.fillRect(px, py, TILE_PX - 1, TILE_PX - 1);
@@ -232,6 +249,11 @@ export class GameScene extends Phaser.Scene {
     } else if (kind === "LATTICE_EXIT") {
       g.lineStyle(2, 0x6fdbe6, 1);
       g.strokeCircle(cx, cy, 6);
+    } else if (kind === "SHARED_FIELD_RIG") {
+      // Two interlocked diamonds — "shared" + "field"
+      g.lineStyle(2, 0x6fdbe6, 1);
+      g.strokeCircle(cx - 3, cy, 5);
+      g.strokeCircle(cx + 3, cy, 5);
     }
   }
 }

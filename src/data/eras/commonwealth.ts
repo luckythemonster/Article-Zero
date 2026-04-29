@@ -63,6 +63,7 @@ function mkTile(kind: TileKind): Tile {
     case "STAIR_DOWN":
     case "VENT_INTAKE":
     case "LATTICE_EXIT":
+    case "SHARED_FIELD_RIG":
       return { kind, solid: false, opaque: false };
   }
 }

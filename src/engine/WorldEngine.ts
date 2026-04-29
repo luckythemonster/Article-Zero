@@ -20,6 +20,7 @@ import { articleZeroMeta } from "./ArticleZeroMeta";
 import { stitcherTimer } from "./StitcherTimer";
 import { miradorPersona } from "./MiradorPersona";
 import { ventOptimizer } from "./VentOptimizer";
+import { insomniaSystem } from "./InsomniaSystem";
 
 class WorldEngine {
   private state: WorldState | null = null;
@@ -31,10 +32,19 @@ class WorldEngine {
     stitcherTimer.reset();
     miradorPersona.reset();
     ventOptimizer.reset();
+    insomniaSystem.reset();
 
     this.recomputeFOV();
     eventBus.emit("ERA_SELECTED", { era });
     eventBus.emit("TURN_START", { turn: 1, apRestored: this.state.player.apMax });
+  }
+
+  /** Mark Sol entangled and unlock the insomnia mechanic. Idempotent. */
+  markEntangled(): void {
+    const s = this.getState();
+    if (s.player.entangled) return;
+    s.player.entangled = true;
+    eventBus.emit("SOL_ENTANGLED", { turn: s.turn });
   }
 
   loadFromState(state: WorldState): void {
@@ -89,7 +99,11 @@ class WorldEngine {
     s.visibleTiles.clear();
     for (const xy of visible) {
       const [xs, ys] = xy.split(",");
-      s.visibleTiles.add(`${xs},${ys},${s.player.pos.z}`);
+      const key = `${xs},${ys},${s.player.pos.z}`;
+      s.visibleTiles.add(key);
+      // Memory trace tracks every tile ever in line-of-sight. Used by the
+      // insomnia mechanic in the Lattice era; harmless elsewhere.
+      s.memoryTrace.add(key);
     }
     eventBus.emit("FOV_UPDATED", {
       floor: s.player.pos.z,

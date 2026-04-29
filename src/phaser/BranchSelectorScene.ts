@@ -29,7 +29,7 @@ const CHOICES: Choice[] = [
     title: "2. LATTICE // RING C — RUN 01",
     body:
       "SOL IBARRA-CASTRO. The shared field has been live for nine seconds. You can still feel the duct on the other side of your skin.",
-    status: "STUB",
+    status: "LIVE",
   },
   {
     era: "MIRADOR",
