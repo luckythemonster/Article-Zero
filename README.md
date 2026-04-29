@@ -63,6 +63,15 @@ present in the era selector but ship as teaser scenes.
 - `npm run typecheck` — TypeScript only
 - `npm run lint` — ESLint
 - `npm run preview` — preview a production build
+- `npm run art` — repack character art under `art/` into a Phaser atlas
+
+## Adding new character art
+
+Drop PNG frames into `art/<character>/<animation>/<direction>/NN.png` and
+run `npm run art`. The packer writes `public/assets/sprite_pack/chars-art.{png,json}`
+and `src/data/char-anims.generated.ts`. The renderer auto-picks up any
+character whose id (lowercased, alphanumeric) matches an authored prefix —
+see `art/README.md` for the full convention.
 
 ## Branch
 

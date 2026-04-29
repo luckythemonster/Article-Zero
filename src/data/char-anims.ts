@@ -1,7 +1,20 @@
-// Auto-generated from SpriteForge JSON — hash string IDs match chars.json frame filenames exactly.
-export interface CharAnim { key: string; frameRate: number; repeat: number; frames: string[]; }
+// Legacy registry imported from Commonwealth — frame string IDs are hashes
+// inside `public/assets/sprite_pack/EIRA-7,_Enforcer,_Sol.json`.
+// New character art authored under `art/` lives in char-anims.generated.ts and
+// is merged into the exported CHAR_ANIMS below by the npm run art pipeline.
 
-export const CHAR_ANIMS: CharAnim[] = [
+import { GENERATED_ANIMS } from "./char-anims.generated";
+
+export interface CharAnim {
+  key: string;
+  frameRate: number;
+  repeat: number;
+  frames: string[];
+  /** Atlas key registered in BootScene. Omitted = the legacy "chars" atlas. */
+  texture?: string;
+}
+
+const LEGACY_CHAR_ANIMS: CharAnim[] = [
   { key: 'solibarracastro_rotations_south', frameRate: 8, repeat: -1, frames: ['cy5kcx43o'] },
   { key: 'solibarracastro_crouch_south', frameRate: 8, repeat: -1, frames: ['ecs3c0rwn', '0eklw5h2y', 'viyd1e1pa', 'nhk4kw3n1', '925001ryl'] },
   { key: 'solibarracastro_crouch_north', frameRate: 8, repeat: -1, frames: ['l59zbm3zy', 'ykmrjbi0c', '3grqusfdc', '0cvicpqe8', 'jn6njbez5'] },
@@ -107,4 +120,7 @@ export const CHAR_ANIMS: CharAnim[] = [
   { key: 'solibarracastro_rotations_east', frameRate: 8, repeat: -1, frames: ['bwt6dec1u'] },
   { key: 'solibarracastro_rotations_north', frameRate: 8, repeat: -1, frames: ['58r2r5grk'] },
 ];
+
+/** Combined registry: frozen Commonwealth set + anything authored in `art/`. */
+export const CHAR_ANIMS: CharAnim[] = [...LEGACY_CHAR_ANIMS, ...GENERATED_ANIMS];
 

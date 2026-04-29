@@ -40,7 +40,11 @@ function entityAnimKey(entity: Entity, walking: boolean, chasing: boolean): stri
   if (entity.id === "EIRA-7") {
     return walking ? `eira7_walkcycle_${f}` : `eira7_rotations_${f}`;
   }
-  return ""; // APEX-19 + future: rendered as a glyph
+  // Future characters: derive a key from the entity id ("APEX-19" → "apex19").
+  // GameScene checks anims.exists() before playing, so a missing animation
+  // automatically falls back to the glyph rectangle below.
+  const id = entity.id.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return walking ? `${id}_walkcycle_${f}` : `${id}_idle_${f}`;
 }
 
 export class GameScene extends Phaser.Scene {
@@ -146,8 +150,9 @@ export class GameScene extends Phaser.Scene {
       const visible = state.visibleTiles.has(`${entity.pos.x},${entity.pos.y},${floor.z}`);
       const walking = (entity.lastMoveTurn ?? -1) >= state.turn - 1;
       const animKey = entityAnimKey(entity, walking, state.detected && violationsActive);
+      const hasArt = animKey && this.anims.exists(animKey);
 
-      if (animKey) {
+      if (hasArt) {
         let sprite = this.entitySprites.get(entity.id);
         if (!sprite) {
           sprite = this.add.sprite(px, py, "chars");
@@ -159,7 +164,9 @@ export class GameScene extends Phaser.Scene {
         sprite.setVisible(visible);
         this.tryPlay(sprite, animKey);
       } else {
-        // Fallback for entities without atlas art (APEX-19): tinted rect+glyph.
+        // No registered animation: render as a tinted rectangle so the entity
+        // is still visible. New character art added via `npm run art` will
+        // automatically take over once the animation key exists.
         let rect = this.entityRects.get(entity.id);
         if (!rect) {
           rect = this.add.rectangle(px, py, TILE_PX - 8, TILE_PX - 8, 0x6ad0a4);
