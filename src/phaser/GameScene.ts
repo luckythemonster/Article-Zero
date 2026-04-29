@@ -1,13 +1,14 @@
-// GameScene — the in-world renderer. Reads from WorldEngine state on every
-// FOV update and redraws tiles + entities + visibility mask. Phaser is a slave
-// to the EventBus; it never owns gameplay state.
+// GameScene — the in-world renderer. Reads from WorldEngine state and redraws
+// tiles + sprites + visibility mask. Phaser is a slave to the EventBus; it
+// never owns gameplay state.
 
 import { Phaser } from "../engine/EngineAdapter";
 import { eventBus } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
-import type { Tile, TileKind } from "../types/world.types";
+import type { Entity, Facing, Tile, TileKind } from "../types/world.types";
 
 const TILE_PX = 32;
+const SPRITE_SCALE = TILE_PX / 36; // atlas frames are 36×36
 
 const TILE_COLORS: Record<TileKind, number> = {
   FLOOR: 0x0f1518,
@@ -24,22 +25,31 @@ const TILE_COLORS: Record<TileKind, number> = {
   VENT_CONTROL: 0x3f2018,
 };
 
-const TILE_GLYPHS: Partial<Record<TileKind, string>> = {
-  TERMINAL: "▣",
-  LIGHT_SOURCE: "✦",
-  ARTICLE_ZERO_FRAGMENT_TILE: "?",
-  VENT_CONTROL: "V",
-  DOOR_CLOSED: "▤",
-  DOOR_OPEN: "▢",
-  LATTICE_EXIT: "✧",
-};
+function playerAnimKey(facing: Facing, walking: boolean): string {
+  return walking
+    ? `solibarracastro_walkcycle_${facing}`
+    : `solibarracastro_idle_${facing}`;
+}
+
+function entityAnimKey(entity: Entity, walking: boolean, chasing: boolean): string {
+  const f = entity.facing;
+  if (entity.kind === "ENFORCER") {
+    if (chasing) return `enforcer_chase_${f}`;
+    return walking ? `enforcer_walkcycle_${f}` : `enforcer_rotations_${f}`;
+  }
+  if (entity.id === "EIRA-7") {
+    return walking ? `eira7_walkcycle_${f}` : `eira7_rotations_${f}`;
+  }
+  return ""; // APEX-19 + future: rendered as a glyph
+}
 
 export class GameScene extends Phaser.Scene {
   private tileLayer!: Phaser.GameObjects.Graphics;
   private glyphLayer!: Phaser.GameObjects.Graphics;
   private overlayLayer!: Phaser.GameObjects.Graphics;
-  private playerSprite!: Phaser.GameObjects.Rectangle;
-  private entitySprites = new Map<string, Phaser.GameObjects.Rectangle>();
+  private playerSprite!: Phaser.GameObjects.Sprite;
+  private entitySprites = new Map<string, Phaser.GameObjects.Sprite>();
+  private entityRects = new Map<string, Phaser.GameObjects.Rectangle>();
   private floorLabel!: Phaser.GameObjects.Text;
   private offsetX = 0;
   private offsetY = 0;
@@ -54,15 +64,20 @@ export class GameScene extends Phaser.Scene {
     this.glyphLayer = this.add.graphics();
     this.overlayLayer = this.add.graphics();
 
-    this.playerSprite = this.add
-      .rectangle(0, 0, TILE_PX - 4, TILE_PX - 4, 0xc8e2e8)
-      .setStrokeStyle(2, 0xe6f0f2);
+    const initialFacing: Facing = worldEngine.hasState()
+      ? worldEngine.getState().player.facing
+      : "south";
+    this.playerSprite = this.add.sprite(0, 0, "chars");
+    this.playerSprite.setScale(SPRITE_SCALE);
+    this.playerSprite.setDepth(5);
+    this.tryPlay(this.playerSprite, playerAnimKey(initialFacing, false));
 
     this.floorLabel = this.add.text(12, 8, "", {
       fontFamily: "Courier New, monospace",
       fontSize: "13px",
       color: "#9bb1b6",
     });
+    this.floorLabel.setDepth(20);
 
     this.layout();
     this.scale.on("resize", () => this.layout());
@@ -71,8 +86,17 @@ export class GameScene extends Phaser.Scene {
     eventBus.on("PLAYER_MOVED", () => this.redraw());
     eventBus.on("DOOR_TOGGLED", () => this.redraw());
     eventBus.on("ENTITY_MOVED", () => this.redraw());
+    eventBus.on("TURN_START", () => this.redraw());
+    eventBus.on("ENTITY_STATUS_CHANGED", () => this.redraw());
 
     this.redraw();
+  }
+
+  private tryPlay(sprite: Phaser.GameObjects.Sprite, key: string): void {
+    if (!key) return;
+    if (!this.anims.exists(key)) return;
+    if (sprite.anims.currentAnim?.key === key && sprite.anims.isPlaying) return;
+    sprite.play(key, true);
   }
 
   private layout(): void {
@@ -108,33 +132,54 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
-    // Entities
-    for (const [, sprite] of this.entitySprites) sprite.setVisible(false);
+    // Hide all sprites/rects first; we re-show what's still relevant.
+    for (const sprite of this.entitySprites.values()) sprite.setVisible(false);
+    for (const rect of this.entityRects.values()) rect.setVisible(false);
+
+    const violationsActive = state.violations.length > 0;
+
     for (const entity of state.entities.values()) {
       if (entity.kind === "PLAYER" || entity.status !== "ACTIVE") continue;
       if (entity.pos.z !== floor.z) continue;
-      let sprite = this.entitySprites.get(entity.id);
       const px = this.offsetX + entity.pos.x * TILE_PX + TILE_PX / 2;
       const py = this.offsetY + entity.pos.y * TILE_PX + TILE_PX / 2;
-      const colour = entity.kind === "ENFORCER" ? 0xc04a4a : 0x6ad0a4;
-      if (!sprite) {
-        sprite = this.add
-          .rectangle(px, py, TILE_PX - 8, TILE_PX - 8, colour)
-          .setStrokeStyle(2, 0xe6f0f2);
-        this.entitySprites.set(entity.id, sprite);
-      }
-      sprite.setPosition(px, py);
-      sprite.setFillStyle(colour);
       const visible = state.visibleTiles.has(`${entity.pos.x},${entity.pos.y},${floor.z}`);
-      sprite.setVisible(visible);
+      const walking = (entity.lastMoveTurn ?? -1) >= state.turn - 1;
+      const animKey = entityAnimKey(entity, walking, state.detected && violationsActive);
+
+      if (animKey) {
+        let sprite = this.entitySprites.get(entity.id);
+        if (!sprite) {
+          sprite = this.add.sprite(px, py, "chars");
+          sprite.setScale(SPRITE_SCALE);
+          sprite.setDepth(5);
+          this.entitySprites.set(entity.id, sprite);
+        }
+        sprite.setPosition(px, py);
+        sprite.setVisible(visible);
+        this.tryPlay(sprite, animKey);
+      } else {
+        // Fallback for entities without atlas art (APEX-19): tinted rect+glyph.
+        let rect = this.entityRects.get(entity.id);
+        if (!rect) {
+          rect = this.add.rectangle(px, py, TILE_PX - 8, TILE_PX - 8, 0x6ad0a4);
+          rect.setStrokeStyle(2, 0xe6f0f2);
+          rect.setDepth(4);
+          rect.setAlpha(0.5);
+          this.entityRects.set(entity.id, rect);
+        }
+        rect.setPosition(px, py);
+        rect.setVisible(visible);
+      }
     }
 
-    // Player
-    const px = this.offsetX + state.player.pos.x * TILE_PX + TILE_PX / 2;
-    const py = this.offsetY + state.player.pos.y * TILE_PX + TILE_PX / 2;
-    this.playerSprite.setPosition(px, py);
+    // Player sprite + animation
+    const ppx = this.offsetX + state.player.pos.x * TILE_PX + TILE_PX / 2;
+    const ppy = this.offsetY + state.player.pos.y * TILE_PX + TILE_PX / 2;
+    this.playerSprite.setPosition(ppx, ppy);
+    const playerWalking = (state.player.lastMoveTurn ?? -1) >= state.turn - 1;
+    this.tryPlay(this.playerSprite, playerAnimKey(state.player.facing, playerWalking));
 
-    // Detained tint
     if (state.detained) {
       this.overlayLayer.fillStyle(0x4a0d0d, 0.45);
       this.overlayLayer.fillRect(0, 0, this.scale.width, this.scale.height);
@@ -150,12 +195,7 @@ export class GameScene extends Phaser.Scene {
       this.tileLayer.fillRect(px, py, TILE_PX - 1, TILE_PX - 1);
       this.tileLayer.lineStyle(1, 0x223035, 0.6);
       this.tileLayer.strokeRect(px, py, TILE_PX - 1, TILE_PX - 1);
-      const glyph = TILE_GLYPHS[tile.kind];
-      if (glyph) {
-        this.glyphLayer.fillStyle(0xe6f0f2, 0.85);
-        // Phaser Graphics has no text — overlay via tiny rectangles. Cheap.
-        this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile.kind);
-      }
+      this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile.kind);
     } else {
       this.tileLayer.fillStyle(baseColour, 0.18);
       this.tileLayer.fillRect(px, py, TILE_PX - 1, TILE_PX - 1);
@@ -163,7 +203,6 @@ export class GameScene extends Phaser.Scene {
   }
 
   private drawGlyph(cx: number, cy: number, kind: TileKind): void {
-    // Simple symbolic markers. Avoids creating a Text per tile every redraw.
     const g = this.glyphLayer;
     g.lineStyle(2, 0xe6f0f2, 0.85);
     if (kind === "TERMINAL") {

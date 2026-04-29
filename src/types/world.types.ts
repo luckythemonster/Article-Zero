@@ -35,6 +35,8 @@ export type ComplianceStatus = "GREEN" | "YELLOW" | "RED";
 
 export type SubjectivityBelief = "NONE" | "CONTESTED" | "SHAKEN" | "AFFIRMED";
 
+export type Facing = "north" | "south" | "east" | "west";
+
 export type AmbientLightLevel = "LIT" | "DIM" | "DARK";
 
 export type ViolationType =
@@ -76,6 +78,7 @@ export interface Entity {
   kind: EntityKind;
   name: string;
   pos: Vec3;
+  facing: Facing;
   status: EntityStatus;
   hp?: number;
   maxHp?: number;
@@ -89,6 +92,11 @@ export interface Entity {
   memoryBleed?: string[];
   // Side logs only readable in RAPPORT_2 with ELEVATED_ACCESS_KEY.
   sideLogs?: string[];
+  // Patrol route for ENFORCER kind (no-op otherwise).
+  patrol?: Vec3[];
+  patrolIndex?: number;
+  // Last turn this entity moved — used to pick walk vs idle animations.
+  lastMoveTurn?: number;
 }
 
 export type PersonaMode = "COMPLIANT" | "RAPPORT_1" | "RAPPORT_2";
@@ -129,6 +137,7 @@ export interface Floor {
 
 export interface PlayerState {
   pos: Vec3;
+  facing: Facing;
   ap: number;
   apMax: number;
   condition: number;
@@ -140,6 +149,8 @@ export interface PlayerState {
   flashlightBattery: number;
   /** Player's character name in the active era. */
   name: string;
+  /** Last turn the player moved — used to pick walk vs idle animations. */
+  lastMoveTurn?: number;
 }
 
 export interface WorldState {

@@ -1,7 +1,9 @@
-// BootScene — preload textures, then jump straight to the BranchSelector.
-// We're intentionally small here; the game does not depend on heavy assets.
+// BootScene — preload textures, register character animations from
+// CHAR_ANIMS, then jump to the BranchSelector. Animations must exist before
+// any GameScene plays them, so we do the registration here.
 
 import { Phaser } from "../engine/EngineAdapter";
+import { CHAR_ANIMS } from "../data/char-anims";
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -18,6 +20,16 @@ export class BootScene extends Phaser.Scene {
   }
 
   create(): void {
+    for (const a of CHAR_ANIMS) {
+      if (this.anims.exists(a.key)) continue;
+      const frames = a.frames.map((f) => ({ key: "chars", frame: f }));
+      this.anims.create({
+        key: a.key,
+        frames,
+        frameRate: a.frameRate,
+        repeat: a.repeat,
+      });
+    }
     this.scene.start("BranchSelectorScene");
   }
 }

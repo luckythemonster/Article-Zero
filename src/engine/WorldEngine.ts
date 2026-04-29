@@ -67,7 +67,10 @@ class WorldEngine {
   interact = () => actions.interact(this.getState());
   endTurn = () => actions.endTurn(this.getState(), () => this.recomputeFOV());
   toggleFlashlight = () => actions.toggleFlashlight(this.getState(), () => this.recomputeFOV());
-  attemptAlignment = (entityId: string) => actions.attemptAlignment(this.getState(), entityId);
+  canStartAlignment = (entityId: string) =>
+    actions.canStartAlignment(this.getState(), entityId);
+  commitAlignment = (entityId: string) =>
+    actions.commitAlignment(this.getState(), entityId);
 
   recomputeFOV(): void {
     const s = this.getState();

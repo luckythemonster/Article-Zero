@@ -41,6 +41,7 @@ export function emptyState(era: Era): WorldState {
     redDay: false,
     player: {
       pos: { x: 0, y: 0, z: 0 },
+      facing: "south",
       ap: 4,
       apMax: 4,
       condition: 10,

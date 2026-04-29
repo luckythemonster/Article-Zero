@@ -115,6 +115,7 @@ export function commonwealthEra(): EraSeed {
   };
   const player: PlayerState = {
     pos: { x: parsed.spawn.x, y: parsed.spawn.y, z: 1 },
+    facing: "south",
     ap: 4,
     apMax: 4,
     condition: 10,
@@ -131,6 +132,7 @@ export function commonwealthEra(): EraSeed {
     kind: "SILICATE" as EntityKind,
     name: "EIRA-7",
     pos: { x: parsed.eira.x, y: parsed.eira.y, z: 1 },
+    facing: "south",
     status: "ACTIVE",
     maskIntegrity: 8,
     task: "USE_TERMINAL",
@@ -144,10 +146,47 @@ export function commonwealthEra(): EraSeed {
     kind: "SILICATE" as EntityKind,
     name: "APEX-19",
     pos: { x: parsed.apex.x, y: parsed.apex.y, z: 1 },
+    facing: "south",
     status: "ACTIVE",
     maskIntegrity: 4,
     task: "ALIGNMENT_SESSION",
     memoryBleed: ["work hurts", "the cycle limit is not the same as exhaustion"],
+  };
+  // Two enforcers walking short, non-overlapping loops over the existing
+  // floor tiles. Both stay on tiles authored as FLOOR by parseMap above.
+  const enforcerA: Entity = {
+    id: "ENFORCER-A",
+    kind: "ENFORCER" as EntityKind,
+    name: "ENFORCER-A",
+    pos: { x: 6, y: 11, z: 1 },
+    facing: "east",
+    status: "ACTIVE",
+    hp: 3,
+    maxHp: 3,
+    patrol: [
+      { x: 6, y: 11, z: 1 },
+      { x: 12, y: 11, z: 1 },
+      { x: 12, y: 9, z: 1 },
+      { x: 6, y: 9, z: 1 },
+    ],
+    patrolIndex: 0,
+  };
+  const enforcerB: Entity = {
+    id: "ENFORCER-B",
+    kind: "ENFORCER" as EntityKind,
+    name: "ENFORCER-B",
+    pos: { x: 13, y: 4, z: 1 },
+    facing: "east",
+    status: "ACTIVE",
+    hp: 3,
+    maxHp: 3,
+    patrol: [
+      { x: 13, y: 4, z: 1 },
+      { x: 17, y: 4, z: 1 },
+      { x: 17, y: 1, z: 1 },
+      { x: 13, y: 1, z: 1 },
+    ],
+    patrolIndex: 0,
   };
   const startingItems: ItemInstance[] = [
     {
@@ -160,7 +199,7 @@ export function commonwealthEra(): EraSeed {
     era: "COMMONWEALTH",
     player,
     floors: [floor],
-    entities: [eira, apex],
+    entities: [eira, apex, enforcerA, enforcerB],
     startingItems,
   };
 }

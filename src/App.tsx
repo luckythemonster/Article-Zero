@@ -86,7 +86,8 @@ export default function App() {
       if (dx + dy === 1) { target = e.id; break; }
     }
     if (!target) return;
-    worldEngine.attemptAlignment(target);
+    // Validate without spending AP. The modal commits on first ADVANCE.
+    if (!worldEngine.canStartAlignment(target).ok) return;
     setAlignmentEntity(target);
     setModal("ALIGNMENT");
   }, []);
