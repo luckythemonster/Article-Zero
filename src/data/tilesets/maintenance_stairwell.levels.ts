@@ -15,9 +15,9 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
         "opacity": 1,
         "data": [
           [
+            14,
             25,
-            25,
-            25,
+            14,
             25,
             25,
             25,
@@ -67,8 +67,8 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             25,
             14,
             23,
-            8,
-            8,
+            0,
+            0,
             11,
             14,
             14,
@@ -79,8 +79,8 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             14,
             14,
             23,
-            8,
-            8,
+            0,
+            0,
             11,
             14,
             14,
@@ -130,9 +130,9 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             25,
             25,
             25,
+            14,
             25,
-            25,
-            25
+            14
           ]
         ]
       },
@@ -267,20 +267,8 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
         "opacity": 1,
         "data": [
           [
-            28,
+            0,
             25,
-            12,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
             0,
             0,
             0,
@@ -382,31 +370,31 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             0,
             0,
             0,
-            29,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             25,
-            3
+            0
           ]
         ]
       },
       {
         "name": "spawn",
-        "opacity": 1,
+        "opacity": 0.67,
         "data": [
           [
             0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0
-          ],
-          [
-            0,
-            0,
+            1,
             0,
             0,
             0,
@@ -511,6 +499,144 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             0,
             0,
             0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "name": "chasm",
+        "opacity": 1,
+        "data": [
+          [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ],
+          [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
           ]
         ]
       }

@@ -125,26 +125,41 @@ becomes part of the gameplay grid; anything else is pure decoration.
 
 | Layer name      | Tile kind                     | Notes                  |
 | --------------- | ----------------------------- | ---------------------- |
+| `chasm`         | pure decoration (back layer)  | renders below floor    |
+| `void`          | pure decoration (back layer)  | alias for `chasm`      |
+| `pit`           | pure decoration (back layer)  | alias for `chasm`      |
+| `shadows`       | pure decoration, alpha 0.45   | renders just above back layers |
 | `floor`         | `FLOOR`                       | walkable, transparent  |
-| `walls`         | `WALL`                        | solid, opaque          |
 | `doors`         | `DOOR_CLOSED`                 | solid, opens on E      |
+| `walls`         | `WALL`                        | solid, opaque          |
 | `terminals`     | `TERMINAL`                    | opens Document Archive |
 | `vent_control`  | `VENT_CONTROL`                | VENT-4 incident panel  |
 | `shared_field`  | `SHARED_FIELD_RIG`            | RUN 01 trigger         |
 | `light_sources` | `LIGHT_SOURCE`                | local dark-zone fix    |
 | `article_zero`  | `ARTICLE_ZERO_FRAGMENT_TILE`  | meta-layer fragment    |
 | `lattice_exit`  | `LATTICE_EXIT`                | endgame egress         |
+| `objects`       | pure decoration (front layer) | no gameplay effect     |
 | `spawn`         | (not a tile kind — see below) | sets player spawn      |
-| `objects`       | pure decoration               | no gameplay effect     |
-| `shadows`       | pure decoration, alpha 0.45   | no gameplay effect     |
 
-**Resolution order:** semantic layers paint left-to-right in the table
-above; later semantic layers override earlier ones. Empty cells default
-to `WALL` so the player can't walk off the map.
+**Render order is name-driven, not Ed-export-order-driven.** Name your
+layers anything you like in Ed; the importer sorts them back-to-front by
+the priority table above (chasm/void/pit/shadows below floor, structural
+layers above floor, objects on top). Unknown names land in the middle
+band and keep their original Ed order.
+
+**Resolution order for gameplay tiles:** semantic layers apply in the
+table order above (later wins on conflict). Empty cells default to
+`WALL` so the player can't walk off the map.
+
+**Chasm cells:** the gameplay grid only looks at the `floor` / `walls` /
+etc. layers, so a `chasm` cell with no floor on top defaults to `WALL`
+(impassable). Visually the chasm sprite shows through anywhere you don't
+paint floor — useful for "holes you'd fall into".
 
 **Spawn:** the first non-zero cell in a layer named `spawn` becomes the
-player's starting position. If no spawn layer exists, the importer falls
-back to the centre of the map.
+player's starting position. If `spawn` is empty (or absent), Sol drops
+on the first walkable tile in row-major order, then falls back to the
+map centre as a last resort.
 
 ### Pure decoration
 

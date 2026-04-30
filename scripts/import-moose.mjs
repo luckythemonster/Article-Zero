@@ -111,12 +111,20 @@ function extractLevels(ed, frames, defaultTileSize, defaultSpacing) {
   for (const f of frames) if (f.ref) refToIndex.set(f.ref, f.index);
 
   // TileDef.Handle -> SpriteId Ref of the first keyframe.
+  // Some TileDefs (notably the `spawn` marker) have empty KeyFrames — they
+  // exist as cell-presence markers, not renderable sprites. We track those
+  // separately so the level-extractor can still mark a cell as painted
+  // without resolving to a sprite frame.
   const tileDefs = ed.TileDefs ?? [];
   const handleToRef = new Map();
+  const markerHandles = new Set();
   for (const td of tileDefs) {
+    if (td.Handle == null) continue;
     const ref = td.Animation?.KeyFrames?.[0]?.SpriteId;
-    if (td.Handle != null && typeof ref === "string") {
+    if (typeof ref === "string") {
       handleToRef.set(td.Handle, ref);
+    } else {
+      markerHandles.add(td.Handle);
     }
   }
 
@@ -153,12 +161,18 @@ function extractLevels(ed, frames, defaultTileSize, defaultSpacing) {
         painted += 1;
         const ref = handleToRef.get(t.Handle);
         const idx = ref != null ? refToIndex.get(ref) : undefined;
-        if (idx == null) {
+        if (idx != null) {
+          // Tiled / Ed convention: 0 = empty; non-zero = 1-based frame index.
+          grid[y][x] = idx + 1;
+        } else if (markerHandles.has(t.Handle)) {
+          // Marker tile (no sprite). Record presence with sentinel 1 so
+          // semantic-layer logic (especially `spawn`) can locate the cell.
+          // The decoration renderer never sees `spawn`, and out-of-range
+          // frame indices on other marker-named layers degrade harmlessly.
+          grid[y][x] = 1;
+        } else {
           unresolved += 1;
-          continue;
         }
-        // Tiled / Ed convention: 0 = empty; non-zero = 1-based frame index.
-        grid[y][x] = idx + 1;
       }
       layers.push({ name: bName, opacity, data: grid });
     });

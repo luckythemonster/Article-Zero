@@ -29,8 +29,33 @@ const SEMANTIC_LAYERS: { name: string; kind: Exclude<TileKind, "FLOOR" | "DOOR_O
   { name: "lattice_exit",  kind: "LATTICE_EXIT" },
 ];
 
-const PURE_DECORATION_NAMES = new Set(["objects", "shadows"]);
 const SPAWN_LAYER_NAME = "spawn";
+
+// Render-order priority by layer name. Lower = drawn first (bottom).
+// Lets the importer be lazy about Ed's board ordering — what matters is the
+// name. Known back-layer names (chasm / void / pit / shadows) sort below
+// the floor; the floor sits below structural layers (walls, doors); pure-
+// decoration / FX names sort on top.
+const RENDER_PRIORITY: Record<string, number> = {
+  chasm: 10,
+  void: 10,
+  pit: 10,
+  shadows: 20,
+  floor: 40,
+  doors: 60,
+  walls: 70,
+  terminals: 80,
+  vent_control: 80,
+  shared_field: 80,
+  light_sources: 80,
+  article_zero: 80,
+  lattice_exit: 80,
+  objects: 90,
+};
+
+function renderPriority(name: string): number {
+  return RENDER_PRIORITY[name.toLowerCase()] ?? 50;
+}
 
 function makeTile(kind: TileKind): Tile {
   if (kind === "WALL") return { kind, solid: true, opaque: true };
@@ -113,6 +138,28 @@ export function eraSeedFromMooseLevel(
   // Decoration: every layer except the SPAWN sentinel goes to the renderer.
   // Pure-decoration layers default opacity 0.45 for `shadows`, 1 otherwise
   // unless the author overrode it in Ed.
+  // Sort decoration layers back-to-front by name-based priority so the
+  // chasm / void / shadows render below the floor, walls and doors render
+  // above the floor, and pure-decoration / FX layers render on top —
+  // regardless of whatever order Ed exported the boards in.
+  const decoLayers = level.layers
+    .filter((l) => l.name.toLowerCase() !== SPAWN_LAYER_NAME)
+    .map((l, originalIdx) => ({
+      name: l.name,
+      opacity:
+        l.opacity ??
+        (l.name.toLowerCase() === "shadows" ? 0.45 : 1),
+      data: l.data,
+      originalIdx,
+    }))
+    .sort((a, b) => {
+      const pa = renderPriority(a.name);
+      const pb = renderPriority(b.name);
+      if (pa !== pb) return pa - pb;
+      return a.originalIdx - b.originalIdx;
+    })
+    .map(({ name, opacity, data }) => ({ name, opacity, data }));
+
   const decoration: FloorDecoration = {
     textureKey: options.textureKey,
     // Levels-mode decoration assumes square tiles authored at level.tileSize.
@@ -120,15 +167,7 @@ export function eraSeedFromMooseLevel(
     frameWidth: level.tileSize,
     frameHeight: level.tileSize,
     spacing: level.spacing,
-    layers: level.layers
-      .filter((l) => l.name.toLowerCase() !== SPAWN_LAYER_NAME)
-      .map((l) => ({
-        name: l.name,
-        opacity:
-          l.opacity ??
-          (l.name.toLowerCase() === "shadows" ? 0.45 : 1),
-        data: l.data,
-      })),
+    layers: decoLayers,
   };
 
   const z = options.floorIndex ?? 1;
@@ -159,7 +198,10 @@ export function eraSeedFromMooseLevel(
   };
 }
 
-/** Convenience guard — pure-decoration layer name? */
+/** Convenience guard — pure-decoration layer name? Anything not in the
+ *  semantic table or the spawn sentinel is treated as decoration. */
 export function isPureDecorationLayer(name: string): boolean {
-  return PURE_DECORATION_NAMES.has(name.toLowerCase());
+  const n = name.toLowerCase();
+  if (n === SPAWN_LAYER_NAME) return false;
+  return !SEMANTIC_LAYERS.some((s) => s.name === n);
 }
