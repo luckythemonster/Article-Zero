@@ -115,7 +115,8 @@ export type TileKind =
   | "LATTICE_EXIT"
   | "ARTICLE_ZERO_FRAGMENT_TILE"
   | "VENT_CONTROL"      // VENT-4 facility-control terminal
-  | "SHARED_FIELD_RIG"; // Lattice-only: triggers the RUN 01 sequence
+  | "SHARED_FIELD_RIG"  // Lattice-only: triggers the RUN 01 sequence
+  | "CHASM";            // Solid (impassable) but transparent — fall hazard
 
 export interface Tile {
   kind: TileKind;

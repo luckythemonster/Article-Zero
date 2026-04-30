@@ -65,6 +65,8 @@ function mkTile(kind: TileKind): Tile {
     case "LATTICE_EXIT":
     case "SHARED_FIELD_RIG":
       return { kind, solid: false, opaque: false };
+    case "CHASM":
+      return { kind, solid: true, opaque: false };
   }
 }
 

@@ -17,7 +17,14 @@ import type { MooseLayer, MooseLevel } from "../tilesets/types";
 import type { EraSeed } from "../../engine/WorldEngineState";
 
 // Lower index = applied first; later semantic layers win on conflict.
-const SEMANTIC_LAYERS: { name: string; kind: Exclude<TileKind, "FLOOR" | "DOOR_OPEN"> | "FLOOR" }[] = [
+// `chasm` / `void` / `pit` paint first so a floor / walls / doors layer on
+// top can override them — only unpainted floor cells over chasm stay
+// CHASM in the gameplay grid (impassable but transparent so FOV passes
+// across to the far side of a hole).
+const SEMANTIC_LAYERS: { name: string; kind: Exclude<TileKind, "DOOR_OPEN"> }[] = [
+  { name: "chasm",         kind: "CHASM" },
+  { name: "void",          kind: "CHASM" },
+  { name: "pit",           kind: "CHASM" },
   { name: "floor",         kind: "FLOOR" },
   { name: "walls",         kind: "WALL" },
   { name: "doors",         kind: "DOOR_CLOSED" },
@@ -60,6 +67,8 @@ function renderPriority(name: string): number {
 function makeTile(kind: TileKind): Tile {
   if (kind === "WALL") return { kind, solid: true, opaque: true };
   if (kind === "DOOR_CLOSED") return { kind, solid: true, opaque: true };
+  // CHASM: you can't walk into the hole, but you can see across it.
+  if (kind === "CHASM") return { kind, solid: true, opaque: false };
   return { kind, solid: false, opaque: false };
 }
 

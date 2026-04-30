@@ -24,6 +24,7 @@ const TILE_COLORS: Record<TileKind, number> = {
   ARTICLE_ZERO_FRAGMENT_TILE: 0x3a1c3a,
   VENT_CONTROL: 0x3f2018,
   SHARED_FIELD_RIG: 0x18403a,
+  CHASM: 0x05080d,
 };
 
 function playerAnimKey(facing: Facing, walking: boolean): string {

@@ -88,8 +88,18 @@ class WorldEngine {
   }
 
   // Public action surface — every player-initiated mutation goes through here.
-  move = (dx: number, dy: number) => actions.move(this.getState(), dx, dy);
-  interact = () => actions.interact(this.getState());
+  // Wrappers recompute FOV on a successful action so visibility tracks
+  // movement/interactions immediately, not at end-of-turn.
+  move = (dx: number, dy: number) => {
+    const ok = actions.move(this.getState(), dx, dy);
+    if (ok) this.recomputeFOV();
+    return ok;
+  };
+  interact = () => {
+    const ok = actions.interact(this.getState());
+    if (ok) this.recomputeFOV();
+    return ok;
+  };
   endTurn = () => actions.endTurn(this.getState(), () => this.recomputeFOV());
   toggleFlashlight = () => actions.toggleFlashlight(this.getState(), () => this.recomputeFOV());
   canStartAlignment = (entityId: string) =>
