@@ -127,6 +127,26 @@ export interface Tile {
   label?: string;
 }
 
+export interface FloorDecorationLayer {
+  name: string;
+  /** 0..1 alpha applied when rendering this layer. */
+  opacity: number;
+  /** Row-major 2D grid; 0 means empty, non-zero is a 1-based frame index
+   *  into the decoration spritesheet (matches Ed / Tiled conventions). */
+  data: number[][];
+}
+
+export interface FloorDecoration {
+  /** Phaser texture key — must match a sheet preloaded in BootScene. */
+  textureKey: string;
+  /** Source frame size in px (width === height). */
+  frameSize: number;
+  /** Px gutter between frames in the source sheet. Ed exports use 1. */
+  spacing: number;
+  /** Stacked back-to-front in render order. */
+  layers: FloorDecorationLayer[];
+}
+
 export interface Floor {
   z: FloorIndex;
   width: number;
@@ -134,6 +154,10 @@ export interface Floor {
   name: string;
   tiles: Tile[]; // row-major, length = width * height
   ambientLight: AmbientLightLevel;
+  /** Optional Ed/Moose-imported sprite layers. When present, GameScene
+   *  renders these in place of the colored-rectangle fallback for visible
+   *  tiles. Memory-trace dimming and the glyph layer still apply. */
+  decoration?: FloorDecoration;
 }
 
 export interface PlayerState {

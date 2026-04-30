@@ -55,6 +55,10 @@ export class GameScene extends Phaser.Scene {
   private playerSprite!: Phaser.GameObjects.Sprite;
   private entitySprites = new Map<string, Phaser.GameObjects.Sprite>();
   private entityRects = new Map<string, Phaser.GameObjects.Rectangle>();
+  /** Pool of decoration sprites placed by the moose-import path. Keyed
+   *  per `${layerIndex}:${x},${y}` so they can be re-used across redraws. */
+  private decoSprites = new Map<string, Phaser.GameObjects.Image>();
+  private decoFloorZ: number | null = null;
   private floorLabel!: Phaser.GameObjects.Text;
   private offsetX = 0;
   private offsetY = 0;
@@ -130,13 +134,21 @@ export class GameScene extends Phaser.Scene {
     this.overlayLayer.clear();
 
     const memoryActive = state.player.entangled === true;
+    const useDecoration = !!floor.decoration;
+
+    if (useDecoration) {
+      this.renderDecoration(state, floor, memoryActive);
+    } else {
+      this.clearDecorationSprites();
+    }
+
     for (let y = 0; y < floor.height; y++) {
       for (let x = 0; x < floor.width; x++) {
         const tile = floor.tiles[y * floor.width + x];
         const key = `${x},${y},${floor.z}`;
         const visible = state.visibleTiles.has(key);
         const remembered = memoryActive && state.memoryTrace.has(key);
-        this.drawTile(tile, x, y, visible, remembered);
+        this.drawTile(tile, x, y, visible, remembered, useDecoration);
       }
     }
 
@@ -203,9 +215,26 @@ export class GameScene extends Phaser.Scene {
     y: number,
     visible: boolean,
     remembered: boolean,
+    decorationActive: boolean,
   ): void {
     const px = this.offsetX + x * TILE_PX;
     const py = this.offsetY + y * TILE_PX;
+    if (decorationActive) {
+      // Decoration sprites carry the visual weight; we only need glyph
+      // overlays for game-relevant tile kinds, plus a faint dim wash on
+      // unseen / remembered cells to communicate FOV.
+      if (visible) {
+        this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile.kind);
+      } else if (remembered) {
+        this.tileLayer.fillStyle(0x050809, 0.35);
+        this.tileLayer.fillRect(px, py, TILE_PX, TILE_PX);
+      } else {
+        this.tileLayer.fillStyle(0x050809, 0.7);
+        this.tileLayer.fillRect(px, py, TILE_PX, TILE_PX);
+      }
+      return;
+    }
+
     const baseColour = TILE_COLORS[tile.kind];
     if (visible) {
       this.tileLayer.fillStyle(baseColour, 1);
@@ -214,8 +243,6 @@ export class GameScene extends Phaser.Scene {
       this.tileLayer.strokeRect(px, py, TILE_PX - 1, TILE_PX - 1);
       this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile.kind);
     } else if (remembered) {
-      // Insomnia memory trace: previously seen tiles render at reduced
-      // contrast forever after the player becomes entangled.
       this.tileLayer.fillStyle(baseColour, 0.42);
       this.tileLayer.fillRect(px, py, TILE_PX - 1, TILE_PX - 1);
       this.tileLayer.lineStyle(1, 0x223035, 0.25);
@@ -223,6 +250,66 @@ export class GameScene extends Phaser.Scene {
     } else {
       this.tileLayer.fillStyle(baseColour, 0.18);
       this.tileLayer.fillRect(px, py, TILE_PX - 1, TILE_PX - 1);
+    }
+  }
+
+  private clearDecorationSprites(): void {
+    for (const sprite of this.decoSprites.values()) sprite.destroy();
+    this.decoSprites.clear();
+    this.decoFloorZ = null;
+  }
+
+  private renderDecoration(
+    state: ReturnType<typeof worldEngine.getState>,
+    floor: NonNullable<ReturnType<typeof worldEngine.getFloor>>,
+    memoryActive: boolean,
+  ): void {
+    const dec = floor.decoration!;
+    // If we changed floors (or decoration), wipe the pool.
+    if (this.decoFloorZ !== floor.z) {
+      this.clearDecorationSprites();
+      this.decoFloorZ = floor.z;
+    }
+    // Track which keys we used this frame so we can hide the rest.
+    const seen = new Set<string>();
+
+    dec.layers.forEach((layer, layerIdx) => {
+      for (let y = 0; y < floor.height; y++) {
+        const row = layer.data[y] ?? [];
+        for (let x = 0; x < floor.width; x++) {
+          const idx = row[x] ?? 0;
+          if (!idx) continue;
+          const tileKey = `${x},${y},${floor.z}`;
+          const visible = state.visibleTiles.has(tileKey);
+          const remembered = memoryActive && state.memoryTrace.has(tileKey);
+          if (!visible && !remembered) continue;
+          const px = this.offsetX + x * TILE_PX + TILE_PX / 2;
+          const py = this.offsetY + y * TILE_PX + TILE_PX / 2;
+          const key = `${layerIdx}:${tileKey}`;
+          let sprite = this.decoSprites.get(key);
+          // Frame index = stored index minus 1 (Tiled/Ed convention).
+          const frame = idx - 1;
+          if (!sprite) {
+            sprite = this.add.image(px, py, dec.textureKey, frame);
+            sprite.setDepth(layerIdx);
+            this.decoSprites.set(key, sprite);
+          } else {
+            sprite.setPosition(px, py);
+            sprite.setFrame(frame);
+          }
+          // Decoration tiles match the tile cell at native size (32 px).
+          // Frame size may be larger; scale to the cell.
+          sprite.setDisplaySize(TILE_PX, TILE_PX);
+          sprite.setVisible(true);
+          const baseAlpha = layer.opacity;
+          sprite.setAlpha(visible ? baseAlpha : baseAlpha * 0.42);
+          seen.add(key);
+        }
+      }
+    });
+
+    for (const [key, sprite] of this.decoSprites) {
+      if (!seen.has(key)) sprite.setVisible(false);
     }
   }
 

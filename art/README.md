@@ -1,4 +1,22 @@
-# Character art sources
+# Art sources
+
+Two pipelines live here, depending on what you're authoring:
+
+- **Character sprite frames** — folders of PNGs under `art/<character>/...`
+  + `npm run art`. Output goes into the chars-art atlas. Used by the
+  renderer's per-entity sprite lookup. See "Character art sources" below.
+- **Tile-based level art (Ed / Chilling Moose)** — drop the `.zip` Ed
+  exports under `art/moose/<project>.zip` and run
+  `npm run moose -- art/moose/<project>.zip`. The script unpacks the
+  sheet, emits a Phaser-ready spritesheet at
+  `public/assets/tilesets/<project>/sheet.png`, generates a typed frame
+  registry under `src/data/tilesets/<project>.ts`, and (when the export
+  contains levels) a level data module at
+  `src/data/tilesets/<project>.levels.ts`. See "Ed level authoring" below.
+
+---
+
+## Character art sources
 
 Drop PNG frames in here, run `npm run art`, and the game picks them up.
 
@@ -71,3 +89,111 @@ For named characters in the existing slice (`SOL IBARRA-CASTRO`,
 art for the player. Author Rowan-specific frames as `art/rowan/...`, then
 update `playerAnimKey` in `src/phaser/GameScene.ts` to prefer `rowan_*` when
 the active era is COMMONWEALTH — that's the only code change needed.
+
+---
+
+## Ed level authoring (Chilling Moose)
+
+Author tilesets and full levels in **Ed - Game Tile Editor**
+(`apps.apple.com/app/id6502629511`), export the project zip, drop it in
+`art/moose/<name>.zip`, and run:
+
+```
+npm run moose -- art/moose/<name>.zip
+```
+
+That bakes a Phaser-ready spritesheet at
+`public/assets/tilesets/<name>/sheet.png`, writes a frame registry to
+`src/data/tilesets/<name>.ts`, registers the tileset in
+`src/data/tilesets/registry.generated.ts`, and (when the export contains
+levels) writes `src/data/tilesets/<name>.levels.ts` for the renderer.
+
+### Project setup in Ed
+
+- **Tile size:** 32 × 32.
+- **Spacing:** 1 px gutter between frames. The importer infers this from
+  the sprite X coordinates, so as long as Ed's slice picker is set
+  consistently you don't need to do anything special.
+- **Sheets:** one per project for now. If you need more art, add it as
+  more frames in the same sheet — a future revision will support
+  multi-sheet exports, but v1.5 only ingests sheet 0.
+
+### Layer name → game semantics
+
+The importer reads layer names case-insensitively. Anything in this table
+becomes part of the gameplay grid; anything else is pure decoration.
+
+| Layer name      | Tile kind                     | Notes                  |
+| --------------- | ----------------------------- | ---------------------- |
+| `floor`         | `FLOOR`                       | walkable, transparent  |
+| `walls`         | `WALL`                        | solid, opaque          |
+| `doors`         | `DOOR_CLOSED`                 | solid, opens on E      |
+| `terminals`     | `TERMINAL`                    | opens Document Archive |
+| `vent_control`  | `VENT_CONTROL`                | VENT-4 incident panel  |
+| `shared_field`  | `SHARED_FIELD_RIG`            | RUN 01 trigger         |
+| `light_sources` | `LIGHT_SOURCE`                | local dark-zone fix    |
+| `article_zero`  | `ARTICLE_ZERO_FRAGMENT_TILE`  | meta-layer fragment    |
+| `lattice_exit`  | `LATTICE_EXIT`                | endgame egress         |
+| `spawn`         | (not a tile kind — see below) | sets player spawn      |
+| `objects`       | pure decoration               | no gameplay effect     |
+| `shadows`       | pure decoration, alpha 0.45   | no gameplay effect     |
+
+**Resolution order:** semantic layers paint left-to-right in the table
+above; later semantic layers override earlier ones. Empty cells default
+to `WALL` so the player can't walk off the map.
+
+**Spawn:** the first non-zero cell in a layer named `spawn` becomes the
+player's starting position. If no spawn layer exists, the importer falls
+back to the centre of the map.
+
+### Pure decoration
+
+Anything that isn't in the table renders as art only — useful for
+flooring patterns, wall trim, scenery, debris. Two pure-decoration names
+are common:
+
+- `objects` — full opacity by default
+- `shadows` — opacity 0.45 by default (matches the Tiled convention)
+
+Any other name (e.g. `glow`, `floor_trim`, `wall_caps`) is also accepted
+and rendered at the layer's authored opacity.
+
+### What's NOT consumed (yet)
+
+- **Brushes / autotile rules** — the `BitMasks` field is preserved in
+  the frame registry for future autotile support, but tiles render
+  exactly as Ed places them.
+- **Frame animations** — Ed can group multi-frame animations; the
+  importer ignores the animation table.
+- **Colliders** — gameplay solidity comes from the layer-name table, not
+  from Ed's collider shapes.
+
+### Wiring an Ed level into an era
+
+After the importer succeeds, hook the level into one of the era seed
+modules in `src/data/eras/`. Use the `eraSeedFromMooseLevel` helper:
+
+```ts
+import { eraSeedFromMooseLevel } from "./from-moose";
+import { LATTICE_LEVELS } from "../tilesets/lattice.levels"; // generated
+
+export function latticeEra() {
+  return eraSeedFromMooseLevel(LATTICE_LEVELS[0], {
+    era: "LATTICE",
+    textureKey: "lattice",
+    ambientLight: "DIM",
+    floorName: "RING C // DUCT 4-A — third shift",
+    player: {
+      ap: 4, apMax: 4, condition: 10, conditionMax: 10,
+      compliance: "GREEN", belief: "NONE",
+      inventory: [], flashlightOn: false, flashlightBattery: 30,
+      name: "SOL IBARRA-CASTRO",
+      entangled: false,
+    },
+    entities: [/* hand-authored alongside the level */],
+  });
+}
+```
+
+Entities (NPCs, enforcers, items) stay in TS code — Ed handles the map,
+your TS module handles who's standing on it.

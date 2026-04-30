@@ -13,7 +13,8 @@
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint . --ext .ts,.tsx",
-    "art": "node scripts/build-atlas.mjs"
+    "art": "node scripts/build-atlas.mjs",
+    "moose": "node scripts/import-moose.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",

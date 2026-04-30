@@ -9,11 +9,12 @@
 import { Phaser } from "../engine/EngineAdapter";
 import {
   STAIRS_FRAMES,
-  STAIRS_FRAME_COUNT,
+  STAIRS_FRAME_SIZE,
+  STAIRS_SPACING,
   STAIRS_TEXTURE_KEY,
 } from "../data/tilesets/stairs";
 
-const SOURCE_TILE = 32;
+const SOURCE_TILE = STAIRS_FRAME_SIZE;
 const DISPLAY_TILE = 64;
 const COLS = 8;
 const PADDING = 12;
@@ -25,11 +26,14 @@ export class TilesetSandboxScene extends Phaser.Scene {
   }
 
   preload(): void {
+    // The texture is already preloaded by BootScene via the moose registry,
+    // but leave a defensive load in case the scene is reached without the
+    // boot path running first.
     if (this.textures.exists(STAIRS_TEXTURE_KEY)) return;
-    this.load.spritesheet(STAIRS_TEXTURE_KEY, "/assets/tilesets/stairs.png", {
+    this.load.spritesheet(STAIRS_TEXTURE_KEY, "/assets/tilesets/stairs/sheet.png", {
       frameWidth: SOURCE_TILE,
       frameHeight: SOURCE_TILE,
-      spacing: 1,
+      spacing: STAIRS_SPACING,
     });
   }
 
@@ -42,7 +46,7 @@ export class TilesetSandboxScene extends Phaser.Scene {
       color: "#cfe9ee",
     });
     this.add.text(PADDING, PADDING + 18,
-      `${STAIRS_FRAME_COUNT} frames @ 32x32 (1px gutter). ESC to return.`, {
+      `${STAIRS_FRAMES.length} frames @ ${SOURCE_TILE}x${SOURCE_TILE} (${STAIRS_SPACING}px gutter). ESC to return.`, {
       fontFamily: "Courier New, monospace",
       fontSize: "11px",
       color: "#7fa1a8",

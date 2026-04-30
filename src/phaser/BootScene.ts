@@ -10,6 +10,7 @@
 
 import { Phaser } from "../engine/EngineAdapter";
 import { CHAR_ANIMS } from "../data/char-anims";
+import { MOOSE_TILESETS } from "../data/tilesets/registry.generated";
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -28,6 +29,17 @@ export class BootScene extends Phaser.Scene {
       "/assets/sprite_pack/chars-art.png",
       "/assets/sprite_pack/chars-art.json",
     );
+
+    // Every Moose-imported tileset registered by `npm run moose` becomes a
+    // Phaser spritesheet keyed by its project name.
+    for (const t of MOOSE_TILESETS) {
+      if (this.textures.exists(t.key)) continue;
+      this.load.spritesheet(t.key, t.path, {
+        frameWidth: t.frameSize,
+        frameHeight: t.frameSize,
+        spacing: t.spacing,
+      });
+    }
   }
 
   create(): void {
