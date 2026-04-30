@@ -13,7 +13,8 @@ import type {
 import { tileKey } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import { calculateFOV, getEffectiveFOVRadius } from "./fov";
-import { seedFromEra } from "./WorldEngineState";
+import { seedFromEra, seedToWorldState } from "./WorldEngineState";
+import type { EraSeed } from "./WorldEngineState";
 import { actions } from "./WorldEngineActions";
 import { documentArchive } from "./DocumentArchive";
 import { articleZeroMeta } from "./ArticleZeroMeta";
@@ -27,16 +28,29 @@ class WorldEngine {
 
   initWorld(era: Era): void {
     this.state = seedFromEra(era);
+    this.resetSubsystems();
+    this.recomputeFOV();
+    eventBus.emit("ERA_SELECTED", { era });
+    eventBus.emit("TURN_START", { turn: 1, apRestored: this.state.player.apMax });
+  }
+
+  /** Sandbox path: load any pre-built EraSeed (dev/test maps, imported
+   *  Moose levels) without going through the era-keyed seed switch. */
+  initWorldFromSeed(seed: EraSeed): void {
+    this.state = seedToWorldState(seed);
+    this.resetSubsystems();
+    this.recomputeFOV();
+    eventBus.emit("ERA_SELECTED", { era: seed.era });
+    eventBus.emit("TURN_START", { turn: 1, apRestored: this.state.player.apMax });
+  }
+
+  private resetSubsystems(): void {
     documentArchive.reset();
     articleZeroMeta.reset();
     stitcherTimer.reset();
     miradorPersona.reset();
     ventOptimizer.reset();
     insomniaSystem.reset();
-
-    this.recomputeFOV();
-    eventBus.emit("ERA_SELECTED", { era });
-    eventBus.emit("TURN_START", { turn: 1, apRestored: this.state.player.apMax });
   }
 
   /** Mark Sol entangled and unlock the insomnia mechanic. Idempotent. */

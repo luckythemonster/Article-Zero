@@ -65,16 +65,21 @@ export function emptyState(era: Era): WorldState {
   };
 }
 
-export function seedFromEra(era: Era): WorldState {
-  const seed = era === "COMMONWEALTH"
-    ? commonwealthEra()
-    : era === "LATTICE"
-      ? latticeStub()
-      : miradorStub();
+/** Build a fresh WorldState from any EraSeed (era-keyed or hand-rolled). */
+export function seedToWorldState(seed: EraSeed): WorldState {
   const state = emptyState(seed.era);
   state.player = seed.player;
   for (const floor of seed.floors) state.floors.set(floor.z, floor);
   for (const entity of seed.entities) state.entities.set(entity.id, entity);
   for (const item of seed.startingItems) state.items.set(item.id, item);
   return state;
+}
+
+export function seedFromEra(era: Era): WorldState {
+  const seed = era === "COMMONWEALTH"
+    ? commonwealthEra()
+    : era === "LATTICE"
+      ? latticeStub()
+      : miradorStub();
+  return seedToWorldState(seed);
 }

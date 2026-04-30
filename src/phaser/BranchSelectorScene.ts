@@ -7,10 +7,13 @@ import { eventBus } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
 import { tutorialDirector } from "../engine/TutorialDirector";
 import { ambientHum } from "../audio/AmbientHum";
+import { mooseSandboxEra } from "../data/eras/moose-sandbox";
 import type { Era } from "../types/world.types";
 
+type ChoiceTarget = Era | "PALETTE" | "MOOSE_LEVEL";
+
 interface Choice {
-  era: Era | "SANDBOX";
+  era: ChoiceTarget;
   title: string;
   body: string;
   status: "LIVE" | "STUB" | "DEV";
@@ -39,10 +42,17 @@ const CHOICES: Choice[] = [
     status: "STUB",
   },
   {
-    era: "SANDBOX",
+    era: "PALETTE",
     title: "4. DEV // TILE PALETTE",
     body:
-      "Inspect the stairs.png tileset (48 frames, 32x32, 1px gutter). ESC to return. Use this to pick which frames map to floor / wall / stair / door semantics.",
+      "Inspect every imported Moose tileset frame-by-frame. ◀ ▶ keys cycle between sheets. ESC to return.",
+    status: "DEV",
+  },
+  {
+    era: "MOOSE_LEVEL",
+    title: "5. DEV // MOOSE LEVEL",
+    body:
+      "Walk Sol around the most recently imported Moose level (currently: maintenance stairwell). Tile decoration renders from the Phaser-loaded sheet.",
     status: "DEV",
   },
 ];
@@ -106,7 +116,7 @@ export class BranchSelectorScene extends Phaser.Scene {
       title.on("pointerdown", () => this.selectChoice(choice.era));
     });
 
-    this.add.text(W / 2, H - 40, "press 1, 2, 3, or 4", {
+    this.add.text(W / 2, H - 40, "press 1, 2, 3, 4, or 5", {
       fontFamily: "Courier New, monospace",
       fontSize: "12px",
       color: "#5e7a80",
@@ -115,12 +125,21 @@ export class BranchSelectorScene extends Phaser.Scene {
     this.input.keyboard?.on("keydown-ONE", () => this.selectChoice("COMMONWEALTH"));
     this.input.keyboard?.on("keydown-TWO", () => this.selectChoice("LATTICE"));
     this.input.keyboard?.on("keydown-THREE", () => this.selectChoice("MIRADOR"));
-    this.input.keyboard?.on("keydown-FOUR", () => this.selectChoice("SANDBOX"));
+    this.input.keyboard?.on("keydown-FOUR", () => this.selectChoice("PALETTE"));
+    this.input.keyboard?.on("keydown-FIVE", () => this.selectChoice("MOOSE_LEVEL"));
   }
 
-  private selectChoice(choice: Era | "SANDBOX"): void {
-    if (choice === "SANDBOX") {
+  private selectChoice(choice: ChoiceTarget): void {
+    if (choice === "PALETTE") {
       this.scene.start("TilesetSandboxScene");
+      return;
+    }
+    if (choice === "MOOSE_LEVEL") {
+      ambientHum.start();
+      tutorialDirector.reset();
+      tutorialDirector.init();
+      worldEngine.initWorldFromSeed(mooseSandboxEra());
+      this.scene.start("GameScene");
       return;
     }
     this.selectEra(choice);
