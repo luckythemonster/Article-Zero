@@ -78,7 +78,14 @@ export function eraSeedFromMooseLevel(
     }
   }
 
-  // Resolve spawn
+  // Resolve spawn — preference order:
+  //   1) explicit options.spawnOverride
+  //   2) first non-zero cell in a layer named `spawn`
+  //   3) first walkable (non-solid) tile in row-major order
+  //   4) map centre
+  // The walkable-cell fallback matters when the author forgot to paint a
+  // spawn tile but did paint a floor — without it Sol could land inside a
+  // wall and be unable to move.
   let spawn = options.spawnOverride ?? null;
   if (!spawn) {
     const spawnLayer = findLayer(level, SPAWN_LAYER_NAME);
@@ -89,6 +96,15 @@ export function eraSeedFromMooseLevel(
         for (let x = 0; x < width; x++) {
           if ((row[x] ?? 0) !== 0) { spawn = { x, y }; break outer; }
         }
+      }
+    }
+  }
+  if (!spawn) {
+    walkable:
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const t = tiles[y * width + x];
+        if (t && !t.solid) { spawn = { x, y }; break walkable; }
       }
     }
   }

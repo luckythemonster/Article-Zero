@@ -210,6 +210,33 @@ function extractLevels(ed, frames, defaultTileSize, defaultSpacing) {
       layers,
     });
 
+    // Empty-semantic-layer warning. The user almost certainly added these
+    // boards on purpose, so a zero-tile board likely means they forgot to
+    // paint. We surface this so the next export round-trip is informed.
+    const SEMANTIC = new Set([
+      "floor", "walls", "doors", "terminals", "vent_control",
+      "shared_field", "light_sources", "article_zero", "lattice_exit",
+      "spawn",
+    ]);
+    for (const ly of layers) {
+      const lname = ly.name.toLowerCase();
+      if (!SEMANTIC.has(lname)) continue;
+      const total = ly.data.reduce(
+        (n, row) => n + row.reduce((m, c) => m + (c > 0 ? 1 : 0), 0),
+        0,
+      );
+      if (total > 0) continue;
+      if (lname === "spawn") {
+        console.log(
+          `note:  layer "${ly.name}" is empty — Sol will spawn on the first walkable floor cell (or the map centre if no floor exists).`,
+        );
+      } else {
+        console.log(
+          `note:  layer "${ly.name}" is empty (no painted cells); the layer will have no in-game effect.`,
+        );
+      }
+    }
+
     if (painted > 0 && unresolved === painted) {
       console.warn(
         `warn: level "${levelName}" has ${painted} painted tiles but none resolved through TileDefs — check that the project has been saved (Ed sometimes elides TileDefs in unsaved projects).`,
