@@ -87,6 +87,10 @@ export interface EventMap {
   // Article Zero meta-layer
   ARTICLE_ZERO_FRAGMENT_FOUND: { fragmentId: string };
   ARTICLE_ZERO_REVEAL: { phase: "FORESHADOW" | "PARTIAL" | "FULL" };
+  ARTICLE_ZERO_RESOLVED: {
+    resolution: "ACCEPTED" | "REFUSED";
+    turn: number;
+  };
   ARTICLE_ZERO_VIOLATION: { entityId: EntityId; action: string; turn: number };
 
   // Violations

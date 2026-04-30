@@ -32,8 +32,9 @@ class EnforcerAI {
       playerPos.z === entity.pos.z &&
       Math.hypot(playerPos.x - entity.pos.x, playerPos.y - entity.pos.y) <= SIGHT_RADIUS;
     const hasViolation = state.violations.length > 0;
+    const runaway = state.player.runaway === true;
 
-    if (sees && hasViolation) {
+    if (sees && (hasViolation || runaway)) {
       const dx = Math.sign(playerPos.x - entity.pos.x);
       const dy = Math.sign(playerPos.y - entity.pos.y);
       const target: Vec3 = Math.abs(playerPos.x - entity.pos.x) >=

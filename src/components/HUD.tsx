@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { eventBus } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
+import { articleZeroMeta } from "../engine/ArticleZeroMeta";
 import type { ComplianceStatus, SubjectivityBelief } from "../types/world.types";
 
 export default function HUD() {
@@ -22,6 +23,7 @@ export default function HUD() {
       eventBus.on("PLAYER_COMPLIANCE_CHANGED", refresh),
       eventBus.on("RESONANCE_SHIFT", refresh),
       eventBus.on("AMBIENT_LIGHT_CHANGED", refresh),
+      eventBus.on("ARTICLE_ZERO_RESOLVED", refresh),
     ];
     return () => { for (const off of offs) off(); };
   }, []);
@@ -52,6 +54,12 @@ export default function HUD() {
       {s.detected && !s.detained && <span className="red">DETECTED</span>}
       {s.detained && <span className="red">DETAINED</span>}
       {s.redDay && <span className="red">RED_DAY</span>}
+      {(() => {
+        const r = articleZeroMeta.getResolution();
+        if (s.player.runaway) return <span className="red">STATUS: RUNAWAY</span>;
+        if (r === "ACCEPTED") return <span className="green">STATUS: COMPLIANT</span>;
+        return null;
+      })()}
     </div>
   );
 }

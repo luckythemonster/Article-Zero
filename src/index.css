@@ -191,6 +191,62 @@ a { color: #7fc7d4; }
   font-style: italic;
 }
 
+/* PARTIAL Article Zero notice — drier, system-warning register. */
+.az-azpartial {
+  position: fixed;
+  top: 140px;
+  left: 12px;
+  max-width: 360px;
+  background: rgba(38, 22, 8, 0.92);
+  border-left: 3px solid #c89adb;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #e9d8f4;
+  z-index: 23;
+}
+
+/* Article Zero FULL reveal modal */
+.az-az-reveal { z-index: 60; }
+.az-az-tag {
+  color: #c89adb; font-size: 11px; letter-spacing: 0.18em;
+}
+.az-az-h {
+  font-size: 11px; letter-spacing: 0.12em; color: #7fa1a8;
+  margin: 14px 0 6px;
+}
+.az-az-log {
+  background: #04080a; padding: 10px; border: 1px solid #14222a;
+  color: #cfe9ee; max-height: 160px; overflow: auto;
+  white-space: pre-wrap;
+}
+.az-az-srp { display: flex; flex-direction: column; gap: 6px; }
+.az-az-row {
+  display: grid;
+  grid-template-columns: 220px 1fr 160px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.az-az-label { color: #cfe9ee; }
+.az-az-track {
+  height: 8px; background: #04080a; border: 1px solid #14222a; position: relative;
+}
+.az-az-fill { height: 100%; background: #7fc7d4; }
+.az-az-fill.pinned { background: #c04a4a; }
+.az-az-value { color: #9bb1b6; text-align: right; font-size: 11px; }
+.az-az-value.pinned { color: #ff7f7f; }
+.az-az-prose {
+  color: #cfe9ee; line-height: 1.55; margin-top: 14px;
+  border-top: 1px solid #14222a; padding-top: 12px;
+}
+.az-az-actions {
+  display: flex; gap: 12px; margin-top: 14px; justify-content: flex-end;
+}
+.az-az-accept { background: #0e2a25; color: #b6e8d3; border-color: #2a5a4a; }
+.az-az-refuse { background: #2a0e0e; color: #f4d1d1; border-color: #5a2a2a; }
+.az-az-accept:hover { background: #143830; }
+.az-az-refuse:hover { background: #3a1414; }
+
 .az-archive .case {
   border: 1px solid #1f3138;
   margin: 10px 0;

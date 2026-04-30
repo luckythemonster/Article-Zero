@@ -146,6 +146,7 @@ export const actions = {
     stitcherTimer.tick(state);
     miradorPersona.tick(state);
     insomniaSystem.tick(state);
+    articleZeroMeta.checkPromote(state);
     // Expire violations older than 20 turns
     state.violations = state.violations.filter((v) => state.turn - v.turn < 20);
     // Flashlight battery

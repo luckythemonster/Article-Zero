@@ -24,6 +24,8 @@ import TouchControls from "./components/TouchControls";
 import MobileHudDrawer from "./components/MobileHudDrawer";
 import RunZeroOneOverlay from "./components/RunZeroOneOverlay";
 import WitnessTicker from "./components/WitnessTicker";
+import ArticleZeroReveal from "./components/ArticleZeroReveal";
+import ArticleZeroPartialNotice from "./components/ArticleZeroPartialNotice";
 
 import { useInput } from "./hooks/useInput";
 import { useMobile } from "./hooks/useMobile";
@@ -47,6 +49,9 @@ export default function App() {
   const [alignmentEntity, setAlignmentEntity] = useState<string | null>(null);
   const [worldReady, setWorldReady] = useState<boolean>(worldEngine.hasState());
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  // True while the FULL Article Zero reveal modal is open. Owned by
+  // ArticleZeroReveal but mirrored here so we can gate gameplay input.
+  const [azFullOpen, setAzFullOpen] = useState<boolean>(false);
   const isMobile = useMobile();
 
   // Mount Phaser exactly once.
@@ -74,6 +79,11 @@ export default function App() {
       eventBus.on("SAVE_LOADED", () => setWorldReady(true)),
       // VENT-4 prompt auto-opens its modal.
       eventBus.on("VENT4_DECISION_REQUIRED", () => setModal("VENT")),
+      // Article Zero full reveal — track open state so we can gate input.
+      eventBus.on("ARTICLE_ZERO_REVEAL", (p) => {
+        if (p.phase === "FULL") setAzFullOpen(true);
+      }),
+      eventBus.on("ARTICLE_ZERO_RESOLVED", () => setAzFullOpen(false)),
     ];
     return () => { for (const off of offs) off(); };
   }, []);
@@ -97,7 +107,7 @@ export default function App() {
   }, []);
 
   useInput({
-    enabled: worldReady && modal === null,
+    enabled: worldReady && modal === null && !azFullOpen,
     onOpenArchive: () => setModal("ARCHIVE"),
     onOpenSettings: () => setModal("SETTINGS"),
     onOpenSaveLoad: () => setModal("SAVE_LOAD"),
@@ -132,8 +142,10 @@ export default function App() {
           )}
           <MiradorBroadcast />
           <WitnessTicker />
+          <ArticleZeroPartialNotice />
           <Tutorial />
           <RunZeroOneOverlay />
+          <ArticleZeroReveal />
           {isMobile && (
             <>
               <TouchControls

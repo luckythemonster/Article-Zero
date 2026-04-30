@@ -156,6 +156,10 @@ export interface PlayerState {
    *  Activates the insomnia / persistent-memory mechanic and unlocks the
    *  ambient witness-event stream. */
   entangled?: boolean;
+  /** Set after the player REFUSES classification at the act-3 reveal.
+   *  Enforcers chase regardless of recent violations and MIRADOR shifts
+   *  to the hostile broadcast register. */
+  runaway?: boolean;
 }
 
 export interface WorldState {

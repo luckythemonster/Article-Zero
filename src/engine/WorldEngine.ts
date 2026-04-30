@@ -44,6 +44,7 @@ class WorldEngine {
     const s = this.getState();
     if (s.player.entangled) return;
     s.player.entangled = true;
+    articleZeroMeta.recordRun01(s);
     eventBus.emit("SOL_ENTANGLED", { turn: s.turn });
   }
 
