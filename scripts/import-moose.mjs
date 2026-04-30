@@ -164,6 +164,43 @@ function extractLevels(ed, frames, defaultTileSize, defaultSpacing) {
     });
 
     if (layers.length === 0) continue;
+
+    // Auto-crop the level to the union bbox of painted cells across all
+    // layers. Ed defaults a new Board's size to the project's
+    // Width/Height (often 100x100), even when paint occupies only a
+    // corner — without this the renderer would draw a giant mostly-empty
+    // grid.
+    let minX = Infinity, minY = Infinity, maxX = -1, maxY = -1;
+    for (const ly of layers) {
+      for (let y = 0; y < ly.data.length; y++) {
+        const row = ly.data[y];
+        for (let x = 0; x < row.length; x++) {
+          if ((row[x] ?? 0) === 0) continue;
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+    if (maxX >= 0 && (minX > 0 || minY > 0 || maxX < width - 1 || maxY < height - 1)) {
+      const newW = maxX - minX + 1;
+      const newH = maxY - minY + 1;
+      for (const ly of layers) {
+        const cropGrid = [];
+        for (let y = minY; y <= maxY; y++) {
+          const row = ly.data[y] ?? [];
+          cropGrid.push(row.slice(minX, maxX + 1));
+        }
+        ly.data = cropGrid;
+      }
+      console.log(
+        `note:  level "${levelName}" cropped from ${width}x${height} to ${newW}x${newH} (paint bbox: ${minX},${minY} -> ${maxX},${maxY})`,
+      );
+      width = newW;
+      height = newH;
+    }
+
     out.push({
       name: levelName,
       width,
