@@ -99,7 +99,10 @@ export function eraSeedFromMooseLevel(
   // unless the author overrode it in Ed.
   const decoration: FloorDecoration = {
     textureKey: options.textureKey,
-    frameSize: level.tileSize,
+    // Levels-mode decoration assumes square tiles authored at level.tileSize.
+    // Multi-height frames are wired by hand in the era seed (see Floor.decoration).
+    frameWidth: level.tileSize,
+    frameHeight: level.tileSize,
     spacing: level.spacing,
     layers: level.layers
       .filter((l) => l.name.toLowerCase() !== SPAWN_LAYER_NAME)

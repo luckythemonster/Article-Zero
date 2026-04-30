@@ -31,12 +31,12 @@ export class BootScene extends Phaser.Scene {
     );
 
     // Every Moose-imported tileset registered by `npm run moose` becomes a
-    // Phaser spritesheet keyed by its project name.
+    // Phaser spritesheet keyed by its project slug.
     for (const t of MOOSE_TILESETS) {
       if (this.textures.exists(t.key)) continue;
       this.load.spritesheet(t.key, t.path, {
-        frameWidth: t.frameSize,
-        frameHeight: t.frameSize,
+        frameWidth: t.frameWidth,
+        frameHeight: t.frameHeight,
         spacing: t.spacing,
       });
     }

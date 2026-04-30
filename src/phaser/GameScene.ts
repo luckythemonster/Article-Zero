@@ -273,6 +273,12 @@ export class GameScene extends Phaser.Scene {
     // Track which keys we used this frame so we can hide the rest.
     const seen = new Set<string>();
 
+    // Width always matches a single tile cell; height matches its native
+    // aspect so tall frames (e.g. 32x64 stair pieces) extend up into the
+    // cell above rather than getting squashed.
+    const widthScale = TILE_PX / dec.frameWidth;
+    const displayHeight = dec.frameHeight * widthScale;
+
     dec.layers.forEach((layer, layerIdx) => {
       for (let y = 0; y < floor.height; y++) {
         const row = layer.data[y] ?? [];
@@ -283,23 +289,24 @@ export class GameScene extends Phaser.Scene {
           const visible = state.visibleTiles.has(tileKey);
           const remembered = memoryActive && state.memoryTrace.has(tileKey);
           if (!visible && !remembered) continue;
+          // Anchor at bottom-center of the cell. Tall sprites overflow upward.
           const px = this.offsetX + x * TILE_PX + TILE_PX / 2;
-          const py = this.offsetY + y * TILE_PX + TILE_PX / 2;
+          const py = this.offsetY + y * TILE_PX + TILE_PX;
           const key = `${layerIdx}:${tileKey}`;
           let sprite = this.decoSprites.get(key);
           // Frame index = stored index minus 1 (Tiled/Ed convention).
           const frame = idx - 1;
           if (!sprite) {
             sprite = this.add.image(px, py, dec.textureKey, frame);
+            sprite.setOrigin(0.5, 1);
             sprite.setDepth(layerIdx);
             this.decoSprites.set(key, sprite);
           } else {
             sprite.setPosition(px, py);
             sprite.setFrame(frame);
+            sprite.setOrigin(0.5, 1);
           }
-          // Decoration tiles match the tile cell at native size (32 px).
-          // Frame size may be larger; scale to the cell.
-          sprite.setDisplaySize(TILE_PX, TILE_PX);
+          sprite.setDisplaySize(TILE_PX, displayHeight);
           sprite.setVisible(true);
           const baseAlpha = layer.opacity;
           sprite.setAlpha(visible ? baseAlpha : baseAlpha * 0.42);

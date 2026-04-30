@@ -6,9 +6,19 @@ import type { MooseTilesetEntry } from "./types";
 
 export const MOOSE_TILESETS: MooseTilesetEntry[] = [
   {
+    "key": "maintenance_stairwell",
+    "label": "maintenance stairwell",
+    "path": "/assets/tilesets/maintenance_stairwell/sheet.png",
+    "frameWidth": 32,
+    "frameHeight": 64,
+    "spacing": 1
+  },
+  {
     "key": "stairs",
+    "label": "stairs",
     "path": "/assets/tilesets/stairs/sheet.png",
-    "frameSize": 32,
+    "frameWidth": 32,
+    "frameHeight": 32,
     "spacing": 1
   }
 ];

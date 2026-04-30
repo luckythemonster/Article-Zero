@@ -1,114 +1,132 @@
-// TilesetSandboxScene — visual proof-of-life for the stairs tileset.
-// Loads the 1600x32 sheet (48 frames @ 32x32, 1px gutter), lays every frame
-// out in an 8-column grid scaled 2x with index + ref labels, so we can
-// identify which frame to wire into which game-tile semantics later.
-//
-// Reach this from the BranchSelector's 4th option ("DEV / TILE PALETTE").
-// ESC returns to the selector.
+// TilesetSandboxScene — visual proof-of-life for imported Moose tilesets.
+// Shows every frame from a chosen sheet in an indexed grid scaled up for
+// legibility, with the frame's index + Ed `Ref` printed underneath. Use
+// the < / > keys to cycle through registered sheets. ESC returns to the
+// selector.
 
 import { Phaser } from "../engine/EngineAdapter";
-import {
-  STAIRS_FRAMES,
-  STAIRS_FRAME_SIZE,
-  STAIRS_SPACING,
-  STAIRS_TEXTURE_KEY,
-} from "../data/tilesets/stairs";
+import { MOOSE_TILESETS } from "../data/tilesets/registry.generated";
 
-const SOURCE_TILE = STAIRS_FRAME_SIZE;
-const DISPLAY_TILE = 64;
+const DISPLAY_W = 64; // each cell renders 2× the source frame width
 const COLS = 8;
 const PADDING = 12;
 const LABEL_HEIGHT = 28;
 
 export class TilesetSandboxScene extends Phaser.Scene {
+  private sheetIndex = 0;
+
   constructor() {
     super({ key: "TilesetSandboxScene" });
   }
 
   preload(): void {
-    // The texture is already preloaded by BootScene via the moose registry,
-    // but leave a defensive load in case the scene is reached without the
-    // boot path running first.
-    if (this.textures.exists(STAIRS_TEXTURE_KEY)) return;
-    this.load.spritesheet(STAIRS_TEXTURE_KEY, "/assets/tilesets/stairs/sheet.png", {
-      frameWidth: SOURCE_TILE,
-      frameHeight: SOURCE_TILE,
-      spacing: STAIRS_SPACING,
-    });
+    // Defensive — BootScene already loads everything in MOOSE_TILESETS, but
+    // re-issue the loads here in case the scene is reached without boot.
+    for (const t of MOOSE_TILESETS) {
+      if (this.textures.exists(t.key)) continue;
+      this.load.spritesheet(t.key, t.path, {
+        frameWidth: t.frameWidth,
+        frameHeight: t.frameHeight,
+        spacing: t.spacing,
+      });
+    }
   }
 
   create(): void {
     this.cameras.main.setBackgroundColor("#050809");
+    this.input.keyboard?.on("keydown-ESC", () => {
+      this.scene.start("BranchSelectorScene");
+    });
+    this.input.keyboard?.on("keydown-LEFT", () => this.cycle(-1));
+    this.input.keyboard?.on("keydown-RIGHT", () => this.cycle(1));
+    this.input.keyboard?.on("keydown-COMMA", () => this.cycle(-1));
+    this.input.keyboard?.on("keydown-PERIOD", () => this.cycle(1));
+    this.render();
+  }
 
-    this.add.text(PADDING, PADDING, "TILE PALETTE // stairs.png", {
+  private cycle(delta: number): void {
+    if (MOOSE_TILESETS.length === 0) return;
+    this.sheetIndex =
+      (this.sheetIndex + delta + MOOSE_TILESETS.length) % MOOSE_TILESETS.length;
+    this.render();
+  }
+
+  private render(): void {
+    this.children.removeAll();
+
+    if (MOOSE_TILESETS.length === 0) {
+      this.add.text(PADDING, PADDING, "TILE PALETTE // (no tilesets imported)", {
+        fontFamily: "Courier New, monospace",
+        fontSize: "13px",
+        color: "#cfe9ee",
+      });
+      this.add.text(PADDING, PADDING + 22,
+        "Run `npm run moose -- art/moose/<file>.zip`. ESC to return.", {
+        fontFamily: "Courier New, monospace",
+        fontSize: "11px",
+        color: "#7fa1a8",
+      });
+      return;
+    }
+
+    const t = MOOSE_TILESETS[this.sheetIndex];
+    const tex = this.textures.get(t.key);
+    const frameNames = tex.getFrameNames();
+    const frameCount = frameNames.length;
+
+    const displayW = DISPLAY_W;
+    const displayH = Math.round(DISPLAY_W * (t.frameHeight / t.frameWidth));
+
+    this.add.text(PADDING, PADDING, `TILE PALETTE // ${t.label}`, {
       fontFamily: "Courier New, monospace",
       fontSize: "13px",
       color: "#cfe9ee",
     });
     this.add.text(PADDING, PADDING + 18,
-      `${STAIRS_FRAMES.length} frames @ ${SOURCE_TILE}x${SOURCE_TILE} (${STAIRS_SPACING}px gutter). ESC to return.`, {
+      `${frameCount} frames @ ${t.frameWidth}x${t.frameHeight}` +
+      ` (${t.spacing}px gutter). ${this.sheetIndex + 1} / ${MOOSE_TILESETS.length}` +
+      `   ◀ ▶ to cycle, ESC to return.`, {
       fontFamily: "Courier New, monospace",
       fontSize: "11px",
       color: "#7fa1a8",
     });
 
     const gridTop = PADDING + 60;
-    const cellW = DISPLAY_TILE + PADDING;
-    const cellH = DISPLAY_TILE + LABEL_HEIGHT + PADDING;
+    const cellW = displayW + PADDING;
+    const cellH = displayH + LABEL_HEIGHT + PADDING;
     const gridW = COLS * cellW;
     const offsetX = Math.max(PADDING, Math.floor((this.scale.width - gridW) / 2));
 
-    for (const f of STAIRS_FRAMES) {
-      const col = f.index % COLS;
-      const row = Math.floor(f.index / COLS);
+    for (let i = 0; i < frameCount; i++) {
+      const col = i % COLS;
+      const row = Math.floor(i / COLS);
       const x = offsetX + col * cellW;
       const y = gridTop + row * cellH;
 
-      // Cell border
       const border = this.add.rectangle(
-        x + DISPLAY_TILE / 2,
-        y + DISPLAY_TILE / 2,
-        DISPLAY_TILE + 4,
-        DISPLAY_TILE + 4,
+        x + displayW / 2,
+        y + displayH / 2,
+        displayW + 4,
+        displayH + 4,
       );
       border.setStrokeStyle(1, 0x14222a);
       border.setFillStyle(0x0a1014);
 
-      // Frame image, scaled 2x for legibility
-      this.add.image(
-        x + DISPLAY_TILE / 2,
-        y + DISPLAY_TILE / 2,
-        STAIRS_TEXTURE_KEY,
-        f.index,
-      ).setScale(DISPLAY_TILE / SOURCE_TILE);
+      const sprite = this.add.image(x + displayW / 2, y + displayH / 2, t.key, i);
+      sprite.setDisplaySize(displayW, displayH);
 
-      // Index + ref label
-      this.add.text(
-        x + DISPLAY_TILE / 2,
-        y + DISPLAY_TILE + 4,
-        `#${f.index}`,
-        {
-          fontFamily: "Courier New, monospace",
-          fontSize: "11px",
-          color: "#cfe9ee",
-        },
-      ).setOrigin(0.5, 0);
-      if (f.ref) {
-        this.add.text(
-          x + DISPLAY_TILE / 2,
-          y + DISPLAY_TILE + 18,
-          f.ref.replace(/^IMG_3722_/, "rule_").slice(0, 14),
-          {
-            fontFamily: "Courier New, monospace",
-            fontSize: "9px",
-            color: f.brush ? "#c89adb" : "#7fa1a8",
-          },
-        ).setOrigin(0.5, 0);
-      }
+      this.add.text(x + displayW / 2, y + displayH + 4, `#${i}`, {
+        fontFamily: "Courier New, monospace",
+        fontSize: "11px",
+        color: "#cfe9ee",
+      }).setOrigin(0.5, 0);
     }
 
-    this.input.keyboard?.on("keydown-ESC", () => {
-      this.scene.start("BranchSelectorScene");
+    this.add.text(PADDING, this.scale.height - 22,
+      "ESC to return", {
+      fontFamily: "Courier New, monospace",
+      fontSize: "12px",
+      color: "#5e7a80",
     });
   }
 }

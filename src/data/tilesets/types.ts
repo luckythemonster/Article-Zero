@@ -28,10 +28,13 @@ export interface MooseLevel {
 }
 
 export interface MooseTilesetEntry {
-  /** Phaser texture key. */
+  /** Phaser texture key. Slugified project name, valid as a JS identifier. */
   key: string;
+  /** Display name preserved from the original Ed project (may contain spaces). */
+  label: string;
   /** URL the BootScene fetches. */
   path: string;
-  frameSize: number;
+  frameWidth: number;
+  frameHeight: number;
   spacing: number;
 }

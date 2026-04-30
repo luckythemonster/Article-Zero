@@ -139,8 +139,12 @@ export interface FloorDecorationLayer {
 export interface FloorDecoration {
   /** Phaser texture key — must match a sheet preloaded in BootScene. */
   textureKey: string;
-  /** Source frame size in px (width === height). */
-  frameSize: number;
+  /** Source frame width in px. */
+  frameWidth: number;
+  /** Source frame height in px. May exceed `frameWidth` for tall pieces
+   *  (e.g. stair sprites that occupy a 32x64 region). The renderer anchors
+   *  such sprites at bottom-center so they can extend into the cell above. */
+  frameHeight: number;
   /** Px gutter between frames in the source sheet. Ed exports use 1. */
   spacing: number;
   /** Stacked back-to-front in render order. */
