@@ -6,6 +6,7 @@ import { createGame } from "./engine/EngineAdapter";
 import { BootScene } from "./phaser/BootScene";
 import { BranchSelectorScene } from "./phaser/BranchSelectorScene";
 import { GameScene } from "./phaser/GameScene";
+import { TilesetSandboxScene } from "./phaser/TilesetSandboxScene";
 import { eventBus } from "./engine/EventBus";
 import { worldEngine } from "./engine/WorldEngine";
 import { tutorialDirector } from "./engine/TutorialDirector";
@@ -63,7 +64,7 @@ export default function App() {
       width: 960,
       height: 640,
       backgroundColor: "#050809",
-      scenes: [BootScene, BranchSelectorScene, GameScene],
+      scenes: [BootScene, BranchSelectorScene, GameScene, TilesetSandboxScene],
     });
     return () => {
       gameRef.current?.destroy(true);

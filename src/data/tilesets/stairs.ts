@@ -1,0 +1,255 @@
+// Auto-generated from sprites-and-tilesets/ASSETS/stairs.zip → edplay.json.
+// Sheet: stairs.png (1600x32, 48 valid 32x32 frames, 1px gutter -> stride 33).
+// Phaser: load.spritesheet("stairs", ..., { frameWidth: 32, frameHeight: 32, spacing: 1 })
+
+export interface StairsFrame {
+  index: number;
+  ref: string | null;
+  brush: string | null;
+}
+
+export const STAIRS_FRAMES: StairsFrame[] = [
+  {
+    "index": 0,
+    "ref": "stairwell1_9",
+    "brush": null
+  },
+  {
+    "index": 1,
+    "ref": "IMG_3722_13",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 2,
+    "ref": "IMG_3722_14",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 3,
+    "ref": "stairwell1_1",
+    "brush": null
+  },
+  {
+    "index": 4,
+    "ref": "stairwell1_17",
+    "brush": null
+  },
+  {
+    "index": 5,
+    "ref": "stairwell1_14",
+    "brush": null
+  },
+  {
+    "index": 6,
+    "ref": "stairwell1_23",
+    "brush": null
+  },
+  {
+    "index": 7,
+    "ref": "stairwell1_30",
+    "brush": null
+  },
+  {
+    "index": 8,
+    "ref": "stairwell1_15",
+    "brush": null
+  },
+  {
+    "index": 9,
+    "ref": "stairwell1_4",
+    "brush": null
+  },
+  {
+    "index": 10,
+    "ref": "stairwell1_25",
+    "brush": null
+  },
+  {
+    "index": 11,
+    "ref": "IMG_3722_0",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 12,
+    "ref": "IMG_3722_2",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 13,
+    "ref": "stairwell1_27",
+    "brush": null
+  },
+  {
+    "index": 14,
+    "ref": "stairwell1_31",
+    "brush": null
+  },
+  {
+    "index": 15,
+    "ref": "stairwell1_0",
+    "brush": null
+  },
+  {
+    "index": 16,
+    "ref": "IMG_3722_4",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 17,
+    "ref": "stairwell1_7",
+    "brush": null
+  },
+  {
+    "index": 18,
+    "ref": "IMG_3722_8",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 19,
+    "ref": "IMG_3722_3",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 20,
+    "ref": "stairwell1_24",
+    "brush": null
+  },
+  {
+    "index": 21,
+    "ref": "stairwell1_19",
+    "brush": null
+  },
+  {
+    "index": 22,
+    "ref": "stairwell1_10",
+    "brush": null
+  },
+  {
+    "index": 23,
+    "ref": "stairwell1_3",
+    "brush": null
+  },
+  {
+    "index": 24,
+    "ref": "stairwell1_11",
+    "brush": null
+  },
+  {
+    "index": 25,
+    "ref": "stairwell1_20",
+    "brush": null
+  },
+  {
+    "index": 26,
+    "ref": "IMG_3722_6",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 27,
+    "ref": "stairwell1_28",
+    "brush": null
+  },
+  {
+    "index": 28,
+    "ref": "IMG_3722_15",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 29,
+    "ref": "stairwell1_22",
+    "brush": null
+  },
+  {
+    "index": 30,
+    "ref": "stairwell1_8",
+    "brush": null
+  },
+  {
+    "index": 31,
+    "ref": "IMG_3722_11",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 32,
+    "ref": "stairwell1_2",
+    "brush": null
+  },
+  {
+    "index": 33,
+    "ref": "stairwell1_5",
+    "brush": null
+  },
+  {
+    "index": 34,
+    "ref": "IMG_3722_7",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 35,
+    "ref": "stairwell1_26",
+    "brush": null
+  },
+  {
+    "index": 36,
+    "ref": "stairwell1_6",
+    "brush": null
+  },
+  {
+    "index": 37,
+    "ref": "stairwell1_16",
+    "brush": null
+  },
+  {
+    "index": 38,
+    "ref": "IMG_3722_12",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 39,
+    "ref": "IMG_3722_5",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 40,
+    "ref": "stairwell1_29",
+    "brush": null
+  },
+  {
+    "index": 41,
+    "ref": "IMG_3722_10",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 42,
+    "ref": "stairwell1_21",
+    "brush": null
+  },
+  {
+    "index": 43,
+    "ref": "IMG_3722_1",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 44,
+    "ref": "stairwell1_13",
+    "brush": null
+  },
+  {
+    "index": 45,
+    "ref": "stairwell1_18",
+    "brush": null
+  },
+  {
+    "index": 46,
+    "ref": "IMG_3722_9",
+    "brush": "b_IMG_3722"
+  },
+  {
+    "index": 47,
+    "ref": "stairwell1_12",
+    "brush": null
+  }
+];
+
+export const STAIRS_TEXTURE_KEY = "stairs";
+export const STAIRS_FRAME_COUNT = 48;
