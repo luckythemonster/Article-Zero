@@ -98,43 +98,90 @@ function buildFrames(sprites, stride, frameWidth, frameHeight, sheetWidth, sheet
   return out;
 }
 
-function extractLevels(rawLevels, defaultTileSize, defaultSpacing) {
+// Ed's painted level data lives in Levels[].Boards[] — each Board is a
+// layer (sparse Tiles[] plus its own Width/Height/Opacity/Name). Each
+// painted tile carries a Handle that resolves through TileDefs to a
+// SpriteId Ref, which we then map back to our slice-frame index.
+function extractLevels(ed, frames, defaultTileSize, defaultSpacing) {
+  const rawLevels = ed.Levels ?? ed.levels;
   if (!Array.isArray(rawLevels)) return [];
+
+  // SpriteId (Ref string) -> our frame index in the slice order.
+  const refToIndex = new Map();
+  for (const f of frames) if (f.ref) refToIndex.set(f.ref, f.index);
+
+  // TileDef.Handle -> SpriteId Ref of the first keyframe.
+  const tileDefs = ed.TileDefs ?? [];
+  const handleToRef = new Map();
+  for (const td of tileDefs) {
+    const ref = td.Animation?.KeyFrames?.[0]?.SpriteId;
+    if (td.Handle != null && typeof ref === "string") {
+      handleToRef.set(td.Handle, ref);
+    }
+  }
+
   const out = [];
   for (const lv of rawLevels) {
-    const name = lv.Name ?? lv.name ?? "level";
-    const width = lv.Width ?? lv.width;
-    const height = lv.Height ?? lv.height;
-    const rawLayers = lv.Layers ?? lv.layers;
-    if (!width || !height || !Array.isArray(rawLayers)) continue;
-    const layers = [];
-    for (const ly of rawLayers) {
-      const lname = ly.Name ?? ly.name ?? "layer";
-      const opacity = ly.Opacity ?? ly.opacity ?? 1;
-      const data = ly.Data ?? ly.data;
-      if (!Array.isArray(data)) continue;
-      let grid;
-      if (Array.isArray(data[0])) {
-        grid = data;
-      } else if (data.length === width * height) {
-        grid = [];
-        for (let y = 0; y < height; y++) {
-          grid.push(data.slice(y * width, (y + 1) * width));
-        }
-      } else {
-        continue;
-      }
-      layers.push({ name: lname, opacity, data: grid });
+    const levelName = lv.Name ?? lv.name ?? "level";
+    const boards = lv.Boards ?? lv.boards ?? [];
+    if (!Array.isArray(boards) || boards.length === 0) continue;
+
+    // We pick the level's grid dimensions from the largest board so that
+    // every layer ends up the same shape after we pad zero rows/cols.
+    let width = 0;
+    let height = 0;
+    for (const b of boards) {
+      width = Math.max(width, b.Width ?? b.width ?? 0);
+      height = Math.max(height, b.Height ?? b.height ?? 0);
     }
+    if (!width || !height) continue;
+
+    const layers = [];
+    let unresolved = 0;
+    let painted = 0;
+    boards.forEach((b, boardIdx) => {
+      const bName = b.Name ?? b.name ?? `board ${boardIdx + 1}`;
+      const opacity = b.Opacity ?? b.opacity ?? 1;
+      const tiles = b.Tiles ?? b.tiles ?? [];
+      const grid = Array.from({ length: height }, () =>
+        new Array(width).fill(0),
+      );
+      for (const t of tiles) {
+        const x = t.X ?? t.x ?? 0;
+        const y = t.Y ?? t.y ?? 0;
+        if (x < 0 || y < 0 || x >= width || y >= height) continue;
+        painted += 1;
+        const ref = handleToRef.get(t.Handle);
+        const idx = ref != null ? refToIndex.get(ref) : undefined;
+        if (idx == null) {
+          unresolved += 1;
+          continue;
+        }
+        // Tiled / Ed convention: 0 = empty; non-zero = 1-based frame index.
+        grid[y][x] = idx + 1;
+      }
+      layers.push({ name: bName, opacity, data: grid });
+    });
+
     if (layers.length === 0) continue;
     out.push({
-      name,
+      name: levelName,
       width,
       height,
       tileSize: defaultTileSize,
       spacing: defaultSpacing,
       layers,
     });
+
+    if (painted > 0 && unresolved === painted) {
+      console.warn(
+        `warn: level "${levelName}" has ${painted} painted tiles but none resolved through TileDefs — check that the project has been saved (Ed sometimes elides TileDefs in unsaved projects).`,
+      );
+    } else if (unresolved > 0) {
+      console.warn(
+        `warn: level "${levelName}" has ${unresolved}/${painted} unresolved tile handles (probably autotile rule outputs; v1.5 doesn't evaluate rules).`,
+      );
+    }
   }
   return out;
 }
@@ -211,7 +258,7 @@ async function main() {
     const sheetHeight = buf.readUInt32BE(20);
 
     const frames = buildFrames(sprites, stride, frameWidth, frameHeight, sheetWidth, sheetHeight);
-    const levels = extractLevels(ed.Levels, frameWidth, spacing);
+    const levels = extractLevels(ed, frames, frameWidth, spacing);
 
     const outDir = path.join(TILESETS_DIR, slug);
     await fs.mkdir(outDir, { recursive: true });
