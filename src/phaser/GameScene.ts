@@ -73,6 +73,15 @@ export class GameScene extends Phaser.Scene {
   /** Door-cell sprite key by `${x},${y},${z}` so DOOR_TOGGLED can locate
    *  the sprite without scanning all decoration cells. */
   private doorSpriteByPos = new Map<string, string>();
+  /** Per-cell "open frame" sourced from the `doors_open` layer when the
+   *  author paints one. The doors-layer sprite swaps to this frame when
+   *  the cell's tile-kind is DOOR_OPEN, falling back to the animation's
+   *  settle frame if no `doors_open` paint exists. */
+  private doorOpenFrameByPos = new Map<string, number>();
+  /** Per-cell "closed frame" sourced from the `doors` layer so we can
+   *  always restore exactly what the author painted, regardless of any
+   *  drift in the animation's baseFrame. */
+  private doorClosedFrameByPos = new Map<string, number>();
   private floorLabel!: Phaser.GameObjects.Text;
   private offsetX = 0;
   private offsetY = 0;
@@ -275,6 +284,8 @@ export class GameScene extends Phaser.Scene {
     this.decoSprites.clear();
     this.decoFloorZ = null;
     this.doorSpriteByPos.clear();
+    this.doorOpenFrameByPos.clear();
+    this.doorClosedFrameByPos.clear();
   }
 
   private ensureDecoAnimIndex(textureKey: string): void {
@@ -305,8 +316,27 @@ export class GameScene extends Phaser.Scene {
     const widthScale = TILE_PX / dec.frameWidth;
     const displayHeight = dec.frameHeight * widthScale;
 
+    // First pass: feed the doors_open layer into the open-frame map so the
+    // doors render path can consult it. The layer itself never renders —
+    // its visual representation IS the doors-layer sprite, swapped to the
+    // open frame when the cell's tile-kind is DOOR_OPEN.
+    for (const layer of dec.layers) {
+      if (layer.name.toLowerCase() !== "doors_open") continue;
+      for (let y = 0; y < floor.height; y++) {
+        const row = layer.data[y] ?? [];
+        for (let x = 0; x < floor.width; x++) {
+          const idx = row[x] ?? 0;
+          if (!idx) continue;
+          this.doorOpenFrameByPos.set(`${x},${y},${floor.z}`, idx - 1);
+        }
+      }
+    }
+
     dec.layers.forEach((layer, layerIdx) => {
-      const isDoorLayer = layer.name.toLowerCase() === "doors";
+      const lname = layer.name.toLowerCase();
+      // doors_open data is already consumed; skip its sprite render entirely.
+      if (lname === "doors_open") return;
+      const isDoorLayer = lname === "doors";
       for (let y = 0; y < floor.height; y++) {
         const row = layer.data[y] ?? [];
         for (let x = 0; x < floor.width; x++) {
@@ -320,7 +350,19 @@ export class GameScene extends Phaser.Scene {
           const py = this.offsetY + y * TILE_PX + TILE_PX;
           const key = `${layerIdx}:${tileKey}`;
           let sprite = this.decoSprites.get(key);
-          const frame = idx - 1;
+          // Frame index = stored index minus 1 (Tiled/Ed convention).
+          let frame = idx - 1;
+          // Doors specifically swap frame based on tile-kind so an open
+          // door shows the open art (from doors_open or animation settle).
+          if (isDoorLayer) {
+            this.doorClosedFrameByPos.set(tileKey, frame);
+            const tile = floor.tiles[y * floor.width + x];
+            if (tile?.kind === "DOOR_OPEN") {
+              const openFrame = this.doorOpenFrameByPos.get(tileKey);
+              const animMeta = this.decoAnimByFrame.get(frame);
+              frame = openFrame ?? animMeta?.anim.settleFrame ?? frame;
+            }
+          }
           if (!sprite) {
             sprite = this.add.sprite(px, py, dec.textureKey, frame);
             sprite.setOrigin(0.5, 1);
@@ -348,7 +390,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   /** Play the open/close animation on the door sprite at `pos`. Called from
-   *  the DOOR_TOGGLED listener registered in `create()`. */
+   *  the DOOR_TOGGLED listener registered in `create()`. Settles on the
+   *  per-cell open/closed frame from the layer data so author-painted
+   *  open-state art (the `doors_open` layer) wins over the animation's
+   *  generic settle frame. */
   private playDoorAnim(pos: Vec3, opening: boolean): void {
     const tileKey = `${pos.x},${pos.y},${pos.z}`;
     const spriteKey = this.doorSpriteByPos.get(tileKey);
@@ -356,14 +401,22 @@ export class GameScene extends Phaser.Scene {
     const sprite = this.decoSprites.get(spriteKey);
     if (!sprite) return;
     const currentFrame = sprite.frame.name;
-    // Phaser frame names are strings like "0", "1", ... for spritesheets.
     const frameIdx = Number(currentFrame);
-    const meta = this.decoAnimByFrame.get(frameIdx);
+    const meta = this.decoAnimByFrame.get(frameIdx)
+      ?? (() => {
+        // After a save/load the sprite may currently sit on a per-cell
+        // open/closed frame that isn't in the anim index. Fall back to
+        // any registered animation for this texture.
+        for (const v of this.decoAnimByFrame.values()) return v;
+        return undefined;
+      })();
     if (!meta) return;
     const direction = opening ? "open" : "close";
     const key = mooseAnimKey(meta.textureKey, meta.anim.handle, direction);
     if (!this.anims.exists(key)) return;
-    const settleAfter = opening ? meta.anim.settleFrame : meta.anim.baseFrame;
+    const openFrame = this.doorOpenFrameByPos.get(tileKey) ?? meta.anim.settleFrame;
+    const closedFrame = this.doorClosedFrameByPos.get(tileKey) ?? meta.anim.baseFrame;
+    const settleAfter = opening ? openFrame : closedFrame;
     sprite.once("animationcomplete", () => {
       sprite.setFrame(settleAfter);
     });

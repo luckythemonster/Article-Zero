@@ -38,7 +38,7 @@ export const MOOSE_TILESETS: MooseTilesetEntry[] = [
           42,
           42
         ],
-        "frameRate": 4
+        "frameRate": 8
       }
     ]
   },

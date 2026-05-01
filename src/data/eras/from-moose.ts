@@ -42,7 +42,9 @@ const SPAWN_LAYER_NAME = "spawn";
 // Lets the importer be lazy about Ed's board ordering — what matters is the
 // name. Known back-layer names (chasm / void / pit / shadows) sort below
 // the floor; the floor sits below structural layers (walls, doors); pure-
-// decoration / FX names sort on top.
+// decoration / FX names sort on top. `doors_open` sits at the same depth
+// as `doors` — its data is consumed by the doors render path (see
+// GameScene.renderDecoration), so the layer itself never renders directly.
 const RENDER_PRIORITY: Record<string, number> = {
   chasm: 10,
   void: 10,
@@ -50,6 +52,7 @@ const RENDER_PRIORITY: Record<string, number> = {
   shadows: 20,
   floor: 40,
   doors: 60,
+  doors_open: 60,
   walls: 70,
   terminals: 80,
   vent_control: 80,

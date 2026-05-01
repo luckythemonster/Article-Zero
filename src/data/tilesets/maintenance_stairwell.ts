@@ -299,6 +299,6 @@ export const MAINTENANCE_STAIRWELL_TILE_ANIMS: MooseTileAnim[] = [
       42,
       42
     ],
-    "frameRate": 4
+    "frameRate": 8
   }
 ];
