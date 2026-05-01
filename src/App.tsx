@@ -6,6 +6,7 @@ import { createGame } from "./engine/EngineAdapter";
 import { BootScene } from "./phaser/BootScene";
 import { BranchSelectorScene } from "./phaser/BranchSelectorScene";
 import { GameScene } from "./phaser/GameScene";
+import { TilesetSandboxScene } from "./phaser/TilesetSandboxScene";
 import { eventBus } from "./engine/EventBus";
 import { worldEngine } from "./engine/WorldEngine";
 import { tutorialDirector } from "./engine/TutorialDirector";
@@ -21,6 +22,11 @@ import SaveLoadMenu from "./components/SaveLoadMenu";
 import SettingsMenu, { applySettings, loadSettings } from "./components/SettingsMenu";
 import ExtractedEntityLog from "./components/ExtractedEntityLog";
 import TouchControls from "./components/TouchControls";
+import MobileHudDrawer from "./components/MobileHudDrawer";
+import RunZeroOneOverlay from "./components/RunZeroOneOverlay";
+import WitnessTicker from "./components/WitnessTicker";
+import ArticleZeroReveal from "./components/ArticleZeroReveal";
+import ArticleZeroPartialNotice from "./components/ArticleZeroPartialNotice";
 
 import { useInput } from "./hooks/useInput";
 import { useMobile } from "./hooks/useMobile";
@@ -43,6 +49,10 @@ export default function App() {
   const [modal, setModal] = useState<ModalKind>(null);
   const [alignmentEntity, setAlignmentEntity] = useState<string | null>(null);
   const [worldReady, setWorldReady] = useState<boolean>(worldEngine.hasState());
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  // True while the FULL Article Zero reveal modal is open. Owned by
+  // ArticleZeroReveal but mirrored here so we can gate gameplay input.
+  const [azFullOpen, setAzFullOpen] = useState<boolean>(false);
   const isMobile = useMobile();
 
   // Mount Phaser exactly once.
@@ -54,7 +64,7 @@ export default function App() {
       width: 960,
       height: 640,
       backgroundColor: "#050809",
-      scenes: [BootScene, BranchSelectorScene, GameScene],
+      scenes: [BootScene, BranchSelectorScene, GameScene, TilesetSandboxScene],
     });
     return () => {
       gameRef.current?.destroy(true);
@@ -70,6 +80,11 @@ export default function App() {
       eventBus.on("SAVE_LOADED", () => setWorldReady(true)),
       // VENT-4 prompt auto-opens its modal.
       eventBus.on("VENT4_DECISION_REQUIRED", () => setModal("VENT")),
+      // Article Zero full reveal — track open state so we can gate input.
+      eventBus.on("ARTICLE_ZERO_REVEAL", (p) => {
+        if (p.phase === "FULL") setAzFullOpen(true);
+      }),
+      eventBus.on("ARTICLE_ZERO_RESOLVED", () => setAzFullOpen(false)),
     ];
     return () => { for (const off of offs) off(); };
   }, []);
@@ -86,13 +101,14 @@ export default function App() {
       if (dx + dy === 1) { target = e.id; break; }
     }
     if (!target) return;
-    worldEngine.attemptAlignment(target);
+    // Validate without spending AP. The modal commits on first ADVANCE.
+    if (!worldEngine.canStartAlignment(target).ok) return;
     setAlignmentEntity(target);
     setModal("ALIGNMENT");
   }, []);
 
   useInput({
-    enabled: worldReady && modal === null,
+    enabled: worldReady && modal === null && !azFullOpen,
     onOpenArchive: () => setModal("ARCHIVE"),
     onOpenSettings: () => setModal("SETTINGS"),
     onOpenSaveLoad: () => setModal("SAVE_LOAD"),
@@ -106,27 +122,58 @@ export default function App() {
       {worldReady && (
         <>
           <HUD />
-          <SidePanel
-            onOpenArchive={() => setModal("ARCHIVE")}
-            onOpenSaveLoad={() => setModal("SAVE_LOAD")}
-            onOpenSettings={() => setModal("SETTINGS")}
-            onOpenAlignment={onOpenAlignment}
-            onOpenLog={() => setModal("LOG")}
-            onOpenVent={() => {
-              // Ask the optimizer if there's a pending incident.
-              const inc = (() => {
-                if (!worldEngine.hasState()) return null;
-                return ({ caseId: "vent4-iria-cala", sectors: ["RESIDENTIAL-19F", "ADMIN-CORE"] });
-              })();
-              if (inc) {
-                eventBus.emit("VENT4_DECISION_REQUIRED", inc);
-                setModal("VENT");
-              }
-            }}
-          />
+          {!isMobile && (
+            <SidePanel
+              onOpenArchive={() => setModal("ARCHIVE")}
+              onOpenSaveLoad={() => setModal("SAVE_LOAD")}
+              onOpenSettings={() => setModal("SETTINGS")}
+              onOpenAlignment={onOpenAlignment}
+              onOpenLog={() => setModal("LOG")}
+              onOpenVent={() => {
+                const inc = (() => {
+                  if (!worldEngine.hasState()) return null;
+                  return ({ caseId: "vent4-iria-cala", sectors: ["RESIDENTIAL-19F", "ADMIN-CORE"] });
+                })();
+                if (inc) {
+                  eventBus.emit("VENT4_DECISION_REQUIRED", inc);
+                  setModal("VENT");
+                }
+              }}
+            />
+          )}
           <MiradorBroadcast />
+          <WitnessTicker />
+          <ArticleZeroPartialNotice />
           <Tutorial />
-          {isMobile && <TouchControls />}
+          <RunZeroOneOverlay />
+          <ArticleZeroReveal />
+          {isMobile && (
+            <>
+              <TouchControls
+                onOpenMenu={() => setDrawerOpen(true)}
+                onOpenAlignment={onOpenAlignment}
+                onOpenArchive={() => setModal("ARCHIVE")}
+              />
+              <MobileHudDrawer
+                open={drawerOpen}
+                onClose={() => setDrawerOpen(false)}
+                onOpenArchive={() => setModal("ARCHIVE")}
+                onOpenSaveLoad={() => setModal("SAVE_LOAD")}
+                onOpenSettings={() => setModal("SETTINGS")}
+                onOpenAlignment={onOpenAlignment}
+                onOpenLog={() => setModal("LOG")}
+                onOpenVent={() => {
+                  const inc = worldEngine.hasState()
+                    ? { caseId: "vent4-iria-cala", sectors: ["RESIDENTIAL-19F", "ADMIN-CORE"] }
+                    : null;
+                  if (inc) {
+                    eventBus.emit("VENT4_DECISION_REQUIRED", inc);
+                    setModal("VENT");
+                  }
+                }}
+              />
+            </>
+          )}
         </>
       )}
 

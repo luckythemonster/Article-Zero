@@ -87,6 +87,10 @@ export interface EventMap {
   // Article Zero meta-layer
   ARTICLE_ZERO_FRAGMENT_FOUND: { fragmentId: string };
   ARTICLE_ZERO_REVEAL: { phase: "FORESHADOW" | "PARTIAL" | "FULL" };
+  ARTICLE_ZERO_RESOLVED: {
+    resolution: "ACCEPTED" | "REFUSED";
+    turn: number;
+  };
   ARTICLE_ZERO_VIOLATION: { entityId: EntityId; action: string; turn: number };
 
   // Violations
@@ -107,6 +111,12 @@ export interface EventMap {
 
   // Era / branch
   ERA_SELECTED: { era: Era };
+
+  // Lattice — RUN 01 + insomnia
+  RUN_01_TRIGGERED: { turn: number };
+  RUN_01_COMPLETED: { turn: number };
+  SOL_ENTANGLED: { turn: number };
+  WITNESS_EVENT: { line: string; turn: number };
 
   // Dialogue
   DIALOGUE_OPENED: { entityId: EntityId; mode: PersonaMode };

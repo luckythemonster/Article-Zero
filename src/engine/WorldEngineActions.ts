@@ -1,19 +1,27 @@
 // Player action implementations. Mutates WorldState in place, then emits via
-// the EventBus. Kept thin — one function per verb. The slice supports:
-//   move, interact, endTurn, toggleFlashlight, attemptAlignment.
+// the EventBus. Kept thin — one function per verb.
 
-import type { Vec3, WorldState } from "../types/world.types";
+import type { Facing, Vec3, WorldState } from "../types/world.types";
 import { tileKey } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import { alignmentSession } from "./AlignmentSession";
 import { ventOptimizer } from "./VentOptimizer";
 import { stitcherTimer } from "./StitcherTimer";
 import { miradorPersona } from "./MiradorPersona";
+import { enforcerAI } from "./EnforcerAI";
 import { documentArchive } from "./DocumentArchive";
 import { articleZeroMeta } from "./ArticleZeroMeta";
+import { insomniaSystem } from "./InsomniaSystem";
 
 const MOVE_AP_COST = 1;
 const INTERACT_AP_COST = 1;
+const ALIGN_AP_COST = 2;
+
+export function facingFromDelta(dx: number, dy: number): Facing | null {
+  if (dx === 0 && dy === 0) return null;
+  if (Math.abs(dx) >= Math.abs(dy)) return dx > 0 ? "east" : "west";
+  return dy > 0 ? "south" : "north";
+}
 
 function tileAt(state: WorldState, pos: Vec3) {
   const floor = state.floors.get(pos.z);
@@ -38,6 +46,8 @@ function entityAt(state: WorldState, pos: Vec3) {
 export const actions = {
   move(state: WorldState, dx: number, dy: number): boolean {
     if (state.detained || state.player.ap < MOVE_AP_COST) return false;
+    const facing = facingFromDelta(dx, dy);
+    if (facing) state.player.facing = facing;
     const from = state.player.pos;
     const to: Vec3 = { x: from.x + dx, y: from.y + dy, z: from.z };
     const t = tileAt(state, to);
@@ -46,6 +56,7 @@ export const actions = {
     if (blockingEntity) return false;
     state.player.pos = to;
     state.player.ap -= MOVE_AP_COST;
+    state.player.lastMoveTurn = state.turn;
     eventBus.emit("PLAYER_MOVED", { from, to });
     eventBus.emit("PLAYER_AP_CHANGED", {
       previous: state.player.ap + MOVE_AP_COST,
@@ -85,7 +96,12 @@ export const actions = {
     if (!here) return false;
 
     if (here.kind === "ARTICLE_ZERO_FRAGMENT_TILE") {
-      articleZeroMeta.discoverFragment(state, "fragment-nw-smac-01");
+      const fragmentId = state.era === "LATTICE"
+        ? "fragment-ring-c"
+        : state.era === "MIRADOR"
+          ? "fragment-mirador"
+          : "fragment-nw-smac-01";
+      articleZeroMeta.discoverFragment(state, fragmentId);
       state.player.ap -= INTERACT_AP_COST;
       return true;
     }
@@ -93,6 +109,16 @@ export const actions = {
       const incident = ventOptimizer.openIncident(state);
       if (incident) {
         eventBus.emit("VENT4_DECISION_REQUIRED", incident);
+        state.player.ap -= INTERACT_AP_COST;
+        return true;
+      }
+    }
+    if (here.kind === "SHARED_FIELD_RIG") {
+      // RUN 01 — only fires once. The merge dialogue is rendered by the
+      // RunZeroOneOverlay React component, which calls worldEngine.markEntangled
+      // when the sequence completes.
+      if (!state.player.entangled) {
+        eventBus.emit("RUN_01_TRIGGERED", { turn: state.turn });
         state.player.ap -= INTERACT_AP_COST;
         return true;
       }
@@ -116,8 +142,11 @@ export const actions = {
       current: state.player.ap,
     });
     // Tick subsystems
+    enforcerAI.tick(state);
     stitcherTimer.tick(state);
     miradorPersona.tick(state);
+    insomniaSystem.tick(state);
+    articleZeroMeta.checkPromote(state);
     // Expire violations older than 20 turns
     state.violations = state.violations.filter((v) => state.turn - v.turn < 20);
     // Flashlight battery
@@ -142,15 +171,41 @@ export const actions = {
     recomputeFOV();
   },
 
-  attemptAlignment(state: WorldState, entityId: string): boolean {
+  /**
+   * Pure validation. Does NOT mutate state — open the modal first, only spend
+   * AP and start the session when the player clicks ADVANCE.
+   */
+  canStartAlignment(
+    state: WorldState,
+    entityId: string,
+  ): { ok: boolean; reason?: string } {
+    if (state.detained) return { ok: false, reason: "detained" };
     const entity = state.entities.get(entityId);
-    if (!entity || entity.status !== "ACTIVE") return false;
-    // Must be adjacent.
+    if (!entity || entity.status !== "ACTIVE") {
+      return { ok: false, reason: "no-such-entity" };
+    }
+    if (entity.kind !== "SILICATE") {
+      return { ok: false, reason: "not-silicate" };
+    }
     const dx = Math.abs(entity.pos.x - state.player.pos.x);
     const dy = Math.abs(entity.pos.y - state.player.pos.y);
-    if (entity.pos.z !== state.player.pos.z || dx + dy > 1) return false;
-    if (state.player.ap < 2) return false;
-    state.player.ap -= 2;
+    if (entity.pos.z !== state.player.pos.z || dx + dy > 1) {
+      return { ok: false, reason: "not-adjacent" };
+    }
+    if (state.player.ap < ALIGN_AP_COST) return { ok: false, reason: "low-ap" };
+    return { ok: true };
+  },
+
+  /**
+   * Spend AP and start the session. Caller must have already checked
+   * canStartAlignment — this is the commit step from the modal's first ADVANCE.
+   */
+  commitAlignment(state: WorldState, entityId: string): boolean {
+    const check = actions.canStartAlignment(state, entityId);
+    if (!check.ok) return false;
+    const previous = state.player.ap;
+    state.player.ap -= ALIGN_AP_COST;
+    eventBus.emit("PLAYER_AP_CHANGED", { previous, current: state.player.ap });
     alignmentSession.start(state, entityId);
     return true;
   },

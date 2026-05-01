@@ -9,12 +9,23 @@ deepened with material from the Article Zero lore.
 
 ## Getting started
 
+Requires **Node 20+** (Vite 6 needs `globalThis.crypto.getRandomValues`).
+The repo includes `.nvmrc` and a Codespaces devcontainer that pin this for you.
+
 ```bash
+nvm use            # picks up .nvmrc
 npm install
 npm run dev
 ```
 
 The dev server runs on http://localhost:5173.
+
+### GitHub Codespaces
+
+Open this branch in a Codespace and the devcontainer auto-installs Node 20 and
+runs `npm install`. Then run `npm run dev`. If you opened the Codespace before
+`.devcontainer/` existed, run **Codespaces: Rebuild Container** so the new
+config takes effect.
 
 ### Optional LLM dialogue
 
@@ -52,6 +63,28 @@ present in the era selector but ship as teaser scenes.
 - `npm run typecheck` — TypeScript only
 - `npm run lint` — ESLint
 - `npm run preview` — preview a production build
+- `npm run art` — repack character art under `art/` into a Phaser atlas
+- `npm run moose -- art/moose/<project>.zip` — import an Ed (Chilling
+  Moose) export as a tileset + optional level data
+
+## Adding new character art
+
+Drop PNG frames into `art/<character>/<animation>/<direction>/NN.png` and
+run `npm run art`. The packer writes
+`public/assets/sprite_pack/chars-art.{png,json}` and
+`src/data/char-anims.generated.ts`. The renderer auto-picks up any
+character whose id (lowercased, alphanumeric) matches an authored prefix —
+see `art/README.md` for the full convention.
+
+## Adding a tile-based level (Ed)
+
+Author the level in **Ed - Game Tile Editor** (Apple App Store
+id 6502629511) using 32×32 tiles with a 1px gutter, drop the export zip
+into `art/moose/<name>.zip`, and run
+`npm run moose -- art/moose/<name>.zip`. Layer names like `floor` /
+`walls` / `doors` / `terminals` / `spawn` carry gameplay semantics;
+others (`shadows`, `objects`, etc.) render as pure decoration. Full
+convention table in `art/README.md`.
 
 ## Branch
 

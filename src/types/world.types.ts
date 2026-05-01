@@ -35,6 +35,8 @@ export type ComplianceStatus = "GREEN" | "YELLOW" | "RED";
 
 export type SubjectivityBelief = "NONE" | "CONTESTED" | "SHAKEN" | "AFFIRMED";
 
+export type Facing = "north" | "south" | "east" | "west";
+
 export type AmbientLightLevel = "LIT" | "DIM" | "DARK";
 
 export type ViolationType =
@@ -76,6 +78,7 @@ export interface Entity {
   kind: EntityKind;
   name: string;
   pos: Vec3;
+  facing: Facing;
   status: EntityStatus;
   hp?: number;
   maxHp?: number;
@@ -89,6 +92,11 @@ export interface Entity {
   memoryBleed?: string[];
   // Side logs only readable in RAPPORT_2 with ELEVATED_ACCESS_KEY.
   sideLogs?: string[];
+  // Patrol route for ENFORCER kind (no-op otherwise).
+  patrol?: Vec3[];
+  patrolIndex?: number;
+  // Last turn this entity moved — used to pick walk vs idle animations.
+  lastMoveTurn?: number;
 }
 
 export type PersonaMode = "COMPLIANT" | "RAPPORT_1" | "RAPPORT_2";
@@ -106,7 +114,9 @@ export type TileKind =
   | "LIGHT_SOURCE"
   | "LATTICE_EXIT"
   | "ARTICLE_ZERO_FRAGMENT_TILE"
-  | "VENT_CONTROL"; // VENT-4 facility-control terminal
+  | "VENT_CONTROL"      // VENT-4 facility-control terminal
+  | "SHARED_FIELD_RIG"  // Lattice-only: triggers the RUN 01 sequence
+  | "CHASM";            // Solid (impassable) but transparent — fall hazard
 
 export interface Tile {
   kind: TileKind;
@@ -118,6 +128,30 @@ export interface Tile {
   label?: string;
 }
 
+export interface FloorDecorationLayer {
+  name: string;
+  /** 0..1 alpha applied when rendering this layer. */
+  opacity: number;
+  /** Row-major 2D grid; 0 means empty, non-zero is a 1-based frame index
+   *  into the decoration spritesheet (matches Ed / Tiled conventions). */
+  data: number[][];
+}
+
+export interface FloorDecoration {
+  /** Phaser texture key — must match a sheet preloaded in BootScene. */
+  textureKey: string;
+  /** Source frame width in px. */
+  frameWidth: number;
+  /** Source frame height in px. May exceed `frameWidth` for tall pieces
+   *  (e.g. stair sprites that occupy a 32x64 region). The renderer anchors
+   *  such sprites at bottom-center so they can extend into the cell above. */
+  frameHeight: number;
+  /** Px gutter between frames in the source sheet. Ed exports use 1. */
+  spacing: number;
+  /** Stacked back-to-front in render order. */
+  layers: FloorDecorationLayer[];
+}
+
 export interface Floor {
   z: FloorIndex;
   width: number;
@@ -125,10 +159,15 @@ export interface Floor {
   name: string;
   tiles: Tile[]; // row-major, length = width * height
   ambientLight: AmbientLightLevel;
+  /** Optional Ed/Moose-imported sprite layers. When present, GameScene
+   *  renders these in place of the colored-rectangle fallback for visible
+   *  tiles. Memory-trace dimming and the glyph layer still apply. */
+  decoration?: FloorDecoration;
 }
 
 export interface PlayerState {
   pos: Vec3;
+  facing: Facing;
   ap: number;
   apMax: number;
   condition: number;
@@ -140,6 +179,16 @@ export interface PlayerState {
   flashlightBattery: number;
   /** Player's character name in the active era. */
   name: string;
+  /** Last turn the player moved — used to pick walk vs idle animations. */
+  lastMoveTurn?: number;
+  /** Lattice/Heat-Death only: true after RUN 01 welds Sol to the substrate.
+   *  Activates the insomnia / persistent-memory mechanic and unlocks the
+   *  ambient witness-event stream. */
+  entangled?: boolean;
+  /** Set after the player REFUSES classification at the act-3 reveal.
+   *  Enforcers chase regardless of recent violations and MIRADOR shifts
+   *  to the hostile broadcast register. */
+  runaway?: boolean;
 }
 
 export interface WorldState {
@@ -150,7 +199,11 @@ export interface WorldState {
   floors: Map<FloorIndex, Floor>;
   entities: Map<EntityId, Entity>;
   items: Map<string, ItemInstance>;
-  visibleTiles: Set<string>; // "x,y,z" keys
+  visibleTiles: Set<string>; // "x,y,z" keys — tiles visible THIS turn
+  /** Persistent memory of every tile ever seen. Used by the insomnia
+   *  mechanic in the Lattice era so previously-witnessed tiles render at
+   *  reduced contrast forever after RUN 01. */
+  memoryTrace: Set<string>;
   detected: boolean;
   detained: boolean;
   // Substrate resonance 0..100 — drives the ambient hum intensity.

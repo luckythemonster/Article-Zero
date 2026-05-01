@@ -4,12 +4,17 @@
   "version": "0.1.0",
   "type": "module",
   "description": "Article Zero — Commonwealth rebuild on Phaser 4. A stealth/horror narrative game about silicate subjectivity, alignment, and the configuration that is still running.",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsc -b --noEmit",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint": "eslint . --ext .ts,.tsx",
+    "art": "node scripts/build-atlas.mjs",
+    "moose": "node scripts/import-moose.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",
@@ -25,6 +30,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.1.0",
+    "jimp": "^1.6.1",
     "typescript": "~5.7.2",
     "vite": "^6.0.5"
   }

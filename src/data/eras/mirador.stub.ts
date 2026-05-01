@@ -46,6 +46,7 @@ export function miradorStub(): EraSeed {
   };
   const player: PlayerState = {
     pos: { x: spawn.x, y: spawn.y, z: 1 },
+    facing: "south",
     ap: 4,
     apMax: 4,
     condition: 10,

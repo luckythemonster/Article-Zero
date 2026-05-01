@@ -1,28 +1,22 @@
 // EnforcerAI — patrol + alert + chase. Stripped to the essentials for the
-// slice: enforcers patrol a list of waypoints; if they see the player and the
-// player has any active violation on the same floor, they chase.
+// slice: enforcers walk a patrol route stored on the entity itself; if they
+// see the player and the player has an active violation on the same floor,
+// they chase.
 
-import type { Entity, Vec3, WorldState } from "../types/world.types";
+import type { Entity, Facing, Vec3, WorldState } from "../types/world.types";
 import { eventBus } from "./EventBus";
-
-interface Waypoint extends Vec3 {}
-
-interface PatrolMemory {
-  waypoints: Waypoint[];
-  index: number;
-}
 
 const SIGHT_RADIUS = 5;
 
+function facingFromDelta(dx: number, dy: number): Facing | null {
+  if (dx === 0 && dy === 0) return null;
+  if (Math.abs(dx) >= Math.abs(dy)) return dx > 0 ? "east" : "west";
+  return dy > 0 ? "south" : "north";
+}
+
 class EnforcerAI {
-  private memory = new Map<string, PatrolMemory>();
-
   reset(): void {
-    this.memory.clear();
-  }
-
-  registerPatrol(entityId: string, waypoints: Waypoint[]): void {
-    this.memory.set(entityId, { waypoints, index: 0 });
+    // No internal state — patrol progress lives on the entity.
   }
 
   tick(state: WorldState): void {
@@ -33,20 +27,18 @@ class EnforcerAI {
   }
 
   private stepEnforcer(state: WorldState, entity: Entity): void {
-    const mem = this.memory.get(entity.id);
-    if (!mem || mem.waypoints.length === 0) return;
-
     const playerPos = state.player.pos;
     const sees =
       playerPos.z === entity.pos.z &&
       Math.hypot(playerPos.x - entity.pos.x, playerPos.y - entity.pos.y) <= SIGHT_RADIUS;
     const hasViolation = state.violations.length > 0;
+    const runaway = state.player.runaway === true;
 
-    if (sees && hasViolation) {
-      // Chase: take a single step toward the player.
+    if (sees && (hasViolation || runaway)) {
       const dx = Math.sign(playerPos.x - entity.pos.x);
       const dy = Math.sign(playerPos.y - entity.pos.y);
-      const target: Vec3 = Math.abs(playerPos.x - entity.pos.x) >= Math.abs(playerPos.y - entity.pos.y)
+      const target: Vec3 = Math.abs(playerPos.x - entity.pos.x) >=
+        Math.abs(playerPos.y - entity.pos.y)
         ? { x: entity.pos.x + dx, y: entity.pos.y, z: entity.pos.z }
         : { x: entity.pos.x, y: entity.pos.y + dy, z: entity.pos.z };
       this.tryMove(state, entity, target);
@@ -60,10 +52,13 @@ class EnforcerAI {
       return;
     }
 
-    // Idle patrol: step one tile toward current waypoint; advance when reached.
-    const wp = mem.waypoints[mem.index];
-    if (entity.pos.x === wp.x && entity.pos.y === wp.y) {
-      mem.index = (mem.index + 1) % mem.waypoints.length;
+    // Idle patrol: step one tile toward the current waypoint; advance when reached.
+    const route = entity.patrol;
+    if (!route || route.length === 0) return;
+    const idx = entity.patrolIndex ?? 0;
+    const wp = route[idx % route.length];
+    if (entity.pos.x === wp.x && entity.pos.y === wp.y && entity.pos.z === wp.z) {
+      entity.patrolIndex = (idx + 1) % route.length;
       return;
     }
     const dx = Math.sign(wp.x - entity.pos.x);
@@ -81,7 +76,10 @@ class EnforcerAI {
     const tile = floor.tiles[to.y * floor.width + to.x];
     if (!tile || tile.solid) return;
     const from = entity.pos;
+    const facing = facingFromDelta(to.x - from.x, to.y - from.y);
+    if (facing) entity.facing = facing;
     entity.pos = to;
+    entity.lastMoveTurn = state.turn;
     eventBus.emit("ENTITY_MOVED", { entityId: entity.id, from, to });
   }
 }

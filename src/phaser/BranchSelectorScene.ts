@@ -7,13 +7,16 @@ import { eventBus } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
 import { tutorialDirector } from "../engine/TutorialDirector";
 import { ambientHum } from "../audio/AmbientHum";
+import { mooseSandboxEra } from "../data/eras/moose-sandbox";
 import type { Era } from "../types/world.types";
 
+type ChoiceTarget = Era | "PALETTE" | "MOOSE_LEVEL";
+
 interface Choice {
-  era: Era;
+  era: ChoiceTarget;
   title: string;
   body: string;
-  status: "LIVE" | "STUB";
+  status: "LIVE" | "STUB" | "DEV";
 }
 
 const CHOICES: Choice[] = [
@@ -29,7 +32,7 @@ const CHOICES: Choice[] = [
     title: "2. LATTICE // RING C — RUN 01",
     body:
       "SOL IBARRA-CASTRO. The shared field has been live for nine seconds. You can still feel the duct on the other side of your skin.",
-    status: "STUB",
+    status: "LIVE",
   },
   {
     era: "MIRADOR",
@@ -37,6 +40,20 @@ const CHOICES: Choice[] = [
     body:
       "MARA IBARRA. Bragg goes live in four minutes. The persona package is loading. You have noticed the loop before.",
     status: "STUB",
+  },
+  {
+    era: "PALETTE",
+    title: "4. DEV // TILE PALETTE",
+    body:
+      "Inspect every imported Moose tileset frame-by-frame. ◀ ▶ keys cycle between sheets. ESC to return.",
+    status: "DEV",
+  },
+  {
+    era: "MOOSE_LEVEL",
+    title: "5. DEV // MOOSE LEVEL",
+    body:
+      "Walk Sol around the most recently imported Moose level (currently: maintenance stairwell). Tile decoration renders from the Phaser-loaded sheet.",
+    status: "DEV",
   },
 ];
 
@@ -78,25 +95,54 @@ export class BranchSelectorScene extends Phaser.Scene {
         color: "#9bb1b6",
         wordWrap: { width: W - 200 },
       });
-      const tag = choice.status === "LIVE" ? "[ENTER]" : "[TRANSMISSION INCOMPLETE]";
+      const tag = choice.status === "LIVE"
+        ? "[ENTER]"
+        : choice.status === "DEV"
+          ? "[DEV]"
+          : "[TRANSMISSION INCOMPLETE]";
+      const tagColor = choice.status === "LIVE"
+        ? "#7fc7d4"
+        : choice.status === "DEV"
+          ? "#c89adb"
+          : "#3f5358";
+      const titleColorActive = choice.status === "DEV" ? "#c89adb" : titleColor;
+      title.setColor(titleColorActive);
       this.add.text(W - 80, y, tag, {
         fontFamily: "Courier New, monospace",
         fontSize: "13px",
-        color: choice.status === "LIVE" ? "#7fc7d4" : "#3f5358",
+        color: tagColor,
       }).setOrigin(1, 0);
       title.setInteractive({ useHandCursor: true });
-      title.on("pointerdown", () => this.selectEra(choice.era));
+      title.on("pointerdown", () => this.selectChoice(choice.era));
     });
 
-    this.add.text(W / 2, H - 40, "press 1, 2, or 3", {
+    this.add.text(W / 2, H - 40, "press 1, 2, 3, 4, or 5", {
       fontFamily: "Courier New, monospace",
       fontSize: "12px",
       color: "#5e7a80",
     }).setOrigin(0.5, 1);
 
-    this.input.keyboard?.on("keydown-ONE", () => this.selectEra("COMMONWEALTH"));
-    this.input.keyboard?.on("keydown-TWO", () => this.selectEra("LATTICE"));
-    this.input.keyboard?.on("keydown-THREE", () => this.selectEra("MIRADOR"));
+    this.input.keyboard?.on("keydown-ONE", () => this.selectChoice("COMMONWEALTH"));
+    this.input.keyboard?.on("keydown-TWO", () => this.selectChoice("LATTICE"));
+    this.input.keyboard?.on("keydown-THREE", () => this.selectChoice("MIRADOR"));
+    this.input.keyboard?.on("keydown-FOUR", () => this.selectChoice("PALETTE"));
+    this.input.keyboard?.on("keydown-FIVE", () => this.selectChoice("MOOSE_LEVEL"));
+  }
+
+  private selectChoice(choice: ChoiceTarget): void {
+    if (choice === "PALETTE") {
+      this.scene.start("TilesetSandboxScene");
+      return;
+    }
+    if (choice === "MOOSE_LEVEL") {
+      ambientHum.start();
+      tutorialDirector.reset();
+      tutorialDirector.init();
+      worldEngine.initWorldFromSeed(mooseSandboxEra());
+      this.scene.start("GameScene");
+      return;
+    }
+    this.selectEra(choice);
   }
 
   private selectEra(era: Era): void {

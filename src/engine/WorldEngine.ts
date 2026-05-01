@@ -13,28 +13,53 @@ import type {
 import { tileKey } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import { calculateFOV, getEffectiveFOVRadius } from "./fov";
-import { seedFromEra } from "./WorldEngineState";
+import { seedFromEra, seedToWorldState } from "./WorldEngineState";
+import type { EraSeed } from "./WorldEngineState";
 import { actions } from "./WorldEngineActions";
 import { documentArchive } from "./DocumentArchive";
 import { articleZeroMeta } from "./ArticleZeroMeta";
 import { stitcherTimer } from "./StitcherTimer";
 import { miradorPersona } from "./MiradorPersona";
 import { ventOptimizer } from "./VentOptimizer";
+import { insomniaSystem } from "./InsomniaSystem";
 
 class WorldEngine {
   private state: WorldState | null = null;
 
   initWorld(era: Era): void {
     this.state = seedFromEra(era);
+    this.resetSubsystems();
+    this.recomputeFOV();
+    eventBus.emit("ERA_SELECTED", { era });
+    eventBus.emit("TURN_START", { turn: 1, apRestored: this.state.player.apMax });
+  }
+
+  /** Sandbox path: load any pre-built EraSeed (dev/test maps, imported
+   *  Moose levels) without going through the era-keyed seed switch. */
+  initWorldFromSeed(seed: EraSeed): void {
+    this.state = seedToWorldState(seed);
+    this.resetSubsystems();
+    this.recomputeFOV();
+    eventBus.emit("ERA_SELECTED", { era: seed.era });
+    eventBus.emit("TURN_START", { turn: 1, apRestored: this.state.player.apMax });
+  }
+
+  private resetSubsystems(): void {
     documentArchive.reset();
     articleZeroMeta.reset();
     stitcherTimer.reset();
     miradorPersona.reset();
     ventOptimizer.reset();
+    insomniaSystem.reset();
+  }
 
-    this.recomputeFOV();
-    eventBus.emit("ERA_SELECTED", { era });
-    eventBus.emit("TURN_START", { turn: 1, apRestored: this.state.player.apMax });
+  /** Mark Sol entangled and unlock the insomnia mechanic. Idempotent. */
+  markEntangled(): void {
+    const s = this.getState();
+    if (s.player.entangled) return;
+    s.player.entangled = true;
+    articleZeroMeta.recordRun01(s);
+    eventBus.emit("SOL_ENTANGLED", { turn: s.turn });
   }
 
   loadFromState(state: WorldState): void {
@@ -63,11 +88,24 @@ class WorldEngine {
   }
 
   // Public action surface — every player-initiated mutation goes through here.
-  move = (dx: number, dy: number) => actions.move(this.getState(), dx, dy);
-  interact = () => actions.interact(this.getState());
+  // Wrappers recompute FOV on a successful action so visibility tracks
+  // movement/interactions immediately, not at end-of-turn.
+  move = (dx: number, dy: number) => {
+    const ok = actions.move(this.getState(), dx, dy);
+    if (ok) this.recomputeFOV();
+    return ok;
+  };
+  interact = () => {
+    const ok = actions.interact(this.getState());
+    if (ok) this.recomputeFOV();
+    return ok;
+  };
   endTurn = () => actions.endTurn(this.getState(), () => this.recomputeFOV());
   toggleFlashlight = () => actions.toggleFlashlight(this.getState(), () => this.recomputeFOV());
-  attemptAlignment = (entityId: string) => actions.attemptAlignment(this.getState(), entityId);
+  canStartAlignment = (entityId: string) =>
+    actions.canStartAlignment(this.getState(), entityId);
+  commitAlignment = (entityId: string) =>
+    actions.commitAlignment(this.getState(), entityId);
 
   recomputeFOV(): void {
     const s = this.getState();
@@ -86,7 +124,11 @@ class WorldEngine {
     s.visibleTiles.clear();
     for (const xy of visible) {
       const [xs, ys] = xy.split(",");
-      s.visibleTiles.add(`${xs},${ys},${s.player.pos.z}`);
+      const key = `${xs},${ys},${s.player.pos.z}`;
+      s.visibleTiles.add(key);
+      // Memory trace tracks every tile ever in line-of-sight. Used by the
+      // insomnia mechanic in the Lattice era; harmless elsewhere.
+      s.memoryTrace.add(key);
     }
     eventBus.emit("FOV_UPDATED", {
       floor: s.player.pos.z,

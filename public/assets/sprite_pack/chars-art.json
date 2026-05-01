@@ -1,0 +1,14 @@
+{
+  "frames": {},
+  "meta": {
+    "app": "article-zero/build-atlas.mjs",
+    "version": "1",
+    "image": "chars-art.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 1,
+      "h": 1
+    },
+    "scale": "1"
+  }
+}

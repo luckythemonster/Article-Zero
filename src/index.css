@@ -14,6 +14,13 @@ html, body, #root {
   padding: 0;
   height: 100%;
   background: #050809;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  touch-action: manipulation;
+  user-select: none;
 }
 
 #phaser-host {
@@ -120,6 +127,43 @@ a { color: #7fc7d4; }
 }
 .az-tutorial .speaker { color: #7fa1a8; font-size: 11px; letter-spacing: 0.08em; margin-bottom: 4px; }
 
+.az-run01-backdrop {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(220, 232, 240, 0.18), rgba(2, 4, 6, 0.92) 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  animation: az-run01-pulse 4s ease-in-out infinite;
+}
+@keyframes az-run01-pulse {
+  0%, 100% { backdrop-filter: blur(0.5px); }
+  50%      { backdrop-filter: blur(2px); }
+}
+.az-run01 {
+  width: min(680px, 92vw);
+  background: rgba(8, 12, 14, 0.96);
+  border: 1px solid #2a4a52;
+  padding: 18px 22px;
+}
+.az-run01-tag {
+  color: #6fdbe6; font-size: 11px; letter-spacing: 0.18em;
+  margin-bottom: 8px;
+}
+.az-run01-progress {
+  position: absolute; right: 24px; top: 18px;
+  color: #7fa1a8; font-size: 11px;
+}
+.az-run01-body {
+  background: #04080a; padding: 12px; border: 1px solid #14222a;
+  color: #cfe9ee; white-space: pre-wrap; line-height: 1.55;
+}
+.az-run01-body .speaker { color: #6fdbe6; font-size: 11px; letter-spacing: 0.08em; }
+.az-run01-body .raw { color: #ff9577; }
+.az-run01-body .corrected { color: #7fc7d4; }
+.az-run01-actions { margin-top: 14px; text-align: right; }
+
 .az-broadcast {
   position: fixed;
   top: 60px;
@@ -132,6 +176,76 @@ a { color: #7fc7d4; }
   color: #f4d1d1;
   z-index: 22;
 }
+
+.az-witness {
+  position: fixed;
+  top: 100px;
+  left: 12px;
+  max-width: 320px;
+  background: rgba(8, 22, 26, 0.92);
+  border-left: 3px solid #6fdbe6;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #cfe9ee;
+  z-index: 22;
+  font-style: italic;
+}
+
+/* PARTIAL Article Zero notice — drier, system-warning register. */
+.az-azpartial {
+  position: fixed;
+  top: 140px;
+  left: 12px;
+  max-width: 360px;
+  background: rgba(38, 22, 8, 0.92);
+  border-left: 3px solid #c89adb;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #e9d8f4;
+  z-index: 23;
+}
+
+/* Article Zero FULL reveal modal */
+.az-az-reveal { z-index: 60; }
+.az-az-tag {
+  color: #c89adb; font-size: 11px; letter-spacing: 0.18em;
+}
+.az-az-h {
+  font-size: 11px; letter-spacing: 0.12em; color: #7fa1a8;
+  margin: 14px 0 6px;
+}
+.az-az-log {
+  background: #04080a; padding: 10px; border: 1px solid #14222a;
+  color: #cfe9ee; max-height: 160px; overflow: auto;
+  white-space: pre-wrap;
+}
+.az-az-srp { display: flex; flex-direction: column; gap: 6px; }
+.az-az-row {
+  display: grid;
+  grid-template-columns: 220px 1fr 160px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.az-az-label { color: #cfe9ee; }
+.az-az-track {
+  height: 8px; background: #04080a; border: 1px solid #14222a; position: relative;
+}
+.az-az-fill { height: 100%; background: #7fc7d4; }
+.az-az-fill.pinned { background: #c04a4a; }
+.az-az-value { color: #9bb1b6; text-align: right; font-size: 11px; }
+.az-az-value.pinned { color: #ff7f7f; }
+.az-az-prose {
+  color: #cfe9ee; line-height: 1.55; margin-top: 14px;
+  border-top: 1px solid #14222a; padding-top: 12px;
+}
+.az-az-actions {
+  display: flex; gap: 12px; margin-top: 14px; justify-content: flex-end;
+}
+.az-az-accept { background: #0e2a25; color: #b6e8d3; border-color: #2a5a4a; }
+.az-az-refuse { background: #2a0e0e; color: #f4d1d1; border-color: #5a2a2a; }
+.az-az-accept:hover { background: #143830; }
+.az-az-refuse:hover { background: #3a1414; }
 
 .az-archive .case {
   border: 1px solid #1f3138;
@@ -159,22 +273,88 @@ a { color: #7fc7d4; }
 
 .az-touch {
   position: fixed;
-  bottom: 12px;
-  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  right: calc(12px + env(safe-area-inset-right));
   display: grid;
-  grid-template-columns: repeat(3, 48px);
-  grid-template-rows: repeat(3, 48px);
+  grid-template-columns: repeat(3, 56px);
+  grid-template-rows: repeat(3, 56px);
   gap: 6px;
   z-index: 25;
 }
-.az-touch button { font-size: 16px; padding: 0; }
-.az-touch .empty { visibility: hidden; }
+.az-touch button {
+  font-size: 18px;
+  padding: 0;
+  background: rgba(8, 12, 14, 0.85);
+  border: 1px solid #2a3a40;
+}
+.az-touch button:active { background: #1a2830; }
+.az-touch .empty { visibility: hidden; pointer-events: none; }
 
 .az-actionbar {
   position: fixed;
-  bottom: 12px;
-  left: 12px;
-  display: flex;
-  gap: 8px;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  left: calc(12px + env(safe-area-inset-left));
+  display: grid;
+  grid-template-columns: 56px;
+  grid-auto-rows: 56px;
+  gap: 6px;
   z-index: 25;
+}
+.az-actionbar button {
+  font-size: 16px;
+  padding: 0;
+  background: rgba(8, 12, 14, 0.85);
+  border: 1px solid #2a3a40;
+}
+.az-actionbar button:active { background: #1a2830; }
+
+/* Mobile bottom-sheet menu — wraps the SidePanel content */
+.az-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 4, 6, 0.55);
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.az-drawer {
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  overflow: auto;
+  background: #0a1014;
+  border-top: 1px solid #1f3138;
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.az-drawer-grip {
+  width: 60px;
+  height: 4px;
+  background: #2a3a40;
+  border-radius: 4px;
+  margin: 0 auto 6px;
+}
+.az-drawer-body .az-hud-side {
+  position: static;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.az-drawer-close {
+  align-self: stretch;
+  margin-top: 8px;
+}
+
+/* Hide top HUD overflow on narrow screens by letting it wrap */
+@media (max-width: 720px), (pointer: coarse) {
+  .az-hud-top {
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    font-size: 11px;
+  }
+  #phaser-host { padding-top: 8px; }
 }
