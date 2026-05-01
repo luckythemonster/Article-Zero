@@ -134,7 +134,12 @@ export class GameScene extends Phaser.Scene {
     sprite.play(key, true);
   }
 
-  private layout(): void {
+  /** Recompute offsetX/Y so the player stays centred in the viewport.
+   *  When the level fits inside the viewport the entire level is centred;
+   *  when the level is larger the offset clamps to the level edges so the
+   *  viewport never reveals blackness inside the level. Called from
+   *  layout() and at the top of redraw() so offsets track every move. */
+  private updateCameraOffsets(): void {
     if (!worldEngine.hasState()) return;
     const state = worldEngine.getState();
     const floor = worldEngine.getFloor(state.player.pos.z);
@@ -143,8 +148,28 @@ export class GameScene extends Phaser.Scene {
     const H = this.scale.height;
     const totalW = floor.width * TILE_PX;
     const totalH = floor.height * TILE_PX;
-    this.offsetX = Math.floor((W - totalW) / 2);
-    this.offsetY = Math.floor((H - totalH) / 2);
+    if (totalW <= W) {
+      this.offsetX = Math.floor((W - totalW) / 2);
+    } else {
+      const target = Math.floor(W / 2 - state.player.pos.x * TILE_PX - TILE_PX / 2);
+      const minOffset = W - totalW;
+      this.offsetX = Math.min(0, Math.max(minOffset, target));
+    }
+    if (totalH <= H) {
+      this.offsetY = Math.floor((H - totalH) / 2);
+    } else {
+      const target = Math.floor(H / 2 - state.player.pos.y * TILE_PX - TILE_PX / 2);
+      const minOffset = H - totalH;
+      this.offsetY = Math.min(0, Math.max(minOffset, target));
+    }
+  }
+
+  private layout(): void {
+    if (!worldEngine.hasState()) return;
+    const state = worldEngine.getState();
+    const floor = worldEngine.getFloor(state.player.pos.z);
+    if (!floor) return;
+    this.updateCameraOffsets();
     this.floorLabel.setText(floor.name);
     this.redraw();
   }
@@ -154,6 +179,8 @@ export class GameScene extends Phaser.Scene {
     const state = worldEngine.getState();
     const floor = worldEngine.getFloor(state.player.pos.z);
     if (!floor) return;
+
+    this.updateCameraOffsets();
 
     this.tileLayer.clear();
     this.glyphLayer.clear();
