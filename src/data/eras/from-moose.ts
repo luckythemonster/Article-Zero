@@ -38,6 +38,27 @@ const SEMANTIC_LAYERS: { name: string; kind: Exclude<TileKind, "DOOR_OPEN"> }[] 
 
 const SPAWN_LAYER_NAME = "spawn";
 
+// Friendly aliases so common misspellings ("wall" instead of "walls",
+// "doors_closed" instead of "doors") still resolve to the canonical
+// layer-name table. Applied case-insensitively before any semantic
+// matching so downstream code only has to recognise the canonical names.
+const LAYER_NAME_ALIASES: Record<string, string> = {
+  wall: "walls",
+  door: "doors",
+  doors_closed: "doors",
+  door_closed: "doors",
+  door_open: "doors_open",
+  terminal: "terminals",
+  light_source: "light_sources",
+  vents: "vent_control",
+  vent: "vent_control",
+};
+
+function canonicalLayerName(raw: string): string {
+  const n = raw.toLowerCase();
+  return LAYER_NAME_ALIASES[n] ?? n;
+}
+
 // Render-order priority by layer name. Lower = drawn first (bottom).
 // Lets the importer be lazy about Ed's board ordering — what matters is the
 // name. Known back-layer names (chasm / void / pit / shadows) sort below
@@ -64,7 +85,7 @@ const RENDER_PRIORITY: Record<string, number> = {
 };
 
 function renderPriority(name: string): number {
-  return RENDER_PRIORITY[name.toLowerCase()] ?? 50;
+  return RENDER_PRIORITY[canonicalLayerName(name)] ?? 50;
 }
 
 function makeTile(kind: TileKind): Tile {
@@ -76,7 +97,7 @@ function makeTile(kind: TileKind): Tile {
 }
 
 function findLayer(level: MooseLevel, name: string): MooseLayer | undefined {
-  return level.layers.find((l) => l.name.toLowerCase() === name);
+  return level.layers.find((l) => canonicalLayerName(l.name) === name);
 }
 
 interface SeedOptions {
@@ -155,12 +176,15 @@ export function eraSeedFromMooseLevel(
   // above the floor, and pure-decoration / FX layers render on top —
   // regardless of whatever order Ed exported the boards in.
   const decoLayers = level.layers
-    .filter((l) => l.name.toLowerCase() !== SPAWN_LAYER_NAME)
+    .filter((l) => canonicalLayerName(l.name) !== SPAWN_LAYER_NAME)
     .map((l, originalIdx) => ({
-      name: l.name,
+      // Keep the original Ed-authored name so the GameScene render path's
+      // string comparisons (e.g. against "doors", "doors_open") still
+      // resolve. Run through canonicalLayerName when matching downstream.
+      name: canonicalLayerName(l.name),
       opacity:
         l.opacity ??
-        (l.name.toLowerCase() === "shadows" ? 0.45 : 1),
+        (canonicalLayerName(l.name) === "shadows" ? 0.45 : 1),
       data: l.data,
       originalIdx,
     }))
@@ -213,7 +237,7 @@ export function eraSeedFromMooseLevel(
 /** Convenience guard — pure-decoration layer name? Anything not in the
  *  semantic table or the spawn sentinel is treated as decoration. */
 export function isPureDecorationLayer(name: string): boolean {
-  const n = name.toLowerCase();
+  const n = canonicalLayerName(name);
   if (n === SPAWN_LAYER_NAME) return false;
   return !SEMANTIC_LAYERS.some((s) => s.name === n);
 }

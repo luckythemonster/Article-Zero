@@ -147,6 +147,21 @@ the priority table above (chasm/void/pit/shadows below floor, structural
 layers above floor, objects on top). Unknown names land in the middle
 band and keep their original Ed order.
 
+**Aliases** — common alternate spellings resolve to the canonical names
+above before any matching, so either form works:
+
+| You painted   | Treated as     |
+| ------------- | -------------- |
+| `wall`        | `walls`        |
+| `door`        | `doors`        |
+| `doors_closed`| `doors`        |
+| `door_closed` | `doors`        |
+| `door_open`   | `doors_open`   |
+| `terminal`    | `terminals`    |
+| `light_source`| `light_sources`|
+| `vent`        | `vent_control` |
+| `vents`       | `vent_control` |
+
 **Resolution order for gameplay tiles:** semantic layers apply in the
 table order above (later wins on conflict). Empty cells default to
 `WALL` so the player can't walk off the map.

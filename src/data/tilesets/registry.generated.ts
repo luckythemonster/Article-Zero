@@ -6,6 +6,85 @@ import type { MooseTilesetEntry } from "./types";
 
 export const MOOSE_TILESETS: MooseTilesetEntry[] = [
   {
+    "key": "article_zero",
+    "label": "Article zero",
+    "path": "/assets/tilesets/article_zero/sheet.png",
+    "frameWidth": 32,
+    "frameHeight": 64,
+    "spacing": 1,
+    "tileAnims": [
+      {
+        "handle": 2081201750,
+        "label": "Office door south",
+        "baseFrame": 130,
+        "settleFrame": 57,
+        "frames": [
+          130,
+          130,
+          135,
+          130,
+          142,
+          55,
+          59,
+          54,
+          57
+        ],
+        "frameRate": 8
+      },
+      {
+        "handle": 3147691485,
+        "label": "elevator open",
+        "baseFrame": 140,
+        "settleFrame": 60,
+        "frames": [
+          140,
+          140,
+          136,
+          131,
+          128,
+          124,
+          126,
+          133,
+          138,
+          60
+        ],
+        "frameRate": 8
+      },
+      {
+        "handle": 765656860,
+        "label": "tiledef-765656860",
+        "baseFrame": 156,
+        "settleFrame": 150,
+        "frames": [
+          156,
+          146,
+          144,
+          154,
+          148,
+          152,
+          150
+        ],
+        "frameRate": 8
+      },
+      {
+        "handle": 3697363465,
+        "label": "Door South ",
+        "baseFrame": 175,
+        "settleFrame": 163,
+        "frames": [
+          175,
+          184,
+          168,
+          162,
+          158,
+          164,
+          163
+        ],
+        "frameRate": 8
+      }
+    ]
+  },
+  {
     "key": "maintenance_stairwell",
     "label": "maintenance stairwell",
     "path": "/assets/tilesets/maintenance_stairwell/sheet.png",

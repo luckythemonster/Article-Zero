@@ -1,34 +1,43 @@
-// Moose sandbox era — loads the painted Moose level as a walkable map for
-// visual end-to-end testing of the import pipeline. Picks the first level
-// from the most recently imported project that has at least one painted
-// layer; today that's `MAINTENANCE_STAIRWELL_LEVELS[0]`.
+// Moose sandbox era — loads a painted Moose level as a walkable map for
+// visual end-to-end testing of the import pipeline. Picks the level with
+// the most painted cells across all imported projects, so a freshly
+// imported richer project automatically becomes the active sandbox map.
 //
 // No NPCs, no incidents, no RUN 01 trigger — just Sol on the imported
 // floor so you can confirm tiles render and walls/floors behave.
 
 import { eraSeedFromMooseLevel } from "./from-moose";
 import {
-  MAINTENANCE_STAIRWELL_LEVELS,
-} from "../tilesets/maintenance_stairwell.levels";
+  ARTICLE_ZERO_LEVELS,
+} from "../tilesets/article_zero.levels";
 import {
-  MAINTENANCE_STAIRWELL_TEXTURE_KEY,
-} from "../tilesets/maintenance_stairwell";
+  ARTICLE_ZERO_TEXTURE_KEY,
+} from "../tilesets/article_zero";
+import type { MooseLevel } from "../tilesets/types";
 import type { EraSeed } from "../../engine/WorldEngineState";
 
+function paintedCells(level: MooseLevel): number {
+  let n = 0;
+  for (const ly of level.layers) {
+    for (const row of ly.data) {
+      for (const c of row) if (c > 0) n += 1;
+    }
+  }
+  return n;
+}
+
 export function mooseSandboxEra(): EraSeed {
-  // Pick the first level that actually has painted cells. Empty levels
-  // (Ed scratchpads) get skipped.
-  const level =
-    MAINTENANCE_STAIRWELL_LEVELS.find((lv) =>
-      lv.layers.some((ly) => ly.data.some((row) => row.some((c) => c > 0))),
-    ) ?? MAINTENANCE_STAIRWELL_LEVELS[0];
+  // Pick the level with the most painted cells. Ties keep array order.
+  const candidates = [...ARTICLE_ZERO_LEVELS];
+  candidates.sort((a, b) => paintedCells(b) - paintedCells(a));
+  const level = candidates[0] ?? ARTICLE_ZERO_LEVELS[0];
 
   return eraSeedFromMooseLevel(level, {
     era: "LATTICE", // borrow the era enum so subsystem ticks don't break
     floorIndex: 1,
     floorName: `MOOSE LEVEL // ${level.name}`,
     ambientLight: "LIT",
-    textureKey: MAINTENANCE_STAIRWELL_TEXTURE_KEY,
+    textureKey: ARTICLE_ZERO_TEXTURE_KEY,
     player: {
       ap: 4,
       apMax: 4,
