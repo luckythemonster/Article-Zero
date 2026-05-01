@@ -54,10 +54,10 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             25,
             25,
             14,
-            20,
-            9,
-            9,
-            4,
+            0,
+            0,
+            0,
+            0,
             14,
             14,
             25
@@ -66,10 +66,10 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             25,
             25,
             14,
-            23,
             0,
             0,
-            11,
+            0,
+            0,
             14,
             14,
             25
@@ -78,10 +78,10 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             25,
             14,
             14,
-            23,
             0,
             0,
-            11,
+            0,
+            0,
             14,
             14,
             25
@@ -90,10 +90,10 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             25,
             25,
             14,
-            7,
-            5,
-            5,
-            19,
+            0,
+            0,
+            0,
+            0,
             14,
             14,
             25
@@ -141,9 +141,9 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
         "opacity": 1,
         "data": [
           [
-            28,
+            32,
             0,
-            12,
+            13,
             13,
             13,
             13,
@@ -256,9 +256,9 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             24,
             24,
             24,
-            29,
-            14,
-            3
+            24,
+            0,
+            22
           ]
         ]
       },
@@ -268,7 +268,7 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
         "data": [
           [
             0,
-            25,
+            46,
             0,
             0,
             0,
@@ -383,7 +383,7 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             0,
             0,
             0,
-            25,
+            46,
             0
           ]
         ]
@@ -558,22 +558,10 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             8,
             8,
             8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8
-          ],
-          [
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
-            8,
+            20,
+            9,
+            9,
+            4,
             8,
             8,
             8
@@ -582,10 +570,10 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             8,
             8,
             8,
+            23,
             8,
             8,
-            8,
-            8,
+            11,
             8,
             8,
             8
@@ -594,10 +582,22 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
             8,
             8,
             8,
+            23,
+            8,
+            8,
+            11,
+            8,
+            8,
+            8
+          ],
+          [
             8,
             8,
             8,
-            8,
+            7,
+            5,
+            5,
+            19,
             8,
             8,
             8
