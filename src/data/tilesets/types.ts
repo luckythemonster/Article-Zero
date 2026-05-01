@@ -37,4 +37,29 @@ export interface MooseTilesetEntry {
   frameWidth: number;
   frameHeight: number;
   spacing: number;
+  /** Multi-keyframe TileDefs to register as Phaser animations. Empty when
+   *  the project has no animated TileDefs. */
+  tileAnims?: MooseTileAnim[];
+}
+
+/** A multi-keyframe TileDef captured from Ed's `Animation.KeyFrames` array.
+ *  Painted cells whose tile records `baseFrame` are eligible to play this
+ *  animation on a state event (e.g. DOOR_TOGGLED). */
+export interface MooseTileAnim {
+  /** TileDef.Handle from edplay.json — stable across re-imports. */
+  handle: number;
+  /** TileDef.Ref string ("Door South" etc). For diagnostics + future
+   *  orientation-aware selection. */
+  label: string;
+  /** Frame index of KeyFrames[0] — what's stored on painted cells in the
+   *  layer data. The renderer looks up animations by this. */
+  baseFrame: number;
+  /** Frame index of the final keyframe — what the sprite settles on after
+   *  the open animation completes. */
+  settleFrame: number;
+  /** Phaser frame indices for the full open sequence (length === number of
+   *  keyframes). The close animation is the reverse of this list. */
+  frames: number[];
+  /** Animation.Rate from Ed (frames per second). */
+  frameRate: number;
 }

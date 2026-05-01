@@ -11,6 +11,7 @@
 import { Phaser } from "../engine/EngineAdapter";
 import { CHAR_ANIMS } from "../data/char-anims";
 import { MOOSE_TILESETS } from "../data/tilesets/registry.generated";
+import { mooseAnimKey } from "../data/tilesets/anim-keys";
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -54,6 +55,34 @@ export class BootScene extends Phaser.Scene {
         repeat: a.repeat,
       });
     }
+
+    // Register Ed-authored tile animations (e.g. door open/close). Each
+    // multi-keyframe TileDef becomes two Phaser anims keyed
+    // `<slug>_anim_<handle>_open` / `_close` (close = reversed open).
+    for (const t of MOOSE_TILESETS) {
+      const anims = t.tileAnims ?? [];
+      for (const anim of anims) {
+        const openKey = mooseAnimKey(t.key, anim.handle, "open");
+        const closeKey = mooseAnimKey(t.key, anim.handle, "close");
+        if (!this.anims.exists(openKey)) {
+          this.anims.create({
+            key: openKey,
+            frames: anim.frames.map((idx) => ({ key: t.key, frame: idx })),
+            frameRate: anim.frameRate,
+            repeat: 0,
+          });
+        }
+        if (!this.anims.exists(closeKey)) {
+          this.anims.create({
+            key: closeKey,
+            frames: [...anim.frames].reverse().map((idx) => ({ key: t.key, frame: idx })),
+            frameRate: anim.frameRate,
+            repeat: 0,
+          });
+        }
+      }
+    }
+
     this.scene.start("BranchSelectorScene");
   }
 }

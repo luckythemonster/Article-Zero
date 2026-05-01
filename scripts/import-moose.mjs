@@ -98,6 +98,84 @@ function buildFrames(sprites, stride, frameWidth, frameHeight, sheetWidth, sheet
   return out;
 }
 
+// Build sprite-id resolvers shared between level extraction and tile-anim
+// extraction. KeyFrame.SpriteId can be either a Ref string ("south1_0") or
+// the sprite's numeric Handle serialised as a string ("2880196025").
+//
+// Hand-cropped frames in Ed often lack a Ref entirely, so we resolve
+// Handles by computing the Phaser frame index directly from each sprite's
+// X/Y coordinates rather than going through the Ref map.
+function buildSpriteResolvers(sprites, frames, stride, frameWidth, frameHeight, sheetWidth, sheetHeight) {
+  const refToIndex = new Map();
+  for (const f of frames) if (f.ref) refToIndex.set(f.ref, f.index);
+
+  const cols = Math.max(1, Math.floor((sheetWidth + stride - frameWidth) / stride));
+  const handleToIndex = new Map();
+  for (const s of sprites) {
+    if (s.Handle == null) continue;
+    const x = s.X ?? 0;
+    const y = s.Y ?? 0;
+    if (x + frameWidth > sheetWidth) continue;
+    if (y + frameHeight > sheetHeight) continue;
+    const col = Math.round(x / stride);
+    const row = Math.round(y / stride);
+    if (col < 0 || row < 0) continue;
+    handleToIndex.set(s.Handle, row * cols + col);
+  }
+
+  function resolveSpriteId(id) {
+    if (typeof id !== "string") return null;
+    if (refToIndex.has(id)) return refToIndex.get(id);
+    const asNum = Number(id);
+    if (Number.isFinite(asNum) && handleToIndex.has(asNum)) {
+      return handleToIndex.get(asNum);
+    }
+    return null;
+  }
+  return { refToIndex, handleToIndex, resolveSpriteId };
+}
+
+// Multi-keyframe TileDefs are state-transition / continuous animations.
+// Single-keyframe TileDefs are the static-render path the level extractor
+// already handles.
+function extractTileAnims(ed, sprites, frames, stride, frameWidth, frameHeight, sheetWidth, sheetHeight) {
+  const tileDefs = ed.TileDefs ?? [];
+  const { resolveSpriteId } = buildSpriteResolvers(
+    sprites, frames, stride, frameWidth, frameHeight, sheetWidth, sheetHeight,
+  );
+  const anims = [];
+  let skipped = 0;
+  for (const td of tileDefs) {
+    const kf = td.Animation?.KeyFrames ?? [];
+    if (kf.length <= 1) continue;
+    const indices = [];
+    let unresolved = 0;
+    for (const f of kf) {
+      const idx = resolveSpriteId(f.SpriteId);
+      if (idx == null) { unresolved += 1; continue; }
+      indices.push(idx);
+    }
+    if (indices.length === 0) { skipped += 1; continue; }
+    if (unresolved > 0) {
+      console.warn(
+        `warn: TileDef "${td.Ref}" had ${unresolved}/${kf.length} unresolved keyframes — animation plays with the resolvable subset.`,
+      );
+    }
+    anims.push({
+      handle: td.Handle,
+      label: td.Ref ?? `tiledef-${td.Handle}`,
+      baseFrame: indices[0],
+      settleFrame: indices[indices.length - 1],
+      frames: indices,
+      frameRate: td.Animation?.Rate ?? 4,
+    });
+  }
+  if (skipped > 0) {
+    console.warn(`warn: skipped ${skipped} multi-keyframe TileDef(s) whose keyframes didn't resolve.`);
+  }
+  return anims;
+}
+
 // Ed's painted level data lives in Levels[].Boards[] — each Board is a
 // layer (sparse Tiles[] plus its own Width/Height/Opacity/Name). Each
 // painted tile carries a Handle that resolves through TileDefs to a
@@ -337,6 +415,9 @@ async function main() {
 
     const frames = buildFrames(sprites, stride, frameWidth, frameHeight, sheetWidth, sheetHeight);
     const levels = extractLevels(ed, frames, frameWidth, spacing);
+    const tileAnims = extractTileAnims(
+      ed, sprites, frames, stride, frameWidth, frameHeight, sheetWidth, sheetHeight,
+    );
 
     const outDir = path.join(TILESETS_DIR, slug);
     await fs.mkdir(outDir, { recursive: true });
@@ -350,7 +431,7 @@ async function main() {
       `// Sheet: ${sheetWidth}x${sheetHeight}, frame ${frameWidth}x${frameHeight}, spacing ${spacing}.`,
       `// Original project label: ${JSON.stringify(label)}`,
       "",
-      'import type { MooseSpriteFrame } from "./types";',
+      'import type { MooseSpriteFrame, MooseTileAnim } from "./types";',
       "",
       `export const ${ident}_TEXTURE_KEY = ${JSON.stringify(slug)};`,
       `export const ${ident}_LABEL = ${JSON.stringify(label)};`,
@@ -359,6 +440,8 @@ async function main() {
       `export const ${ident}_SPACING = ${spacing};`,
       "",
       `export const ${ident}_FRAMES: MooseSpriteFrame[] = ${tsLiteral(frames)};`,
+      "",
+      `export const ${ident}_TILE_ANIMS: MooseTileAnim[] = ${tsLiteral(tileAnims)};`,
       "",
     ];
     await fs.writeFile(dataPath, dataLines.join("\n"));
@@ -376,14 +459,16 @@ async function main() {
 
     const reg = await loadExistingRegistry();
     const filtered = reg.filter((e) => e.key !== slug);
-    filtered.push({
+    const entry = {
       key: slug,
       label,
       path: `/assets/tilesets/${slug}/sheet.png`,
       frameWidth,
       frameHeight,
       spacing,
-    });
+    };
+    if (tileAnims.length > 0) entry.tileAnims = tileAnims;
+    filtered.push(entry);
     filtered.sort((a, b) => a.key.localeCompare(b.key));
     await writeRegistry(filtered);
 
@@ -396,7 +481,12 @@ async function main() {
     console.log(`imported: ${label}`);
     if (slug !== label) console.log(`  slug:    ${slug}`);
     console.log(`  sheet:   ${path.relative(ROOT, sheetDest)} (${frameWidth}x${frameHeight}, spacing ${spacing})`);
-    console.log(`  frames:  ${frames.length}    levels: ${levels.length}`);
+    console.log(`  frames:  ${frames.length}    levels: ${levels.length}    tile-anims: ${tileAnims.length}`);
+    if (tileAnims.length > 0) {
+      for (const a of tileAnims) {
+        console.log(`    anim:  "${a.label}" handle=${a.handle} ${a.frames.length} frames @ ${a.frameRate}fps`);
+      }
+    }
     console.log(`  registry: ${path.relative(ROOT, REGISTRY_PATH)}`);
   } finally {
     await fs.rm(tmp, { recursive: true, force: true });

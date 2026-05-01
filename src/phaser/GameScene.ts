@@ -5,7 +5,10 @@
 import { Phaser } from "../engine/EngineAdapter";
 import { eventBus } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
-import type { Entity, Facing, Tile, TileKind } from "../types/world.types";
+import { mooseAnimKey } from "../data/tilesets/anim-keys";
+import type { MooseTileAnim } from "../data/tilesets/types";
+import { MOOSE_TILESETS } from "../data/tilesets/registry.generated";
+import type { Entity, Facing, Tile, TileKind, Vec3 } from "../types/world.types";
 
 const TILE_PX = 32;
 const SPRITE_SCALE = TILE_PX / 36; // atlas frames are 36×36
@@ -57,9 +60,19 @@ export class GameScene extends Phaser.Scene {
   private entitySprites = new Map<string, Phaser.GameObjects.Sprite>();
   private entityRects = new Map<string, Phaser.GameObjects.Rectangle>();
   /** Pool of decoration sprites placed by the moose-import path. Keyed
-   *  per `${layerIndex}:${x},${y}` so they can be re-used across redraws. */
-  private decoSprites = new Map<string, Phaser.GameObjects.Image>();
+   *  per `${layerIndex}:${x},${y}` so they can be re-used across redraws.
+   *  Phaser.GameObjects.Sprite is an Image subclass, so static cells render
+   *  the same way; animated cells (driven by Ed multi-keyframe TileDefs)
+   *  can additionally `.play()` an animation registered by BootScene. */
+  private decoSprites = new Map<string, Phaser.GameObjects.Sprite>();
   private decoFloorZ: number | null = null;
+  /** frame index -> tile-anim metadata for the currently active decoration
+   *  texture. Built lazily when the floor's decoration texture changes. */
+  private decoAnimByFrame = new Map<number, { textureKey: string; anim: MooseTileAnim }>();
+  private decoTextureKey: string | null = null;
+  /** Door-cell sprite key by `${x},${y},${z}` so DOOR_TOGGLED can locate
+   *  the sprite without scanning all decoration cells. */
+  private doorSpriteByPos = new Map<string, string>();
   private floorLabel!: Phaser.GameObjects.Text;
   private offsetX = 0;
   private offsetY = 0;
@@ -94,7 +107,10 @@ export class GameScene extends Phaser.Scene {
 
     eventBus.on("FOV_UPDATED", () => this.redraw());
     eventBus.on("PLAYER_MOVED", () => this.redraw());
-    eventBus.on("DOOR_TOGGLED", () => this.redraw());
+    eventBus.on("DOOR_TOGGLED", (p) => {
+      this.playDoorAnim(p.pos, p.open);
+      this.redraw();
+    });
     eventBus.on("ENTITY_MOVED", () => this.redraw());
     eventBus.on("TURN_START", () => this.redraw());
     eventBus.on("ENTITY_STATUS_CHANGED", () => this.redraw());
@@ -258,6 +274,20 @@ export class GameScene extends Phaser.Scene {
     for (const sprite of this.decoSprites.values()) sprite.destroy();
     this.decoSprites.clear();
     this.decoFloorZ = null;
+    this.doorSpriteByPos.clear();
+  }
+
+  private ensureDecoAnimIndex(textureKey: string): void {
+    if (this.decoTextureKey === textureKey) return;
+    this.decoAnimByFrame.clear();
+    this.decoTextureKey = textureKey;
+    const entry = MOOSE_TILESETS.find((t) => t.key === textureKey);
+    for (const a of entry?.tileAnims ?? []) {
+      this.decoAnimByFrame.set(a.baseFrame, { textureKey, anim: a });
+      // Settle frames also count — when we restore mid-game from a save
+      // mid-open, the cell's visible frame is the settle frame.
+      this.decoAnimByFrame.set(a.settleFrame, { textureKey, anim: a });
+    }
   }
 
   private renderDecoration(
@@ -266,21 +296,17 @@ export class GameScene extends Phaser.Scene {
     memoryActive: boolean,
   ): void {
     const dec = floor.decoration!;
-    // If we changed floors (or decoration), wipe the pool.
     if (this.decoFloorZ !== floor.z) {
       this.clearDecorationSprites();
       this.decoFloorZ = floor.z;
     }
-    // Track which keys we used this frame so we can hide the rest.
+    this.ensureDecoAnimIndex(dec.textureKey);
     const seen = new Set<string>();
-
-    // Width always matches a single tile cell; height matches its native
-    // aspect so tall frames (e.g. 32x64 stair pieces) extend up into the
-    // cell above rather than getting squashed.
     const widthScale = TILE_PX / dec.frameWidth;
     const displayHeight = dec.frameHeight * widthScale;
 
     dec.layers.forEach((layer, layerIdx) => {
+      const isDoorLayer = layer.name.toLowerCase() === "doors";
       for (let y = 0; y < floor.height; y++) {
         const row = layer.data[y] ?? [];
         for (let x = 0; x < floor.width; x++) {
@@ -290,21 +316,20 @@ export class GameScene extends Phaser.Scene {
           const visible = state.visibleTiles.has(tileKey);
           const remembered = memoryActive && state.memoryTrace.has(tileKey);
           if (!visible && !remembered) continue;
-          // Anchor at bottom-center of the cell. Tall sprites overflow upward.
           const px = this.offsetX + x * TILE_PX + TILE_PX / 2;
           const py = this.offsetY + y * TILE_PX + TILE_PX;
           const key = `${layerIdx}:${tileKey}`;
           let sprite = this.decoSprites.get(key);
-          // Frame index = stored index minus 1 (Tiled/Ed convention).
           const frame = idx - 1;
           if (!sprite) {
-            sprite = this.add.image(px, py, dec.textureKey, frame);
+            sprite = this.add.sprite(px, py, dec.textureKey, frame);
             sprite.setOrigin(0.5, 1);
             sprite.setDepth(layerIdx);
             this.decoSprites.set(key, sprite);
           } else {
             sprite.setPosition(px, py);
-            sprite.setFrame(frame);
+            // Don't overwrite frame if the sprite is mid-animation.
+            if (!sprite.anims.isPlaying) sprite.setFrame(frame);
             sprite.setOrigin(0.5, 1);
           }
           sprite.setDisplaySize(TILE_PX, displayHeight);
@@ -312,6 +337,7 @@ export class GameScene extends Phaser.Scene {
           const baseAlpha = layer.opacity;
           sprite.setAlpha(visible ? baseAlpha : baseAlpha * 0.42);
           seen.add(key);
+          if (isDoorLayer) this.doorSpriteByPos.set(tileKey, key);
         }
       }
     });
@@ -319,6 +345,29 @@ export class GameScene extends Phaser.Scene {
     for (const [key, sprite] of this.decoSprites) {
       if (!seen.has(key)) sprite.setVisible(false);
     }
+  }
+
+  /** Play the open/close animation on the door sprite at `pos`. Called from
+   *  the DOOR_TOGGLED listener registered in `create()`. */
+  private playDoorAnim(pos: Vec3, opening: boolean): void {
+    const tileKey = `${pos.x},${pos.y},${pos.z}`;
+    const spriteKey = this.doorSpriteByPos.get(tileKey);
+    if (!spriteKey) return;
+    const sprite = this.decoSprites.get(spriteKey);
+    if (!sprite) return;
+    const currentFrame = sprite.frame.name;
+    // Phaser frame names are strings like "0", "1", ... for spritesheets.
+    const frameIdx = Number(currentFrame);
+    const meta = this.decoAnimByFrame.get(frameIdx);
+    if (!meta) return;
+    const direction = opening ? "open" : "close";
+    const key = mooseAnimKey(meta.textureKey, meta.anim.handle, direction);
+    if (!this.anims.exists(key)) return;
+    const settleAfter = opening ? meta.anim.settleFrame : meta.anim.baseFrame;
+    sprite.once("animationcomplete", () => {
+      sprite.setFrame(settleAfter);
+    });
+    sprite.play(key, true);
   }
 
   private drawGlyph(cx: number, cy: number, kind: TileKind): void {

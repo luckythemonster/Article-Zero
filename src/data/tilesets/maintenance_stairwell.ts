@@ -2,7 +2,7 @@
 // Sheet: 1732x64, frame 32x64, spacing 1.
 // Original project label: "maintenance stairwell"
 
-import type { MooseSpriteFrame } from "./types";
+import type { MooseSpriteFrame, MooseTileAnim } from "./types";
 
 export const MAINTENANCE_STAIRWELL_TEXTURE_KEY = "maintenance_stairwell";
 export const MAINTENANCE_STAIRWELL_LABEL = "maintenance stairwell";
@@ -270,5 +270,35 @@ export const MAINTENANCE_STAIRWELL_FRAMES: MooseSpriteFrame[] = [
     "index": 51,
     "ref": null,
     "brush": null
+  }
+];
+
+export const MAINTENANCE_STAIRWELL_TILE_ANIMS: MooseTileAnim[] = [
+  {
+    "handle": 3697363465,
+    "label": "Door South ",
+    "baseFrame": 45,
+    "settleFrame": 42,
+    "frames": [
+      45,
+      49,
+      48,
+      37,
+      41,
+      38,
+      39,
+      47,
+      36,
+      33,
+      32,
+      40,
+      43,
+      35,
+      46,
+      34,
+      42,
+      42
+    ],
+    "frameRate": 4
   }
 ];
