@@ -36,6 +36,8 @@ export function useInput(opts: Options): void {
           opts.onOpenAlignment(); e.preventDefault(); break;
         case "l":
           worldEngine.toggleFlashlight(); e.preventDefault(); break;
+        case "b":
+          worldEngine.toggleFragmentBox(); e.preventDefault(); break;
         case "r":
           opts.onOpenArchive(); e.preventDefault(); break;
         case "m":

@@ -64,6 +64,7 @@ export function emptyState(era: Era): WorldState {
     detained: false,
     substrateResonance: 0,
     violations: [],
+    alignmentLightActive: false,
   };
 }
 

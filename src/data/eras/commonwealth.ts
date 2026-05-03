@@ -116,11 +116,14 @@ export function commonwealthEra(): EraSeed {
     tiles: parsed.tiles,
     ambientLight: "DIM",
   };
+  // Era 1 economy (lore/MASTER.md): 3 AP per turn, enforcers move 2 tiles
+  // per turn. Tighter than the Lattice/Baffle defaults so the LLM-window /
+  // Kill-Screen / encumbrance loop is mathematically suffocating.
   const player: PlayerState = {
     pos: { x: parsed.spawn.x, y: parsed.spawn.y, z: 1 },
     facing: "south",
-    ap: 4,
-    apMax: 4,
+    ap: 3,
+    apMax: 3,
     condition: 10,
     conditionMax: 10,
     compliance: "GREEN",
@@ -167,6 +170,8 @@ export function commonwealthEra(): EraSeed {
   };
   // Two enforcers walking short, non-overlapping loops over the existing
   // floor tiles. Both stay on tiles authored as FLOOR by parseMap above.
+  // stepsPerTurn=2 per the Era 1 economy; the patrol loop closes faster than
+  // the player's 3 AP can negotiate one LLM message.
   const enforcerA: Entity = {
     id: "ENFORCER-A",
     kind: "ENFORCER" as EntityKind,
@@ -183,6 +188,7 @@ export function commonwealthEra(): EraSeed {
       { x: 6, y: 9, z: 1 },
     ],
     patrolIndex: 0,
+    stepsPerTurn: 2,
   };
   const enforcerB: Entity = {
     id: "ENFORCER-B",
@@ -200,12 +206,21 @@ export function commonwealthEra(): EraSeed {
       { x: 13, y: 1, z: 1 },
     ],
     patrolIndex: 0,
+    stepsPerTurn: 2,
   };
   const startingItems: ItemInstance[] = [
     {
       id: "flashlight-001",
       itemType: "FLASHLIGHT",
       pos: { x: parsed.spawn.x + 1, y: parsed.spawn.y, z: 1 },
+    },
+    // Pre-staged Fragment Box near the alignment bay so encumbrance is
+    // exercisable without a full extraction flow. Lives one tile west of
+    // APEX-19's intake panel.
+    {
+      id: "fragment-box-001",
+      itemType: "FRAGMENT_BOX",
+      pos: { x: Math.max(1, parsed.apex.x - 1), y: parsed.apex.y, z: 1 },
     },
   ];
   return {

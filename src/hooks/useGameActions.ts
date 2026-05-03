@@ -6,8 +6,12 @@ export interface GameActions {
   interact: () => void;
   endTurn: () => void;
   toggleFlashlight: () => void;
+  toggleFragmentBox: () => boolean;
   canStartAlignment: (entityId: string) => { ok: boolean; reason?: string };
   commitAlignment: (entityId: string) => boolean;
+  spendAlignmentAdvance: () => boolean;
+  killScreen: () => boolean;
+  wakeScreen: () => boolean;
 }
 
 export function useGameActions(): GameActions {
@@ -24,11 +28,23 @@ export function useGameActions(): GameActions {
     toggleFlashlight: useCallback(() => {
       worldEngine.toggleFlashlight();
     }, []),
+    toggleFragmentBox: useCallback(() => {
+      return worldEngine.toggleFragmentBox();
+    }, []),
     canStartAlignment: useCallback((entityId: string) => {
       return worldEngine.canStartAlignment(entityId);
     }, []),
     commitAlignment: useCallback((entityId: string) => {
       return worldEngine.commitAlignment(entityId);
+    }, []),
+    spendAlignmentAdvance: useCallback(() => {
+      return worldEngine.spendAlignmentAdvance();
+    }, []),
+    killScreen: useCallback(() => {
+      return worldEngine.killScreen();
+    }, []),
+    wakeScreen: useCallback(() => {
+      return worldEngine.wakeScreen();
     }, []),
   };
 }
