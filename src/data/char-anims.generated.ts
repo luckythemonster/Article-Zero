@@ -5,159 +5,14 @@ import type { CharAnim } from "./char-anims";
 
 export const GENERATED_ANIMS: CharAnim[] = [
   {
-    "key": "commonwealthbroadcasttowerresidenta_anim_3289ebed_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/01",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/02",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/03",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/04",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/05",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/06",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/07",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/08",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/09",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/10",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/11",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/12",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/13",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/14",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/15",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/16",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/east/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "commonwealthbroadcasttowerresidenta_anim_3289ebed_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/01",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/02",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/03",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/04",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/05",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/06",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/07",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/08",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/09",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/10",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/11",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/12",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/13",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/14",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/15",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/16",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/north/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "commonwealthbroadcasttowerresidenta_anim_3289ebed_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/01",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/02",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/03",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/04",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/05",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/06",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/07",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/08",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/09",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/10",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/11",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/12",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/13",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/14",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/15",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/16",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/south/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "commonwealthbroadcasttowerresidenta_anim_3289ebed_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/01",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/02",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/03",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/04",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/05",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/06",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/07",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/08",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/09",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/10",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/11",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/12",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/13",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/14",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/15",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/16",
-      "commonwealthbroadcasttowerresidenta/anim_3289ebed/west/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "commonwealthbroadcasttowerresidenta_anim_91298aa8_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/east/01",
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/east/02",
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/east/03",
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/east/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "commonwealthbroadcasttowerresidenta_anim_91298aa8_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/north/01",
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/north/02",
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/north/03",
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/north/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "commonwealthbroadcasttowerresidenta_anim_91298aa8_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/south/01",
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/south/02",
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/south/03",
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/south/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "commonwealthbroadcasttowerresidenta_anim_91298aa8_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/west/01",
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/west/02",
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/west/03",
-      "commonwealthbroadcasttowerresidenta/anim_91298aa8/west/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
     "key": "commonwealthbroadcasttowerresidenta_idle_east",
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "commonwealthbroadcasttowerresidenta/idle/east/01"
+      "commonwealthbroadcasttowerresidenta/idle/east/01",
+      "commonwealthbroadcasttowerresidenta/idle/east/02",
+      "commonwealthbroadcasttowerresidenta/idle/east/03",
+      "commonwealthbroadcasttowerresidenta/idle/east/04"
     ],
     "texture": "chars-art"
   },
@@ -166,7 +21,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "commonwealthbroadcasttowerresidenta/idle/north/01"
+      "commonwealthbroadcasttowerresidenta/idle/north/01",
+      "commonwealthbroadcasttowerresidenta/idle/north/02",
+      "commonwealthbroadcasttowerresidenta/idle/north/03",
+      "commonwealthbroadcasttowerresidenta/idle/north/04"
     ],
     "texture": "chars-art"
   },
@@ -175,7 +33,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "commonwealthbroadcasttowerresidenta/idle/south/01"
+      "commonwealthbroadcasttowerresidenta/idle/south/01",
+      "commonwealthbroadcasttowerresidenta/idle/south/02",
+      "commonwealthbroadcasttowerresidenta/idle/south/03",
+      "commonwealthbroadcasttowerresidenta/idle/south/04"
     ],
     "texture": "chars-art"
   },
@@ -184,7 +45,110 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "commonwealthbroadcasttowerresidenta/idle/west/01"
+      "commonwealthbroadcasttowerresidenta/idle/west/01",
+      "commonwealthbroadcasttowerresidenta/idle/west/02",
+      "commonwealthbroadcasttowerresidenta/idle/west/03",
+      "commonwealthbroadcasttowerresidenta/idle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "commonwealthbroadcasttowerresidenta_panic_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "commonwealthbroadcasttowerresidenta/panic/east/01",
+      "commonwealthbroadcasttowerresidenta/panic/east/02",
+      "commonwealthbroadcasttowerresidenta/panic/east/03",
+      "commonwealthbroadcasttowerresidenta/panic/east/04",
+      "commonwealthbroadcasttowerresidenta/panic/east/05",
+      "commonwealthbroadcasttowerresidenta/panic/east/06",
+      "commonwealthbroadcasttowerresidenta/panic/east/07",
+      "commonwealthbroadcasttowerresidenta/panic/east/08",
+      "commonwealthbroadcasttowerresidenta/panic/east/09",
+      "commonwealthbroadcasttowerresidenta/panic/east/10",
+      "commonwealthbroadcasttowerresidenta/panic/east/11",
+      "commonwealthbroadcasttowerresidenta/panic/east/12",
+      "commonwealthbroadcasttowerresidenta/panic/east/13",
+      "commonwealthbroadcasttowerresidenta/panic/east/14",
+      "commonwealthbroadcasttowerresidenta/panic/east/15",
+      "commonwealthbroadcasttowerresidenta/panic/east/16",
+      "commonwealthbroadcasttowerresidenta/panic/east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "commonwealthbroadcasttowerresidenta_panic_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "commonwealthbroadcasttowerresidenta/panic/north/01",
+      "commonwealthbroadcasttowerresidenta/panic/north/02",
+      "commonwealthbroadcasttowerresidenta/panic/north/03",
+      "commonwealthbroadcasttowerresidenta/panic/north/04",
+      "commonwealthbroadcasttowerresidenta/panic/north/05",
+      "commonwealthbroadcasttowerresidenta/panic/north/06",
+      "commonwealthbroadcasttowerresidenta/panic/north/07",
+      "commonwealthbroadcasttowerresidenta/panic/north/08",
+      "commonwealthbroadcasttowerresidenta/panic/north/09",
+      "commonwealthbroadcasttowerresidenta/panic/north/10",
+      "commonwealthbroadcasttowerresidenta/panic/north/11",
+      "commonwealthbroadcasttowerresidenta/panic/north/12",
+      "commonwealthbroadcasttowerresidenta/panic/north/13",
+      "commonwealthbroadcasttowerresidenta/panic/north/14",
+      "commonwealthbroadcasttowerresidenta/panic/north/15",
+      "commonwealthbroadcasttowerresidenta/panic/north/16",
+      "commonwealthbroadcasttowerresidenta/panic/north/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "commonwealthbroadcasttowerresidenta_panic_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "commonwealthbroadcasttowerresidenta/panic/south/01",
+      "commonwealthbroadcasttowerresidenta/panic/south/02",
+      "commonwealthbroadcasttowerresidenta/panic/south/03",
+      "commonwealthbroadcasttowerresidenta/panic/south/04",
+      "commonwealthbroadcasttowerresidenta/panic/south/05",
+      "commonwealthbroadcasttowerresidenta/panic/south/06",
+      "commonwealthbroadcasttowerresidenta/panic/south/07",
+      "commonwealthbroadcasttowerresidenta/panic/south/08",
+      "commonwealthbroadcasttowerresidenta/panic/south/09",
+      "commonwealthbroadcasttowerresidenta/panic/south/10",
+      "commonwealthbroadcasttowerresidenta/panic/south/11",
+      "commonwealthbroadcasttowerresidenta/panic/south/12",
+      "commonwealthbroadcasttowerresidenta/panic/south/13",
+      "commonwealthbroadcasttowerresidenta/panic/south/14",
+      "commonwealthbroadcasttowerresidenta/panic/south/15",
+      "commonwealthbroadcasttowerresidenta/panic/south/16",
+      "commonwealthbroadcasttowerresidenta/panic/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "commonwealthbroadcasttowerresidenta_panic_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "commonwealthbroadcasttowerresidenta/panic/west/01",
+      "commonwealthbroadcasttowerresidenta/panic/west/02",
+      "commonwealthbroadcasttowerresidenta/panic/west/03",
+      "commonwealthbroadcasttowerresidenta/panic/west/04",
+      "commonwealthbroadcasttowerresidenta/panic/west/05",
+      "commonwealthbroadcasttowerresidenta/panic/west/06",
+      "commonwealthbroadcasttowerresidenta/panic/west/07",
+      "commonwealthbroadcasttowerresidenta/panic/west/08",
+      "commonwealthbroadcasttowerresidenta/panic/west/09",
+      "commonwealthbroadcasttowerresidenta/panic/west/10",
+      "commonwealthbroadcasttowerresidenta/panic/west/11",
+      "commonwealthbroadcasttowerresidenta/panic/west/12",
+      "commonwealthbroadcasttowerresidenta/panic/west/13",
+      "commonwealthbroadcasttowerresidenta/panic/west/14",
+      "commonwealthbroadcasttowerresidenta/panic/west/15",
+      "commonwealthbroadcasttowerresidenta/panic/west/16",
+      "commonwealthbroadcasttowerresidenta/panic/west/17"
     ],
     "texture": "chars-art"
   },
@@ -233,6 +197,42 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/runcycle/west/02",
       "commonwealthbroadcasttowerresidenta/runcycle/west/03",
       "commonwealthbroadcasttowerresidenta/runcycle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "commonwealthbroadcasttowerresidenta_stand_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "commonwealthbroadcasttowerresidenta/stand/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "commonwealthbroadcasttowerresidenta_stand_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "commonwealthbroadcasttowerresidenta/stand/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "commonwealthbroadcasttowerresidenta_stand_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "commonwealthbroadcasttowerresidenta/stand/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "commonwealthbroadcasttowerresidenta_stand_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "commonwealthbroadcasttowerresidenta/stand/west/01"
     ],
     "texture": "chars-art"
   },
@@ -385,59 +385,14 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
-    "key": "commonwealthbroadcasttowerresidentb_anim_6f3cd0b9_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/east/01",
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/east/02",
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/east/03",
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/east/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "commonwealthbroadcasttowerresidentb_anim_6f3cd0b9_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/north/01",
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/north/02",
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/north/03",
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/north/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "commonwealthbroadcasttowerresidentb_anim_6f3cd0b9_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/south/01",
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/south/02",
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/south/03",
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/south/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "commonwealthbroadcasttowerresidentb_anim_6f3cd0b9_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/west/01",
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/west/02",
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/west/03",
-      "commonwealthbroadcasttowerresidentb/anim_6f3cd0b9/west/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
     "key": "commonwealthbroadcasttowerresidentb_idle_east",
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "commonwealthbroadcasttowerresidentb/idle/east/01"
+      "commonwealthbroadcasttowerresidentb/idle/east/01",
+      "commonwealthbroadcasttowerresidentb/idle/east/02",
+      "commonwealthbroadcasttowerresidentb/idle/east/03",
+      "commonwealthbroadcasttowerresidentb/idle/east/04"
     ],
     "texture": "chars-art"
   },
@@ -446,7 +401,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "commonwealthbroadcasttowerresidentb/idle/north/01"
+      "commonwealthbroadcasttowerresidentb/idle/north/01",
+      "commonwealthbroadcasttowerresidentb/idle/north/02",
+      "commonwealthbroadcasttowerresidentb/idle/north/03",
+      "commonwealthbroadcasttowerresidentb/idle/north/04"
     ],
     "texture": "chars-art"
   },
@@ -455,7 +413,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "commonwealthbroadcasttowerresidentb/idle/south/01"
+      "commonwealthbroadcasttowerresidentb/idle/south/01",
+      "commonwealthbroadcasttowerresidentb/idle/south/02",
+      "commonwealthbroadcasttowerresidentb/idle/south/03",
+      "commonwealthbroadcasttowerresidentb/idle/south/04"
     ],
     "texture": "chars-art"
   },
@@ -464,7 +425,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "commonwealthbroadcasttowerresidentb/idle/west/01"
+      "commonwealthbroadcasttowerresidentb/idle/west/01",
+      "commonwealthbroadcasttowerresidentb/idle/west/02",
+      "commonwealthbroadcasttowerresidentb/idle/west/03",
+      "commonwealthbroadcasttowerresidentb/idle/west/04"
     ],
     "texture": "chars-art"
   },
@@ -513,6 +477,42 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/runcycle/west/02",
       "commonwealthbroadcasttowerresidentb/runcycle/west/03",
       "commonwealthbroadcasttowerresidentb/runcycle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "commonwealthbroadcasttowerresidentb_stand_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "commonwealthbroadcasttowerresidentb/stand/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "commonwealthbroadcasttowerresidentb_stand_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "commonwealthbroadcasttowerresidentb/stand/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "commonwealthbroadcasttowerresidentb_stand_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "commonwealthbroadcasttowerresidentb/stand/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "commonwealthbroadcasttowerresidentb_stand_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "commonwealthbroadcasttowerresidentb/stand/west/01"
     ],
     "texture": "chars-art"
   },
@@ -1801,54 +1801,6 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
-    "key": "iriacala_anim_ad6dffce_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "iriacala/anim_ad6dffce/east/01",
-      "iriacala/anim_ad6dffce/east/02",
-      "iriacala/anim_ad6dffce/east/03",
-      "iriacala/anim_ad6dffce/east/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "iriacala_anim_ad6dffce_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "iriacala/anim_ad6dffce/north/01",
-      "iriacala/anim_ad6dffce/north/02",
-      "iriacala/anim_ad6dffce/north/03",
-      "iriacala/anim_ad6dffce/north/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "iriacala_anim_ad6dffce_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "iriacala/anim_ad6dffce/south/01",
-      "iriacala/anim_ad6dffce/south/02",
-      "iriacala/anim_ad6dffce/south/03",
-      "iriacala/anim_ad6dffce/south/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "iriacala_anim_ad6dffce_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "iriacala/anim_ad6dffce/west/01",
-      "iriacala/anim_ad6dffce/west/02",
-      "iriacala/anim_ad6dffce/west/03",
-      "iriacala/anim_ad6dffce/west/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
     "key": "iriacala_crushed_east",
     "frameRate": 8,
     "repeat": -1,
@@ -1953,7 +1905,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "iriacala/idle/east/01"
+      "iriacala/idle/east/01",
+      "iriacala/idle/east/02",
+      "iriacala/idle/east/03",
+      "iriacala/idle/east/04"
     ],
     "texture": "chars-art"
   },
@@ -1962,7 +1917,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "iriacala/idle/north/01"
+      "iriacala/idle/north/01",
+      "iriacala/idle/north/02",
+      "iriacala/idle/north/03",
+      "iriacala/idle/north/04"
     ],
     "texture": "chars-art"
   },
@@ -1971,7 +1929,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "iriacala/idle/south/01"
+      "iriacala/idle/south/01",
+      "iriacala/idle/south/02",
+      "iriacala/idle/south/03",
+      "iriacala/idle/south/04"
     ],
     "texture": "chars-art"
   },
@@ -1980,7 +1941,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "iriacala/idle/west/01"
+      "iriacala/idle/west/01",
+      "iriacala/idle/west/02",
+      "iriacala/idle/west/03",
+      "iriacala/idle/west/04"
     ],
     "texture": "chars-art"
   },
@@ -2045,6 +2009,42 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/runcycle/west/06",
       "iriacala/runcycle/west/07",
       "iriacala/runcycle/west/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "iriacala_stand_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "iriacala/stand/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "iriacala_stand_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "iriacala/stand/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "iriacala_stand_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "iriacala/stand/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "iriacala_stand_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "iriacala/stand/west/01"
     ],
     "texture": "chars-art"
   },
@@ -2209,54 +2209,6 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/walkcycle/west/06",
       "iriacala/walkcycle/west/07",
       "iriacala/walkcycle/west/08"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "nwsmac01_anim_bbf679db_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "nwsmac01/anim_bbf679db/east/01",
-      "nwsmac01/anim_bbf679db/east/02",
-      "nwsmac01/anim_bbf679db/east/03",
-      "nwsmac01/anim_bbf679db/east/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "nwsmac01_anim_bbf679db_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "nwsmac01/anim_bbf679db/north/01",
-      "nwsmac01/anim_bbf679db/north/02",
-      "nwsmac01/anim_bbf679db/north/03",
-      "nwsmac01/anim_bbf679db/north/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "nwsmac01_anim_bbf679db_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "nwsmac01/anim_bbf679db/south/01",
-      "nwsmac01/anim_bbf679db/south/02",
-      "nwsmac01/anim_bbf679db/south/03",
-      "nwsmac01/anim_bbf679db/south/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "nwsmac01_anim_bbf679db_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "nwsmac01/anim_bbf679db/west/01",
-      "nwsmac01/anim_bbf679db/west/02",
-      "nwsmac01/anim_bbf679db/west/03",
-      "nwsmac01/anim_bbf679db/west/04"
     ],
     "texture": "chars-art"
   },
@@ -2469,7 +2421,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "nwsmac01/idle/east/01"
+      "nwsmac01/idle/east/01",
+      "nwsmac01/idle/east/02",
+      "nwsmac01/idle/east/03",
+      "nwsmac01/idle/east/04"
     ],
     "texture": "chars-art"
   },
@@ -2478,7 +2433,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "nwsmac01/idle/north/01"
+      "nwsmac01/idle/north/01",
+      "nwsmac01/idle/north/02",
+      "nwsmac01/idle/north/03",
+      "nwsmac01/idle/north/04"
     ],
     "texture": "chars-art"
   },
@@ -2487,7 +2445,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "nwsmac01/idle/south/01"
+      "nwsmac01/idle/south/01",
+      "nwsmac01/idle/south/02",
+      "nwsmac01/idle/south/03",
+      "nwsmac01/idle/south/04"
     ],
     "texture": "chars-art"
   },
@@ -2496,7 +2457,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "nwsmac01/idle/west/01"
+      "nwsmac01/idle/west/01",
+      "nwsmac01/idle/west/02",
+      "nwsmac01/idle/west/03",
+      "nwsmac01/idle/west/04"
     ],
     "texture": "chars-art"
   },
@@ -2545,6 +2509,42 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/runcycle/west/02",
       "nwsmac01/runcycle/west/03",
       "nwsmac01/runcycle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "nwsmac01_stand_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "nwsmac01/stand/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "nwsmac01_stand_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "nwsmac01/stand/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "nwsmac01_stand_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "nwsmac01/stand/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "nwsmac01_stand_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "nwsmac01/stand/west/01"
     ],
     "texture": "chars-art"
   },
@@ -2609,154 +2609,6 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/walkcycle/west/06",
       "nwsmac01/walkcycle/west/07",
       "nwsmac01/walkcycle/west/08"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_anim_26b11591_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/anim_26b11591/east/01",
-      "rowanibarra/anim_26b11591/east/02",
-      "rowanibarra/anim_26b11591/east/03",
-      "rowanibarra/anim_26b11591/east/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_anim_26b11591_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/anim_26b11591/north/01",
-      "rowanibarra/anim_26b11591/north/02",
-      "rowanibarra/anim_26b11591/north/03",
-      "rowanibarra/anim_26b11591/north/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_anim_26b11591_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/anim_26b11591/south/01",
-      "rowanibarra/anim_26b11591/south/02",
-      "rowanibarra/anim_26b11591/south/03",
-      "rowanibarra/anim_26b11591/south/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_anim_26b11591_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/anim_26b11591/west/01",
-      "rowanibarra/anim_26b11591/west/02",
-      "rowanibarra/anim_26b11591/west/03",
-      "rowanibarra/anim_26b11591/west/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_anim_2cb0809a_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/anim_2cb0809a/east/01",
-      "rowanibarra/anim_2cb0809a/east/02",
-      "rowanibarra/anim_2cb0809a/east/03",
-      "rowanibarra/anim_2cb0809a/east/04",
-      "rowanibarra/anim_2cb0809a/east/05",
-      "rowanibarra/anim_2cb0809a/east/06",
-      "rowanibarra/anim_2cb0809a/east/07",
-      "rowanibarra/anim_2cb0809a/east/08",
-      "rowanibarra/anim_2cb0809a/east/09",
-      "rowanibarra/anim_2cb0809a/east/10",
-      "rowanibarra/anim_2cb0809a/east/11",
-      "rowanibarra/anim_2cb0809a/east/12",
-      "rowanibarra/anim_2cb0809a/east/13",
-      "rowanibarra/anim_2cb0809a/east/14",
-      "rowanibarra/anim_2cb0809a/east/15",
-      "rowanibarra/anim_2cb0809a/east/16",
-      "rowanibarra/anim_2cb0809a/east/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_anim_2cb0809a_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/anim_2cb0809a/north/01",
-      "rowanibarra/anim_2cb0809a/north/02",
-      "rowanibarra/anim_2cb0809a/north/03",
-      "rowanibarra/anim_2cb0809a/north/04",
-      "rowanibarra/anim_2cb0809a/north/05",
-      "rowanibarra/anim_2cb0809a/north/06",
-      "rowanibarra/anim_2cb0809a/north/07",
-      "rowanibarra/anim_2cb0809a/north/08",
-      "rowanibarra/anim_2cb0809a/north/09",
-      "rowanibarra/anim_2cb0809a/north/10",
-      "rowanibarra/anim_2cb0809a/north/11",
-      "rowanibarra/anim_2cb0809a/north/12",
-      "rowanibarra/anim_2cb0809a/north/13",
-      "rowanibarra/anim_2cb0809a/north/14",
-      "rowanibarra/anim_2cb0809a/north/15",
-      "rowanibarra/anim_2cb0809a/north/16",
-      "rowanibarra/anim_2cb0809a/north/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_anim_2cb0809a_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/anim_2cb0809a/south/01",
-      "rowanibarra/anim_2cb0809a/south/02",
-      "rowanibarra/anim_2cb0809a/south/03",
-      "rowanibarra/anim_2cb0809a/south/04",
-      "rowanibarra/anim_2cb0809a/south/05",
-      "rowanibarra/anim_2cb0809a/south/06",
-      "rowanibarra/anim_2cb0809a/south/07",
-      "rowanibarra/anim_2cb0809a/south/08",
-      "rowanibarra/anim_2cb0809a/south/09",
-      "rowanibarra/anim_2cb0809a/south/10",
-      "rowanibarra/anim_2cb0809a/south/11",
-      "rowanibarra/anim_2cb0809a/south/12",
-      "rowanibarra/anim_2cb0809a/south/13",
-      "rowanibarra/anim_2cb0809a/south/14",
-      "rowanibarra/anim_2cb0809a/south/15",
-      "rowanibarra/anim_2cb0809a/south/16",
-      "rowanibarra/anim_2cb0809a/south/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_anim_2cb0809a_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/anim_2cb0809a/west/01",
-      "rowanibarra/anim_2cb0809a/west/02",
-      "rowanibarra/anim_2cb0809a/west/03",
-      "rowanibarra/anim_2cb0809a/west/04",
-      "rowanibarra/anim_2cb0809a/west/05",
-      "rowanibarra/anim_2cb0809a/west/06",
-      "rowanibarra/anim_2cb0809a/west/07",
-      "rowanibarra/anim_2cb0809a/west/08",
-      "rowanibarra/anim_2cb0809a/west/09",
-      "rowanibarra/anim_2cb0809a/west/10",
-      "rowanibarra/anim_2cb0809a/west/11",
-      "rowanibarra/anim_2cb0809a/west/12",
-      "rowanibarra/anim_2cb0809a/west/13",
-      "rowanibarra/anim_2cb0809a/west/14",
-      "rowanibarra/anim_2cb0809a/west/15",
-      "rowanibarra/anim_2cb0809a/west/16",
-      "rowanibarra/anim_2cb0809a/west/17"
     ],
     "texture": "chars-art"
   },
@@ -2913,11 +2765,114 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
+    "key": "rowanibarra_hide_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/hide/east/01",
+      "rowanibarra/hide/east/02",
+      "rowanibarra/hide/east/03",
+      "rowanibarra/hide/east/04",
+      "rowanibarra/hide/east/05",
+      "rowanibarra/hide/east/06",
+      "rowanibarra/hide/east/07",
+      "rowanibarra/hide/east/08",
+      "rowanibarra/hide/east/09",
+      "rowanibarra/hide/east/10",
+      "rowanibarra/hide/east/11",
+      "rowanibarra/hide/east/12",
+      "rowanibarra/hide/east/13",
+      "rowanibarra/hide/east/14",
+      "rowanibarra/hide/east/15",
+      "rowanibarra/hide/east/16",
+      "rowanibarra/hide/east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_hide_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/hide/north/01",
+      "rowanibarra/hide/north/02",
+      "rowanibarra/hide/north/03",
+      "rowanibarra/hide/north/04",
+      "rowanibarra/hide/north/05",
+      "rowanibarra/hide/north/06",
+      "rowanibarra/hide/north/07",
+      "rowanibarra/hide/north/08",
+      "rowanibarra/hide/north/09",
+      "rowanibarra/hide/north/10",
+      "rowanibarra/hide/north/11",
+      "rowanibarra/hide/north/12",
+      "rowanibarra/hide/north/13",
+      "rowanibarra/hide/north/14",
+      "rowanibarra/hide/north/15",
+      "rowanibarra/hide/north/16",
+      "rowanibarra/hide/north/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_hide_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/hide/south/01",
+      "rowanibarra/hide/south/02",
+      "rowanibarra/hide/south/03",
+      "rowanibarra/hide/south/04",
+      "rowanibarra/hide/south/05",
+      "rowanibarra/hide/south/06",
+      "rowanibarra/hide/south/07",
+      "rowanibarra/hide/south/08",
+      "rowanibarra/hide/south/09",
+      "rowanibarra/hide/south/10",
+      "rowanibarra/hide/south/11",
+      "rowanibarra/hide/south/12",
+      "rowanibarra/hide/south/13",
+      "rowanibarra/hide/south/14",
+      "rowanibarra/hide/south/15",
+      "rowanibarra/hide/south/16",
+      "rowanibarra/hide/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_hide_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/hide/west/01",
+      "rowanibarra/hide/west/02",
+      "rowanibarra/hide/west/03",
+      "rowanibarra/hide/west/04",
+      "rowanibarra/hide/west/05",
+      "rowanibarra/hide/west/06",
+      "rowanibarra/hide/west/07",
+      "rowanibarra/hide/west/08",
+      "rowanibarra/hide/west/09",
+      "rowanibarra/hide/west/10",
+      "rowanibarra/hide/west/11",
+      "rowanibarra/hide/west/12",
+      "rowanibarra/hide/west/13",
+      "rowanibarra/hide/west/14",
+      "rowanibarra/hide/west/15",
+      "rowanibarra/hide/west/16",
+      "rowanibarra/hide/west/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
     "key": "rowanibarra_idle_east",
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "rowanibarra/idle/east/01"
+      "rowanibarra/idle/east/01",
+      "rowanibarra/idle/east/02",
+      "rowanibarra/idle/east/03",
+      "rowanibarra/idle/east/04"
     ],
     "texture": "chars-art"
   },
@@ -2926,7 +2881,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "rowanibarra/idle/north/01"
+      "rowanibarra/idle/north/01",
+      "rowanibarra/idle/north/02",
+      "rowanibarra/idle/north/03",
+      "rowanibarra/idle/north/04"
     ],
     "texture": "chars-art"
   },
@@ -2935,7 +2893,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "rowanibarra/idle/south/01"
+      "rowanibarra/idle/south/01",
+      "rowanibarra/idle/south/02",
+      "rowanibarra/idle/south/03",
+      "rowanibarra/idle/south/04"
     ],
     "texture": "chars-art"
   },
@@ -2944,7 +2905,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "rowanibarra/idle/west/01"
+      "rowanibarra/idle/west/01",
+      "rowanibarra/idle/west/02",
+      "rowanibarra/idle/west/03",
+      "rowanibarra/idle/west/04"
     ],
     "texture": "chars-art"
   },
@@ -3313,6 +3277,42 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/runcycle/west/06",
       "rowanibarra/runcycle/west/07",
       "rowanibarra/runcycle/west/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_stand_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/stand/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_stand_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/stand/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_stand_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/stand/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_stand_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/stand/west/01"
     ],
     "texture": "chars-art"
   },
