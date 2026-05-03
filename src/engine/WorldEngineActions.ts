@@ -100,7 +100,9 @@ export const actions = {
         ? "fragment-ring-c"
         : state.era === "MIRADOR"
           ? "fragment-mirador"
-          : "fragment-nw-smac-01";
+          : state.era === "BAFFLE"
+            ? "fragment-baffle"
+            : "fragment-nw-smac-01";
       articleZeroMeta.discoverFragment(state, fragmentId);
       state.player.ap -= INTERACT_AP_COST;
       return true;

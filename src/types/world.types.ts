@@ -4,8 +4,9 @@
 
 export type EntityId = string;
 
-// Named eras the player can branch into. Lattice and Mirador are stubs in v1.
-export type Era = "COMMONWEALTH" | "LATTICE" | "MIRADOR";
+// Named eras the player can branch into. BAFFLE is the third visible era
+// (The Finder); MIRADOR is preserved as a hidden dev branch.
+export type Era = "COMMONWEALTH" | "LATTICE" | "BAFFLE" | "MIRADOR";
 
 // Floors are local to an era's map. The original Commonwealth used 0..11.
 export type FloorIndex = number;

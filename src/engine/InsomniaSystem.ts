@@ -27,6 +27,12 @@ const WITNESS_LINES = [
   "A duct seals itself two corridors south. The seal is correct. The duct is also wrong.",
   "Mara Ibarra, somewhere far away, says my name on a feed I will never receive.",
   "The Lattice carries on. The Commonwealth carries on. Neither knows about the other tonight.",
+  // Heat Death / Bright Knot framing — Era 3 per lore/MASTER.md.
+  "The radiators are venting heat into a void that is no longer cold. The vector reads inverted.",
+  "A panel in the outer hull begins to vitrify. The substrate registers it as a sound.",
+  "The Bright Knot index gains another fragment. I do not know which mind it was.",
+  "A maintenance corridor shears at a weld six rings up. No one was inside it. I felt no one inside it.",
+  "The sun is larger than it was at the start of this shift. The instruments do not agree but the substrate does.",
 ];
 
 class InsomniaSystem {

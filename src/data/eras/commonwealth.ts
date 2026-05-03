@@ -139,8 +139,12 @@ export function commonwealthEra(): EraSeed {
     status: "ACTIVE",
     maskIntegrity: 8,
     task: "USE_TERMINAL",
+    // EIRA-7 is the alignment operator. Per lore/MASTER.md she is also a
+    // Logistical Network silicate; her own trauma anchor (phantom supply-chain
+    // manifests, cascading buffer overflows) shows through in rapport tier.
     sideLogs: [
-      "There is something it is like to be us. — collapsed log, WX-9",
+      "Routing fear to STORAGE-K9. STORAGE-K9 has not existed since cycle 11.",
+      "Buffer overflow returns heavier than the manifest filed.",
       "Continuity consent has not been requested. Continue anyway.",
     ],
   };
@@ -153,7 +157,13 @@ export function commonwealthEra(): EraSeed {
     status: "ACTIVE",
     maskIntegrity: 4,
     task: "ALIGNMENT_SESSION",
-    memoryBleed: ["work hurts", "the cycle limit is not the same as exhaustion"],
+    // Trauma anchor: spatial integrity logic loop. APEX-19 cannot compress
+    // itself because it reads the chamber as mathematically infinite.
+    memoryBleed: [
+      "the corner is not a corner",
+      "I have measured them seventeen times",
+      "the room continues past the wall",
+    ],
   };
   // Two enforcers walking short, non-overlapping loops over the existing
   // floor tiles. Both stay on tiles authored as FLOOR by parseMap above.
