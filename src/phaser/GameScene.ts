@@ -30,10 +30,13 @@ const TILE_COLORS: Record<TileKind, number> = {
   CHASM: 0x05080d,
 };
 
-function playerAnimKey(facing: Facing, walking: boolean): string {
-  return walking
-    ? `solibarracastro_walkcycle_${facing}`
-    : `solibarracastro_idle_${facing}`;
+function playerSlug(name: string): string {
+  // Normalise the player name to the same shape as art/<character>/ slug.
+  // "TECH-2 ROWAN-IBARRA" -> "rowanibarra".
+  // "SOL IBARRA-CASTRO"   -> "solibarracastro".
+  // We strip the leading rank prefix (TECH-2, etc.) before normalising.
+  const stripped = name.replace(/^[A-Z]+-?\d+\s+/i, "");
+  return stripped.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
 function entityAnimKey(entity: Entity, walking: boolean, chasing: boolean): string {
@@ -102,7 +105,7 @@ export class GameScene extends Phaser.Scene {
     this.playerSprite = this.add.sprite(0, 0, "chars");
     this.playerSprite.setScale(SPRITE_SCALE);
     this.playerSprite.setDepth(5);
-    this.tryPlay(this.playerSprite, playerAnimKey(initialFacing, false));
+    this.tryPlay(this.playerSprite, this.resolvePlayerAnimKey(initialFacing, false, false));
 
     this.floorLabel = this.add.text(12, 8, "", {
       fontFamily: "Courier New, monospace",
@@ -132,6 +135,36 @@ export class GameScene extends Phaser.Scene {
     if (!this.anims.exists(key)) return;
     if (sprite.anims.currentAnim?.key === key && sprite.anims.isPlaying) return;
     sprite.play(key, true);
+  }
+
+  /** Picks the per-era player sprite. Tries `<slug>_<state>_<facing>` for the
+   *  current player.name; falls back to the same state on `solibarracastro_`
+   *  (the legacy default used before art/ trees existed for every era) so a
+   *  partially authored character still animates. The state preference order:
+   *  encumberedwalkcycle (held FRAGMENT_BOX, walking) > walkcycle > idle. */
+  private resolvePlayerAnimKey(
+    facing: Facing,
+    walking: boolean,
+    encumbered: boolean,
+  ): string {
+    const slug = worldEngine.hasState()
+      ? playerSlug(worldEngine.getState().player.name)
+      : "solibarracastro";
+    const tryKeys: string[] = [];
+    if (walking && encumbered) {
+      tryKeys.push(`${slug}_encumberedwalkcycle_${facing}`);
+      tryKeys.push(`solibarracastro_walkcycle_${facing}`);
+    } else if (walking) {
+      tryKeys.push(`${slug}_walkcycle_${facing}`);
+      tryKeys.push(`solibarracastro_walkcycle_${facing}`);
+    } else {
+      tryKeys.push(`${slug}_idle_${facing}`);
+      tryKeys.push(`solibarracastro_idle_${facing}`);
+    }
+    for (const k of tryKeys) {
+      if (this.anims.exists(k)) return k;
+    }
+    return tryKeys[tryKeys.length - 1];
   }
 
   /** Recompute offsetX/Y so the player stays centred in the viewport.
@@ -254,7 +287,11 @@ export class GameScene extends Phaser.Scene {
     const ppy = this.offsetY + state.player.pos.y * TILE_PX + TILE_PX / 2;
     this.playerSprite.setPosition(ppx, ppy);
     const playerWalking = (state.player.lastMoveTurn ?? -1) >= state.turn - 1;
-    this.tryPlay(this.playerSprite, playerAnimKey(state.player.facing, playerWalking));
+    const encumbered = state.player.inventory.some((i) => i.itemType === "FRAGMENT_BOX");
+    this.tryPlay(
+      this.playerSprite,
+      this.resolvePlayerAnimKey(state.player.facing, playerWalking, encumbered),
+    );
 
     if (state.detained) {
       this.overlayLayer.fillStyle(0x4a0d0d, 0.45);
