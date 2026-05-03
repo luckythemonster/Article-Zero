@@ -36,6 +36,7 @@ function serialiseState(s: WorldState): any {
     detained: s.detained,
     substrateResonance: s.substrateResonance,
     violations: s.violations,
+    alignmentLightActive: s.alignmentLightActive,
   };
 }
 
@@ -54,6 +55,7 @@ function deserialiseState(s: any): WorldState {
     detained: s.detained,
     substrateResonance: s.substrateResonance,
     violations: s.violations,
+    alignmentLightActive: s.alignmentLightActive ?? false,
   };
 }
 

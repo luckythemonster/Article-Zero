@@ -55,7 +55,11 @@ export type ItemType =
   | "VENT_OVERRIDE_KEY"
   | "ELEVATED_ACCESS_KEY"
   | "RAPPORT_NOTES"
-  | "ARTICLE_ZERO_FRAGMENT";
+  | "ARTICLE_ZERO_FRAGMENT"
+  // A compressed silicate mind. Heavy and fragile — encumbers the carrier:
+  // refresh AP is reduced by 1 and environmental interaction is blocked
+  // while held. See lore/MASTER.md §4.
+  | "FRAGMENT_BOX";
 
 export interface ItemInstance {
   id: string;
@@ -96,6 +100,9 @@ export interface Entity {
   // Patrol route for ENFORCER kind (no-op otherwise).
   patrol?: Vec3[];
   patrolIndex?: number;
+  // ENFORCER-only: how many tiles this entity advances per world tick.
+  // Defaults to 1 when unset.
+  stepsPerTurn?: number;
   // Last turn this entity moved — used to pick walk vs idle animations.
   lastMoveTurn?: number;
 }
@@ -211,6 +218,10 @@ export interface WorldState {
   substrateResonance: number;
   // Active violations awaiting expiry.
   violations: { type: ViolationType; turn: number }[];
+  // True while the InterrogationTerminal UI is open AND the player has not
+  // pressed [Kill Screen]. The terminal casts a 3-tile light cone in this
+  // state; enforcers in line-of-sight break patrol and investigate.
+  alignmentLightActive: boolean;
 }
 
 export const tileKey = (pos: Vec3): string => `${pos.x},${pos.y},${pos.z}`;

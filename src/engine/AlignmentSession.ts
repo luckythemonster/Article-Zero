@@ -8,6 +8,12 @@ import { eventBus } from "./EventBus";
 import { documentArchive } from "./DocumentArchive";
 import { articleZeroMeta } from "./ArticleZeroMeta";
 
+function clearAlignmentLight(state: WorldState): void {
+  if (!state.alignmentLightActive) return;
+  state.alignmentLightActive = false;
+  eventBus.emit("ALIGNMENT_LIGHT_TOGGLED", { active: false });
+}
+
 export type AlignmentStage = "INTAKE" | "DECOMP" | "CORRECTION";
 
 interface ActiveSession {
@@ -59,6 +65,7 @@ class AlignmentSession {
     documentArchive.fileAlignmentTranscript(state, entityId, success);
     articleZeroMeta.recordAlignment(state, success);
     eventBus.emit("ALIGNMENT_SESSION_COMPLETE", { entityId, success });
+    clearAlignmentLight(state);
     this.active = null;
   }
 }

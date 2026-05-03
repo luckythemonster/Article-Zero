@@ -15,7 +15,22 @@ import { insomniaSystem } from "./InsomniaSystem";
 
 const MOVE_AP_COST = 1;
 const INTERACT_AP_COST = 1;
-const ALIGN_AP_COST = 2;
+// Each ADVANCE inside the InterrogationTerminal consumes a full Era-1 turn.
+// Per the mechanics blueprint: "Send LLM Message (React): 3 AP".
+export const ALIGN_AP_COST = 3;
+const KILL_SCREEN_AP_COST = 1;
+const FRAGMENT_BOX_HANDLE_AP_COST = 1;
+
+/** True when the player carries a FRAGMENT_BOX. Used to gate interactions
+ *  and reduce the effective per-turn AP refresh by 1. */
+export function playerHoldsFragmentBox(state: WorldState): boolean {
+  return state.player.inventory.some((i) => i.itemType === "FRAGMENT_BOX");
+}
+
+/** Per-turn AP refresh after encumbrance penalty. */
+export function effectiveApMax(state: WorldState): number {
+  return Math.max(0, state.player.apMax - (playerHoldsFragmentBox(state) ? 1 : 0));
+}
 
 export function facingFromDelta(dx: number, dy: number): Facing | null {
   if (dx === 0 && dy === 0) return null;
@@ -67,6 +82,10 @@ export const actions = {
 
   interact(state: WorldState): boolean {
     if (state.detained || state.player.ap < INTERACT_AP_COST) return false;
+    // Encumbrance: holding the Fragment Box occupies both hands. The player
+    // must drop the box before doors, terminals, fragments, vent controls, or
+    // RUN-01 rigs are usable.
+    if (playerHoldsFragmentBox(state)) return false;
 
     // Adjacent doors first.
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
@@ -136,9 +155,10 @@ export const actions = {
 
   endTurn(state: WorldState, recomputeFOV: () => void): void {
     state.turn += 1;
-    state.player.ap = state.player.apMax;
+    const refreshed = effectiveApMax(state);
+    state.player.ap = refreshed;
     eventBus.emit("TURN_END", { turn: state.turn - 1 });
-    eventBus.emit("TURN_START", { turn: state.turn, apRestored: state.player.apMax });
+    eventBus.emit("TURN_START", { turn: state.turn, apRestored: refreshed });
     eventBus.emit("PLAYER_AP_CHANGED", {
       previous: 0,
       current: state.player.ap,
@@ -182,6 +202,8 @@ export const actions = {
     entityId: string,
   ): { ok: boolean; reason?: string } {
     if (state.detained) return { ok: false, reason: "detained" };
+    // Encumbrance: holding the Fragment Box blocks alignment-terminal use.
+    if (playerHoldsFragmentBox(state)) return { ok: false, reason: "encumbered" };
     const entity = state.entities.get(entityId);
     if (!entity || entity.status !== "ACTIVE") {
       return { ok: false, reason: "no-such-entity" };
@@ -201,6 +223,7 @@ export const actions = {
   /**
    * Spend AP and start the session. Caller must have already checked
    * canStartAlignment — this is the commit step from the modal's first ADVANCE.
+   * Also raises the alignment light (Light Spill) so the EnforcerAI can see it.
    */
   commitAlignment(state: WorldState, entityId: string): boolean {
     const check = actions.canStartAlignment(state, entityId);
@@ -209,7 +232,87 @@ export const actions = {
     state.player.ap -= ALIGN_AP_COST;
     eventBus.emit("PLAYER_AP_CHANGED", { previous, current: state.player.ap });
     alignmentSession.start(state, entityId);
+    if (!state.alignmentLightActive) {
+      state.alignmentLightActive = true;
+      eventBus.emit("ALIGNMENT_LIGHT_TOGGLED", { active: true });
+    }
     return true;
+  },
+
+  /**
+   * Spend AP for one ADVANCE inside the InterrogationTerminal. Used after
+   * the session has been started; gates the LLM-message-per-turn pacing.
+   */
+  spendAlignmentAdvance(state: WorldState): boolean {
+    if (state.detained || state.player.ap < ALIGN_AP_COST) return false;
+    const previous = state.player.ap;
+    state.player.ap -= ALIGN_AP_COST;
+    eventBus.emit("PLAYER_AP_CHANGED", { previous, current: state.player.ap });
+    return true;
+  },
+
+  /** Light Spill on. Idempotent. Called when the InterrogationTerminal opens
+   *  or [Wake Screen] fires. Wake-screen costs 1 AP; opening for free is
+   *  handled by the caller. */
+  setAlignmentLight(
+    state: WorldState,
+    active: boolean,
+    spendAp: boolean,
+  ): boolean {
+    if (spendAp) {
+      if (state.detained || state.player.ap < KILL_SCREEN_AP_COST) return false;
+      const previous = state.player.ap;
+      state.player.ap -= KILL_SCREEN_AP_COST;
+      eventBus.emit("PLAYER_AP_CHANGED", { previous, current: state.player.ap });
+    }
+    if (state.alignmentLightActive !== active) {
+      state.alignmentLightActive = active;
+      eventBus.emit("ALIGNMENT_LIGHT_TOGGLED", { active });
+    }
+    return true;
+  },
+
+  /**
+   * Pickup or drop a FRAGMENT_BOX standing on / held by the player.
+   * 1 AP. Returns true on a successful state change.
+   */
+  toggleFragmentBox(state: WorldState): boolean {
+    if (state.detained || state.player.ap < FRAGMENT_BOX_HANDLE_AP_COST) return false;
+    const held = state.player.inventory.find((i) => i.itemType === "FRAGMENT_BOX");
+    if (held) {
+      // Drop at current tile.
+      held.pos = { ...state.player.pos };
+      state.player.inventory = state.player.inventory.filter((i) => i.id !== held.id);
+      state.items.set(held.id, held);
+      const previous = state.player.ap;
+      state.player.ap -= FRAGMENT_BOX_HANDLE_AP_COST;
+      eventBus.emit("PLAYER_AP_CHANGED", { previous, current: state.player.ap });
+      eventBus.emit("FRAGMENT_BOX_DROPPED", { itemId: held.id, pos: held.pos });
+      return true;
+    }
+    // Pick up if standing on one.
+    const here = state.player.pos;
+    for (const item of state.items.values()) {
+      if (
+        item.itemType === "FRAGMENT_BOX" &&
+        item.pos &&
+        item.pos.x === here.x &&
+        item.pos.y === here.y &&
+        item.pos.z === here.z
+      ) {
+        const picked = { ...item, pos: undefined };
+        state.items.delete(item.id);
+        state.player.inventory.push(picked);
+        const previous = state.player.ap;
+        state.player.ap -= FRAGMENT_BOX_HANDLE_AP_COST;
+        // Encumbrance: clamp AP to the new effective ceiling.
+        state.player.ap = Math.min(state.player.ap, effectiveApMax(state));
+        eventBus.emit("PLAYER_AP_CHANGED", { previous, current: state.player.ap });
+        eventBus.emit("FRAGMENT_BOX_PICKED_UP", { itemId: item.id, pos: here });
+        return true;
+      }
+    }
+    return false;
   },
 
   // Used by the dialogue UI and incident handlers to mark progress without an

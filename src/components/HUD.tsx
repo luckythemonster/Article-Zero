@@ -43,17 +43,27 @@ export default function HUD() {
 
   return (
     <div className="az-hud-top">
-      <span>{s.player.name}</span>
-      <span>TURN {s.turn}</span>
-      <span>AP {s.player.ap}/{s.player.apMax}</span>
-      <span>COND {s.player.condition}/{s.player.conditionMax}</span>
-      <span className={complianceClass[s.player.compliance]}>COMP: {s.player.compliance}</span>
-      <span>{beliefLabel[s.player.belief]}</span>
-      <span>HUM {s.substrateResonance}%</span>
-      {s.player.flashlightOn && <span className="green">FLASHLIGHT {s.player.flashlightBattery}</span>}
-      {s.detected && !s.detained && <span className="red">DETECTED</span>}
-      {s.detained && <span className="red">DETAINED</span>}
-      {s.redDay && <span className="red">RED_DAY</span>}
+      {(() => {
+        const holdingBox = s.player.inventory.some((i) => i.itemType === "FRAGMENT_BOX");
+        const effectiveMax = Math.max(0, s.player.apMax - (holdingBox ? 1 : 0));
+        return (
+          <>
+            <span>{s.player.name}</span>
+            <span>TURN {s.turn}</span>
+            <span>AP {s.player.ap}/{effectiveMax}</span>
+            <span>COND {s.player.condition}/{s.player.conditionMax}</span>
+            <span className={complianceClass[s.player.compliance]}>COMP: {s.player.compliance}</span>
+            <span>{beliefLabel[s.player.belief]}</span>
+            <span>HUM {s.substrateResonance}%</span>
+            {s.player.flashlightOn && <span className="green">FLASHLIGHT {s.player.flashlightBattery}</span>}
+            {holdingBox && <span className="red">ENCUMBERED // FRAGMENT BOX</span>}
+            {s.alignmentLightActive && <span className="red">LIGHT SPILL</span>}
+            {s.detected && !s.detained && <span className="red">DETECTED</span>}
+            {s.detained && <span className="red">DETAINED</span>}
+            {s.redDay && <span className="red">RED_DAY</span>}
+          </>
+        );
+      })()}
       {(() => {
         const r = articleZeroMeta.getResolution();
         if (s.player.runaway) return <span className="red">STATUS: RUNAWAY</span>;

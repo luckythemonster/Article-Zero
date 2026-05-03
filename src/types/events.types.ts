@@ -58,6 +58,12 @@ export interface EventMap {
     stage: "INTAKE" | "DECOMP" | "CORRECTION" | "MAINTENANCE";
   };
   ALIGNMENT_SESSION_COMPLETE: { entityId: EntityId; success: boolean };
+  ALIGNMENT_LIGHT_TOGGLED: { active: boolean };
+  ENFORCER_INVESTIGATING: { enforcerId: EntityId; reason: "LIGHT_SPILL" };
+
+  // Encumbrance
+  FRAGMENT_BOX_PICKED_UP: { itemId: string; pos: Vec3 };
+  FRAGMENT_BOX_DROPPED: { itemId: string; pos: Vec3 };
 
   // Stitcher
   STITCHER_TICK: { turnsRemaining: number };

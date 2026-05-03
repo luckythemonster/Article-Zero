@@ -106,6 +106,14 @@ class WorldEngine {
     actions.canStartAlignment(this.getState(), entityId);
   commitAlignment = (entityId: string) =>
     actions.commitAlignment(this.getState(), entityId);
+  spendAlignmentAdvance = () => actions.spendAlignmentAdvance(this.getState());
+  killScreen = () => actions.setAlignmentLight(this.getState(), false, true);
+  wakeScreen = () => actions.setAlignmentLight(this.getState(), true, true);
+  toggleFragmentBox = () => {
+    const ok = actions.toggleFragmentBox(this.getState());
+    if (ok) this.recomputeFOV();
+    return ok;
+  };
 
   recomputeFOV(): void {
     const s = this.getState();

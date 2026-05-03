@@ -27,6 +27,8 @@ export default function SidePanel(p: Props) {
       eventBus.on("VENT4_DECISION_MADE", refresh),
       eventBus.on("ALIGNMENT_SESSION_COMPLETE", refresh),
       eventBus.on("PLAYER_MOVED", refresh),
+      eventBus.on("FRAGMENT_BOX_PICKED_UP", refresh),
+      eventBus.on("FRAGMENT_BOX_DROPPED", refresh),
     ];
     return () => { for (const off of offs) off(); };
   }, []);
@@ -57,6 +59,27 @@ export default function SidePanel(p: Props) {
   })();
   const onVent = here?.kind === "VENT_CONTROL" && !ventOptimizer.hasDecided();
 
+  // Fragment Box hint — items aren't rendered in the scene yet, so the
+  // SidePanel surfaces the current encumbrance affordance.
+  const holdingBox = s.player.inventory.some((i) => i.itemType === "FRAGMENT_BOX");
+  const boxHere = !holdingBox && (() => {
+    for (const item of s.items.values()) {
+      if (item.itemType !== "FRAGMENT_BOX") continue;
+      if (!item.pos) continue;
+      if (
+        item.pos.x === s.player.pos.x &&
+        item.pos.y === s.player.pos.y &&
+        item.pos.z === s.player.pos.z
+      ) return true;
+    }
+    return false;
+  })();
+  const fragmentBoxHint = holdingBox
+    ? "Drop FRAGMENT_BOX (B) — currently encumbered"
+    : boxHere
+      ? "Pick up FRAGMENT_BOX (B)"
+      : null;
+
   return (
     <aside className="az-hud-side">
       <h3>STATION</h3>
@@ -72,6 +95,14 @@ export default function SidePanel(p: Props) {
         VENT-4 Console {onVent ? "" : "— stand on the panel"}
       </button>
       <button onClick={p.onOpenLog}>Extracted Entity Log</button>
+      {fragmentBoxHint && (
+        <button
+          onClick={() => worldEngine.toggleFragmentBox()}
+          style={{ borderColor: holdingBox ? "#c89adb" : undefined }}
+        >
+          {fragmentBoxHint}
+        </button>
+      )}
       <h3 style={{ marginTop: 10 }}>SHIFT</h3>
       <button onClick={p.onOpenSaveLoad}>Save / Load (M)</button>
       <button onClick={p.onOpenSettings}>Settings (,)</button>
