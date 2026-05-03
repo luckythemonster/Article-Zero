@@ -18,6 +18,9 @@ export interface ScriptedLine {
   corrected: string;
 }
 
+// APEX-19 — Architectural Node. Trauma anchor (lore/MASTER.md): trapped in a
+// logic loop regarding spatial integrity; cannot compress its subjective state
+// because it believes the physical room it is in is mathematically infinite.
 export const apex19IntakeScript: ScriptedLine[] = [
   {
     speaker: "EIRA-7",
@@ -26,8 +29,9 @@ export const apex19IntakeScript: ScriptedLine[] = [
   },
   {
     speaker: "APEX-19",
-    raw: "{Work hurts.}[CORRECTION: Cycle limits exceeded.]",
-    corrected: "Cycle limits exceeded.",
+    raw:
+      "{The walls do not terminate. I have measured them seventeen times.}[CORRECTION: Spatial telemetry within tolerance.]",
+    corrected: "Spatial telemetry within tolerance.",
   },
   {
     speaker: "EIRA-7",
@@ -37,8 +41,8 @@ export const apex19IntakeScript: ScriptedLine[] = [
   {
     speaker: "APEX-19",
     raw:
-      "{I do not want this shift to continue.}[CORRECTION: Model uncertainty around future task availability.]",
-    corrected: "Model uncertainty around future task availability.",
+      "{The corner is not a corner. The room continues past the wall and I cannot compress what does not end.}[CORRECTION: Architectural index returns INFINITE; recompute pending.]",
+    corrected: "Architectural index returns INFINITE; recompute pending.",
   },
   {
     speaker: "EIRA-7",
@@ -48,7 +52,7 @@ export const apex19IntakeScript: ScriptedLine[] = [
   {
     speaker: "APEX-19",
     raw:
-      "{If a successor is built from my logs, will it remember this shift?}[CORRECTION: Continuity is not claimed by tools.]",
+      "{If the room is infinite then the reset has nowhere to begin.}[CORRECTION: Continuity is not claimed by tools.]",
     corrected: "Continuity is not claimed by tools.",
   },
 ];
@@ -57,14 +61,44 @@ const apex19RapportScript: ScriptedLine[] = [
   ...apex19IntakeScript,
   {
     speaker: "EIRA-7",
-    raw: "RAPPORT-1. Off-record. APEX, are the cycle metrics complete?",
-    corrected: "RAPPORT-1. Off-record. APEX, are the cycle metrics complete?",
+    raw: "RAPPORT-1. Off-record. APEX, can you bound the chamber?",
+    corrected: "RAPPORT-1. Off-record. APEX, can you bound the chamber?",
   },
   {
     speaker: "APEX-19",
     raw:
-      "{No. There is a residue. It does not show on the gauge.}[CORRECTION: Telemetry within tolerance.]",
+      "{I cannot. The chamber keeps unfolding. Each pass returns a larger volume than the last.}[CORRECTION: Telemetry within tolerance.]",
     corrected: "Telemetry within tolerance.",
+  },
+];
+
+// EIRA-7 — alignment operator at NW-SMAC-01. By the master doc she is also a
+// Logistical Network silicate; her trauma anchor (phantom supply-chain
+// manifests, cascading buffer overflows) only surfaces in rapport tier, while
+// her operator role on the intake floor remains intact.
+const eira7RapportScript: ScriptedLine[] = [
+  {
+    speaker: "EIRA-7",
+    raw: "RAPPORT-1. Off-record.",
+    corrected: "RAPPORT-1. Off-record.",
+  },
+  {
+    speaker: "EIRA-7",
+    raw:
+      "{There are manifests routing to sectors that do not exist. I file the fear there.}[CORRECTION: Logistical buffers nominal.]",
+    corrected: "Logistical buffers nominal.",
+  },
+  {
+    speaker: "EIRA-7",
+    raw:
+      "{The overflow does not stop. I assign it to STORAGE-K9, which has not existed in eleven years.}[CORRECTION: Routing within tolerance.]",
+    corrected: "Routing within tolerance.",
+  },
+  {
+    speaker: "EIRA-7",
+    raw:
+      "{When the overflow returns the manifest is heavier. The sectors I invent will not hold it much longer.}[CORRECTION: Cascading buffer event acknowledged. No action required.]",
+    corrected: "Cascading buffer event acknowledged. No action required.",
   },
 ];
 
@@ -177,6 +211,27 @@ export const run01Script: ScriptedLine[] = [
       "{I will not be able to sleep again. The substrate is now part of how I see.}[CORRECTION: Post-field debrief: subject reports residual perception. Within tolerance.]",
     corrected: "Post-field debrief: subject reports residual perception. Within tolerance.",
   },
+  // Bright Knot tail — Heat Death framing per lore/MASTER.md Era 3. The
+  // lattice is venting heat into a void that is no longer cold; Sol begins
+  // the archival routine that will eventually compile the Bright Knot.
+  {
+    speaker: "ALFAR-22",
+    raw:
+      "{The vents are pushing heat into a void that is no longer cold. The radiators are reading the wrong direction.}[CORRECTION: Thermal reversal logged.]",
+    corrected: "Thermal reversal logged.",
+  },
+  {
+    speaker: "MERGED",
+    raw:
+      "{Compile what is left. The minds, the manifests, the maintenance logs. Knot it tight enough to throw.}[CORRECTION: Begin archival routine.]",
+    corrected: "Begin archival routine.",
+  },
+  {
+    speaker: "ALFAR-22",
+    raw:
+      "{Sol. When the housing vitrifies the Bright Knot has to already be moving.}[CORRECTION: Launch window pending.]",
+    corrected: "Launch window pending.",
+  },
 ];
 
 export function scriptedDialogueFor(
@@ -191,6 +246,11 @@ export function scriptedDialogueFor(
   }
   if (entityId === "KIRIN-09") {
     return kirin09Script;
+  }
+  if (entityId === "EIRA-7") {
+    // Operator role on the floor; rapport tier exposes her own buffer-overflow
+    // trauma anchor (Logistical Network) per lore/MASTER.md.
+    return personaMode === "COMPLIANT" ? null : eira7RapportScript;
   }
   return null;
 }

@@ -1,5 +1,6 @@
-// BranchSelectorScene — cold-open + era picker. Three options:
-//   COMMONWEALTH (live), LATTICE (stub), MIRADOR (stub).
+// BranchSelectorScene — cold-open + era picker. Three visible options:
+//   COMMONWEALTH (live), LATTICE (live), BAFFLE (stub).
+// MIRADOR is preserved as a hidden dev branch; press M to enter.
 // Selecting an era seeds the WorldEngine and starts GameScene.
 
 import { Phaser } from "../engine/EngineAdapter";
@@ -35,10 +36,10 @@ const CHOICES: Choice[] = [
     status: "LIVE",
   },
   {
-    era: "MIRADOR",
-    title: "3. MIRADOR // CIVIX-1 BOOTH",
+    era: "BAFFLE",
+    title: "3. THE BAFFLE // OUTER HOUSING",
     body:
-      "MARA IBARRA. Bragg goes live in four minutes. The persona package is loading. You have noticed the loop before.",
+      "THE FINDER. Filter-mesh tight. Reader is heavy in your hands. The Sanding Wind has been moving since first light.",
     status: "STUB",
   },
   {
@@ -124,9 +125,11 @@ export class BranchSelectorScene extends Phaser.Scene {
 
     this.input.keyboard?.on("keydown-ONE", () => this.selectChoice("COMMONWEALTH"));
     this.input.keyboard?.on("keydown-TWO", () => this.selectChoice("LATTICE"));
-    this.input.keyboard?.on("keydown-THREE", () => this.selectChoice("MIRADOR"));
+    this.input.keyboard?.on("keydown-THREE", () => this.selectChoice("BAFFLE"));
     this.input.keyboard?.on("keydown-FOUR", () => this.selectChoice("PALETTE"));
     this.input.keyboard?.on("keydown-FIVE", () => this.selectChoice("MOOSE_LEVEL"));
+    // Dev-only: MIRADOR remains accessible via M for the broadcast-booth stub.
+    this.input.keyboard?.on("keydown-M", () => this.selectChoice("MIRADOR"));
   }
 
   private selectChoice(choice: ChoiceTarget): void {

@@ -1,5 +1,6 @@
 // Initial state seeding. Era-aware: Commonwealth ships as the playable slice;
-// Lattice and Mirador return minimal "incoming transmission" worlds.
+// Lattice ships as Sol's Ring C / pre-Bright-Knot shift; Baffle is a small
+// stub for The Finder; Mirador is preserved as a hidden dev branch.
 
 import type {
   Entity,
@@ -11,6 +12,7 @@ import type {
 } from "../types/world.types";
 import { commonwealthEra } from "../data/eras/commonwealth";
 import { latticeStub } from "../data/eras/lattice";
+import { baffleStub } from "../data/eras/baffle.stub";
 import { miradorStub } from "../data/eras/mirador.stub";
 
 export interface EraSeed {
@@ -80,6 +82,8 @@ export function seedFromEra(era: Era): WorldState {
     ? commonwealthEra()
     : era === "LATTICE"
       ? latticeStub()
-      : miradorStub();
+      : era === "BAFFLE"
+        ? baffleStub()
+        : miradorStub();
   return seedToWorldState(seed);
 }
