@@ -102,7 +102,7 @@ export class GameScene extends Phaser.Scene {
     const initialFacing: Facing = worldEngine.hasState()
       ? worldEngine.getState().player.facing
       : "south";
-    this.playerSprite = this.add.sprite(0, 0, "chars");
+    this.playerSprite = this.add.sprite(0, 0, "chars-art");
     this.playerSprite.setScale(SPRITE_SCALE);
     this.playerSprite.setDepth(5);
     this.tryPlay(this.playerSprite, this.resolvePlayerAnimKey(initialFacing, false, false));
@@ -257,7 +257,7 @@ export class GameScene extends Phaser.Scene {
       if (hasArt) {
         let sprite = this.entitySprites.get(entity.id);
         if (!sprite) {
-          sprite = this.add.sprite(px, py, "chars");
+          sprite = this.add.sprite(px, py, "chars-art");
           sprite.setScale(SPRITE_SCALE);
           sprite.setDepth(5);
           this.entitySprites.set(entity.id, sprite);
