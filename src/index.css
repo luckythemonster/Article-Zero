@@ -25,7 +25,9 @@ button {
 
 #phaser-host {
   width: 100%;
-  height: 100%;
+  /* 100vh is reliable; 100dvh tracks the iOS chrome better when supported. */
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;

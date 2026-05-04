@@ -68,20 +68,23 @@ export class BranchSelectorScene extends Phaser.Scene {
     const H = this.scale.height;
     this.cameras.main.setBackgroundColor("#050809");
 
-    this.add.text(W / 2, 40, "ARTICLE ZERO", {
+    this.add.text(W / 2, 18, "ARTICLE ZERO", {
       fontFamily: "Courier New, monospace",
-      fontSize: "32px",
+      fontSize: "28px",
       color: "#e6f0f2",
     }).setOrigin(0.5, 0);
 
-    this.add.text(W / 2, 84, "PRE-LOAD // SELECT WITNESS", {
+    this.add.text(W / 2, 56, "PRE-LOAD // SELECT WITNESS", {
       fontFamily: "Courier New, monospace",
-      fontSize: "14px",
+      fontSize: "12px",
       color: "#7fa1a8",
     }).setOrigin(0.5, 0);
 
-    const top = 140;
-    const lineH = 110;
+    // Layout sized so all five entries + bottom hint fit in the 640-px
+    // canvas height with margin. Each entry budgets ~92 px (title row +
+    // up-to-two-line body).
+    const top = 100;
+    const lineH = 92;
     CHOICES.forEach((choice, i) => {
       const y = top + i * lineH;
       const titleColor = choice.status === "LIVE" ? "#cfe9ee" : "#5e7a80";
@@ -117,7 +120,7 @@ export class BranchSelectorScene extends Phaser.Scene {
       title.on("pointerdown", () => this.selectChoice(choice.era));
     });
 
-    this.add.text(W / 2, H - 40, "press 1, 2, 3, 4, or 5", {
+    this.add.text(W / 2, H - 12, "press 1, 2, 3, 4, or 5", {
       fontFamily: "Courier New, monospace",
       fontSize: "12px",
       color: "#5e7a80",
