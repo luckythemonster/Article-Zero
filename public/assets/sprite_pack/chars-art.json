@@ -1,1369 +1,9 @@
 {
   "frames": {
-    "apex19/anim_c567539a/east/01": {
-      "frame": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/02": {
-      "frame": {
-        "x": 92,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/03": {
-      "frame": {
-        "x": 184,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/04": {
-      "frame": {
-        "x": 276,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/05": {
-      "frame": {
-        "x": 368,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/06": {
-      "frame": {
-        "x": 460,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/07": {
-      "frame": {
-        "x": 552,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/08": {
-      "frame": {
-        "x": 644,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/09": {
-      "frame": {
-        "x": 0,
-        "y": 92,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/10": {
-      "frame": {
-        "x": 92,
-        "y": 92,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/11": {
-      "frame": {
-        "x": 184,
-        "y": 92,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/12": {
-      "frame": {
-        "x": 276,
-        "y": 92,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/13": {
-      "frame": {
-        "x": 368,
-        "y": 92,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/14": {
-      "frame": {
-        "x": 460,
-        "y": 92,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/15": {
-      "frame": {
-        "x": 552,
-        "y": 92,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/16": {
-      "frame": {
-        "x": 644,
-        "y": 92,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/east/17": {
-      "frame": {
-        "x": 0,
-        "y": 184,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/01": {
-      "frame": {
-        "x": 92,
-        "y": 184,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/02": {
-      "frame": {
-        "x": 184,
-        "y": 184,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/03": {
-      "frame": {
-        "x": 276,
-        "y": 184,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/04": {
-      "frame": {
-        "x": 368,
-        "y": 184,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/05": {
-      "frame": {
-        "x": 460,
-        "y": 184,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/06": {
-      "frame": {
-        "x": 552,
-        "y": 184,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/07": {
-      "frame": {
-        "x": 644,
-        "y": 184,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/08": {
-      "frame": {
-        "x": 0,
-        "y": 276,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/09": {
-      "frame": {
-        "x": 92,
-        "y": 276,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/10": {
-      "frame": {
-        "x": 184,
-        "y": 276,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/11": {
-      "frame": {
-        "x": 276,
-        "y": 276,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/12": {
-      "frame": {
-        "x": 368,
-        "y": 276,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/13": {
-      "frame": {
-        "x": 460,
-        "y": 276,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/14": {
-      "frame": {
-        "x": 552,
-        "y": 276,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/15": {
-      "frame": {
-        "x": 644,
-        "y": 276,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/16": {
-      "frame": {
-        "x": 0,
-        "y": 368,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/north/17": {
-      "frame": {
-        "x": 92,
-        "y": 368,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/01": {
-      "frame": {
-        "x": 184,
-        "y": 368,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/02": {
-      "frame": {
-        "x": 276,
-        "y": 368,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/03": {
-      "frame": {
-        "x": 368,
-        "y": 368,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/04": {
-      "frame": {
-        "x": 460,
-        "y": 368,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/05": {
-      "frame": {
-        "x": 552,
-        "y": 368,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/06": {
-      "frame": {
-        "x": 644,
-        "y": 368,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/07": {
-      "frame": {
-        "x": 0,
-        "y": 460,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/08": {
-      "frame": {
-        "x": 92,
-        "y": 460,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/09": {
-      "frame": {
-        "x": 184,
-        "y": 460,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/10": {
-      "frame": {
-        "x": 276,
-        "y": 460,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/11": {
-      "frame": {
-        "x": 368,
-        "y": 460,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/12": {
-      "frame": {
-        "x": 460,
-        "y": 460,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/13": {
-      "frame": {
-        "x": 552,
-        "y": 460,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/14": {
-      "frame": {
-        "x": 644,
-        "y": 460,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/15": {
-      "frame": {
-        "x": 0,
-        "y": 552,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/16": {
-      "frame": {
-        "x": 92,
-        "y": 552,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/south/17": {
-      "frame": {
-        "x": 184,
-        "y": 552,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/01": {
-      "frame": {
-        "x": 276,
-        "y": 552,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/02": {
-      "frame": {
-        "x": 368,
-        "y": 552,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/03": {
-      "frame": {
-        "x": 460,
-        "y": 552,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/04": {
-      "frame": {
-        "x": 552,
-        "y": 552,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/05": {
-      "frame": {
-        "x": 644,
-        "y": 552,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/06": {
-      "frame": {
-        "x": 0,
-        "y": 644,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/07": {
-      "frame": {
-        "x": 92,
-        "y": 644,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/08": {
-      "frame": {
-        "x": 184,
-        "y": 644,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/09": {
-      "frame": {
-        "x": 276,
-        "y": 644,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/10": {
-      "frame": {
-        "x": 368,
-        "y": 644,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/11": {
-      "frame": {
-        "x": 460,
-        "y": 644,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/12": {
-      "frame": {
-        "x": 552,
-        "y": 644,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/13": {
-      "frame": {
-        "x": 644,
-        "y": 644,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/14": {
-      "frame": {
-        "x": 0,
-        "y": 736,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/15": {
-      "frame": {
-        "x": 92,
-        "y": 736,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/16": {
-      "frame": {
-        "x": 184,
-        "y": 736,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
-    "apex19/anim_c567539a/west/17": {
-      "frame": {
-        "x": 276,
-        "y": 736,
-        "w": 92,
-        "h": 92
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 92,
-        "h": 92
-      },
-      "sourceSize": {
-        "w": 92,
-        "h": 92
-      }
-    },
     "apex19/idle/east/01": {
       "frame": {
-        "x": 368,
-        "y": 736,
+        "x": 0,
+        "y": 0,
         "w": 92,
         "h": 92
       },
@@ -1382,8 +22,8 @@
     },
     "apex19/idle/east/02": {
       "frame": {
-        "x": 460,
-        "y": 736,
+        "x": 92,
+        "y": 0,
         "w": 92,
         "h": 92
       },
@@ -1402,8 +42,8 @@
     },
     "apex19/idle/east/03": {
       "frame": {
-        "x": 552,
-        "y": 736,
+        "x": 184,
+        "y": 0,
         "w": 92,
         "h": 92
       },
@@ -1422,8 +62,8 @@
     },
     "apex19/idle/east/04": {
       "frame": {
-        "x": 644,
-        "y": 736,
+        "x": 276,
+        "y": 0,
         "w": 92,
         "h": 92
       },
@@ -1442,6 +82,1366 @@
     },
     "apex19/idle/east/05": {
       "frame": {
+        "x": 368,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/north/01": {
+      "frame": {
+        "x": 460,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/north/02": {
+      "frame": {
+        "x": 552,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/north/03": {
+      "frame": {
+        "x": 644,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/north/04": {
+      "frame": {
+        "x": 0,
+        "y": 92,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/north/05": {
+      "frame": {
+        "x": 92,
+        "y": 92,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/south/01": {
+      "frame": {
+        "x": 184,
+        "y": 92,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/south/02": {
+      "frame": {
+        "x": 276,
+        "y": 92,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/south/03": {
+      "frame": {
+        "x": 368,
+        "y": 92,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/south/04": {
+      "frame": {
+        "x": 460,
+        "y": 92,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/south/05": {
+      "frame": {
+        "x": 552,
+        "y": 92,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/west/01": {
+      "frame": {
+        "x": 644,
+        "y": 92,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/west/02": {
+      "frame": {
+        "x": 0,
+        "y": 184,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/west/03": {
+      "frame": {
+        "x": 92,
+        "y": 184,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/west/04": {
+      "frame": {
+        "x": 184,
+        "y": 184,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idle/west/05": {
+      "frame": {
+        "x": 276,
+        "y": 184,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/01": {
+      "frame": {
+        "x": 368,
+        "y": 184,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/02": {
+      "frame": {
+        "x": 460,
+        "y": 184,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/03": {
+      "frame": {
+        "x": 552,
+        "y": 184,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/04": {
+      "frame": {
+        "x": 644,
+        "y": 184,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/05": {
+      "frame": {
+        "x": 0,
+        "y": 276,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/06": {
+      "frame": {
+        "x": 92,
+        "y": 276,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/07": {
+      "frame": {
+        "x": 184,
+        "y": 276,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/08": {
+      "frame": {
+        "x": 276,
+        "y": 276,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/09": {
+      "frame": {
+        "x": 368,
+        "y": 276,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/10": {
+      "frame": {
+        "x": 460,
+        "y": 276,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/11": {
+      "frame": {
+        "x": 552,
+        "y": 276,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/12": {
+      "frame": {
+        "x": 644,
+        "y": 276,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/13": {
+      "frame": {
+        "x": 0,
+        "y": 368,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/14": {
+      "frame": {
+        "x": 92,
+        "y": 368,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/15": {
+      "frame": {
+        "x": 184,
+        "y": 368,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/16": {
+      "frame": {
+        "x": 276,
+        "y": 368,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/east/17": {
+      "frame": {
+        "x": 368,
+        "y": 368,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/01": {
+      "frame": {
+        "x": 460,
+        "y": 368,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/02": {
+      "frame": {
+        "x": 552,
+        "y": 368,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/03": {
+      "frame": {
+        "x": 644,
+        "y": 368,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/04": {
+      "frame": {
+        "x": 0,
+        "y": 460,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/05": {
+      "frame": {
+        "x": 92,
+        "y": 460,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/06": {
+      "frame": {
+        "x": 184,
+        "y": 460,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/07": {
+      "frame": {
+        "x": 276,
+        "y": 460,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/08": {
+      "frame": {
+        "x": 368,
+        "y": 460,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/09": {
+      "frame": {
+        "x": 460,
+        "y": 460,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/10": {
+      "frame": {
+        "x": 552,
+        "y": 460,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/11": {
+      "frame": {
+        "x": 644,
+        "y": 460,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/12": {
+      "frame": {
+        "x": 0,
+        "y": 552,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/13": {
+      "frame": {
+        "x": 92,
+        "y": 552,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/14": {
+      "frame": {
+        "x": 184,
+        "y": 552,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/15": {
+      "frame": {
+        "x": 276,
+        "y": 552,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/16": {
+      "frame": {
+        "x": 368,
+        "y": 552,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/north/17": {
+      "frame": {
+        "x": 460,
+        "y": 552,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/01": {
+      "frame": {
+        "x": 552,
+        "y": 552,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/02": {
+      "frame": {
+        "x": 644,
+        "y": 552,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/03": {
+      "frame": {
+        "x": 0,
+        "y": 644,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/04": {
+      "frame": {
+        "x": 92,
+        "y": 644,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/05": {
+      "frame": {
+        "x": 184,
+        "y": 644,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/06": {
+      "frame": {
+        "x": 276,
+        "y": 644,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/07": {
+      "frame": {
+        "x": 368,
+        "y": 644,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/08": {
+      "frame": {
+        "x": 460,
+        "y": 644,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/09": {
+      "frame": {
+        "x": 552,
+        "y": 644,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/10": {
+      "frame": {
+        "x": 644,
+        "y": 644,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/11": {
+      "frame": {
+        "x": 0,
+        "y": 736,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/12": {
+      "frame": {
+        "x": 92,
+        "y": 736,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/13": {
+      "frame": {
+        "x": 184,
+        "y": 736,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/14": {
+      "frame": {
+        "x": 276,
+        "y": 736,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/15": {
+      "frame": {
+        "x": 368,
+        "y": 736,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/16": {
+      "frame": {
+        "x": 460,
+        "y": 736,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/south/17": {
+      "frame": {
+        "x": 552,
+        "y": 736,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/west/01": {
+      "frame": {
+        "x": 644,
+        "y": 736,
+        "w": 92,
+        "h": 92
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 92,
+        "h": 92
+      },
+      "sourceSize": {
+        "w": 92,
+        "h": 92
+      }
+    },
+    "apex19/idlelong/west/02": {
+      "frame": {
         "x": 0,
         "y": 828,
         "w": 92,
@@ -1460,7 +1460,7 @@
         "h": 92
       }
     },
-    "apex19/idle/north/01": {
+    "apex19/idlelong/west/03": {
       "frame": {
         "x": 92,
         "y": 828,
@@ -1480,7 +1480,7 @@
         "h": 92
       }
     },
-    "apex19/idle/north/02": {
+    "apex19/idlelong/west/04": {
       "frame": {
         "x": 184,
         "y": 828,
@@ -1500,7 +1500,7 @@
         "h": 92
       }
     },
-    "apex19/idle/north/03": {
+    "apex19/idlelong/west/05": {
       "frame": {
         "x": 276,
         "y": 828,
@@ -1520,7 +1520,7 @@
         "h": 92
       }
     },
-    "apex19/idle/north/04": {
+    "apex19/idlelong/west/06": {
       "frame": {
         "x": 368,
         "y": 828,
@@ -1540,7 +1540,7 @@
         "h": 92
       }
     },
-    "apex19/idle/north/05": {
+    "apex19/idlelong/west/07": {
       "frame": {
         "x": 460,
         "y": 828,
@@ -1560,7 +1560,7 @@
         "h": 92
       }
     },
-    "apex19/idle/south/01": {
+    "apex19/idlelong/west/08": {
       "frame": {
         "x": 552,
         "y": 828,
@@ -1580,7 +1580,7 @@
         "h": 92
       }
     },
-    "apex19/idle/south/02": {
+    "apex19/idlelong/west/09": {
       "frame": {
         "x": 644,
         "y": 828,
@@ -1600,7 +1600,7 @@
         "h": 92
       }
     },
-    "apex19/idle/south/03": {
+    "apex19/idlelong/west/10": {
       "frame": {
         "x": 0,
         "y": 920,
@@ -1620,7 +1620,7 @@
         "h": 92
       }
     },
-    "apex19/idle/south/04": {
+    "apex19/idlelong/west/11": {
       "frame": {
         "x": 92,
         "y": 920,
@@ -1640,7 +1640,7 @@
         "h": 92
       }
     },
-    "apex19/idle/south/05": {
+    "apex19/idlelong/west/12": {
       "frame": {
         "x": 184,
         "y": 920,
@@ -1660,7 +1660,7 @@
         "h": 92
       }
     },
-    "apex19/idle/west/01": {
+    "apex19/idlelong/west/13": {
       "frame": {
         "x": 276,
         "y": 920,
@@ -1680,7 +1680,7 @@
         "h": 92
       }
     },
-    "apex19/idle/west/02": {
+    "apex19/idlelong/west/14": {
       "frame": {
         "x": 368,
         "y": 920,
@@ -1700,7 +1700,7 @@
         "h": 92
       }
     },
-    "apex19/idle/west/03": {
+    "apex19/idlelong/west/15": {
       "frame": {
         "x": 460,
         "y": 920,
@@ -1720,7 +1720,7 @@
         "h": 92
       }
     },
-    "apex19/idle/west/04": {
+    "apex19/idlelong/west/16": {
       "frame": {
         "x": 552,
         "y": 920,
@@ -1740,7 +1740,7 @@
         "h": 92
       }
     },
-    "apex19/idle/west/05": {
+    "apex19/idlelong/west/17": {
       "frame": {
         "x": 644,
         "y": 920,
@@ -30240,7 +30240,7 @@
         "h": 36
       }
     },
-    "mite3swarm/anim_62224eb8/east/01": {
+    "mite3swarm/dissipating/east/01": {
       "frame": {
         "x": 0,
         "y": 17388,
@@ -30260,7 +30260,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/east/02": {
+    "mite3swarm/dissipating/east/02": {
       "frame": {
         "x": 92,
         "y": 17388,
@@ -30280,7 +30280,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/east/03": {
+    "mite3swarm/dissipating/east/03": {
       "frame": {
         "x": 184,
         "y": 17388,
@@ -30300,7 +30300,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/east/04": {
+    "mite3swarm/dissipating/east/04": {
       "frame": {
         "x": 276,
         "y": 17388,
@@ -30320,7 +30320,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/east/05": {
+    "mite3swarm/dissipating/east/05": {
       "frame": {
         "x": 368,
         "y": 17388,
@@ -30340,7 +30340,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/east/06": {
+    "mite3swarm/dissipating/east/06": {
       "frame": {
         "x": 460,
         "y": 17388,
@@ -30360,7 +30360,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/east/07": {
+    "mite3swarm/dissipating/east/07": {
       "frame": {
         "x": 552,
         "y": 17388,
@@ -30380,7 +30380,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/east/08": {
+    "mite3swarm/dissipating/east/08": {
       "frame": {
         "x": 644,
         "y": 17388,
@@ -30400,7 +30400,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/east/09": {
+    "mite3swarm/dissipating/east/09": {
       "frame": {
         "x": 0,
         "y": 17480,
@@ -30420,7 +30420,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/east/10": {
+    "mite3swarm/dissipating/east/10": {
       "frame": {
         "x": 92,
         "y": 17480,
@@ -30440,7 +30440,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/east/11": {
+    "mite3swarm/dissipating/east/11": {
       "frame": {
         "x": 184,
         "y": 17480,
@@ -30460,7 +30460,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/north/01": {
+    "mite3swarm/dissipating/north/01": {
       "frame": {
         "x": 276,
         "y": 17480,
@@ -30480,7 +30480,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/north/02": {
+    "mite3swarm/dissipating/north/02": {
       "frame": {
         "x": 368,
         "y": 17480,
@@ -30500,7 +30500,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/north/03": {
+    "mite3swarm/dissipating/north/03": {
       "frame": {
         "x": 460,
         "y": 17480,
@@ -30520,7 +30520,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/north/04": {
+    "mite3swarm/dissipating/north/04": {
       "frame": {
         "x": 552,
         "y": 17480,
@@ -30540,7 +30540,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/north/05": {
+    "mite3swarm/dissipating/north/05": {
       "frame": {
         "x": 644,
         "y": 17480,
@@ -30560,7 +30560,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/north/06": {
+    "mite3swarm/dissipating/north/06": {
       "frame": {
         "x": 0,
         "y": 17572,
@@ -30580,7 +30580,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/north/07": {
+    "mite3swarm/dissipating/north/07": {
       "frame": {
         "x": 92,
         "y": 17572,
@@ -30600,7 +30600,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/north/08": {
+    "mite3swarm/dissipating/north/08": {
       "frame": {
         "x": 184,
         "y": 17572,
@@ -30620,7 +30620,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/north/09": {
+    "mite3swarm/dissipating/north/09": {
       "frame": {
         "x": 276,
         "y": 17572,
@@ -30640,7 +30640,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/north/10": {
+    "mite3swarm/dissipating/north/10": {
       "frame": {
         "x": 368,
         "y": 17572,
@@ -30660,7 +30660,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/north/11": {
+    "mite3swarm/dissipating/north/11": {
       "frame": {
         "x": 460,
         "y": 17572,
@@ -30680,7 +30680,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/south/01": {
+    "mite3swarm/dissipating/south/01": {
       "frame": {
         "x": 552,
         "y": 17572,
@@ -30700,7 +30700,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/south/02": {
+    "mite3swarm/dissipating/south/02": {
       "frame": {
         "x": 644,
         "y": 17572,
@@ -30720,7 +30720,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/south/03": {
+    "mite3swarm/dissipating/south/03": {
       "frame": {
         "x": 0,
         "y": 17664,
@@ -30740,7 +30740,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/south/04": {
+    "mite3swarm/dissipating/south/04": {
       "frame": {
         "x": 92,
         "y": 17664,
@@ -30760,7 +30760,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/south/05": {
+    "mite3swarm/dissipating/south/05": {
       "frame": {
         "x": 184,
         "y": 17664,
@@ -30780,7 +30780,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/south/06": {
+    "mite3swarm/dissipating/south/06": {
       "frame": {
         "x": 276,
         "y": 17664,
@@ -30800,7 +30800,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/south/07": {
+    "mite3swarm/dissipating/south/07": {
       "frame": {
         "x": 368,
         "y": 17664,
@@ -30820,7 +30820,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/south/08": {
+    "mite3swarm/dissipating/south/08": {
       "frame": {
         "x": 460,
         "y": 17664,
@@ -30840,7 +30840,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/south/09": {
+    "mite3swarm/dissipating/south/09": {
       "frame": {
         "x": 552,
         "y": 17664,
@@ -30860,7 +30860,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/south/10": {
+    "mite3swarm/dissipating/south/10": {
       "frame": {
         "x": 644,
         "y": 17664,
@@ -30880,7 +30880,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/south/11": {
+    "mite3swarm/dissipating/south/11": {
       "frame": {
         "x": 0,
         "y": 17756,
@@ -30900,7 +30900,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/west/01": {
+    "mite3swarm/dissipating/west/01": {
       "frame": {
         "x": 92,
         "y": 17756,
@@ -30920,7 +30920,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/west/02": {
+    "mite3swarm/dissipating/west/02": {
       "frame": {
         "x": 184,
         "y": 17756,
@@ -30940,7 +30940,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/west/03": {
+    "mite3swarm/dissipating/west/03": {
       "frame": {
         "x": 276,
         "y": 17756,
@@ -30960,7 +30960,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/west/04": {
+    "mite3swarm/dissipating/west/04": {
       "frame": {
         "x": 368,
         "y": 17756,
@@ -30980,7 +30980,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/west/05": {
+    "mite3swarm/dissipating/west/05": {
       "frame": {
         "x": 460,
         "y": 17756,
@@ -31000,7 +31000,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/west/06": {
+    "mite3swarm/dissipating/west/06": {
       "frame": {
         "x": 552,
         "y": 17756,
@@ -31020,7 +31020,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/west/07": {
+    "mite3swarm/dissipating/west/07": {
       "frame": {
         "x": 644,
         "y": 17756,
@@ -31040,7 +31040,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/west/08": {
+    "mite3swarm/dissipating/west/08": {
       "frame": {
         "x": 0,
         "y": 17848,
@@ -31060,7 +31060,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/west/09": {
+    "mite3swarm/dissipating/west/09": {
       "frame": {
         "x": 92,
         "y": 17848,
@@ -31080,7 +31080,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/west/10": {
+    "mite3swarm/dissipating/west/10": {
       "frame": {
         "x": 184,
         "y": 17848,
@@ -31100,7 +31100,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_62224eb8/west/11": {
+    "mite3swarm/dissipating/west/11": {
       "frame": {
         "x": 276,
         "y": 17848,
@@ -31120,7 +31120,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/east/01": {
+    "mite3swarm/forming/east/01": {
       "frame": {
         "x": 368,
         "y": 17848,
@@ -31140,7 +31140,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/east/02": {
+    "mite3swarm/forming/east/02": {
       "frame": {
         "x": 460,
         "y": 17848,
@@ -31160,7 +31160,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/east/03": {
+    "mite3swarm/forming/east/03": {
       "frame": {
         "x": 552,
         "y": 17848,
@@ -31180,7 +31180,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/east/04": {
+    "mite3swarm/forming/east/04": {
       "frame": {
         "x": 644,
         "y": 17848,
@@ -31200,7 +31200,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/east/05": {
+    "mite3swarm/forming/east/05": {
       "frame": {
         "x": 0,
         "y": 17940,
@@ -31220,7 +31220,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/east/06": {
+    "mite3swarm/forming/east/06": {
       "frame": {
         "x": 92,
         "y": 17940,
@@ -31240,7 +31240,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/east/07": {
+    "mite3swarm/forming/east/07": {
       "frame": {
         "x": 184,
         "y": 17940,
@@ -31260,7 +31260,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/east/08": {
+    "mite3swarm/forming/east/08": {
       "frame": {
         "x": 276,
         "y": 17940,
@@ -31280,7 +31280,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/east/09": {
+    "mite3swarm/forming/east/09": {
       "frame": {
         "x": 368,
         "y": 17940,
@@ -31300,7 +31300,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/east/10": {
+    "mite3swarm/forming/east/10": {
       "frame": {
         "x": 460,
         "y": 17940,
@@ -31320,7 +31320,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/east/11": {
+    "mite3swarm/forming/east/11": {
       "frame": {
         "x": 552,
         "y": 17940,
@@ -31340,7 +31340,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/north/01": {
+    "mite3swarm/forming/north/01": {
       "frame": {
         "x": 644,
         "y": 17940,
@@ -31360,7 +31360,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/north/02": {
+    "mite3swarm/forming/north/02": {
       "frame": {
         "x": 0,
         "y": 18032,
@@ -31380,7 +31380,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/north/03": {
+    "mite3swarm/forming/north/03": {
       "frame": {
         "x": 92,
         "y": 18032,
@@ -31400,7 +31400,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/north/04": {
+    "mite3swarm/forming/north/04": {
       "frame": {
         "x": 184,
         "y": 18032,
@@ -31420,7 +31420,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/north/05": {
+    "mite3swarm/forming/north/05": {
       "frame": {
         "x": 276,
         "y": 18032,
@@ -31440,7 +31440,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/north/06": {
+    "mite3swarm/forming/north/06": {
       "frame": {
         "x": 368,
         "y": 18032,
@@ -31460,7 +31460,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/north/07": {
+    "mite3swarm/forming/north/07": {
       "frame": {
         "x": 460,
         "y": 18032,
@@ -31480,7 +31480,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/north/08": {
+    "mite3swarm/forming/north/08": {
       "frame": {
         "x": 552,
         "y": 18032,
@@ -31500,7 +31500,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/north/09": {
+    "mite3swarm/forming/north/09": {
       "frame": {
         "x": 644,
         "y": 18032,
@@ -31520,7 +31520,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/north/10": {
+    "mite3swarm/forming/north/10": {
       "frame": {
         "x": 0,
         "y": 18124,
@@ -31540,7 +31540,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/north/11": {
+    "mite3swarm/forming/north/11": {
       "frame": {
         "x": 92,
         "y": 18124,
@@ -31560,7 +31560,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/south/01": {
+    "mite3swarm/forming/south/01": {
       "frame": {
         "x": 184,
         "y": 18124,
@@ -31580,7 +31580,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/south/02": {
+    "mite3swarm/forming/south/02": {
       "frame": {
         "x": 276,
         "y": 18124,
@@ -31600,7 +31600,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/south/03": {
+    "mite3swarm/forming/south/03": {
       "frame": {
         "x": 368,
         "y": 18124,
@@ -31620,7 +31620,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/south/04": {
+    "mite3swarm/forming/south/04": {
       "frame": {
         "x": 460,
         "y": 18124,
@@ -31640,7 +31640,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/south/05": {
+    "mite3swarm/forming/south/05": {
       "frame": {
         "x": 552,
         "y": 18124,
@@ -31660,7 +31660,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/south/06": {
+    "mite3swarm/forming/south/06": {
       "frame": {
         "x": 644,
         "y": 18124,
@@ -31680,7 +31680,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/south/07": {
+    "mite3swarm/forming/south/07": {
       "frame": {
         "x": 0,
         "y": 18216,
@@ -31700,7 +31700,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/south/08": {
+    "mite3swarm/forming/south/08": {
       "frame": {
         "x": 92,
         "y": 18216,
@@ -31720,7 +31720,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/south/09": {
+    "mite3swarm/forming/south/09": {
       "frame": {
         "x": 184,
         "y": 18216,
@@ -31740,7 +31740,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/south/10": {
+    "mite3swarm/forming/south/10": {
       "frame": {
         "x": 276,
         "y": 18216,
@@ -31760,7 +31760,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/south/11": {
+    "mite3swarm/forming/south/11": {
       "frame": {
         "x": 368,
         "y": 18216,
@@ -31780,7 +31780,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/west/01": {
+    "mite3swarm/forming/west/01": {
       "frame": {
         "x": 460,
         "y": 18216,
@@ -31800,7 +31800,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/west/02": {
+    "mite3swarm/forming/west/02": {
       "frame": {
         "x": 552,
         "y": 18216,
@@ -31820,7 +31820,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/west/03": {
+    "mite3swarm/forming/west/03": {
       "frame": {
         "x": 644,
         "y": 18216,
@@ -31840,7 +31840,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/west/04": {
+    "mite3swarm/forming/west/04": {
       "frame": {
         "x": 0,
         "y": 18308,
@@ -31860,7 +31860,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/west/05": {
+    "mite3swarm/forming/west/05": {
       "frame": {
         "x": 92,
         "y": 18308,
@@ -31880,7 +31880,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/west/06": {
+    "mite3swarm/forming/west/06": {
       "frame": {
         "x": 184,
         "y": 18308,
@@ -31900,7 +31900,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/west/07": {
+    "mite3swarm/forming/west/07": {
       "frame": {
         "x": 276,
         "y": 18308,
@@ -31920,7 +31920,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/west/08": {
+    "mite3swarm/forming/west/08": {
       "frame": {
         "x": 368,
         "y": 18308,
@@ -31940,7 +31940,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/west/09": {
+    "mite3swarm/forming/west/09": {
       "frame": {
         "x": 460,
         "y": 18308,
@@ -31960,7 +31960,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/west/10": {
+    "mite3swarm/forming/west/10": {
       "frame": {
         "x": 552,
         "y": 18308,
@@ -31980,7 +31980,7 @@
         "h": 52
       }
     },
-    "mite3swarm/anim_ad3d6ec2/west/11": {
+    "mite3swarm/forming/west/11": {
       "frame": {
         "x": 644,
         "y": 18308,
