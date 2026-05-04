@@ -116,8 +116,10 @@ export class BranchSelectorScene extends Phaser.Scene {
         fontSize: "13px",
         color: tagColor,
       }).setOrigin(1, 0);
-      title.setInteractive({ useHandCursor: true });
-      title.on("pointerdown", () => this.selectChoice(choice.era));
+      if (choice.status !== "STUB") {
+        title.setInteractive({ useHandCursor: true });
+        title.on("pointerdown", () => this.selectChoice(choice.era));
+      }
     });
 
     this.add.text(W / 2, H - 12, "press 1, 2, 3, 4, or 5", {
