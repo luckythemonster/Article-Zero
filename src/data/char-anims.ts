@@ -121,6 +121,6 @@ const LEGACY_CHAR_ANIMS: CharAnim[] = [
   { key: 'solibarracastro_rotations_north', frameRate: 8, repeat: -1, frames: ['58r2r5grk'] },
 ];
 
-/** Combined registry: frozen Commonwealth set + anything authored in `art/`. */
-export const CHAR_ANIMS: CharAnim[] = [...LEGACY_CHAR_ANIMS, ...GENERATED_ANIMS];
+/** Combined registry: generated art takes priority; legacy fills anything not yet in art/. */
+export const CHAR_ANIMS: CharAnim[] = [...GENERATED_ANIMS, ...LEGACY_CHAR_ANIMS];
 
