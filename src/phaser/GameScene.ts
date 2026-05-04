@@ -88,6 +88,18 @@ export class GameScene extends Phaser.Scene {
   private floorLabel!: Phaser.GameObjects.Text;
   private offsetX = 0;
   private offsetY = 0;
+  /** Last tile position rendered for each entity (and the player under
+   *  the key "__player__"). Used by placeMovingSprite() to decide whether
+   *  to snap or tween between redraws. Entries are dropped when an entity
+   *  is no longer visible / on a different floor, so reappearance snaps. */
+  private prevTilePositions = new Map<string, { x: number; y: number; z: number }>();
+  /** Last (offsetX, offsetY) we drew at. When the camera shifts (because
+   *  the player crossed a tile in a follow-camera level), every sprite
+   *  needs to snap to stay aligned with the world tiles, which themselves
+   *  re-render at the new offset. Tweening only when the offset is stable
+   *  keeps the player + NPCs visually glued to the floor. */
+  private prevOffset: { x: number; y: number } | null = null;
+  private static readonly WALK_TWEEN_MS = 150;
 
   constructor() {
     super({ key: "GameScene" });
@@ -135,6 +147,60 @@ export class GameScene extends Phaser.Scene {
     if (!this.anims.exists(key)) return;
     if (sprite.anims.currentAnim?.key === key && sprite.anims.isPlaying) return;
     sprite.play(key, true);
+  }
+
+  /** Move a sprite to its target screen position, tweening the slide if the
+   *  entity stepped to an adjacent tile under a stable camera, snapping in
+   *  every other case (first appearance, floor change, teleport, camera
+   *  shift). When neither the tile nor the offset moved we leave any
+   *  in-flight tween alone — that prevents follow-up redraws from FOV /
+   *  TURN_START events from cutting a slide short. */
+  private placeMovingSprite(
+    id: string,
+    sprite:
+      | Phaser.GameObjects.Sprite
+      | Phaser.GameObjects.Rectangle,
+    tilePos: { x: number; y: number; z: number },
+    screenX: number,
+    screenY: number,
+    offsetChanged: boolean,
+  ): void {
+    const prev = this.prevTilePositions.get(id);
+    const sameFloor = !!prev && prev.z === tilePos.z;
+    const tileMoved = !!prev && sameFloor && (prev.x !== tilePos.x || prev.y !== tilePos.y);
+    const adjacent =
+      !!prev &&
+      sameFloor &&
+      Math.abs(tilePos.x - prev.x) <= 1 &&
+      Math.abs(tilePos.y - prev.y) <= 1;
+
+    if (!prev || !sameFloor) {
+      this.tweens.killTweensOf(sprite);
+      sprite.setPosition(screenX, screenY);
+      return;
+    }
+    if (offsetChanged) {
+      this.tweens.killTweensOf(sprite);
+      sprite.setPosition(screenX, screenY);
+      return;
+    }
+    if (tileMoved && adjacent) {
+      this.tweens.killTweensOf(sprite);
+      this.tweens.add({
+        targets: sprite,
+        x: screenX,
+        y: screenY,
+        duration: GameScene.WALK_TWEEN_MS,
+        ease: "Linear",
+      });
+      return;
+    }
+    if (tileMoved) {
+      this.tweens.killTweensOf(sprite);
+      sprite.setPosition(screenX, screenY);
+      return;
+    }
+    // Same tile + same offset: leave any in-flight tween untouched.
   }
 
   /** Picks the per-era player sprite. Tries `<slug>_<state>_<facing>` for the
@@ -214,6 +280,10 @@ export class GameScene extends Phaser.Scene {
     if (!floor) return;
 
     this.updateCameraOffsets();
+    const offsetChanged =
+      this.prevOffset !== null &&
+      (this.prevOffset.x !== this.offsetX || this.prevOffset.y !== this.offsetY);
+    const nextTilePositions = new Map<string, { x: number; y: number; z: number }>();
 
     this.tileLayer.clear();
     this.glyphLayer.clear();
@@ -256,13 +326,19 @@ export class GameScene extends Phaser.Scene {
 
       if (hasArt) {
         let sprite = this.entitySprites.get(entity.id);
+        const justCreated = !sprite;
         if (!sprite) {
           sprite = this.add.sprite(px, py, "chars-art");
           sprite.setScale(SPRITE_SCALE);
           sprite.setDepth(5);
           this.entitySprites.set(entity.id, sprite);
         }
-        sprite.setPosition(px, py);
+        if (visible && !justCreated) {
+          this.placeMovingSprite(entity.id, sprite, entity.pos, px, py, offsetChanged);
+        } else {
+          this.tweens.killTweensOf(sprite);
+          sprite.setPosition(px, py);
+        }
         sprite.setVisible(visible);
         this.tryPlay(sprite, animKey);
       } else {
@@ -270,6 +346,7 @@ export class GameScene extends Phaser.Scene {
         // is still visible. New character art added via `npm run art` will
         // automatically take over once the animation key exists.
         let rect = this.entityRects.get(entity.id);
+        const justCreated = !rect;
         if (!rect) {
           rect = this.add.rectangle(px, py, TILE_PX - 8, TILE_PX - 8, 0x6ad0a4);
           rect.setStrokeStyle(2, 0xe6f0f2);
@@ -277,15 +354,35 @@ export class GameScene extends Phaser.Scene {
           rect.setAlpha(0.5);
           this.entityRects.set(entity.id, rect);
         }
-        rect.setPosition(px, py);
+        if (visible && !justCreated) {
+          this.placeMovingSprite(entity.id, rect, entity.pos, px, py, offsetChanged);
+        } else {
+          this.tweens.killTweensOf(rect);
+          rect.setPosition(px, py);
+        }
         rect.setVisible(visible);
+      }
+      if (visible) {
+        nextTilePositions.set(entity.id, { x: entity.pos.x, y: entity.pos.y, z: entity.pos.z });
       }
     }
 
     // Player sprite + animation
     const ppx = this.offsetX + state.player.pos.x * TILE_PX + TILE_PX / 2;
     const ppy = this.offsetY + state.player.pos.y * TILE_PX + TILE_PX / 2;
-    this.playerSprite.setPosition(ppx, ppy);
+    this.placeMovingSprite(
+      "__player__",
+      this.playerSprite,
+      state.player.pos,
+      ppx,
+      ppy,
+      offsetChanged,
+    );
+    nextTilePositions.set("__player__", {
+      x: state.player.pos.x,
+      y: state.player.pos.y,
+      z: state.player.pos.z,
+    });
     const playerWalking = (state.player.lastMoveTurn ?? -1) >= state.turn - 1;
     const encumbered = state.player.inventory.some((i) => i.itemType === "FRAGMENT_BOX");
     this.tryPlay(
@@ -297,6 +394,9 @@ export class GameScene extends Phaser.Scene {
       this.overlayLayer.fillStyle(0x4a0d0d, 0.45);
       this.overlayLayer.fillRect(0, 0, this.scale.width, this.scale.height);
     }
+
+    this.prevTilePositions = nextTilePositions;
+    this.prevOffset = { x: this.offsetX, y: this.offsetY };
   }
 
   private drawTile(
