@@ -99,7 +99,7 @@ export class GameScene extends Phaser.Scene {
    *  re-render at the new offset. Tweening only when the offset is stable
    *  keeps the player + NPCs visually glued to the floor. */
   private prevOffset: { x: number; y: number } | null = null;
-  private static readonly WALK_TWEEN_MS = 150;
+  private static readonly WALK_TWEEN_MS = 280;
 
   constructor() {
     super({ key: "GameScene" });
