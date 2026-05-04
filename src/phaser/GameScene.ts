@@ -100,6 +100,16 @@ export class GameScene extends Phaser.Scene {
    *  keeps the player + NPCs visually glued to the floor. */
   private prevOffset: { x: number; y: number } | null = null;
   private static readonly WALK_TWEEN_MS = 280;
+  /** How many times the player has stepped this turn. Reset on TURN_START.
+   *  Once it crosses apMax/2, resolvePlayerAnimKey upgrades the player's
+   *  walk animation to a run cycle. Tracked here (not in WorldEngine) so
+   *  the renderer can decide without an engine round-trip; saves restored
+   *  mid-turn just lose the run-anim hint, which is purely cosmetic. */
+  private movesThisTurn = 0;
+  /** Animation key the player should play once (non-looping) before the
+   *  usual idle/walk/run resolution resumes. Set on PLAYER_INTERACTED and
+   *  cleared when Phaser fires ANIMATION_COMPLETE for that key. */
+  private oneShotAnim: string | null = null;
 
   constructor() {
     super({ key: "GameScene" });
@@ -130,14 +140,36 @@ export class GameScene extends Phaser.Scene {
     this.scale.on("resize", () => this.layout());
 
     eventBus.on("FOV_UPDATED", () => this.redraw());
-    eventBus.on("PLAYER_MOVED", () => this.redraw());
+    eventBus.on("PLAYER_MOVED", () => {
+      this.movesThisTurn += 1;
+      this.redraw();
+    });
     eventBus.on("DOOR_TOGGLED", (p) => {
       this.playDoorAnim(p.pos, p.open);
       this.redraw();
     });
     eventBus.on("ENTITY_MOVED", () => this.redraw());
-    eventBus.on("TURN_START", () => this.redraw());
+    eventBus.on("TURN_START", () => {
+      this.movesThisTurn = 0;
+      this.redraw();
+    });
     eventBus.on("ENTITY_STATUS_CHANGED", () => this.redraw());
+    eventBus.on("PLAYER_INTERACTED", (p) => {
+      this.queuePlayerOneShot(p.kind);
+    });
+
+    // When a one-shot finishes, clear the override and let resolvePlayerAnimKey
+    // pick the next idle/walk/run cycle. The "complete" event only fires for
+    // non-looping plays; we trigger that via repeat: 0 in tryPlay below.
+    this.playerSprite.on(
+      Phaser.Animations.Events.ANIMATION_COMPLETE,
+      (anim: Phaser.Animations.Animation) => {
+        if (this.oneShotAnim && anim.key === this.oneShotAnim) {
+          this.oneShotAnim = null;
+          this.redraw();
+        }
+      },
+    );
 
     this.redraw();
   }
@@ -146,7 +178,56 @@ export class GameScene extends Phaser.Scene {
     if (!key) return;
     if (!this.anims.exists(key)) return;
     if (sprite.anims.currentAnim?.key === key && sprite.anims.isPlaying) return;
+    // Player one-shots play through once and self-clear via ANIMATION_COMPLETE.
+    // Everything else loops per its registered repeat (default -1).
+    if (sprite === this.playerSprite && key === this.oneShotAnim) {
+      sprite.play({ key, repeat: 0 }, true);
+      return;
+    }
     sprite.play(key, true);
+  }
+
+  /** Queue an interaction animation for the player. Tries character-specific
+   *  keys first (`solibarracastro_terminal_<dir>` etc.), then alternative
+   *  naming used by other characters' rigs (`<slug>_interactterminal_...`,
+   *  `<slug>_pickupitem_...`). Drops silently if no candidate exists for
+   *  the current era's character — leaves animation as-is. */
+  private queuePlayerOneShot(kind: "TERMINAL" | "PICKUP" | "DOOR"): void {
+    if (!worldEngine.hasState()) return;
+    const state = worldEngine.getState();
+    const slug = playerSlug(state.player.name);
+    const f = state.player.facing;
+    let candidates: string[];
+    if (kind === "TERMINAL") {
+      candidates = [
+        `${slug}_terminal_${f}`,
+        `${slug}_interactterminal_${f}`,
+      ];
+    } else if (kind === "PICKUP") {
+      const holdsBox = state.player.inventory.some((i) => i.itemType === "FRAGMENT_BOX");
+      candidates = holdsBox
+        ? [
+            `${slug}_pickupfragmentbox_${f}`,
+            `${slug}_pickupobject_${f}`,
+            `${slug}_pickupitem_${f}`,
+          ]
+        : [
+            `${slug}_pickupobject_${f}`,
+            `${slug}_pickupitem_${f}`,
+            `${slug}_pickupfragmentbox_${f}`,
+          ];
+    } else {
+      // DOOR currently has no per-character animation; leave the player on
+      // their current cycle. Wire one here when authored.
+      return;
+    }
+    for (const k of candidates) {
+      if (this.anims.exists(k)) {
+        this.oneShotAnim = k;
+        this.tryPlay(this.playerSprite, k);
+        return;
+      }
+    }
   }
 
   /** Move a sprite to its target screen position, tweening the slide if the
@@ -206,18 +287,38 @@ export class GameScene extends Phaser.Scene {
   /** Picks the per-era player sprite. Tries `<slug>_<state>_<facing>` for the
    *  current player.name; falls back to the same state on `solibarracastro_`
    *  (the legacy default used before art/ trees existed for every era) so a
-   *  partially authored character still animates. The state preference order:
-   *  encumberedwalkcycle (held FRAGMENT_BOX, walking) > walkcycle > idle. */
+   *  partially authored character still animates. State preference:
+   *  one-shot interaction > encumberedwalkcycle (FRAGMENT_BOX, walking) >
+   *  run (walking AND > apMax/2 spent on movement) > walkcycle > idle. */
   private resolvePlayerAnimKey(
     facing: Facing,
     walking: boolean,
     encumbered: boolean,
   ): string {
+    if (this.oneShotAnim && this.anims.exists(this.oneShotAnim)) {
+      return this.oneShotAnim;
+    }
     const slug = worldEngine.hasState()
       ? playerSlug(worldEngine.getState().player.name)
       : "solibarracastro";
+    const apMax = worldEngine.hasState()
+      ? worldEngine.getState().player.apMax
+      : 4;
+    // "More than half AP spent on movement" — strict, so apMax 4 needs ≥ 3
+    // moves and apMax 3 needs ≥ 2. Encumbered walks stay in the heavy
+    // walkcycle; running with the Fragment Box would look wrong.
+    const running = walking && !encumbered && this.movesThisTurn > apMax / 2;
     const tryKeys: string[] = [];
-    if (walking && encumbered) {
+    if (running) {
+      // Sol's run cycle is named `running`, every other character uses
+      // `runcycle`. Try both before falling through to the walk cycle so a
+      // partially-authored character still animates.
+      tryKeys.push(`${slug}_running_${facing}`);
+      tryKeys.push(`${slug}_runcycle_${facing}`);
+      tryKeys.push(`${slug}_walkcycle_${facing}`);
+      tryKeys.push(`solibarracastro_running_${facing}`);
+      tryKeys.push(`solibarracastro_walkcycle_${facing}`);
+    } else if (walking && encumbered) {
       tryKeys.push(`${slug}_encumberedwalkcycle_${facing}`);
       tryKeys.push(`solibarracastro_walkcycle_${facing}`);
     } else if (walking) {

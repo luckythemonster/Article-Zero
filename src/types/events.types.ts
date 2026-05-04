@@ -23,6 +23,12 @@ export interface EventMap {
   // Player
   PLAYER_MOVED: { from: Vec3; to: Vec3 };
   PLAYER_AP_CHANGED: { previous: number; current: number };
+  /** A confirmed player-initiated interaction landed. Carries enough kind
+   *  data for the renderer to pick a one-shot animation (terminal, pickup,
+   *  door). Engine fires this in addition to any kind-specific event
+   *  (DOOR_TOGGLED, FRAGMENT_BOX_PICKED_UP, ARTICLE_ZERO_FRAGMENT_FOUND
+   *  etc.) so animation wiring stays decoupled from gameplay listeners. */
+  PLAYER_INTERACTED: { kind: "TERMINAL" | "PICKUP" | "DOOR" };
   PLAYER_CONDITION_CHANGED: { previous: number; current: number };
   PLAYER_COMPLIANCE_CHANGED: { previous: ComplianceStatus; current: ComplianceStatus };
   SUBJECTIVITY_BELIEF_SHIFTED: { previous: SubjectivityBelief; current: SubjectivityBelief };

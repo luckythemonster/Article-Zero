@@ -98,6 +98,7 @@ export const actions = {
         t.opaque = false;
         state.player.ap -= INTERACT_AP_COST;
         eventBus.emit("DOOR_TOGGLED", { pos, open: true });
+        eventBus.emit("PLAYER_INTERACTED", { kind: "DOOR" });
         return true;
       }
       if (t.kind === "DOOR_OPEN") {
@@ -106,6 +107,7 @@ export const actions = {
         t.opaque = true;
         state.player.ap -= INTERACT_AP_COST;
         eventBus.emit("DOOR_TOGGLED", { pos, open: false });
+        eventBus.emit("PLAYER_INTERACTED", { kind: "DOOR" });
         return true;
       }
     }
@@ -124,6 +126,7 @@ export const actions = {
             : "fragment-nw-smac-01";
       articleZeroMeta.discoverFragment(state, fragmentId);
       state.player.ap -= INTERACT_AP_COST;
+      eventBus.emit("PLAYER_INTERACTED", { kind: "PICKUP" });
       return true;
     }
     if (here.kind === "VENT_CONTROL") {
@@ -131,6 +134,7 @@ export const actions = {
       if (incident) {
         eventBus.emit("VENT4_DECISION_REQUIRED", incident);
         state.player.ap -= INTERACT_AP_COST;
+        eventBus.emit("PLAYER_INTERACTED", { kind: "TERMINAL" });
         return true;
       }
     }
@@ -141,6 +145,7 @@ export const actions = {
       if (!state.player.entangled) {
         eventBus.emit("RUN_01_TRIGGERED", { turn: state.turn });
         state.player.ap -= INTERACT_AP_COST;
+        eventBus.emit("PLAYER_INTERACTED", { kind: "TERMINAL" });
         return true;
       }
     }
@@ -148,6 +153,7 @@ export const actions = {
       // Terminals open the document archive in v1.
       documentArchive.broadcastList();
       state.player.ap -= INTERACT_AP_COST;
+      eventBus.emit("PLAYER_INTERACTED", { kind: "TERMINAL" });
       return true;
     }
     return false;
@@ -309,6 +315,7 @@ export const actions = {
         state.player.ap = Math.min(state.player.ap, effectiveApMax(state));
         eventBus.emit("PLAYER_AP_CHANGED", { previous, current: state.player.ap });
         eventBus.emit("FRAGMENT_BOX_PICKED_UP", { itemId: item.id, pos: here });
+        eventBus.emit("PLAYER_INTERACTED", { kind: "PICKUP" });
         return true;
       }
     }
