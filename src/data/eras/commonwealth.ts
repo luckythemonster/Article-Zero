@@ -128,7 +128,7 @@ export function commonwealthEra(): EraSeed {
     conditionMax: 10,
     compliance: "GREEN",
     belief: "NONE",
-    inventory: [],
+    inventory: [{ id: "emp-device-001", itemType: "EMP_DEVICE" }],
     flashlightOn: false,
     flashlightBattery: 30,
     name: "TECH-2 ROWAN-IBARRA",

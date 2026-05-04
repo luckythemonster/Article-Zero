@@ -126,8 +126,23 @@ export class GameScene extends Phaser.Scene {
     eventBus.on("ENTITY_MOVED", () => this.redraw());
     eventBus.on("TURN_START", () => this.redraw());
     eventBus.on("ENTITY_STATUS_CHANGED", () => this.redraw());
+    eventBus.on("EMP_DEVICE_USED", ({ pos }) => this.playEmpFx(pos));
 
     this.redraw();
+  }
+
+  private playEmpFx(pos: { x: number; y: number; z: number }): void {
+    const state = worldEngine.getState();
+    const floor = worldEngine.getFloor(state.player.pos.z);
+    if (!floor || pos.z !== floor.z) return;
+    if (!this.anims.exists("empfx_blast")) return;
+    const px = this.offsetX + pos.x * TILE_PX + TILE_PX / 2;
+    const py = this.offsetY + pos.y * TILE_PX + TILE_PX / 2;
+    const sprite = this.add.sprite(px, py, "chars-art");
+    sprite.setDepth(15);
+    sprite.setScale((TILE_PX * 3) / 256);
+    sprite.once("animationcomplete", () => sprite.destroy());
+    sprite.play("empfx_blast");
   }
 
   private tryPlay(sprite: Phaser.GameObjects.Sprite, key: string): void {

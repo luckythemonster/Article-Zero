@@ -114,6 +114,7 @@ class WorldEngine {
     if (ok) this.recomputeFOV();
     return ok;
   };
+  useEmpDevice = () => actions.useEmpDevice(this.getState());
 
   recomputeFOV(): void {
     const s = this.getState();

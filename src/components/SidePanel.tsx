@@ -29,6 +29,7 @@ export default function SidePanel(p: Props) {
       eventBus.on("PLAYER_MOVED", refresh),
       eventBus.on("FRAGMENT_BOX_PICKED_UP", refresh),
       eventBus.on("FRAGMENT_BOX_DROPPED", refresh),
+      eventBus.on("EMP_DEVICE_USED", refresh),
     ];
     return () => { for (const off of offs) off(); };
   }, []);
@@ -61,6 +62,7 @@ export default function SidePanel(p: Props) {
 
   // Fragment Box hint — items aren't rendered in the scene yet, so the
   // SidePanel surfaces the current encumbrance affordance.
+  const holdingEmp = s.player.inventory.some((i) => i.itemType === "EMP_DEVICE");
   const holdingBox = s.player.inventory.some((i) => i.itemType === "FRAGMENT_BOX");
   const boxHere = !holdingBox && (() => {
     for (const item of s.items.values()) {
@@ -101,6 +103,14 @@ export default function SidePanel(p: Props) {
           style={{ borderColor: holdingBox ? "#c89adb" : undefined }}
         >
           {fragmentBoxHint}
+        </button>
+      )}
+      {holdingEmp && (
+        <button
+          onClick={() => worldEngine.useEmpDevice()}
+          style={{ borderColor: "#7ad4f0" }}
+        >
+          Use EMP device (X)
         </button>
       )}
       <h3 style={{ marginTop: 10 }}>SHIFT</h3>

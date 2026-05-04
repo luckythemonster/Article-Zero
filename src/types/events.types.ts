@@ -65,6 +65,9 @@ export interface EventMap {
   FRAGMENT_BOX_PICKED_UP: { itemId: string; pos: Vec3 };
   FRAGMENT_BOX_DROPPED: { itemId: string; pos: Vec3 };
 
+  // EMP device
+  EMP_DEVICE_USED: { itemId: string; pos: Vec3 };
+
   // Stitcher
   STITCHER_TICK: { turnsRemaining: number };
   STITCHER_RECONCILED: { caseId: string; outcome: "PATCHED" | "FAILED" };

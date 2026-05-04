@@ -38,6 +38,8 @@ export function useInput(opts: Options): void {
           worldEngine.toggleFlashlight(); e.preventDefault(); break;
         case "b":
           worldEngine.toggleFragmentBox(); e.preventDefault(); break;
+        case "x":
+          worldEngine.useEmpDevice(); e.preventDefault(); break;
         case "r":
           opts.onOpenArchive(); e.preventDefault(); break;
         case "m":

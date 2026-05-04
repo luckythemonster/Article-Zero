@@ -315,6 +315,22 @@ export const actions = {
     return false;
   },
 
+  /**
+   * Consume one EMP_DEVICE from the player's inventory and emit EMP_DEVICE_USED.
+   * 1 AP. Returns true on success; false if no EMP held, insufficient AP, or detained.
+   */
+  useEmpDevice(state: WorldState): boolean {
+    if (state.detained || state.player.ap < 1) return false;
+    const idx = state.player.inventory.findIndex((i) => i.itemType === "EMP_DEVICE");
+    if (idx < 0) return false;
+    const [item] = state.player.inventory.splice(idx, 1);
+    const previous = state.player.ap;
+    state.player.ap -= 1;
+    eventBus.emit("PLAYER_AP_CHANGED", { previous, current: state.player.ap });
+    eventBus.emit("EMP_DEVICE_USED", { itemId: item.id, pos: { ...state.player.pos } });
+    return true;
+  },
+
   // Used by the dialogue UI and incident handlers to mark progress without an
   // adjacency check.
   forceTileKey(pos: Vec3): string {

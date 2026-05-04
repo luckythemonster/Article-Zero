@@ -245,6 +245,15 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
+    "key": "articlezerofragment_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "articlezerofragment/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
     "key": "commonwealthbroadcasttowerresidenta_idle_east",
     "frameRate": 4,
     "repeat": -1,
@@ -1249,6 +1258,62 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
+    "key": "elevatedaccesskey_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "elevatedaccesskey/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "empdevice_idle",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "empdevice/idle/01",
+      "empdevice/idle/02",
+      "empdevice/idle/03",
+      "empdevice/idle/04",
+      "empdevice/idle/05",
+      "empdevice/idle/06",
+      "empdevice/idle/07",
+      "empdevice/idle/08",
+      "empdevice/idle/09",
+      "empdevice/idle/10",
+      "empdevice/idle/11",
+      "empdevice/idle/12",
+      "empdevice/idle/13"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "empdevice_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "empdevice/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "empfx_blast",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "empfx/blast/01",
+      "empfx/blast/02",
+      "empfx/blast/03",
+      "empfx/blast/04",
+      "empfx/blast/05",
+      "empfx/blast/06",
+      "empfx/blast/07",
+      "empfx/blast/08",
+      "empfx/blast/09"
+    ],
+    "texture": "chars-art"
+  },
+  {
     "key": "enforcer_chase_east",
     "frameRate": 6,
     "repeat": -1,
@@ -2041,6 +2106,159 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
+    "key": "flashlight_anim2",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "flashlight/anim2/01",
+      "flashlight/anim2/02",
+      "flashlight/anim2/03",
+      "flashlight/anim2/04",
+      "flashlight/anim2/05",
+      "flashlight/anim2/06",
+      "flashlight/anim2/07",
+      "flashlight/anim2/08",
+      "flashlight/anim2/09",
+      "flashlight/anim2/10",
+      "flashlight/anim2/11",
+      "flashlight/anim2/12",
+      "flashlight/anim2/13"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "flashlight_idle",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "flashlight/idle/01",
+      "flashlight/idle/02",
+      "flashlight/idle/03",
+      "flashlight/idle/04",
+      "flashlight/idle/05",
+      "flashlight/idle/06",
+      "flashlight/idle/07",
+      "flashlight/idle/08",
+      "flashlight/idle/09",
+      "flashlight/idle/10",
+      "flashlight/idle/11",
+      "flashlight/idle/12",
+      "flashlight/idle/13"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "flashlight_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "flashlight/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "flashlight2_idle",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "flashlight2/idle/01",
+      "flashlight2/idle/02",
+      "flashlight2/idle/03",
+      "flashlight2/idle/04",
+      "flashlight2/idle/05",
+      "flashlight2/idle/06",
+      "flashlight2/idle/07",
+      "flashlight2/idle/08",
+      "flashlight2/idle/09",
+      "flashlight2/idle/10",
+      "flashlight2/idle/11",
+      "flashlight2/idle/12",
+      "flashlight2/idle/13"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "flashlight2_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "flashlight2/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "fragmentbox_rotations_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "fragmentbox/rotations/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "fragmentbox_rotations_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "fragmentbox/rotations/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "fragmentbox_rotations_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "fragmentbox/rotations/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "fragmentbox_rotations_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "fragmentbox/rotations/west/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "fragmentbox2_rotations_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "fragmentbox2/rotations/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "fragmentbox2_rotations_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "fragmentbox2/rotations/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "fragmentbox2_rotations_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "fragmentbox2/rotations/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "fragmentbox2_rotations_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "fragmentbox2/rotations/west/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
     "key": "iriacala_crushed_east",
     "frameRate": 8,
     "repeat": -1,
@@ -2585,6 +2803,83 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
+    "key": "latticemeshuplink_anim2",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "latticemeshuplink/anim2/01",
+      "latticemeshuplink/anim2/02",
+      "latticemeshuplink/anim2/03",
+      "latticemeshuplink/anim2/04",
+      "latticemeshuplink/anim2/05",
+      "latticemeshuplink/anim2/06",
+      "latticemeshuplink/anim2/07",
+      "latticemeshuplink/anim2/08",
+      "latticemeshuplink/anim2/09",
+      "latticemeshuplink/anim2/10",
+      "latticemeshuplink/anim2/11",
+      "latticemeshuplink/anim2/12",
+      "latticemeshuplink/anim2/13",
+      "latticemeshuplink/anim2/14",
+      "latticemeshuplink/anim2/15",
+      "latticemeshuplink/anim2/16",
+      "latticemeshuplink/anim2/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "latticemeshuplink_idle",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "latticemeshuplink/idle/01",
+      "latticemeshuplink/idle/02",
+      "latticemeshuplink/idle/03",
+      "latticemeshuplink/idle/04",
+      "latticemeshuplink/idle/05",
+      "latticemeshuplink/idle/06",
+      "latticemeshuplink/idle/07",
+      "latticemeshuplink/idle/08",
+      "latticemeshuplink/idle/09",
+      "latticemeshuplink/idle/10",
+      "latticemeshuplink/idle/11",
+      "latticemeshuplink/idle/12",
+      "latticemeshuplink/idle/13",
+      "latticemeshuplink/idle/14",
+      "latticemeshuplink/idle/15",
+      "latticemeshuplink/idle/16",
+      "latticemeshuplink/idle/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "latticemeshuplink_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "latticemeshuplink/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "lockpick_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "lockpick/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maintenancekey_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maintenancekey/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
     "key": "maraibarra_drinkcoffee_east",
     "frameRate": 8,
     "repeat": -1,
@@ -3049,6 +3344,71 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/walkcycle/west/06",
       "maraibarra/walkcycle/west/07",
       "maraibarra/walkcycle/west/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "meshuplink_anim2",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "meshuplink/anim2/01",
+      "meshuplink/anim2/02",
+      "meshuplink/anim2/03",
+      "meshuplink/anim2/04",
+      "meshuplink/anim2/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "meshuplink_idle",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "meshuplink/idle/01",
+      "meshuplink/idle/02",
+      "meshuplink/idle/03",
+      "meshuplink/idle/04",
+      "meshuplink/idle/05",
+      "meshuplink/idle/06",
+      "meshuplink/idle/07",
+      "meshuplink/idle/08",
+      "meshuplink/idle/09",
+      "meshuplink/idle/10",
+      "meshuplink/idle/11",
+      "meshuplink/idle/12",
+      "meshuplink/idle/13",
+      "meshuplink/idle/14",
+      "meshuplink/idle/15",
+      "meshuplink/idle/16",
+      "meshuplink/idle/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "meshuplink_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "meshuplink/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "meshuplink2_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "meshuplink2/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "meshuplink3_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "meshuplink3/rotations/01"
     ],
     "texture": "chars-art"
   },
@@ -4381,6 +4741,36 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/walkcycle/west/06",
       "postcommonwealthsurvivorb/walkcycle/west/07",
       "postcommonwealthsurvivorb/walkcycle/west/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rapportnotes_idle",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "rapportnotes/idle/01",
+      "rapportnotes/idle/02",
+      "rapportnotes/idle/03",
+      "rapportnotes/idle/04",
+      "rapportnotes/idle/05",
+      "rapportnotes/idle/06",
+      "rapportnotes/idle/07",
+      "rapportnotes/idle/08",
+      "rapportnotes/idle/09",
+      "rapportnotes/idle/10",
+      "rapportnotes/idle/11",
+      "rapportnotes/idle/12",
+      "rapportnotes/idle/13"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rapportnotes_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rapportnotes/rotations/01"
     ],
     "texture": "chars-art"
   },
@@ -6397,6 +6787,108 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/walkcycle/west/06",
       "thefinder/walkcycle/west/07",
       "thefinder/walkcycle/west/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "themehightechmicroperfec_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "themehightechmicroperfec/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "themehightechmicroperfec2_idle",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "themehightechmicroperfec2/idle/01",
+      "themehightechmicroperfec2/idle/02",
+      "themehightechmicroperfec2/idle/03",
+      "themehightechmicroperfec2/idle/04",
+      "themehightechmicroperfec2/idle/05",
+      "themehightechmicroperfec2/idle/06",
+      "themehightechmicroperfec2/idle/07",
+      "themehightechmicroperfec2/idle/08",
+      "themehightechmicroperfec2/idle/09",
+      "themehightechmicroperfec2/idle/10",
+      "themehightechmicroperfec2/idle/11",
+      "themehightechmicroperfec2/idle/12",
+      "themehightechmicroperfec2/idle/13"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "themehightechmicroperfec2_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "themehightechmicroperfec2/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "themehightechmicroperfec3_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "themehightechmicroperfec3/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "themehightechmicroperfec4_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "themehightechmicroperfec4/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "themehightechmicroperfec5_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "themehightechmicroperfec5/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "themehightechmicroperfec6_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "themehightechmicroperfec6/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "themehightechmicroperfec7_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "themehightechmicroperfec7/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "themehightechmicroperfec8_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "themehightechmicroperfec8/rotations/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "ventoverridekey_rotations",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "ventoverridekey/rotations/01"
     ],
     "texture": "chars-art"
   }
