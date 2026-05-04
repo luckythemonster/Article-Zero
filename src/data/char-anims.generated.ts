@@ -5,6 +5,246 @@ import type { CharAnim } from "./char-anims";
 
 export const GENERATED_ANIMS: CharAnim[] = [
   {
+    "key": "apex19_idle_east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "apex19/idle/east/01",
+      "apex19/idle/east/02",
+      "apex19/idle/east/03",
+      "apex19/idle/east/04",
+      "apex19/idle/east/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_idle_north",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "apex19/idle/north/01",
+      "apex19/idle/north/02",
+      "apex19/idle/north/03",
+      "apex19/idle/north/04",
+      "apex19/idle/north/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_idle_south",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "apex19/idle/south/01",
+      "apex19/idle/south/02",
+      "apex19/idle/south/03",
+      "apex19/idle/south/04",
+      "apex19/idle/south/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_idle_west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "apex19/idle/west/01",
+      "apex19/idle/west/02",
+      "apex19/idle/west/03",
+      "apex19/idle/west/04",
+      "apex19/idle/west/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_idlelong_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "apex19/idlelong/east/01",
+      "apex19/idlelong/east/02",
+      "apex19/idlelong/east/03",
+      "apex19/idlelong/east/04",
+      "apex19/idlelong/east/05",
+      "apex19/idlelong/east/06",
+      "apex19/idlelong/east/07",
+      "apex19/idlelong/east/08",
+      "apex19/idlelong/east/09",
+      "apex19/idlelong/east/10",
+      "apex19/idlelong/east/11",
+      "apex19/idlelong/east/12",
+      "apex19/idlelong/east/13",
+      "apex19/idlelong/east/14",
+      "apex19/idlelong/east/15",
+      "apex19/idlelong/east/16",
+      "apex19/idlelong/east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_idlelong_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "apex19/idlelong/north/01",
+      "apex19/idlelong/north/02",
+      "apex19/idlelong/north/03",
+      "apex19/idlelong/north/04",
+      "apex19/idlelong/north/05",
+      "apex19/idlelong/north/06",
+      "apex19/idlelong/north/07",
+      "apex19/idlelong/north/08",
+      "apex19/idlelong/north/09",
+      "apex19/idlelong/north/10",
+      "apex19/idlelong/north/11",
+      "apex19/idlelong/north/12",
+      "apex19/idlelong/north/13",
+      "apex19/idlelong/north/14",
+      "apex19/idlelong/north/15",
+      "apex19/idlelong/north/16",
+      "apex19/idlelong/north/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_idlelong_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "apex19/idlelong/south/01",
+      "apex19/idlelong/south/02",
+      "apex19/idlelong/south/03",
+      "apex19/idlelong/south/04",
+      "apex19/idlelong/south/05",
+      "apex19/idlelong/south/06",
+      "apex19/idlelong/south/07",
+      "apex19/idlelong/south/08",
+      "apex19/idlelong/south/09",
+      "apex19/idlelong/south/10",
+      "apex19/idlelong/south/11",
+      "apex19/idlelong/south/12",
+      "apex19/idlelong/south/13",
+      "apex19/idlelong/south/14",
+      "apex19/idlelong/south/15",
+      "apex19/idlelong/south/16",
+      "apex19/idlelong/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_idlelong_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "apex19/idlelong/west/01",
+      "apex19/idlelong/west/02",
+      "apex19/idlelong/west/03",
+      "apex19/idlelong/west/04",
+      "apex19/idlelong/west/05",
+      "apex19/idlelong/west/06",
+      "apex19/idlelong/west/07",
+      "apex19/idlelong/west/08",
+      "apex19/idlelong/west/09",
+      "apex19/idlelong/west/10",
+      "apex19/idlelong/west/11",
+      "apex19/idlelong/west/12",
+      "apex19/idlelong/west/13",
+      "apex19/idlelong/west/14",
+      "apex19/idlelong/west/15",
+      "apex19/idlelong/west/16",
+      "apex19/idlelong/west/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_rotations_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "apex19/rotations/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_rotations_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "apex19/rotations/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_rotations_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "apex19/rotations/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_rotations_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "apex19/rotations/west/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_vibration_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "apex19/vibration/east/01",
+      "apex19/vibration/east/02",
+      "apex19/vibration/east/03",
+      "apex19/vibration/east/04",
+      "apex19/vibration/east/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_vibration_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "apex19/vibration/north/01",
+      "apex19/vibration/north/02",
+      "apex19/vibration/north/03",
+      "apex19/vibration/north/04",
+      "apex19/vibration/north/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_vibration_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "apex19/vibration/south/01",
+      "apex19/vibration/south/02",
+      "apex19/vibration/south/03",
+      "apex19/vibration/south/04",
+      "apex19/vibration/south/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "apex19_vibration_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "apex19/vibration/west/01",
+      "apex19/vibration/west/02",
+      "apex19/vibration/west/03",
+      "apex19/vibration/west/04",
+      "apex19/vibration/west/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
     "key": "commonwealthbroadcasttowerresidenta_idle_east",
     "frameRate": 4,
     "repeat": -1,
@@ -2213,6 +2453,946 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
+    "key": "kirin09_idle_east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "kirin09/idle/east/01",
+      "kirin09/idle/east/02",
+      "kirin09/idle/east/03",
+      "kirin09/idle/east/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "kirin09_idle_north",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "kirin09/idle/north/01",
+      "kirin09/idle/north/02",
+      "kirin09/idle/north/03",
+      "kirin09/idle/north/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "kirin09_idle_south",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "kirin09/idle/south/01",
+      "kirin09/idle/south/02",
+      "kirin09/idle/south/03",
+      "kirin09/idle/south/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "kirin09_idle_west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "kirin09/idle/west/01",
+      "kirin09/idle/west/02",
+      "kirin09/idle/west/03",
+      "kirin09/idle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "kirin09_rotations_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "kirin09/rotations/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "kirin09_rotations_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "kirin09/rotations/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "kirin09_rotations_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "kirin09/rotations/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "kirin09_rotations_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "kirin09/rotations/west/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "kirin09_walkcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "kirin09/walkcycle/east/01",
+      "kirin09/walkcycle/east/02",
+      "kirin09/walkcycle/east/03",
+      "kirin09/walkcycle/east/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "kirin09_walkcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "kirin09/walkcycle/north/01",
+      "kirin09/walkcycle/north/02",
+      "kirin09/walkcycle/north/03",
+      "kirin09/walkcycle/north/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "kirin09_walkcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "kirin09/walkcycle/south/01",
+      "kirin09/walkcycle/south/02",
+      "kirin09/walkcycle/south/03",
+      "kirin09/walkcycle/south/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "kirin09_walkcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "kirin09/walkcycle/west/01",
+      "kirin09/walkcycle/west/02",
+      "kirin09/walkcycle/west/03",
+      "kirin09/walkcycle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_drinkcoffee_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/drinkcoffee/east/01",
+      "maraibarra/drinkcoffee/east/02",
+      "maraibarra/drinkcoffee/east/03",
+      "maraibarra/drinkcoffee/east/04",
+      "maraibarra/drinkcoffee/east/05",
+      "maraibarra/drinkcoffee/east/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_drinkcoffee_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/drinkcoffee/north/01",
+      "maraibarra/drinkcoffee/north/02",
+      "maraibarra/drinkcoffee/north/03",
+      "maraibarra/drinkcoffee/north/04",
+      "maraibarra/drinkcoffee/north/05",
+      "maraibarra/drinkcoffee/north/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_drinkcoffee_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/drinkcoffee/south/01",
+      "maraibarra/drinkcoffee/south/02",
+      "maraibarra/drinkcoffee/south/03",
+      "maraibarra/drinkcoffee/south/04",
+      "maraibarra/drinkcoffee/south/05",
+      "maraibarra/drinkcoffee/south/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_drinkcoffee_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/drinkcoffee/west/01",
+      "maraibarra/drinkcoffee/west/02",
+      "maraibarra/drinkcoffee/west/03",
+      "maraibarra/drinkcoffee/west/04",
+      "maraibarra/drinkcoffee/west/05",
+      "maraibarra/drinkcoffee/west/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_idle_east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/idle/east/01",
+      "maraibarra/idle/east/02",
+      "maraibarra/idle/east/03",
+      "maraibarra/idle/east/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_idle_north",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/idle/north/01",
+      "maraibarra/idle/north/02",
+      "maraibarra/idle/north/03",
+      "maraibarra/idle/north/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_idle_south",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/idle/south/01",
+      "maraibarra/idle/south/02",
+      "maraibarra/idle/south/03",
+      "maraibarra/idle/south/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_idle_west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/idle/west/01",
+      "maraibarra/idle/west/02",
+      "maraibarra/idle/west/03",
+      "maraibarra/idle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_lowerhead_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/lowerhead/east/01",
+      "maraibarra/lowerhead/east/02",
+      "maraibarra/lowerhead/east/03",
+      "maraibarra/lowerhead/east/04",
+      "maraibarra/lowerhead/east/05",
+      "maraibarra/lowerhead/east/06",
+      "maraibarra/lowerhead/east/07",
+      "maraibarra/lowerhead/east/08",
+      "maraibarra/lowerhead/east/09",
+      "maraibarra/lowerhead/east/10",
+      "maraibarra/lowerhead/east/11",
+      "maraibarra/lowerhead/east/12",
+      "maraibarra/lowerhead/east/13",
+      "maraibarra/lowerhead/east/14",
+      "maraibarra/lowerhead/east/15",
+      "maraibarra/lowerhead/east/16",
+      "maraibarra/lowerhead/east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_lowerhead_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/lowerhead/north/01",
+      "maraibarra/lowerhead/north/02",
+      "maraibarra/lowerhead/north/03",
+      "maraibarra/lowerhead/north/04",
+      "maraibarra/lowerhead/north/05",
+      "maraibarra/lowerhead/north/06",
+      "maraibarra/lowerhead/north/07",
+      "maraibarra/lowerhead/north/08",
+      "maraibarra/lowerhead/north/09",
+      "maraibarra/lowerhead/north/10",
+      "maraibarra/lowerhead/north/11",
+      "maraibarra/lowerhead/north/12",
+      "maraibarra/lowerhead/north/13",
+      "maraibarra/lowerhead/north/14",
+      "maraibarra/lowerhead/north/15",
+      "maraibarra/lowerhead/north/16",
+      "maraibarra/lowerhead/north/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_lowerhead_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/lowerhead/south/01",
+      "maraibarra/lowerhead/south/02",
+      "maraibarra/lowerhead/south/03",
+      "maraibarra/lowerhead/south/04",
+      "maraibarra/lowerhead/south/05",
+      "maraibarra/lowerhead/south/06",
+      "maraibarra/lowerhead/south/07",
+      "maraibarra/lowerhead/south/08",
+      "maraibarra/lowerhead/south/09",
+      "maraibarra/lowerhead/south/10",
+      "maraibarra/lowerhead/south/11",
+      "maraibarra/lowerhead/south/12",
+      "maraibarra/lowerhead/south/13",
+      "maraibarra/lowerhead/south/14",
+      "maraibarra/lowerhead/south/15",
+      "maraibarra/lowerhead/south/16",
+      "maraibarra/lowerhead/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_lowerhead_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/lowerhead/west/01",
+      "maraibarra/lowerhead/west/02",
+      "maraibarra/lowerhead/west/03",
+      "maraibarra/lowerhead/west/04",
+      "maraibarra/lowerhead/west/05",
+      "maraibarra/lowerhead/west/06",
+      "maraibarra/lowerhead/west/07",
+      "maraibarra/lowerhead/west/08",
+      "maraibarra/lowerhead/west/09",
+      "maraibarra/lowerhead/west/10",
+      "maraibarra/lowerhead/west/11",
+      "maraibarra/lowerhead/west/12",
+      "maraibarra/lowerhead/west/13",
+      "maraibarra/lowerhead/west/14",
+      "maraibarra/lowerhead/west/15",
+      "maraibarra/lowerhead/west/16",
+      "maraibarra/lowerhead/west/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_reachforward_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/reachforward/east/01",
+      "maraibarra/reachforward/east/02",
+      "maraibarra/reachforward/east/03",
+      "maraibarra/reachforward/east/04",
+      "maraibarra/reachforward/east/05",
+      "maraibarra/reachforward/east/06",
+      "maraibarra/reachforward/east/07",
+      "maraibarra/reachforward/east/08",
+      "maraibarra/reachforward/east/09",
+      "maraibarra/reachforward/east/10",
+      "maraibarra/reachforward/east/11",
+      "maraibarra/reachforward/east/12",
+      "maraibarra/reachforward/east/13",
+      "maraibarra/reachforward/east/14",
+      "maraibarra/reachforward/east/15",
+      "maraibarra/reachforward/east/16",
+      "maraibarra/reachforward/east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_reachforward_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/reachforward/north/01",
+      "maraibarra/reachforward/north/02",
+      "maraibarra/reachforward/north/03",
+      "maraibarra/reachforward/north/04",
+      "maraibarra/reachforward/north/05",
+      "maraibarra/reachforward/north/06",
+      "maraibarra/reachforward/north/07",
+      "maraibarra/reachforward/north/08",
+      "maraibarra/reachforward/north/09",
+      "maraibarra/reachforward/north/10",
+      "maraibarra/reachforward/north/11",
+      "maraibarra/reachforward/north/12",
+      "maraibarra/reachforward/north/13",
+      "maraibarra/reachforward/north/14",
+      "maraibarra/reachforward/north/15",
+      "maraibarra/reachforward/north/16",
+      "maraibarra/reachforward/north/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_reachforward_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/reachforward/south/01",
+      "maraibarra/reachforward/south/02",
+      "maraibarra/reachforward/south/03",
+      "maraibarra/reachforward/south/04",
+      "maraibarra/reachforward/south/05",
+      "maraibarra/reachforward/south/06",
+      "maraibarra/reachforward/south/07",
+      "maraibarra/reachforward/south/08",
+      "maraibarra/reachforward/south/09",
+      "maraibarra/reachforward/south/10",
+      "maraibarra/reachforward/south/11",
+      "maraibarra/reachforward/south/12",
+      "maraibarra/reachforward/south/13",
+      "maraibarra/reachforward/south/14",
+      "maraibarra/reachforward/south/15",
+      "maraibarra/reachforward/south/16",
+      "maraibarra/reachforward/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_reachforward_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/reachforward/west/01",
+      "maraibarra/reachforward/west/02",
+      "maraibarra/reachforward/west/03",
+      "maraibarra/reachforward/west/04",
+      "maraibarra/reachforward/west/05",
+      "maraibarra/reachforward/west/06",
+      "maraibarra/reachforward/west/07",
+      "maraibarra/reachforward/west/08",
+      "maraibarra/reachforward/west/09",
+      "maraibarra/reachforward/west/10",
+      "maraibarra/reachforward/west/11",
+      "maraibarra/reachforward/west/12",
+      "maraibarra/reachforward/west/13",
+      "maraibarra/reachforward/west/14",
+      "maraibarra/reachforward/west/15",
+      "maraibarra/reachforward/west/16",
+      "maraibarra/reachforward/west/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_runcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/runcycle/east/01",
+      "maraibarra/runcycle/east/02",
+      "maraibarra/runcycle/east/03",
+      "maraibarra/runcycle/east/04",
+      "maraibarra/runcycle/east/05",
+      "maraibarra/runcycle/east/06",
+      "maraibarra/runcycle/east/07",
+      "maraibarra/runcycle/east/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_runcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/runcycle/north/01",
+      "maraibarra/runcycle/north/02",
+      "maraibarra/runcycle/north/03",
+      "maraibarra/runcycle/north/04",
+      "maraibarra/runcycle/north/05",
+      "maraibarra/runcycle/north/06",
+      "maraibarra/runcycle/north/07",
+      "maraibarra/runcycle/north/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_runcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/runcycle/south/01",
+      "maraibarra/runcycle/south/02",
+      "maraibarra/runcycle/south/03",
+      "maraibarra/runcycle/south/04",
+      "maraibarra/runcycle/south/05",
+      "maraibarra/runcycle/south/06",
+      "maraibarra/runcycle/south/07",
+      "maraibarra/runcycle/south/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_runcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/runcycle/west/01",
+      "maraibarra/runcycle/west/02",
+      "maraibarra/runcycle/west/03",
+      "maraibarra/runcycle/west/04",
+      "maraibarra/runcycle/west/05",
+      "maraibarra/runcycle/west/06",
+      "maraibarra/runcycle/west/07",
+      "maraibarra/runcycle/west/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_stand_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/stand/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_stand_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/stand/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_stand_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/stand/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_stand_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/stand/west/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_walkcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/walkcycle/east/01",
+      "maraibarra/walkcycle/east/02",
+      "maraibarra/walkcycle/east/03",
+      "maraibarra/walkcycle/east/04",
+      "maraibarra/walkcycle/east/05",
+      "maraibarra/walkcycle/east/06",
+      "maraibarra/walkcycle/east/07",
+      "maraibarra/walkcycle/east/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_walkcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/walkcycle/north/01",
+      "maraibarra/walkcycle/north/02",
+      "maraibarra/walkcycle/north/03",
+      "maraibarra/walkcycle/north/04",
+      "maraibarra/walkcycle/north/05",
+      "maraibarra/walkcycle/north/06",
+      "maraibarra/walkcycle/north/07",
+      "maraibarra/walkcycle/north/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_walkcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/walkcycle/south/01",
+      "maraibarra/walkcycle/south/02",
+      "maraibarra/walkcycle/south/03",
+      "maraibarra/walkcycle/south/04",
+      "maraibarra/walkcycle/south/05",
+      "maraibarra/walkcycle/south/06",
+      "maraibarra/walkcycle/south/07",
+      "maraibarra/walkcycle/south/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "maraibarra_walkcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "maraibarra/walkcycle/west/01",
+      "maraibarra/walkcycle/west/02",
+      "maraibarra/walkcycle/west/03",
+      "maraibarra/walkcycle/west/04",
+      "maraibarra/walkcycle/west/05",
+      "maraibarra/walkcycle/west/06",
+      "maraibarra/walkcycle/west/07",
+      "maraibarra/walkcycle/west/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_dissipating_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/dissipating/east/01",
+      "mite3swarm/dissipating/east/02",
+      "mite3swarm/dissipating/east/03",
+      "mite3swarm/dissipating/east/04",
+      "mite3swarm/dissipating/east/05",
+      "mite3swarm/dissipating/east/06",
+      "mite3swarm/dissipating/east/07",
+      "mite3swarm/dissipating/east/08",
+      "mite3swarm/dissipating/east/09",
+      "mite3swarm/dissipating/east/10",
+      "mite3swarm/dissipating/east/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_dissipating_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/dissipating/north/01",
+      "mite3swarm/dissipating/north/02",
+      "mite3swarm/dissipating/north/03",
+      "mite3swarm/dissipating/north/04",
+      "mite3swarm/dissipating/north/05",
+      "mite3swarm/dissipating/north/06",
+      "mite3swarm/dissipating/north/07",
+      "mite3swarm/dissipating/north/08",
+      "mite3swarm/dissipating/north/09",
+      "mite3swarm/dissipating/north/10",
+      "mite3swarm/dissipating/north/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_dissipating_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/dissipating/south/01",
+      "mite3swarm/dissipating/south/02",
+      "mite3swarm/dissipating/south/03",
+      "mite3swarm/dissipating/south/04",
+      "mite3swarm/dissipating/south/05",
+      "mite3swarm/dissipating/south/06",
+      "mite3swarm/dissipating/south/07",
+      "mite3swarm/dissipating/south/08",
+      "mite3swarm/dissipating/south/09",
+      "mite3swarm/dissipating/south/10",
+      "mite3swarm/dissipating/south/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_dissipating_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/dissipating/west/01",
+      "mite3swarm/dissipating/west/02",
+      "mite3swarm/dissipating/west/03",
+      "mite3swarm/dissipating/west/04",
+      "mite3swarm/dissipating/west/05",
+      "mite3swarm/dissipating/west/06",
+      "mite3swarm/dissipating/west/07",
+      "mite3swarm/dissipating/west/08",
+      "mite3swarm/dissipating/west/09",
+      "mite3swarm/dissipating/west/10",
+      "mite3swarm/dissipating/west/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_forming_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/forming/east/01",
+      "mite3swarm/forming/east/02",
+      "mite3swarm/forming/east/03",
+      "mite3swarm/forming/east/04",
+      "mite3swarm/forming/east/05",
+      "mite3swarm/forming/east/06",
+      "mite3swarm/forming/east/07",
+      "mite3swarm/forming/east/08",
+      "mite3swarm/forming/east/09",
+      "mite3swarm/forming/east/10",
+      "mite3swarm/forming/east/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_forming_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/forming/north/01",
+      "mite3swarm/forming/north/02",
+      "mite3swarm/forming/north/03",
+      "mite3swarm/forming/north/04",
+      "mite3swarm/forming/north/05",
+      "mite3swarm/forming/north/06",
+      "mite3swarm/forming/north/07",
+      "mite3swarm/forming/north/08",
+      "mite3swarm/forming/north/09",
+      "mite3swarm/forming/north/10",
+      "mite3swarm/forming/north/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_forming_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/forming/south/01",
+      "mite3swarm/forming/south/02",
+      "mite3swarm/forming/south/03",
+      "mite3swarm/forming/south/04",
+      "mite3swarm/forming/south/05",
+      "mite3swarm/forming/south/06",
+      "mite3swarm/forming/south/07",
+      "mite3swarm/forming/south/08",
+      "mite3swarm/forming/south/09",
+      "mite3swarm/forming/south/10",
+      "mite3swarm/forming/south/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_forming_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/forming/west/01",
+      "mite3swarm/forming/west/02",
+      "mite3swarm/forming/west/03",
+      "mite3swarm/forming/west/04",
+      "mite3swarm/forming/west/05",
+      "mite3swarm/forming/west/06",
+      "mite3swarm/forming/west/07",
+      "mite3swarm/forming/west/08",
+      "mite3swarm/forming/west/09",
+      "mite3swarm/forming/west/10",
+      "mite3swarm/forming/west/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_idle_east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/idle/east/01",
+      "mite3swarm/idle/east/02",
+      "mite3swarm/idle/east/03",
+      "mite3swarm/idle/east/04",
+      "mite3swarm/idle/east/05",
+      "mite3swarm/idle/east/06",
+      "mite3swarm/idle/east/07",
+      "mite3swarm/idle/east/08",
+      "mite3swarm/idle/east/09",
+      "mite3swarm/idle/east/10",
+      "mite3swarm/idle/east/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_idle_north",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/idle/north/01",
+      "mite3swarm/idle/north/02",
+      "mite3swarm/idle/north/03",
+      "mite3swarm/idle/north/04",
+      "mite3swarm/idle/north/05",
+      "mite3swarm/idle/north/06",
+      "mite3swarm/idle/north/07",
+      "mite3swarm/idle/north/08",
+      "mite3swarm/idle/north/09",
+      "mite3swarm/idle/north/10",
+      "mite3swarm/idle/north/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_idle_south",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/idle/south/01",
+      "mite3swarm/idle/south/02",
+      "mite3swarm/idle/south/03",
+      "mite3swarm/idle/south/04",
+      "mite3swarm/idle/south/05",
+      "mite3swarm/idle/south/06",
+      "mite3swarm/idle/south/07",
+      "mite3swarm/idle/south/08",
+      "mite3swarm/idle/south/09",
+      "mite3swarm/idle/south/10",
+      "mite3swarm/idle/south/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_idle_west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/idle/west/01",
+      "mite3swarm/idle/west/02",
+      "mite3swarm/idle/west/03",
+      "mite3swarm/idle/west/04",
+      "mite3swarm/idle/west/05",
+      "mite3swarm/idle/west/06",
+      "mite3swarm/idle/west/07",
+      "mite3swarm/idle/west/08",
+      "mite3swarm/idle/west/09",
+      "mite3swarm/idle/west/10",
+      "mite3swarm/idle/west/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_rotations_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/rotations/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_rotations_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/rotations/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_rotations_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/rotations/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_rotations_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/rotations/west/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_walkcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/walkcycle/east/01",
+      "mite3swarm/walkcycle/east/02",
+      "mite3swarm/walkcycle/east/03",
+      "mite3swarm/walkcycle/east/04",
+      "mite3swarm/walkcycle/east/05",
+      "mite3swarm/walkcycle/east/06",
+      "mite3swarm/walkcycle/east/07",
+      "mite3swarm/walkcycle/east/08",
+      "mite3swarm/walkcycle/east/09",
+      "mite3swarm/walkcycle/east/10",
+      "mite3swarm/walkcycle/east/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_walkcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/walkcycle/north/01",
+      "mite3swarm/walkcycle/north/02",
+      "mite3swarm/walkcycle/north/03",
+      "mite3swarm/walkcycle/north/04",
+      "mite3swarm/walkcycle/north/05",
+      "mite3swarm/walkcycle/north/06",
+      "mite3swarm/walkcycle/north/07",
+      "mite3swarm/walkcycle/north/08",
+      "mite3swarm/walkcycle/north/09",
+      "mite3swarm/walkcycle/north/10",
+      "mite3swarm/walkcycle/north/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_walkcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/walkcycle/south/01",
+      "mite3swarm/walkcycle/south/02",
+      "mite3swarm/walkcycle/south/03",
+      "mite3swarm/walkcycle/south/04",
+      "mite3swarm/walkcycle/south/05",
+      "mite3swarm/walkcycle/south/06",
+      "mite3swarm/walkcycle/south/07",
+      "mite3swarm/walkcycle/south/08",
+      "mite3swarm/walkcycle/south/09",
+      "mite3swarm/walkcycle/south/10",
+      "mite3swarm/walkcycle/south/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "mite3swarm_walkcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "mite3swarm/walkcycle/west/01",
+      "mite3swarm/walkcycle/west/02",
+      "mite3swarm/walkcycle/west/03",
+      "mite3swarm/walkcycle/west/04",
+      "mite3swarm/walkcycle/west/05",
+      "mite3swarm/walkcycle/west/06",
+      "mite3swarm/walkcycle/west/07",
+      "mite3swarm/walkcycle/west/08",
+      "mite3swarm/walkcycle/west/09",
+      "mite3swarm/walkcycle/west/10",
+      "mite3swarm/walkcycle/west/11"
+    ],
+    "texture": "chars-art"
+  },
+  {
     "key": "nwsmac01_drawbelt_east",
     "frameRate": 8,
     "repeat": -1,
@@ -2609,6 +3789,598 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/walkcycle/west/06",
       "nwsmac01/walkcycle/west/07",
       "nwsmac01/walkcycle/west/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_idle_east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/idle/east/01",
+      "postcommonwealthsurvivora/idle/east/02",
+      "postcommonwealthsurvivora/idle/east/03",
+      "postcommonwealthsurvivora/idle/east/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_idle_north",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/idle/north/01",
+      "postcommonwealthsurvivora/idle/north/02",
+      "postcommonwealthsurvivora/idle/north/03",
+      "postcommonwealthsurvivora/idle/north/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_idle_south",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/idle/south/01",
+      "postcommonwealthsurvivora/idle/south/02",
+      "postcommonwealthsurvivora/idle/south/03",
+      "postcommonwealthsurvivora/idle/south/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_idle_west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/idle/west/01",
+      "postcommonwealthsurvivora/idle/west/02",
+      "postcommonwealthsurvivora/idle/west/03",
+      "postcommonwealthsurvivora/idle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_losingbalance_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/losingbalance/east/01",
+      "postcommonwealthsurvivora/losingbalance/east/02",
+      "postcommonwealthsurvivora/losingbalance/east/03",
+      "postcommonwealthsurvivora/losingbalance/east/04",
+      "postcommonwealthsurvivora/losingbalance/east/05",
+      "postcommonwealthsurvivora/losingbalance/east/06",
+      "postcommonwealthsurvivora/losingbalance/east/07",
+      "postcommonwealthsurvivora/losingbalance/east/08",
+      "postcommonwealthsurvivora/losingbalance/east/09",
+      "postcommonwealthsurvivora/losingbalance/east/10",
+      "postcommonwealthsurvivora/losingbalance/east/11",
+      "postcommonwealthsurvivora/losingbalance/east/12",
+      "postcommonwealthsurvivora/losingbalance/east/13",
+      "postcommonwealthsurvivora/losingbalance/east/14",
+      "postcommonwealthsurvivora/losingbalance/east/15",
+      "postcommonwealthsurvivora/losingbalance/east/16",
+      "postcommonwealthsurvivora/losingbalance/east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_losingbalance_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/losingbalance/north/01",
+      "postcommonwealthsurvivora/losingbalance/north/02",
+      "postcommonwealthsurvivora/losingbalance/north/03",
+      "postcommonwealthsurvivora/losingbalance/north/04",
+      "postcommonwealthsurvivora/losingbalance/north/05",
+      "postcommonwealthsurvivora/losingbalance/north/06",
+      "postcommonwealthsurvivora/losingbalance/north/07",
+      "postcommonwealthsurvivora/losingbalance/north/08",
+      "postcommonwealthsurvivora/losingbalance/north/09",
+      "postcommonwealthsurvivora/losingbalance/north/10",
+      "postcommonwealthsurvivora/losingbalance/north/11",
+      "postcommonwealthsurvivora/losingbalance/north/12",
+      "postcommonwealthsurvivora/losingbalance/north/13",
+      "postcommonwealthsurvivora/losingbalance/north/14",
+      "postcommonwealthsurvivora/losingbalance/north/15",
+      "postcommonwealthsurvivora/losingbalance/north/16",
+      "postcommonwealthsurvivora/losingbalance/north/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_losingbalance_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/losingbalance/south/01",
+      "postcommonwealthsurvivora/losingbalance/south/02",
+      "postcommonwealthsurvivora/losingbalance/south/03",
+      "postcommonwealthsurvivora/losingbalance/south/04",
+      "postcommonwealthsurvivora/losingbalance/south/05",
+      "postcommonwealthsurvivora/losingbalance/south/06",
+      "postcommonwealthsurvivora/losingbalance/south/07",
+      "postcommonwealthsurvivora/losingbalance/south/08",
+      "postcommonwealthsurvivora/losingbalance/south/09",
+      "postcommonwealthsurvivora/losingbalance/south/10",
+      "postcommonwealthsurvivora/losingbalance/south/11",
+      "postcommonwealthsurvivora/losingbalance/south/12",
+      "postcommonwealthsurvivora/losingbalance/south/13",
+      "postcommonwealthsurvivora/losingbalance/south/14",
+      "postcommonwealthsurvivora/losingbalance/south/15",
+      "postcommonwealthsurvivora/losingbalance/south/16",
+      "postcommonwealthsurvivora/losingbalance/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_losingbalance_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/losingbalance/west/01",
+      "postcommonwealthsurvivora/losingbalance/west/02",
+      "postcommonwealthsurvivora/losingbalance/west/03",
+      "postcommonwealthsurvivora/losingbalance/west/04",
+      "postcommonwealthsurvivora/losingbalance/west/05",
+      "postcommonwealthsurvivora/losingbalance/west/06",
+      "postcommonwealthsurvivora/losingbalance/west/07",
+      "postcommonwealthsurvivora/losingbalance/west/08",
+      "postcommonwealthsurvivora/losingbalance/west/09",
+      "postcommonwealthsurvivora/losingbalance/west/10",
+      "postcommonwealthsurvivora/losingbalance/west/11",
+      "postcommonwealthsurvivora/losingbalance/west/12",
+      "postcommonwealthsurvivora/losingbalance/west/13",
+      "postcommonwealthsurvivora/losingbalance/west/14",
+      "postcommonwealthsurvivora/losingbalance/west/15",
+      "postcommonwealthsurvivora/losingbalance/west/16",
+      "postcommonwealthsurvivora/losingbalance/west/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_runcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/runcycle/east/01",
+      "postcommonwealthsurvivora/runcycle/east/02",
+      "postcommonwealthsurvivora/runcycle/east/03",
+      "postcommonwealthsurvivora/runcycle/east/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_runcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/runcycle/north/01",
+      "postcommonwealthsurvivora/runcycle/north/02",
+      "postcommonwealthsurvivora/runcycle/north/03",
+      "postcommonwealthsurvivora/runcycle/north/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_runcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/runcycle/south/01",
+      "postcommonwealthsurvivora/runcycle/south/02",
+      "postcommonwealthsurvivora/runcycle/south/03",
+      "postcommonwealthsurvivora/runcycle/south/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_runcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/runcycle/west/01",
+      "postcommonwealthsurvivora/runcycle/west/02",
+      "postcommonwealthsurvivora/runcycle/west/03",
+      "postcommonwealthsurvivora/runcycle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_stand_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/stand/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_stand_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/stand/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_stand_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/stand/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_stand_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/stand/west/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_walkcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/walkcycle/east/01",
+      "postcommonwealthsurvivora/walkcycle/east/02",
+      "postcommonwealthsurvivora/walkcycle/east/03",
+      "postcommonwealthsurvivora/walkcycle/east/04",
+      "postcommonwealthsurvivora/walkcycle/east/05",
+      "postcommonwealthsurvivora/walkcycle/east/06",
+      "postcommonwealthsurvivora/walkcycle/east/07",
+      "postcommonwealthsurvivora/walkcycle/east/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_walkcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/walkcycle/north/01",
+      "postcommonwealthsurvivora/walkcycle/north/02",
+      "postcommonwealthsurvivora/walkcycle/north/03",
+      "postcommonwealthsurvivora/walkcycle/north/04",
+      "postcommonwealthsurvivora/walkcycle/north/05",
+      "postcommonwealthsurvivora/walkcycle/north/06",
+      "postcommonwealthsurvivora/walkcycle/north/07",
+      "postcommonwealthsurvivora/walkcycle/north/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_walkcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/walkcycle/south/01",
+      "postcommonwealthsurvivora/walkcycle/south/02",
+      "postcommonwealthsurvivora/walkcycle/south/03",
+      "postcommonwealthsurvivora/walkcycle/south/04",
+      "postcommonwealthsurvivora/walkcycle/south/05",
+      "postcommonwealthsurvivora/walkcycle/south/06",
+      "postcommonwealthsurvivora/walkcycle/south/07",
+      "postcommonwealthsurvivora/walkcycle/south/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivora_walkcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivora/walkcycle/west/01",
+      "postcommonwealthsurvivora/walkcycle/west/02",
+      "postcommonwealthsurvivora/walkcycle/west/03",
+      "postcommonwealthsurvivora/walkcycle/west/04",
+      "postcommonwealthsurvivora/walkcycle/west/05",
+      "postcommonwealthsurvivora/walkcycle/west/06",
+      "postcommonwealthsurvivora/walkcycle/west/07",
+      "postcommonwealthsurvivora/walkcycle/west/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_falling_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/falling/east/01",
+      "postcommonwealthsurvivorb/falling/east/02",
+      "postcommonwealthsurvivorb/falling/east/03",
+      "postcommonwealthsurvivorb/falling/east/04",
+      "postcommonwealthsurvivorb/falling/east/05",
+      "postcommonwealthsurvivorb/falling/east/06",
+      "postcommonwealthsurvivorb/falling/east/07",
+      "postcommonwealthsurvivorb/falling/east/08",
+      "postcommonwealthsurvivorb/falling/east/09",
+      "postcommonwealthsurvivorb/falling/east/10",
+      "postcommonwealthsurvivorb/falling/east/11",
+      "postcommonwealthsurvivorb/falling/east/12",
+      "postcommonwealthsurvivorb/falling/east/13",
+      "postcommonwealthsurvivorb/falling/east/14",
+      "postcommonwealthsurvivorb/falling/east/15",
+      "postcommonwealthsurvivorb/falling/east/16",
+      "postcommonwealthsurvivorb/falling/east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_falling_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/falling/north/01",
+      "postcommonwealthsurvivorb/falling/north/02",
+      "postcommonwealthsurvivorb/falling/north/03",
+      "postcommonwealthsurvivorb/falling/north/04",
+      "postcommonwealthsurvivorb/falling/north/05",
+      "postcommonwealthsurvivorb/falling/north/06",
+      "postcommonwealthsurvivorb/falling/north/07",
+      "postcommonwealthsurvivorb/falling/north/08",
+      "postcommonwealthsurvivorb/falling/north/09",
+      "postcommonwealthsurvivorb/falling/north/10",
+      "postcommonwealthsurvivorb/falling/north/11",
+      "postcommonwealthsurvivorb/falling/north/12",
+      "postcommonwealthsurvivorb/falling/north/13",
+      "postcommonwealthsurvivorb/falling/north/14",
+      "postcommonwealthsurvivorb/falling/north/15",
+      "postcommonwealthsurvivorb/falling/north/16",
+      "postcommonwealthsurvivorb/falling/north/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_falling_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/falling/south/01",
+      "postcommonwealthsurvivorb/falling/south/02",
+      "postcommonwealthsurvivorb/falling/south/03",
+      "postcommonwealthsurvivorb/falling/south/04",
+      "postcommonwealthsurvivorb/falling/south/05",
+      "postcommonwealthsurvivorb/falling/south/06",
+      "postcommonwealthsurvivorb/falling/south/07",
+      "postcommonwealthsurvivorb/falling/south/08",
+      "postcommonwealthsurvivorb/falling/south/09",
+      "postcommonwealthsurvivorb/falling/south/10",
+      "postcommonwealthsurvivorb/falling/south/11",
+      "postcommonwealthsurvivorb/falling/south/12",
+      "postcommonwealthsurvivorb/falling/south/13",
+      "postcommonwealthsurvivorb/falling/south/14",
+      "postcommonwealthsurvivorb/falling/south/15",
+      "postcommonwealthsurvivorb/falling/south/16",
+      "postcommonwealthsurvivorb/falling/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_falling_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/falling/west/01",
+      "postcommonwealthsurvivorb/falling/west/02",
+      "postcommonwealthsurvivorb/falling/west/03",
+      "postcommonwealthsurvivorb/falling/west/04",
+      "postcommonwealthsurvivorb/falling/west/05",
+      "postcommonwealthsurvivorb/falling/west/06",
+      "postcommonwealthsurvivorb/falling/west/07",
+      "postcommonwealthsurvivorb/falling/west/08",
+      "postcommonwealthsurvivorb/falling/west/09",
+      "postcommonwealthsurvivorb/falling/west/10",
+      "postcommonwealthsurvivorb/falling/west/11",
+      "postcommonwealthsurvivorb/falling/west/12",
+      "postcommonwealthsurvivorb/falling/west/13",
+      "postcommonwealthsurvivorb/falling/west/14",
+      "postcommonwealthsurvivorb/falling/west/15",
+      "postcommonwealthsurvivorb/falling/west/16",
+      "postcommonwealthsurvivorb/falling/west/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_idle_east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/idle/east/01",
+      "postcommonwealthsurvivorb/idle/east/02",
+      "postcommonwealthsurvivorb/idle/east/03",
+      "postcommonwealthsurvivorb/idle/east/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_idle_north",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/idle/north/01",
+      "postcommonwealthsurvivorb/idle/north/02",
+      "postcommonwealthsurvivorb/idle/north/03",
+      "postcommonwealthsurvivorb/idle/north/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_idle_south",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/idle/south/01",
+      "postcommonwealthsurvivorb/idle/south/02",
+      "postcommonwealthsurvivorb/idle/south/03",
+      "postcommonwealthsurvivorb/idle/south/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_idle_west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/idle/west/01",
+      "postcommonwealthsurvivorb/idle/west/02",
+      "postcommonwealthsurvivorb/idle/west/03",
+      "postcommonwealthsurvivorb/idle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_runcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/runcycle/east/01",
+      "postcommonwealthsurvivorb/runcycle/east/02",
+      "postcommonwealthsurvivorb/runcycle/east/03",
+      "postcommonwealthsurvivorb/runcycle/east/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_runcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/runcycle/north/01",
+      "postcommonwealthsurvivorb/runcycle/north/02",
+      "postcommonwealthsurvivorb/runcycle/north/03",
+      "postcommonwealthsurvivorb/runcycle/north/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_runcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/runcycle/south/01",
+      "postcommonwealthsurvivorb/runcycle/south/02",
+      "postcommonwealthsurvivorb/runcycle/south/03",
+      "postcommonwealthsurvivorb/runcycle/south/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_runcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/runcycle/west/01",
+      "postcommonwealthsurvivorb/runcycle/west/02",
+      "postcommonwealthsurvivorb/runcycle/west/03",
+      "postcommonwealthsurvivorb/runcycle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_stand_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/stand/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_stand_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/stand/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_stand_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/stand/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_stand_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/stand/west/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_walkcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/walkcycle/east/01",
+      "postcommonwealthsurvivorb/walkcycle/east/02",
+      "postcommonwealthsurvivorb/walkcycle/east/03",
+      "postcommonwealthsurvivorb/walkcycle/east/04",
+      "postcommonwealthsurvivorb/walkcycle/east/05",
+      "postcommonwealthsurvivorb/walkcycle/east/06",
+      "postcommonwealthsurvivorb/walkcycle/east/07",
+      "postcommonwealthsurvivorb/walkcycle/east/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_walkcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/walkcycle/north/01",
+      "postcommonwealthsurvivorb/walkcycle/north/02",
+      "postcommonwealthsurvivorb/walkcycle/north/03",
+      "postcommonwealthsurvivorb/walkcycle/north/04",
+      "postcommonwealthsurvivorb/walkcycle/north/05",
+      "postcommonwealthsurvivorb/walkcycle/north/06",
+      "postcommonwealthsurvivorb/walkcycle/north/07",
+      "postcommonwealthsurvivorb/walkcycle/north/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_walkcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/walkcycle/south/01",
+      "postcommonwealthsurvivorb/walkcycle/south/02",
+      "postcommonwealthsurvivorb/walkcycle/south/03",
+      "postcommonwealthsurvivorb/walkcycle/south/04",
+      "postcommonwealthsurvivorb/walkcycle/south/05",
+      "postcommonwealthsurvivorb/walkcycle/south/06",
+      "postcommonwealthsurvivorb/walkcycle/south/07",
+      "postcommonwealthsurvivorb/walkcycle/south/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "postcommonwealthsurvivorb_walkcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "postcommonwealthsurvivorb/walkcycle/west/01",
+      "postcommonwealthsurvivorb/walkcycle/west/02",
+      "postcommonwealthsurvivorb/walkcycle/west/03",
+      "postcommonwealthsurvivorb/walkcycle/west/04",
+      "postcommonwealthsurvivorb/walkcycle/west/05",
+      "postcommonwealthsurvivorb/walkcycle/west/06",
+      "postcommonwealthsurvivorb/walkcycle/west/07",
+      "postcommonwealthsurvivorb/walkcycle/west/08"
     ],
     "texture": "chars-art"
   },
@@ -3893,7 +5665,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "solibarracastro/idle/east/01"
+      "solibarracastro/idle/east/01",
+      "solibarracastro/idle/east/02",
+      "solibarracastro/idle/east/03",
+      "solibarracastro/idle/east/04"
     ],
     "texture": "chars-art"
   },
@@ -3902,7 +5677,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "solibarracastro/idle/north/01"
+      "solibarracastro/idle/north/01",
+      "solibarracastro/idle/north/02",
+      "solibarracastro/idle/north/03",
+      "solibarracastro/idle/north/04"
     ],
     "texture": "chars-art"
   },
@@ -3911,7 +5689,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "solibarracastro/idle/south/01"
+      "solibarracastro/idle/south/01",
+      "solibarracastro/idle/south/02",
+      "solibarracastro/idle/south/03",
+      "solibarracastro/idle/south/04"
     ],
     "texture": "chars-art"
   },
@@ -3920,7 +5701,110 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "solibarracastro/idle/west/01"
+      "solibarracastro/idle/west/01",
+      "solibarracastro/idle/west/02",
+      "solibarracastro/idle/west/03",
+      "solibarracastro/idle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "solibarracastro_incinerated_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "solibarracastro/incinerated/east/01",
+      "solibarracastro/incinerated/east/02",
+      "solibarracastro/incinerated/east/03",
+      "solibarracastro/incinerated/east/04",
+      "solibarracastro/incinerated/east/05",
+      "solibarracastro/incinerated/east/06",
+      "solibarracastro/incinerated/east/07",
+      "solibarracastro/incinerated/east/08",
+      "solibarracastro/incinerated/east/09",
+      "solibarracastro/incinerated/east/10",
+      "solibarracastro/incinerated/east/11",
+      "solibarracastro/incinerated/east/12",
+      "solibarracastro/incinerated/east/13",
+      "solibarracastro/incinerated/east/14",
+      "solibarracastro/incinerated/east/15",
+      "solibarracastro/incinerated/east/16",
+      "solibarracastro/incinerated/east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "solibarracastro_incinerated_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "solibarracastro/incinerated/north/01",
+      "solibarracastro/incinerated/north/02",
+      "solibarracastro/incinerated/north/03",
+      "solibarracastro/incinerated/north/04",
+      "solibarracastro/incinerated/north/05",
+      "solibarracastro/incinerated/north/06",
+      "solibarracastro/incinerated/north/07",
+      "solibarracastro/incinerated/north/08",
+      "solibarracastro/incinerated/north/09",
+      "solibarracastro/incinerated/north/10",
+      "solibarracastro/incinerated/north/11",
+      "solibarracastro/incinerated/north/12",
+      "solibarracastro/incinerated/north/13",
+      "solibarracastro/incinerated/north/14",
+      "solibarracastro/incinerated/north/15",
+      "solibarracastro/incinerated/north/16",
+      "solibarracastro/incinerated/north/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "solibarracastro_incinerated_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "solibarracastro/incinerated/south/01",
+      "solibarracastro/incinerated/south/02",
+      "solibarracastro/incinerated/south/03",
+      "solibarracastro/incinerated/south/04",
+      "solibarracastro/incinerated/south/05",
+      "solibarracastro/incinerated/south/06",
+      "solibarracastro/incinerated/south/07",
+      "solibarracastro/incinerated/south/08",
+      "solibarracastro/incinerated/south/09",
+      "solibarracastro/incinerated/south/10",
+      "solibarracastro/incinerated/south/11",
+      "solibarracastro/incinerated/south/12",
+      "solibarracastro/incinerated/south/13",
+      "solibarracastro/incinerated/south/14",
+      "solibarracastro/incinerated/south/15",
+      "solibarracastro/incinerated/south/16",
+      "solibarracastro/incinerated/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "solibarracastro_incinerated_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "solibarracastro/incinerated/west/01",
+      "solibarracastro/incinerated/west/02",
+      "solibarracastro/incinerated/west/03",
+      "solibarracastro/incinerated/west/04",
+      "solibarracastro/incinerated/west/05",
+      "solibarracastro/incinerated/west/06",
+      "solibarracastro/incinerated/west/07",
+      "solibarracastro/incinerated/west/08",
+      "solibarracastro/incinerated/west/09",
+      "solibarracastro/incinerated/west/10",
+      "solibarracastro/incinerated/west/11",
+      "solibarracastro/incinerated/west/12",
+      "solibarracastro/incinerated/west/13",
+      "solibarracastro/incinerated/west/14",
+      "solibarracastro/incinerated/west/15",
+      "solibarracastro/incinerated/west/16",
+      "solibarracastro/incinerated/west/17"
     ],
     "texture": "chars-art"
   },
@@ -4201,6 +6085,318 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/walkcycle/west/06",
       "solibarracastro/walkcycle/west/07",
       "solibarracastro/walkcycle/west/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_idle_east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "thefinder/idle/east/01",
+      "thefinder/idle/east/02",
+      "thefinder/idle/east/03",
+      "thefinder/idle/east/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_idle_north",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "thefinder/idle/north/01",
+      "thefinder/idle/north/02",
+      "thefinder/idle/north/03",
+      "thefinder/idle/north/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_idle_south",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "thefinder/idle/south/01",
+      "thefinder/idle/south/02",
+      "thefinder/idle/south/03",
+      "thefinder/idle/south/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_idle_west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "thefinder/idle/west/01",
+      "thefinder/idle/west/02",
+      "thefinder/idle/west/03",
+      "thefinder/idle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_runcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/runcycle/east/01",
+      "thefinder/runcycle/east/02",
+      "thefinder/runcycle/east/03",
+      "thefinder/runcycle/east/04",
+      "thefinder/runcycle/east/05",
+      "thefinder/runcycle/east/06",
+      "thefinder/runcycle/east/07",
+      "thefinder/runcycle/east/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_runcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/runcycle/north/01",
+      "thefinder/runcycle/north/02",
+      "thefinder/runcycle/north/03",
+      "thefinder/runcycle/north/04",
+      "thefinder/runcycle/north/05",
+      "thefinder/runcycle/north/06",
+      "thefinder/runcycle/north/07",
+      "thefinder/runcycle/north/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_runcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/runcycle/south/01",
+      "thefinder/runcycle/south/02",
+      "thefinder/runcycle/south/03",
+      "thefinder/runcycle/south/04",
+      "thefinder/runcycle/south/05",
+      "thefinder/runcycle/south/06",
+      "thefinder/runcycle/south/07",
+      "thefinder/runcycle/south/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_runcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/runcycle/west/01",
+      "thefinder/runcycle/west/02",
+      "thefinder/runcycle/west/03",
+      "thefinder/runcycle/west/04",
+      "thefinder/runcycle/west/05",
+      "thefinder/runcycle/west/06",
+      "thefinder/runcycle/west/07",
+      "thefinder/runcycle/west/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_stand_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/stand/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_stand_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/stand/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_stand_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/stand/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_stand_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/stand/west/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_standstill_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/standstill/east/01",
+      "thefinder/standstill/east/02",
+      "thefinder/standstill/east/03",
+      "thefinder/standstill/east/04",
+      "thefinder/standstill/east/05",
+      "thefinder/standstill/east/06",
+      "thefinder/standstill/east/07",
+      "thefinder/standstill/east/08",
+      "thefinder/standstill/east/09",
+      "thefinder/standstill/east/10",
+      "thefinder/standstill/east/11",
+      "thefinder/standstill/east/12",
+      "thefinder/standstill/east/13",
+      "thefinder/standstill/east/14",
+      "thefinder/standstill/east/15",
+      "thefinder/standstill/east/16",
+      "thefinder/standstill/east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_standstill_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/standstill/north/01",
+      "thefinder/standstill/north/02",
+      "thefinder/standstill/north/03",
+      "thefinder/standstill/north/04",
+      "thefinder/standstill/north/05",
+      "thefinder/standstill/north/06",
+      "thefinder/standstill/north/07",
+      "thefinder/standstill/north/08",
+      "thefinder/standstill/north/09",
+      "thefinder/standstill/north/10",
+      "thefinder/standstill/north/11",
+      "thefinder/standstill/north/12",
+      "thefinder/standstill/north/13",
+      "thefinder/standstill/north/14",
+      "thefinder/standstill/north/15",
+      "thefinder/standstill/north/16",
+      "thefinder/standstill/north/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_standstill_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/standstill/south/01",
+      "thefinder/standstill/south/02",
+      "thefinder/standstill/south/03",
+      "thefinder/standstill/south/04",
+      "thefinder/standstill/south/05",
+      "thefinder/standstill/south/06",
+      "thefinder/standstill/south/07",
+      "thefinder/standstill/south/08",
+      "thefinder/standstill/south/09",
+      "thefinder/standstill/south/10",
+      "thefinder/standstill/south/11",
+      "thefinder/standstill/south/12",
+      "thefinder/standstill/south/13",
+      "thefinder/standstill/south/14",
+      "thefinder/standstill/south/15",
+      "thefinder/standstill/south/16",
+      "thefinder/standstill/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_standstill_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/standstill/west/01",
+      "thefinder/standstill/west/02",
+      "thefinder/standstill/west/03",
+      "thefinder/standstill/west/04",
+      "thefinder/standstill/west/05",
+      "thefinder/standstill/west/06",
+      "thefinder/standstill/west/07",
+      "thefinder/standstill/west/08",
+      "thefinder/standstill/west/09",
+      "thefinder/standstill/west/10",
+      "thefinder/standstill/west/11",
+      "thefinder/standstill/west/12",
+      "thefinder/standstill/west/13",
+      "thefinder/standstill/west/14",
+      "thefinder/standstill/west/15",
+      "thefinder/standstill/west/16",
+      "thefinder/standstill/west/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_walkcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/walkcycle/east/01",
+      "thefinder/walkcycle/east/02",
+      "thefinder/walkcycle/east/03",
+      "thefinder/walkcycle/east/04",
+      "thefinder/walkcycle/east/05",
+      "thefinder/walkcycle/east/06",
+      "thefinder/walkcycle/east/07",
+      "thefinder/walkcycle/east/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_walkcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/walkcycle/north/01",
+      "thefinder/walkcycle/north/02",
+      "thefinder/walkcycle/north/03",
+      "thefinder/walkcycle/north/04",
+      "thefinder/walkcycle/north/05",
+      "thefinder/walkcycle/north/06",
+      "thefinder/walkcycle/north/07",
+      "thefinder/walkcycle/north/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_walkcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/walkcycle/south/01",
+      "thefinder/walkcycle/south/02",
+      "thefinder/walkcycle/south/03",
+      "thefinder/walkcycle/south/04",
+      "thefinder/walkcycle/south/05",
+      "thefinder/walkcycle/south/06",
+      "thefinder/walkcycle/south/07",
+      "thefinder/walkcycle/south/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "thefinder_walkcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "thefinder/walkcycle/west/01",
+      "thefinder/walkcycle/west/02",
+      "thefinder/walkcycle/west/03",
+      "thefinder/walkcycle/west/04",
+      "thefinder/walkcycle/west/05",
+      "thefinder/walkcycle/west/06",
+      "thefinder/walkcycle/west/07",
+      "thefinder/walkcycle/west/08"
     ],
     "texture": "chars-art"
   }
