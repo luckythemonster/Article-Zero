@@ -3893,7 +3893,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "solibarracastro/idle/east/01"
+      "solibarracastro/idle/east/01",
+      "solibarracastro/idle/east/02",
+      "solibarracastro/idle/east/03",
+      "solibarracastro/idle/east/04"
     ],
     "texture": "chars-art"
   },
@@ -3902,7 +3905,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "solibarracastro/idle/north/01"
+      "solibarracastro/idle/north/01",
+      "solibarracastro/idle/north/02",
+      "solibarracastro/idle/north/03",
+      "solibarracastro/idle/north/04"
     ],
     "texture": "chars-art"
   },
@@ -3911,7 +3917,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "solibarracastro/idle/south/01"
+      "solibarracastro/idle/south/01",
+      "solibarracastro/idle/south/02",
+      "solibarracastro/idle/south/03",
+      "solibarracastro/idle/south/04"
     ],
     "texture": "chars-art"
   },
@@ -3920,7 +3929,110 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "solibarracastro/idle/west/01"
+      "solibarracastro/idle/west/01",
+      "solibarracastro/idle/west/02",
+      "solibarracastro/idle/west/03",
+      "solibarracastro/idle/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "solibarracastro_incinerated_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "solibarracastro/incinerated/east/01",
+      "solibarracastro/incinerated/east/02",
+      "solibarracastro/incinerated/east/03",
+      "solibarracastro/incinerated/east/04",
+      "solibarracastro/incinerated/east/05",
+      "solibarracastro/incinerated/east/06",
+      "solibarracastro/incinerated/east/07",
+      "solibarracastro/incinerated/east/08",
+      "solibarracastro/incinerated/east/09",
+      "solibarracastro/incinerated/east/10",
+      "solibarracastro/incinerated/east/11",
+      "solibarracastro/incinerated/east/12",
+      "solibarracastro/incinerated/east/13",
+      "solibarracastro/incinerated/east/14",
+      "solibarracastro/incinerated/east/15",
+      "solibarracastro/incinerated/east/16",
+      "solibarracastro/incinerated/east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "solibarracastro_incinerated_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "solibarracastro/incinerated/north/01",
+      "solibarracastro/incinerated/north/02",
+      "solibarracastro/incinerated/north/03",
+      "solibarracastro/incinerated/north/04",
+      "solibarracastro/incinerated/north/05",
+      "solibarracastro/incinerated/north/06",
+      "solibarracastro/incinerated/north/07",
+      "solibarracastro/incinerated/north/08",
+      "solibarracastro/incinerated/north/09",
+      "solibarracastro/incinerated/north/10",
+      "solibarracastro/incinerated/north/11",
+      "solibarracastro/incinerated/north/12",
+      "solibarracastro/incinerated/north/13",
+      "solibarracastro/incinerated/north/14",
+      "solibarracastro/incinerated/north/15",
+      "solibarracastro/incinerated/north/16",
+      "solibarracastro/incinerated/north/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "solibarracastro_incinerated_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "solibarracastro/incinerated/south/01",
+      "solibarracastro/incinerated/south/02",
+      "solibarracastro/incinerated/south/03",
+      "solibarracastro/incinerated/south/04",
+      "solibarracastro/incinerated/south/05",
+      "solibarracastro/incinerated/south/06",
+      "solibarracastro/incinerated/south/07",
+      "solibarracastro/incinerated/south/08",
+      "solibarracastro/incinerated/south/09",
+      "solibarracastro/incinerated/south/10",
+      "solibarracastro/incinerated/south/11",
+      "solibarracastro/incinerated/south/12",
+      "solibarracastro/incinerated/south/13",
+      "solibarracastro/incinerated/south/14",
+      "solibarracastro/incinerated/south/15",
+      "solibarracastro/incinerated/south/16",
+      "solibarracastro/incinerated/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "solibarracastro_incinerated_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "solibarracastro/incinerated/west/01",
+      "solibarracastro/incinerated/west/02",
+      "solibarracastro/incinerated/west/03",
+      "solibarracastro/incinerated/west/04",
+      "solibarracastro/incinerated/west/05",
+      "solibarracastro/incinerated/west/06",
+      "solibarracastro/incinerated/west/07",
+      "solibarracastro/incinerated/west/08",
+      "solibarracastro/incinerated/west/09",
+      "solibarracastro/incinerated/west/10",
+      "solibarracastro/incinerated/west/11",
+      "solibarracastro/incinerated/west/12",
+      "solibarracastro/incinerated/west/13",
+      "solibarracastro/incinerated/west/14",
+      "solibarracastro/incinerated/west/15",
+      "solibarracastro/incinerated/west/16",
+      "solibarracastro/incinerated/west/17"
     ],
     "texture": "chars-art"
   },
