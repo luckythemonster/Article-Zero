@@ -23,7 +23,10 @@ const ATLAS_PNG = path.join(ROOT, "public/assets/sprite_pack/chars-art.png");
 const ATLAS_JSON = path.join(ROOT, "public/assets/sprite_pack/chars-art.json");
 const REGISTRY_TS = path.join(ROOT, "src/data/char-anims.generated.ts");
 
-const ATLAS_COLUMNS = 8;
+// Cap atlas width at 4096 — within WebGL's guaranteed-supported texture
+// dimensions on every GPU. The shelf packer below wraps rows once a frame
+// would push past this width, so atlas height grows efficiently.
+const MAX_W = 4096;
 const TEXTURE_KEY = "chars-art";
 
 const DEFAULT_FRAME_RATES = {
@@ -183,28 +186,41 @@ async function buildAtlas(frames) {
     return { frameMap: {}, atlasW: 1, atlasH: 1 };
   }
 
-  // All frames go into a single grid. Cell size = max width × max height
-  // across the whole set. Per-character size is already enforced.
-  let cellW = 0;
-  let cellH = 0;
-  for (const f of frames) {
-    if (f.width > cellW) cellW = f.width;
-    if (f.height > cellH) cellH = f.height;
-  }
+  // Shelf-pack frames into rows that wrap at MAX_W. Sorting by height
+  // descending keeps tall items grouped so each shelf wastes minimal
+  // vertical space. Tie-breaks make the layout deterministic so reruns
+  // produce a stable diff.
+  const ordered = [...frames].sort(
+    (a, b) =>
+      b.height - a.height || b.width - a.width || a.key.localeCompare(b.key),
+  );
 
-  const cols = Math.min(ATLAS_COLUMNS, frames.length);
-  const rows = Math.ceil(frames.length / cols);
-  const atlasW = cols * cellW;
-  const atlasH = rows * cellH;
+  const placements = new Map(); // key -> { x, y }
+  let shelfY = 0;
+  let shelfH = 0;
+  let cursorX = 0;
+  let atlasW = 0;
+
+  for (const f of ordered) {
+    if (cursorX + f.width > MAX_W) {
+      shelfY += shelfH;
+      shelfH = 0;
+      cursorX = 0;
+    }
+    if (f.height > shelfH) shelfH = f.height;
+    placements.set(f.key, { x: cursorX, y: shelfY });
+    cursorX += f.width;
+    if (cursorX > atlasW) atlasW = cursorX;
+  }
+  const atlasH = shelfY + shelfH;
 
   const atlas = new Jimp({ width: atlasW, height: atlasH, color: 0x00000000 });
   const frameMap = {};
 
-  frames.forEach((f, i) => {
-    const col = i % cols;
-    const row = Math.floor(i / cols);
-    const x = col * cellW;
-    const y = row * cellH;
+  // Compose and emit JSON in input order so the JSON diff stays sensible
+  // even when shelf placement reorders frames internally.
+  for (const f of frames) {
+    const { x, y } = placements.get(f.key);
     atlas.composite(f.image, x, y);
     frameMap[f.key] = {
       frame: { x, y, w: f.width, h: f.height },
@@ -213,7 +229,7 @@ async function buildAtlas(frames) {
       spriteSourceSize: { x: 0, y: 0, w: f.width, h: f.height },
       sourceSize: { w: f.width, h: f.height },
     };
-  });
+  }
 
   await fs.mkdir(path.dirname(ATLAS_PNG), { recursive: true });
   await atlas.write(ATLAS_PNG);
