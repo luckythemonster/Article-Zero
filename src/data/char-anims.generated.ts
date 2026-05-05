@@ -3,6 +3,56 @@
 
 import type { CharAnim } from "./char-anims";
 
+export interface GeneratedAtlas {
+  key: string;
+  /** Path served from /assets/sprite_pack/ */
+  png: string;
+  json: string;
+}
+
+export const GENERATED_ATLASES: GeneratedAtlas[] = [
+  {
+    "key": "chars-art-92x92",
+    "png": "/assets/sprite_pack/chars-art-92x92.png",
+    "json": "/assets/sprite_pack/chars-art-92x92.json"
+  },
+  {
+    "key": "chars-art-48x48",
+    "png": "/assets/sprite_pack/chars-art-48x48.png",
+    "json": "/assets/sprite_pack/chars-art-48x48.json"
+  },
+  {
+    "key": "chars-art-36x36",
+    "png": "/assets/sprite_pack/chars-art-36x36.png",
+    "json": "/assets/sprite_pack/chars-art-36x36.json"
+  },
+  {
+    "key": "chars-art-80x80",
+    "png": "/assets/sprite_pack/chars-art-80x80.png",
+    "json": "/assets/sprite_pack/chars-art-80x80.json"
+  },
+  {
+    "key": "chars-art-256x256",
+    "png": "/assets/sprite_pack/chars-art-256x256.png",
+    "json": "/assets/sprite_pack/chars-art-256x256.json"
+  },
+  {
+    "key": "chars-art-88x88",
+    "png": "/assets/sprite_pack/chars-art-88x88.png",
+    "json": "/assets/sprite_pack/chars-art-88x88.json"
+  },
+  {
+    "key": "chars-art-52x52",
+    "png": "/assets/sprite_pack/chars-art-52x52.png",
+    "json": "/assets/sprite_pack/chars-art-52x52.json"
+  },
+  {
+    "key": "chars-art-56x56",
+    "png": "/assets/sprite_pack/chars-art-56x56.png",
+    "json": "/assets/sprite_pack/chars-art-56x56.json"
+  }
+];
+
 export const GENERATED_ANIMS: CharAnim[] = [
   {
     "key": "apex19_idle_east",
@@ -15,7 +65,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "apex19/idle/east/04",
       "apex19/idle/east/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_idle_north",
@@ -28,7 +78,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "apex19/idle/north/04",
       "apex19/idle/north/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_idle_south",
@@ -41,7 +91,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "apex19/idle/south/04",
       "apex19/idle/south/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_idle_west",
@@ -54,7 +104,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "apex19/idle/west/04",
       "apex19/idle/west/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_idlelong_east",
@@ -79,7 +129,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "apex19/idlelong/east/16",
       "apex19/idlelong/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_idlelong_north",
@@ -104,7 +154,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "apex19/idlelong/north/16",
       "apex19/idlelong/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_idlelong_south",
@@ -129,7 +179,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "apex19/idlelong/south/16",
       "apex19/idlelong/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_idlelong_west",
@@ -154,7 +204,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "apex19/idlelong/west/16",
       "apex19/idlelong/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_rotations_east",
@@ -163,7 +213,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "apex19/rotations/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_rotations_north",
@@ -172,7 +222,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "apex19/rotations/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_rotations_south",
@@ -181,7 +231,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "apex19/rotations/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_rotations_west",
@@ -190,7 +240,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "apex19/rotations/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_vibration_east",
@@ -203,7 +253,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "apex19/vibration/east/04",
       "apex19/vibration/east/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_vibration_north",
@@ -216,7 +266,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "apex19/vibration/north/04",
       "apex19/vibration/north/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_vibration_south",
@@ -229,7 +279,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "apex19/vibration/south/04",
       "apex19/vibration/south/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "apex19_vibration_west",
@@ -242,7 +292,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "apex19/vibration/west/04",
       "apex19/vibration/west/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-92x92"
   },
   {
     "key": "articlezerofragment_rotations",
@@ -251,7 +301,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "articlezerofragment/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_idle_east",
@@ -263,7 +313,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/idle/east/03",
       "commonwealthbroadcasttowerresidenta/idle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_idle_north",
@@ -275,7 +325,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/idle/north/03",
       "commonwealthbroadcasttowerresidenta/idle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_idle_south",
@@ -287,7 +337,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/idle/south/03",
       "commonwealthbroadcasttowerresidenta/idle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_idle_west",
@@ -299,7 +349,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/idle/west/03",
       "commonwealthbroadcasttowerresidenta/idle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_panic_east",
@@ -324,7 +374,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/panic/east/16",
       "commonwealthbroadcasttowerresidenta/panic/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_panic_north",
@@ -349,7 +399,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/panic/north/16",
       "commonwealthbroadcasttowerresidenta/panic/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_panic_south",
@@ -374,7 +424,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/panic/south/16",
       "commonwealthbroadcasttowerresidenta/panic/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_panic_west",
@@ -399,7 +449,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/panic/west/16",
       "commonwealthbroadcasttowerresidenta/panic/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_runcycle_east",
@@ -411,7 +461,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/runcycle/east/03",
       "commonwealthbroadcasttowerresidenta/runcycle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_runcycle_north",
@@ -423,7 +473,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/runcycle/north/03",
       "commonwealthbroadcasttowerresidenta/runcycle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_runcycle_south",
@@ -435,7 +485,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/runcycle/south/03",
       "commonwealthbroadcasttowerresidenta/runcycle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_runcycle_west",
@@ -447,7 +497,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/runcycle/west/03",
       "commonwealthbroadcasttowerresidenta/runcycle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_stand_east",
@@ -456,7 +506,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "commonwealthbroadcasttowerresidenta/stand/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_stand_north",
@@ -465,7 +515,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "commonwealthbroadcasttowerresidenta/stand/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_stand_south",
@@ -474,7 +524,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "commonwealthbroadcasttowerresidenta/stand/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_stand_west",
@@ -483,7 +533,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "commonwealthbroadcasttowerresidenta/stand/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_suffocating_east",
@@ -508,7 +558,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/suffocating/east/16",
       "commonwealthbroadcasttowerresidenta/suffocating/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_suffocating_north",
@@ -533,7 +583,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/suffocating/north/16",
       "commonwealthbroadcasttowerresidenta/suffocating/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_suffocating_south",
@@ -558,7 +608,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/suffocating/south/16",
       "commonwealthbroadcasttowerresidenta/suffocating/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_suffocating_west",
@@ -583,7 +633,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/suffocating/west/16",
       "commonwealthbroadcasttowerresidenta/suffocating/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_walkcycle_east",
@@ -595,7 +645,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/walkcycle/east/03",
       "commonwealthbroadcasttowerresidenta/walkcycle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_walkcycle_north",
@@ -607,7 +657,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/walkcycle/north/03",
       "commonwealthbroadcasttowerresidenta/walkcycle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_walkcycle_south",
@@ -619,7 +669,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/walkcycle/south/03",
       "commonwealthbroadcasttowerresidenta/walkcycle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidenta_walkcycle_west",
@@ -631,7 +681,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidenta/walkcycle/west/03",
       "commonwealthbroadcasttowerresidenta/walkcycle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_idle_east",
@@ -643,7 +693,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/idle/east/03",
       "commonwealthbroadcasttowerresidentb/idle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_idle_north",
@@ -655,7 +705,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/idle/north/03",
       "commonwealthbroadcasttowerresidentb/idle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_idle_south",
@@ -667,7 +717,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/idle/south/03",
       "commonwealthbroadcasttowerresidentb/idle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_idle_west",
@@ -679,7 +729,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/idle/west/03",
       "commonwealthbroadcasttowerresidentb/idle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_runcycle_east",
@@ -691,7 +741,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/runcycle/east/03",
       "commonwealthbroadcasttowerresidentb/runcycle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_runcycle_north",
@@ -703,7 +753,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/runcycle/north/03",
       "commonwealthbroadcasttowerresidentb/runcycle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_runcycle_south",
@@ -715,7 +765,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/runcycle/south/03",
       "commonwealthbroadcasttowerresidentb/runcycle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_runcycle_west",
@@ -727,7 +777,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/runcycle/west/03",
       "commonwealthbroadcasttowerresidentb/runcycle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_stand_east",
@@ -736,7 +786,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "commonwealthbroadcasttowerresidentb/stand/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_stand_north",
@@ -745,7 +795,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "commonwealthbroadcasttowerresidentb/stand/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_stand_south",
@@ -754,7 +804,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "commonwealthbroadcasttowerresidentb/stand/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_stand_west",
@@ -763,7 +813,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "commonwealthbroadcasttowerresidentb/stand/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_suffocating_east",
@@ -788,7 +838,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/suffocating/east/16",
       "commonwealthbroadcasttowerresidentb/suffocating/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_suffocating_north",
@@ -813,7 +863,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/suffocating/north/16",
       "commonwealthbroadcasttowerresidentb/suffocating/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_suffocating_south",
@@ -838,7 +888,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/suffocating/south/16",
       "commonwealthbroadcasttowerresidentb/suffocating/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_suffocating_west",
@@ -863,7 +913,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/suffocating/west/16",
       "commonwealthbroadcasttowerresidentb/suffocating/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_trapped_east",
@@ -888,7 +938,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/trapped/east/16",
       "commonwealthbroadcasttowerresidentb/trapped/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_trapped_north",
@@ -913,7 +963,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/trapped/north/16",
       "commonwealthbroadcasttowerresidentb/trapped/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_trapped_south",
@@ -938,7 +988,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/trapped/south/16",
       "commonwealthbroadcasttowerresidentb/trapped/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_trapped_west",
@@ -963,7 +1013,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/trapped/west/16",
       "commonwealthbroadcasttowerresidentb/trapped/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_walkcycle_east",
@@ -975,7 +1025,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/walkcycle/east/03",
       "commonwealthbroadcasttowerresidentb/walkcycle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_walkcycle_north",
@@ -987,7 +1037,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/walkcycle/north/03",
       "commonwealthbroadcasttowerresidentb/walkcycle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_walkcycle_south",
@@ -999,7 +1049,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/walkcycle/south/03",
       "commonwealthbroadcasttowerresidentb/walkcycle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "commonwealthbroadcasttowerresidentb_walkcycle_west",
@@ -1011,7 +1061,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "commonwealthbroadcasttowerresidentb/walkcycle/west/03",
       "commonwealthbroadcasttowerresidentb/walkcycle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "eira7_powerfailure_east",
@@ -1024,7 +1074,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/powerfailure/east/04",
       "eira7/powerfailure/east/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_powerfailure_north",
@@ -1037,7 +1087,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/powerfailure/north/04",
       "eira7/powerfailure/north/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_powerfailure_south",
@@ -1050,7 +1100,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/powerfailure/south/04",
       "eira7/powerfailure/south/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_powerfailure_west",
@@ -1063,7 +1113,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/powerfailure/west/04",
       "eira7/powerfailure/west/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_pulse_east",
@@ -1076,7 +1126,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/pulse/east/04",
       "eira7/pulse/east/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_pulse_north",
@@ -1089,7 +1139,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/pulse/north/04",
       "eira7/pulse/north/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_pulse_south",
@@ -1102,7 +1152,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/pulse/south/04",
       "eira7/pulse/south/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_pulse_west",
@@ -1115,7 +1165,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/pulse/west/04",
       "eira7/pulse/west/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_rise_east",
@@ -1128,7 +1178,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/rise/east/04",
       "eira7/rise/east/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_rise_north",
@@ -1141,7 +1191,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/rise/north/04",
       "eira7/rise/north/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_rise_south",
@@ -1154,7 +1204,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/rise/south/04",
       "eira7/rise/south/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_rise_west",
@@ -1167,7 +1217,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/rise/west/04",
       "eira7/rise/west/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_rotations_east",
@@ -1176,7 +1226,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "eira7/rotations/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_rotations_north",
@@ -1185,7 +1235,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "eira7/rotations/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_rotations_south",
@@ -1194,7 +1244,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "eira7/rotations/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_rotations_west",
@@ -1203,7 +1253,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "eira7/rotations/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_walkcycle_east",
@@ -1216,7 +1266,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/walkcycle/east/04",
       "eira7/walkcycle/east/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_walkcycle_north",
@@ -1229,7 +1279,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/walkcycle/north/04",
       "eira7/walkcycle/north/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_walkcycle_south",
@@ -1242,7 +1292,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/walkcycle/south/04",
       "eira7/walkcycle/south/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "eira7_walkcycle_west",
@@ -1255,7 +1305,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/walkcycle/west/04",
       "eira7/walkcycle/west/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-80x80"
   },
   {
     "key": "elevatedaccesskey_rotations",
@@ -1264,7 +1314,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "elevatedaccesskey/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "empdevice_idle",
@@ -1285,7 +1335,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "empdevice/idle/12",
       "empdevice/idle/13"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "empdevice_rotations",
@@ -1294,7 +1344,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "empdevice/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "empfx_blast",
@@ -1311,7 +1361,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "empfx/blast/08",
       "empfx/blast/09"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-256x256"
   },
   {
     "key": "enforcer_chase_east",
@@ -1327,7 +1377,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/chase/east/07",
       "enforcer/chase/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_chase_north",
@@ -1343,7 +1393,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/chase/north/07",
       "enforcer/chase/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_chase_south",
@@ -1359,7 +1409,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/chase/south/07",
       "enforcer/chase/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_chase_west",
@@ -1375,7 +1425,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/chase/west/07",
       "enforcer/chase/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_crosspunch_east",
@@ -1389,7 +1439,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/crosspunch/east/05",
       "enforcer/crosspunch/east/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_crosspunch_north",
@@ -1403,7 +1453,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/crosspunch/north/05",
       "enforcer/crosspunch/north/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_crosspunch_south",
@@ -1417,7 +1467,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/crosspunch/south/05",
       "enforcer/crosspunch/south/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_crosspunch_west",
@@ -1431,7 +1481,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/crosspunch/west/05",
       "enforcer/crosspunch/west/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_decapitate_east",
@@ -1456,7 +1506,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/decapitate/east/16",
       "enforcer/decapitate/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_decapitate_north",
@@ -1481,7 +1531,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/decapitate/north/16",
       "enforcer/decapitate/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_decapitate_south",
@@ -1506,7 +1556,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/decapitate/south/16",
       "enforcer/decapitate/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_decapitate_west",
@@ -1531,7 +1581,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/decapitate/west/16",
       "enforcer/decapitate/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_empblast_east",
@@ -1556,7 +1606,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/empblast/east/16",
       "enforcer/empblast/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_empblast_north",
@@ -1581,7 +1631,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/empblast/north/16",
       "enforcer/empblast/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_empblast_south",
@@ -1606,7 +1656,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/empblast/south/16",
       "enforcer/empblast/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_empblast_west",
@@ -1631,7 +1681,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/empblast/west/16",
       "enforcer/empblast/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_idle_east",
@@ -1656,7 +1706,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/idle/east/16",
       "enforcer/idle/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_idle_north",
@@ -1681,7 +1731,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/idle/north/16",
       "enforcer/idle/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_idle_south",
@@ -1706,7 +1756,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/idle/south/16",
       "enforcer/idle/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_idle_west",
@@ -1731,7 +1781,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/idle/west/16",
       "enforcer/idle/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_pullobject_east",
@@ -1745,7 +1795,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/pullobject/east/05",
       "enforcer/pullobject/east/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_pullobject_north",
@@ -1759,7 +1809,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/pullobject/north/05",
       "enforcer/pullobject/north/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_pullobject_south",
@@ -1773,7 +1823,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/pullobject/south/05",
       "enforcer/pullobject/south/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_pullobject_west",
@@ -1787,7 +1837,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/pullobject/west/05",
       "enforcer/pullobject/west/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_pushobject_east",
@@ -1801,7 +1851,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/pushobject/east/05",
       "enforcer/pushobject/east/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_pushobject_north",
@@ -1815,7 +1865,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/pushobject/north/05",
       "enforcer/pushobject/north/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_pushobject_south",
@@ -1829,7 +1879,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/pushobject/south/05",
       "enforcer/pushobject/south/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_pushobject_west",
@@ -1843,7 +1893,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/pushobject/west/05",
       "enforcer/pushobject/west/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_rotations_east",
@@ -1852,7 +1902,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "enforcer/rotations/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_rotations_north",
@@ -1861,7 +1911,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "enforcer/rotations/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_rotations_south",
@@ -1870,7 +1920,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "enforcer/rotations/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_rotations_west",
@@ -1879,7 +1929,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "enforcer/rotations/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_strangle_east",
@@ -1904,7 +1954,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/strangle/east/16",
       "enforcer/strangle/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_strangle_north",
@@ -1929,7 +1979,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/strangle/north/16",
       "enforcer/strangle/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_strangle_south",
@@ -1954,7 +2004,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/strangle/south/16",
       "enforcer/strangle/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_strangle_west",
@@ -1979,7 +2029,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/strangle/west/16",
       "enforcer/strangle/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_throwobject_east",
@@ -1994,7 +2044,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/throwobject/east/06",
       "enforcer/throwobject/east/07"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_throwobject_north",
@@ -2009,7 +2059,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/throwobject/north/06",
       "enforcer/throwobject/north/07"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_throwobject_south",
@@ -2024,7 +2074,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/throwobject/south/06",
       "enforcer/throwobject/south/07"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_throwobject_west",
@@ -2039,7 +2089,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/throwobject/west/06",
       "enforcer/throwobject/west/07"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_walkcycle_east",
@@ -2055,7 +2105,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/walkcycle/east/07",
       "enforcer/walkcycle/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_walkcycle_north",
@@ -2071,7 +2121,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/walkcycle/north/07",
       "enforcer/walkcycle/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_walkcycle_south",
@@ -2087,7 +2137,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/walkcycle/south/07",
       "enforcer/walkcycle/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "enforcer_walkcycle_west",
@@ -2103,7 +2153,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/walkcycle/west/07",
       "enforcer/walkcycle/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "flashlight_anim2",
@@ -2124,7 +2174,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "flashlight/anim2/12",
       "flashlight/anim2/13"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "flashlight_idle",
@@ -2145,7 +2195,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "flashlight/idle/12",
       "flashlight/idle/13"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "flashlight_rotations",
@@ -2154,7 +2204,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "flashlight/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "flashlight2_idle",
@@ -2175,7 +2225,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "flashlight2/idle/12",
       "flashlight2/idle/13"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "flashlight2_rotations",
@@ -2184,7 +2234,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "flashlight2/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "fragmentbox_rotations_east",
@@ -2193,7 +2243,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "fragmentbox/rotations/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "fragmentbox_rotations_north",
@@ -2202,7 +2252,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "fragmentbox/rotations/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "fragmentbox_rotations_south",
@@ -2211,7 +2261,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "fragmentbox/rotations/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "fragmentbox_rotations_west",
@@ -2220,7 +2270,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "fragmentbox/rotations/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "fragmentbox2_rotations_east",
@@ -2229,7 +2279,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "fragmentbox2/rotations/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "fragmentbox2_rotations_north",
@@ -2238,7 +2288,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "fragmentbox2/rotations/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "fragmentbox2_rotations_south",
@@ -2247,7 +2297,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "fragmentbox2/rotations/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "fragmentbox2_rotations_west",
@@ -2256,7 +2306,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "fragmentbox2/rotations/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "iriacala_crushed_east",
@@ -2281,7 +2331,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/crushed/east/16",
       "iriacala/crushed/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_crushed_north",
@@ -2306,7 +2356,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/crushed/north/16",
       "iriacala/crushed/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_crushed_south",
@@ -2331,7 +2381,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/crushed/south/16",
       "iriacala/crushed/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_crushed_west",
@@ -2356,7 +2406,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/crushed/west/16",
       "iriacala/crushed/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_idle_east",
@@ -2368,7 +2418,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/idle/east/03",
       "iriacala/idle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_idle_north",
@@ -2380,7 +2430,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/idle/north/03",
       "iriacala/idle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_idle_south",
@@ -2392,7 +2442,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/idle/south/03",
       "iriacala/idle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_idle_west",
@@ -2404,7 +2454,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/idle/west/03",
       "iriacala/idle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_runcycle_east",
@@ -2420,7 +2470,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/runcycle/east/07",
       "iriacala/runcycle/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_runcycle_north",
@@ -2436,7 +2486,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/runcycle/north/07",
       "iriacala/runcycle/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_runcycle_south",
@@ -2452,7 +2502,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/runcycle/south/07",
       "iriacala/runcycle/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_runcycle_west",
@@ -2468,7 +2518,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/runcycle/west/07",
       "iriacala/runcycle/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_stand_east",
@@ -2477,7 +2527,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "iriacala/stand/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_stand_north",
@@ -2486,7 +2536,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "iriacala/stand/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_stand_south",
@@ -2495,7 +2545,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "iriacala/stand/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_stand_west",
@@ -2504,7 +2554,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "iriacala/stand/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_suffocating_east",
@@ -2529,7 +2579,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/suffocating/east/16",
       "iriacala/suffocating/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_suffocating_north",
@@ -2554,7 +2604,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/suffocating/north/16",
       "iriacala/suffocating/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_suffocating_south",
@@ -2579,7 +2629,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/suffocating/south/16",
       "iriacala/suffocating/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_suffocating_west",
@@ -2604,7 +2654,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/suffocating/west/16",
       "iriacala/suffocating/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_walkcycle_east",
@@ -2620,7 +2670,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/walkcycle/east/07",
       "iriacala/walkcycle/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_walkcycle_north",
@@ -2636,7 +2686,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/walkcycle/north/07",
       "iriacala/walkcycle/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_walkcycle_south",
@@ -2652,7 +2702,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/walkcycle/south/07",
       "iriacala/walkcycle/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "iriacala_walkcycle_west",
@@ -2668,7 +2718,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "iriacala/walkcycle/west/07",
       "iriacala/walkcycle/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "kirin09_idle_east",
@@ -2680,7 +2730,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "kirin09/idle/east/03",
       "kirin09/idle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "kirin09_idle_north",
@@ -2692,7 +2742,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "kirin09/idle/north/03",
       "kirin09/idle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "kirin09_idle_south",
@@ -2704,7 +2754,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "kirin09/idle/south/03",
       "kirin09/idle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "kirin09_idle_west",
@@ -2716,7 +2766,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "kirin09/idle/west/03",
       "kirin09/idle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "kirin09_rotations_east",
@@ -2725,7 +2775,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "kirin09/rotations/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "kirin09_rotations_north",
@@ -2734,7 +2784,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "kirin09/rotations/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "kirin09_rotations_south",
@@ -2743,7 +2793,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "kirin09/rotations/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "kirin09_rotations_west",
@@ -2752,7 +2802,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "kirin09/rotations/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "kirin09_walkcycle_east",
@@ -2764,7 +2814,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "kirin09/walkcycle/east/03",
       "kirin09/walkcycle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "kirin09_walkcycle_north",
@@ -2776,7 +2826,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "kirin09/walkcycle/north/03",
       "kirin09/walkcycle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "kirin09_walkcycle_south",
@@ -2788,7 +2838,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "kirin09/walkcycle/south/03",
       "kirin09/walkcycle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "kirin09_walkcycle_west",
@@ -2800,7 +2850,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "kirin09/walkcycle/west/03",
       "kirin09/walkcycle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "latticemeshuplink_anim2",
@@ -2825,7 +2875,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "latticemeshuplink/anim2/16",
       "latticemeshuplink/anim2/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "latticemeshuplink_idle",
@@ -2850,7 +2900,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "latticemeshuplink/idle/16",
       "latticemeshuplink/idle/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "latticemeshuplink_rotations",
@@ -2859,7 +2909,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "latticemeshuplink/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "lockpick_rotations",
@@ -2868,7 +2918,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "lockpick/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "maintenancekey_rotations",
@@ -2877,7 +2927,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "maintenancekey/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "maraibarra_drinkcoffee_east",
@@ -2891,7 +2941,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/drinkcoffee/east/05",
       "maraibarra/drinkcoffee/east/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_drinkcoffee_north",
@@ -2905,7 +2955,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/drinkcoffee/north/05",
       "maraibarra/drinkcoffee/north/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_drinkcoffee_south",
@@ -2919,7 +2969,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/drinkcoffee/south/05",
       "maraibarra/drinkcoffee/south/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_drinkcoffee_west",
@@ -2933,7 +2983,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/drinkcoffee/west/05",
       "maraibarra/drinkcoffee/west/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_idle_east",
@@ -2945,7 +2995,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/idle/east/03",
       "maraibarra/idle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_idle_north",
@@ -2957,7 +3007,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/idle/north/03",
       "maraibarra/idle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_idle_south",
@@ -2969,7 +3019,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/idle/south/03",
       "maraibarra/idle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_idle_west",
@@ -2981,7 +3031,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/idle/west/03",
       "maraibarra/idle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_lowerhead_east",
@@ -3006,7 +3056,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/lowerhead/east/16",
       "maraibarra/lowerhead/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_lowerhead_north",
@@ -3031,7 +3081,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/lowerhead/north/16",
       "maraibarra/lowerhead/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_lowerhead_south",
@@ -3056,7 +3106,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/lowerhead/south/16",
       "maraibarra/lowerhead/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_lowerhead_west",
@@ -3081,7 +3131,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/lowerhead/west/16",
       "maraibarra/lowerhead/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_reachforward_east",
@@ -3106,7 +3156,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/reachforward/east/16",
       "maraibarra/reachforward/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_reachforward_north",
@@ -3131,7 +3181,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/reachforward/north/16",
       "maraibarra/reachforward/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_reachforward_south",
@@ -3156,7 +3206,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/reachforward/south/16",
       "maraibarra/reachforward/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_reachforward_west",
@@ -3181,7 +3231,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/reachforward/west/16",
       "maraibarra/reachforward/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_runcycle_east",
@@ -3197,7 +3247,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/runcycle/east/07",
       "maraibarra/runcycle/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_runcycle_north",
@@ -3213,7 +3263,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/runcycle/north/07",
       "maraibarra/runcycle/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_runcycle_south",
@@ -3229,7 +3279,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/runcycle/south/07",
       "maraibarra/runcycle/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_runcycle_west",
@@ -3245,7 +3295,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/runcycle/west/07",
       "maraibarra/runcycle/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_stand_east",
@@ -3254,7 +3304,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "maraibarra/stand/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_stand_north",
@@ -3263,7 +3313,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "maraibarra/stand/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_stand_south",
@@ -3272,7 +3322,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "maraibarra/stand/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_stand_west",
@@ -3281,7 +3331,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "maraibarra/stand/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_walkcycle_east",
@@ -3297,7 +3347,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/walkcycle/east/07",
       "maraibarra/walkcycle/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_walkcycle_north",
@@ -3313,7 +3363,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/walkcycle/north/07",
       "maraibarra/walkcycle/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_walkcycle_south",
@@ -3329,7 +3379,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/walkcycle/south/07",
       "maraibarra/walkcycle/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "maraibarra_walkcycle_west",
@@ -3345,7 +3395,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "maraibarra/walkcycle/west/07",
       "maraibarra/walkcycle/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "meshuplink_anim2",
@@ -3358,7 +3408,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "meshuplink/anim2/04",
       "meshuplink/anim2/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "meshuplink_idle",
@@ -3383,7 +3433,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "meshuplink/idle/16",
       "meshuplink/idle/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "meshuplink_rotations",
@@ -3392,7 +3442,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "meshuplink/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "meshuplink2_rotations",
@@ -3401,7 +3451,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "meshuplink2/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "meshuplink3_rotations",
@@ -3410,7 +3460,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "meshuplink3/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-88x88"
   },
   {
     "key": "mite3swarm_dissipating_east",
@@ -3429,7 +3479,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/dissipating/east/10",
       "mite3swarm/dissipating/east/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_dissipating_north",
@@ -3448,7 +3498,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/dissipating/north/10",
       "mite3swarm/dissipating/north/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_dissipating_south",
@@ -3467,7 +3517,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/dissipating/south/10",
       "mite3swarm/dissipating/south/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_dissipating_west",
@@ -3486,7 +3536,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/dissipating/west/10",
       "mite3swarm/dissipating/west/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_forming_east",
@@ -3505,7 +3555,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/forming/east/10",
       "mite3swarm/forming/east/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_forming_north",
@@ -3524,7 +3574,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/forming/north/10",
       "mite3swarm/forming/north/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_forming_south",
@@ -3543,7 +3593,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/forming/south/10",
       "mite3swarm/forming/south/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_forming_west",
@@ -3562,7 +3612,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/forming/west/10",
       "mite3swarm/forming/west/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_idle_east",
@@ -3581,7 +3631,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/idle/east/10",
       "mite3swarm/idle/east/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_idle_north",
@@ -3600,7 +3650,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/idle/north/10",
       "mite3swarm/idle/north/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_idle_south",
@@ -3619,7 +3669,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/idle/south/10",
       "mite3swarm/idle/south/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_idle_west",
@@ -3638,7 +3688,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/idle/west/10",
       "mite3swarm/idle/west/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_rotations_east",
@@ -3647,7 +3697,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "mite3swarm/rotations/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_rotations_north",
@@ -3656,7 +3706,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "mite3swarm/rotations/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_rotations_south",
@@ -3665,7 +3715,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "mite3swarm/rotations/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_rotations_west",
@@ -3674,7 +3724,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "mite3swarm/rotations/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_walkcycle_east",
@@ -3693,7 +3743,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/walkcycle/east/10",
       "mite3swarm/walkcycle/east/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_walkcycle_north",
@@ -3712,7 +3762,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/walkcycle/north/10",
       "mite3swarm/walkcycle/north/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_walkcycle_south",
@@ -3731,7 +3781,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/walkcycle/south/10",
       "mite3swarm/walkcycle/south/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "mite3swarm_walkcycle_west",
@@ -3750,7 +3800,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/walkcycle/west/10",
       "mite3swarm/walkcycle/west/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-52x52"
   },
   {
     "key": "nwsmac01_drawbelt_east",
@@ -3769,7 +3819,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/drawbelt/east/10",
       "nwsmac01/drawbelt/east/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_drawbelt_north",
@@ -3788,7 +3838,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/drawbelt/north/10",
       "nwsmac01/drawbelt/north/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_drawbelt_south",
@@ -3807,7 +3857,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/drawbelt/south/10",
       "nwsmac01/drawbelt/south/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_drawbelt_west",
@@ -3826,7 +3876,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/drawbelt/west/10",
       "nwsmac01/drawbelt/west/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_gettingup_east",
@@ -3839,7 +3889,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/gettingup/east/04",
       "nwsmac01/gettingup/east/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_gettingup_north",
@@ -3852,7 +3902,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/gettingup/north/04",
       "nwsmac01/gettingup/north/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_gettingup_south",
@@ -3865,7 +3915,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/gettingup/south/04",
       "nwsmac01/gettingup/south/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_gettingup_west",
@@ -3878,7 +3928,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/gettingup/west/04",
       "nwsmac01/gettingup/west/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_grapple_east",
@@ -3897,7 +3947,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/grapple/east/10",
       "nwsmac01/grapple/east/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_grapple_north",
@@ -3916,7 +3966,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/grapple/north/10",
       "nwsmac01/grapple/north/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_grapple_south",
@@ -3935,7 +3985,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/grapple/south/10",
       "nwsmac01/grapple/south/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_grapple_west",
@@ -3954,7 +4004,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/grapple/west/10",
       "nwsmac01/grapple/west/11"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_idle_east",
@@ -3966,7 +4016,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/idle/east/03",
       "nwsmac01/idle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_idle_north",
@@ -3978,7 +4028,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/idle/north/03",
       "nwsmac01/idle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_idle_south",
@@ -3990,7 +4040,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/idle/south/03",
       "nwsmac01/idle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_idle_west",
@@ -4002,7 +4052,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/idle/west/03",
       "nwsmac01/idle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_runcycle_east",
@@ -4014,7 +4064,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/runcycle/east/03",
       "nwsmac01/runcycle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_runcycle_north",
@@ -4026,7 +4076,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/runcycle/north/03",
       "nwsmac01/runcycle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_runcycle_south",
@@ -4038,7 +4088,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/runcycle/south/03",
       "nwsmac01/runcycle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_runcycle_west",
@@ -4050,7 +4100,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/runcycle/west/03",
       "nwsmac01/runcycle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_stand_east",
@@ -4059,7 +4109,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "nwsmac01/stand/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_stand_north",
@@ -4068,7 +4118,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "nwsmac01/stand/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_stand_south",
@@ -4077,7 +4127,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "nwsmac01/stand/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_stand_west",
@@ -4086,7 +4136,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "nwsmac01/stand/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_walkcycle_east",
@@ -4102,7 +4152,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/walkcycle/east/07",
       "nwsmac01/walkcycle/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_walkcycle_north",
@@ -4118,7 +4168,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/walkcycle/north/07",
       "nwsmac01/walkcycle/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_walkcycle_south",
@@ -4134,7 +4184,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/walkcycle/south/07",
       "nwsmac01/walkcycle/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "nwsmac01_walkcycle_west",
@@ -4150,7 +4200,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/walkcycle/west/07",
       "nwsmac01/walkcycle/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-56x56"
   },
   {
     "key": "postcommonwealthsurvivora_idle_east",
@@ -4162,7 +4212,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/idle/east/03",
       "postcommonwealthsurvivora/idle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_idle_north",
@@ -4174,7 +4224,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/idle/north/03",
       "postcommonwealthsurvivora/idle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_idle_south",
@@ -4186,7 +4236,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/idle/south/03",
       "postcommonwealthsurvivora/idle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_idle_west",
@@ -4198,7 +4248,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/idle/west/03",
       "postcommonwealthsurvivora/idle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_losingbalance_east",
@@ -4223,7 +4273,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/losingbalance/east/16",
       "postcommonwealthsurvivora/losingbalance/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_losingbalance_north",
@@ -4248,7 +4298,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/losingbalance/north/16",
       "postcommonwealthsurvivora/losingbalance/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_losingbalance_south",
@@ -4273,7 +4323,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/losingbalance/south/16",
       "postcommonwealthsurvivora/losingbalance/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_losingbalance_west",
@@ -4298,7 +4348,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/losingbalance/west/16",
       "postcommonwealthsurvivora/losingbalance/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_runcycle_east",
@@ -4310,7 +4360,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/runcycle/east/03",
       "postcommonwealthsurvivora/runcycle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_runcycle_north",
@@ -4322,7 +4372,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/runcycle/north/03",
       "postcommonwealthsurvivora/runcycle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_runcycle_south",
@@ -4334,7 +4384,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/runcycle/south/03",
       "postcommonwealthsurvivora/runcycle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_runcycle_west",
@@ -4346,7 +4396,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/runcycle/west/03",
       "postcommonwealthsurvivora/runcycle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_stand_east",
@@ -4355,7 +4405,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "postcommonwealthsurvivora/stand/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_stand_north",
@@ -4364,7 +4414,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "postcommonwealthsurvivora/stand/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_stand_south",
@@ -4373,7 +4423,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "postcommonwealthsurvivora/stand/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_stand_west",
@@ -4382,7 +4432,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "postcommonwealthsurvivora/stand/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_walkcycle_east",
@@ -4398,7 +4448,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/walkcycle/east/07",
       "postcommonwealthsurvivora/walkcycle/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_walkcycle_north",
@@ -4414,7 +4464,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/walkcycle/north/07",
       "postcommonwealthsurvivora/walkcycle/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_walkcycle_south",
@@ -4430,7 +4480,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/walkcycle/south/07",
       "postcommonwealthsurvivora/walkcycle/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivora_walkcycle_west",
@@ -4446,7 +4496,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivora/walkcycle/west/07",
       "postcommonwealthsurvivora/walkcycle/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_falling_east",
@@ -4471,7 +4521,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/falling/east/16",
       "postcommonwealthsurvivorb/falling/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_falling_north",
@@ -4496,7 +4546,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/falling/north/16",
       "postcommonwealthsurvivorb/falling/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_falling_south",
@@ -4521,7 +4571,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/falling/south/16",
       "postcommonwealthsurvivorb/falling/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_falling_west",
@@ -4546,7 +4596,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/falling/west/16",
       "postcommonwealthsurvivorb/falling/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_idle_east",
@@ -4558,7 +4608,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/idle/east/03",
       "postcommonwealthsurvivorb/idle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_idle_north",
@@ -4570,7 +4620,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/idle/north/03",
       "postcommonwealthsurvivorb/idle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_idle_south",
@@ -4582,7 +4632,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/idle/south/03",
       "postcommonwealthsurvivorb/idle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_idle_west",
@@ -4594,7 +4644,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/idle/west/03",
       "postcommonwealthsurvivorb/idle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_runcycle_east",
@@ -4606,7 +4656,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/runcycle/east/03",
       "postcommonwealthsurvivorb/runcycle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_runcycle_north",
@@ -4618,7 +4668,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/runcycle/north/03",
       "postcommonwealthsurvivorb/runcycle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_runcycle_south",
@@ -4630,7 +4680,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/runcycle/south/03",
       "postcommonwealthsurvivorb/runcycle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_runcycle_west",
@@ -4642,7 +4692,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/runcycle/west/03",
       "postcommonwealthsurvivorb/runcycle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_stand_east",
@@ -4651,7 +4701,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "postcommonwealthsurvivorb/stand/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_stand_north",
@@ -4660,7 +4710,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "postcommonwealthsurvivorb/stand/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_stand_south",
@@ -4669,7 +4719,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "postcommonwealthsurvivorb/stand/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_stand_west",
@@ -4678,7 +4728,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "postcommonwealthsurvivorb/stand/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_walkcycle_east",
@@ -4694,7 +4744,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/walkcycle/east/07",
       "postcommonwealthsurvivorb/walkcycle/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_walkcycle_north",
@@ -4710,7 +4760,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/walkcycle/north/07",
       "postcommonwealthsurvivorb/walkcycle/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_walkcycle_south",
@@ -4726,7 +4776,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/walkcycle/south/07",
       "postcommonwealthsurvivorb/walkcycle/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "postcommonwealthsurvivorb_walkcycle_west",
@@ -4742,7 +4792,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "postcommonwealthsurvivorb/walkcycle/west/07",
       "postcommonwealthsurvivorb/walkcycle/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rapportnotes_idle",
@@ -4763,7 +4813,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rapportnotes/idle/12",
       "rapportnotes/idle/13"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "rapportnotes_rotations",
@@ -4772,7 +4822,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "rapportnotes/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "rowanibarra_encumberedwalkcycle_east",
@@ -4797,7 +4847,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/encumberedwalkcycle/east/16",
       "rowanibarra/encumberedwalkcycle/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_encumberedwalkcycle_north",
@@ -4822,7 +4872,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/encumberedwalkcycle/north/16",
       "rowanibarra/encumberedwalkcycle/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_encumberedwalkcycle_south",
@@ -4847,7 +4897,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/encumberedwalkcycle/south/16",
       "rowanibarra/encumberedwalkcycle/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_encumberedwalkcycle_west",
@@ -4872,7 +4922,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/encumberedwalkcycle/west/16",
       "rowanibarra/encumberedwalkcycle/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_gettingup_east",
@@ -4885,7 +4935,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/gettingup/east/04",
       "rowanibarra/gettingup/east/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_gettingup_north",
@@ -4898,7 +4948,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/gettingup/north/04",
       "rowanibarra/gettingup/north/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_gettingup_south",
@@ -4911,7 +4961,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/gettingup/south/04",
       "rowanibarra/gettingup/south/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_gettingup_west",
@@ -4924,7 +4974,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/gettingup/west/04",
       "rowanibarra/gettingup/west/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_hide_east",
@@ -4949,7 +4999,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/hide/east/16",
       "rowanibarra/hide/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_hide_north",
@@ -4974,7 +5024,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/hide/north/16",
       "rowanibarra/hide/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_hide_south",
@@ -4999,7 +5049,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/hide/south/16",
       "rowanibarra/hide/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_hide_west",
@@ -5024,7 +5074,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/hide/west/16",
       "rowanibarra/hide/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_idle_east",
@@ -5036,7 +5086,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/idle/east/03",
       "rowanibarra/idle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_idle_north",
@@ -5048,7 +5098,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/idle/north/03",
       "rowanibarra/idle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_idle_south",
@@ -5060,7 +5110,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/idle/south/03",
       "rowanibarra/idle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_idle_west",
@@ -5072,7 +5122,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/idle/west/03",
       "rowanibarra/idle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_interactterminal_east",
@@ -5097,7 +5147,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/interactterminal/east/16",
       "rowanibarra/interactterminal/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_interactterminal_north",
@@ -5122,7 +5172,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/interactterminal/north/16",
       "rowanibarra/interactterminal/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_interactterminal_south",
@@ -5147,7 +5197,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/interactterminal/south/16",
       "rowanibarra/interactterminal/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_interactterminal_west",
@@ -5172,7 +5222,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/interactterminal/west/16",
       "rowanibarra/interactterminal/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_mountbox_east",
@@ -5197,7 +5247,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/mountbox/east/16",
       "rowanibarra/mountbox/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_mountbox_north",
@@ -5222,7 +5272,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/mountbox/north/16",
       "rowanibarra/mountbox/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_mountbox_south",
@@ -5247,7 +5297,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/mountbox/south/16",
       "rowanibarra/mountbox/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_mountbox_west",
@@ -5272,7 +5322,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/mountbox/west/16",
       "rowanibarra/mountbox/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_pickupfragmentbox_east",
@@ -5285,7 +5335,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/pickupfragmentbox/east/04",
       "rowanibarra/pickupfragmentbox/east/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_pickupfragmentbox_north",
@@ -5298,7 +5348,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/pickupfragmentbox/north/04",
       "rowanibarra/pickupfragmentbox/north/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_pickupfragmentbox_south",
@@ -5311,7 +5361,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/pickupfragmentbox/south/04",
       "rowanibarra/pickupfragmentbox/south/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_pickupfragmentbox_west",
@@ -5324,7 +5374,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/pickupfragmentbox/west/04",
       "rowanibarra/pickupfragmentbox/west/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_pickupitem_east",
@@ -5337,7 +5387,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/pickupitem/east/04",
       "rowanibarra/pickupitem/east/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_pickupitem_north",
@@ -5350,7 +5400,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/pickupitem/north/04",
       "rowanibarra/pickupitem/north/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_pickupitem_south",
@@ -5363,7 +5413,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/pickupitem/south/04",
       "rowanibarra/pickupitem/south/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_pickupitem_west",
@@ -5376,7 +5426,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/pickupitem/west/04",
       "rowanibarra/pickupitem/west/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_runcycle_east",
@@ -5392,7 +5442,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/runcycle/east/07",
       "rowanibarra/runcycle/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_runcycle_north",
@@ -5408,7 +5458,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/runcycle/north/07",
       "rowanibarra/runcycle/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_runcycle_south",
@@ -5424,7 +5474,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/runcycle/south/07",
       "rowanibarra/runcycle/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_runcycle_west",
@@ -5440,7 +5490,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/runcycle/west/07",
       "rowanibarra/runcycle/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_stand_east",
@@ -5449,7 +5499,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "rowanibarra/stand/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_stand_north",
@@ -5458,7 +5508,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "rowanibarra/stand/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_stand_south",
@@ -5467,7 +5517,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "rowanibarra/stand/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_stand_west",
@@ -5476,7 +5526,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "rowanibarra/stand/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_walkcycle_east",
@@ -5492,7 +5542,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/walkcycle/east/07",
       "rowanibarra/walkcycle/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_walkcycle_north",
@@ -5508,7 +5558,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/walkcycle/north/07",
       "rowanibarra/walkcycle/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_walkcycle_south",
@@ -5524,7 +5574,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/walkcycle/south/07",
       "rowanibarra/walkcycle/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "rowanibarra_walkcycle_west",
@@ -5540,7 +5590,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/walkcycle/west/07",
       "rowanibarra/walkcycle/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_anim_603b1472_east",
@@ -5565,7 +5615,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/anim_603b1472/east/16",
       "solibarracastro/anim_603b1472/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_anim_603b1472_north",
@@ -5590,7 +5640,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/anim_603b1472/north/16",
       "solibarracastro/anim_603b1472/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_anim_603b1472_south",
@@ -5615,7 +5665,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/anim_603b1472/south/16",
       "solibarracastro/anim_603b1472/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_anim_603b1472_west",
@@ -5640,7 +5690,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/anim_603b1472/west/16",
       "solibarracastro/anim_603b1472/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_anim_e7e1b1c3_east",
@@ -5652,7 +5702,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/anim_e7e1b1c3/east/03",
       "solibarracastro/anim_e7e1b1c3/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_anim_e7e1b1c3_north",
@@ -5664,7 +5714,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/anim_e7e1b1c3/north/03",
       "solibarracastro/anim_e7e1b1c3/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_anim_e7e1b1c3_south",
@@ -5676,7 +5726,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/anim_e7e1b1c3/south/03",
       "solibarracastro/anim_e7e1b1c3/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_anim_e7e1b1c3_west",
@@ -5688,7 +5738,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/anim_e7e1b1c3/west/03",
       "solibarracastro/anim_e7e1b1c3/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_crouchedwalking_east",
@@ -5702,7 +5752,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/crouchedwalking/east/05",
       "solibarracastro/crouchedwalking/east/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_crouchedwalking_north",
@@ -5716,7 +5766,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/crouchedwalking/north/05",
       "solibarracastro/crouchedwalking/north/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_crouchedwalking_south",
@@ -5730,7 +5780,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/crouchedwalking/south/05",
       "solibarracastro/crouchedwalking/south/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_crouchedwalking_west",
@@ -5744,7 +5794,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/crouchedwalking/west/05",
       "solibarracastro/crouchedwalking/west/06"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_crouching_east",
@@ -5757,7 +5807,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/crouching/east/04",
       "solibarracastro/crouching/east/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_crouching_north",
@@ -5770,7 +5820,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/crouching/north/04",
       "solibarracastro/crouching/north/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_crouching_south",
@@ -5783,7 +5833,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/crouching/south/04",
       "solibarracastro/crouching/south/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_crouching_west",
@@ -5796,7 +5846,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/crouching/west/04",
       "solibarracastro/crouching/west/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_decapitated_east",
@@ -5821,7 +5871,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/decapitated/east/16",
       "solibarracastro/decapitated/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_decapitated_north",
@@ -5846,7 +5896,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/decapitated/north/16",
       "solibarracastro/decapitated/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_decapitated_south",
@@ -5871,7 +5921,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/decapitated/south/16",
       "solibarracastro/decapitated/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_decapitated_west",
@@ -5896,7 +5946,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/decapitated/west/16",
       "solibarracastro/decapitated/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_gettingup_east",
@@ -5909,7 +5959,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/gettingup/east/04",
       "solibarracastro/gettingup/east/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_gettingup_north",
@@ -5922,7 +5972,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/gettingup/north/04",
       "solibarracastro/gettingup/north/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_gettingup_south",
@@ -5935,7 +5985,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/gettingup/south/04",
       "solibarracastro/gettingup/south/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_gettingup_west",
@@ -5948,7 +5998,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/gettingup/west/04",
       "solibarracastro/gettingup/west/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_hoisted_east",
@@ -5973,7 +6023,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/hoisted/east/16",
       "solibarracastro/hoisted/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_hoisted_north",
@@ -5998,7 +6048,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/hoisted/north/16",
       "solibarracastro/hoisted/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_hoisted_south",
@@ -6023,7 +6073,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/hoisted/south/16",
       "solibarracastro/hoisted/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_hoisted_west",
@@ -6048,7 +6098,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/hoisted/west/16",
       "solibarracastro/hoisted/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_idle_east",
@@ -6060,7 +6110,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/idle/east/03",
       "solibarracastro/idle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_idle_north",
@@ -6072,7 +6122,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/idle/north/03",
       "solibarracastro/idle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_idle_south",
@@ -6084,7 +6134,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/idle/south/03",
       "solibarracastro/idle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_idle_west",
@@ -6096,7 +6146,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/idle/west/03",
       "solibarracastro/idle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_incinerated_east",
@@ -6121,7 +6171,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/incinerated/east/16",
       "solibarracastro/incinerated/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_incinerated_north",
@@ -6146,7 +6196,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/incinerated/north/16",
       "solibarracastro/incinerated/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_incinerated_south",
@@ -6171,7 +6221,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/incinerated/south/16",
       "solibarracastro/incinerated/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_incinerated_west",
@@ -6196,7 +6246,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/incinerated/west/16",
       "solibarracastro/incinerated/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_pickupobject_east",
@@ -6209,7 +6259,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/pickupobject/east/04",
       "solibarracastro/pickupobject/east/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_pickupobject_north",
@@ -6222,7 +6272,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/pickupobject/north/04",
       "solibarracastro/pickupobject/north/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_pickupobject_south",
@@ -6235,7 +6285,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/pickupobject/south/04",
       "solibarracastro/pickupobject/south/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_pickupobject_west",
@@ -6248,7 +6298,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/pickupobject/west/04",
       "solibarracastro/pickupobject/west/05"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_running_east",
@@ -6264,7 +6314,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/running/east/07",
       "solibarracastro/running/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_running_north",
@@ -6280,7 +6330,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/running/north/07",
       "solibarracastro/running/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_running_south",
@@ -6296,7 +6346,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/running/south/07",
       "solibarracastro/running/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_running_west",
@@ -6312,7 +6362,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/running/west/07",
       "solibarracastro/running/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_terminal_east",
@@ -6337,7 +6387,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/terminal/east/16",
       "solibarracastro/terminal/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_terminal_north",
@@ -6362,7 +6412,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/terminal/north/16",
       "solibarracastro/terminal/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_terminal_south",
@@ -6387,7 +6437,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/terminal/south/16",
       "solibarracastro/terminal/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_terminal_west",
@@ -6412,7 +6462,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/terminal/west/16",
       "solibarracastro/terminal/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_walkcycle_east",
@@ -6428,7 +6478,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/walkcycle/east/07",
       "solibarracastro/walkcycle/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_walkcycle_north",
@@ -6444,7 +6494,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/walkcycle/north/07",
       "solibarracastro/walkcycle/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_walkcycle_south",
@@ -6460,7 +6510,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/walkcycle/south/07",
       "solibarracastro/walkcycle/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "solibarracastro_walkcycle_west",
@@ -6476,7 +6526,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "solibarracastro/walkcycle/west/07",
       "solibarracastro/walkcycle/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_idle_east",
@@ -6488,7 +6538,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/idle/east/03",
       "thefinder/idle/east/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_idle_north",
@@ -6500,7 +6550,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/idle/north/03",
       "thefinder/idle/north/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_idle_south",
@@ -6512,7 +6562,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/idle/south/03",
       "thefinder/idle/south/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_idle_west",
@@ -6524,7 +6574,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/idle/west/03",
       "thefinder/idle/west/04"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_runcycle_east",
@@ -6540,7 +6590,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/runcycle/east/07",
       "thefinder/runcycle/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_runcycle_north",
@@ -6556,7 +6606,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/runcycle/north/07",
       "thefinder/runcycle/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_runcycle_south",
@@ -6572,7 +6622,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/runcycle/south/07",
       "thefinder/runcycle/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_runcycle_west",
@@ -6588,7 +6638,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/runcycle/west/07",
       "thefinder/runcycle/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_stand_east",
@@ -6597,7 +6647,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "thefinder/stand/east/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_stand_north",
@@ -6606,7 +6656,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "thefinder/stand/north/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_stand_south",
@@ -6615,7 +6665,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "thefinder/stand/south/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_stand_west",
@@ -6624,7 +6674,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "thefinder/stand/west/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_standstill_east",
@@ -6649,7 +6699,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/standstill/east/16",
       "thefinder/standstill/east/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_standstill_north",
@@ -6674,7 +6724,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/standstill/north/16",
       "thefinder/standstill/north/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_standstill_south",
@@ -6699,7 +6749,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/standstill/south/16",
       "thefinder/standstill/south/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_standstill_west",
@@ -6724,7 +6774,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/standstill/west/16",
       "thefinder/standstill/west/17"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_walkcycle_east",
@@ -6740,7 +6790,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/walkcycle/east/07",
       "thefinder/walkcycle/east/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_walkcycle_north",
@@ -6756,7 +6806,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/walkcycle/north/07",
       "thefinder/walkcycle/north/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_walkcycle_south",
@@ -6772,7 +6822,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/walkcycle/south/07",
       "thefinder/walkcycle/south/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "thefinder_walkcycle_west",
@@ -6788,7 +6838,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/walkcycle/west/07",
       "thefinder/walkcycle/west/08"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-36x36"
   },
   {
     "key": "themehightechmicroperfec_rotations",
@@ -6797,7 +6847,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "themehightechmicroperfec/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "themehightechmicroperfec2_idle",
@@ -6818,7 +6868,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "themehightechmicroperfec2/idle/12",
       "themehightechmicroperfec2/idle/13"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "themehightechmicroperfec2_rotations",
@@ -6827,7 +6877,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "themehightechmicroperfec2/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "themehightechmicroperfec3_rotations",
@@ -6836,7 +6886,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "themehightechmicroperfec3/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "themehightechmicroperfec4_rotations",
@@ -6845,7 +6895,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "themehightechmicroperfec4/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "themehightechmicroperfec5_rotations",
@@ -6854,7 +6904,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "themehightechmicroperfec5/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "themehightechmicroperfec6_rotations",
@@ -6863,7 +6913,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "themehightechmicroperfec6/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "themehightechmicroperfec7_rotations",
@@ -6872,7 +6922,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "themehightechmicroperfec7/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "themehightechmicroperfec8_rotations",
@@ -6881,7 +6931,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "themehightechmicroperfec8/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   },
   {
     "key": "ventoverridekey_rotations",
@@ -6890,6 +6940,6 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "ventoverridekey/rotations/01"
     ],
-    "texture": "chars-art"
+    "texture": "chars-art-48x48"
   }
 ];

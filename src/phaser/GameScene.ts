@@ -8,10 +8,21 @@ import { worldEngine } from "../engine/WorldEngine";
 import { mooseAnimKey } from "../data/tilesets/anim-keys";
 import type { MooseTileAnim } from "../data/tilesets/types";
 import { MOOSE_TILESETS } from "../data/tilesets/registry.generated";
+import { GENERATED_ATLASES } from "../data/char-anims.generated";
 import type { Entity, Facing, Tile, TileKind, Vec3 } from "../types/world.types";
 
 const TILE_PX = 32;
 const SPRITE_SCALE = TILE_PX / 36; // atlas frames are 36×36
+
+// Default texture key for newly-created sprites. The actual frames are
+// supplied by `sprite.play(animKey)` from the matching bucket atlas, but
+// Phaser still wants *some* loaded texture at construction time. Prefer the
+// 36×36 character bucket (where the player + enforcers live) and fall back
+// to the legacy "chars" atlas if no generated bucket exists yet.
+const DEFAULT_SPRITE_TEXTURE =
+  GENERATED_ATLASES.find((a) => a.key === "chars-art-36x36")?.key ??
+  GENERATED_ATLASES[0]?.key ??
+  "chars";
 
 const TILE_COLORS: Record<TileKind, number> = {
   FLOOR: 0x0f1518,
@@ -102,7 +113,7 @@ export class GameScene extends Phaser.Scene {
     const initialFacing: Facing = worldEngine.hasState()
       ? worldEngine.getState().player.facing
       : "south";
-    this.playerSprite = this.add.sprite(0, 0, "chars-art");
+    this.playerSprite = this.add.sprite(0, 0, DEFAULT_SPRITE_TEXTURE);
     this.playerSprite.setScale(SPRITE_SCALE);
     this.playerSprite.setDepth(5);
     this.tryPlay(this.playerSprite, this.resolvePlayerAnimKey(initialFacing, false, false));
@@ -138,7 +149,9 @@ export class GameScene extends Phaser.Scene {
     if (!this.anims.exists("empfx_blast")) return;
     const px = this.offsetX + pos.x * TILE_PX + TILE_PX / 2;
     const py = this.offsetY + pos.y * TILE_PX + TILE_PX / 2;
-    const sprite = this.add.sprite(px, py, "chars-art");
+    // The 256×256 EMP frames live in the chars-art-256x256 bucket; play()
+    // will swap in the correct frames once the animation kicks off.
+    const sprite = this.add.sprite(px, py, DEFAULT_SPRITE_TEXTURE);
     sprite.setDepth(15);
     sprite.setScale((TILE_PX * 3) / 256);
     sprite.once("animationcomplete", () => sprite.destroy());
@@ -272,7 +285,7 @@ export class GameScene extends Phaser.Scene {
       if (hasArt) {
         let sprite = this.entitySprites.get(entity.id);
         if (!sprite) {
-          sprite = this.add.sprite(px, py, "chars-art");
+          sprite = this.add.sprite(px, py, DEFAULT_SPRITE_TEXTURE);
           sprite.setScale(SPRITE_SCALE);
           sprite.setDepth(5);
           this.entitySprites.set(entity.id, sprite);

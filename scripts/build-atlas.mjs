@@ -19,12 +19,36 @@ import { Jimp } from "jimp";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const ART_DIR = path.join(ROOT, "art");
-const ATLAS_PNG = path.join(ROOT, "public/assets/sprite_pack/chars-art.png");
-const ATLAS_JSON = path.join(ROOT, "public/assets/sprite_pack/chars-art.json");
+const SPRITE_PACK_DIR = path.join(ROOT, "public/assets/sprite_pack");
 const REGISTRY_TS = path.join(ROOT, "src/data/char-anims.generated.ts");
 
-const ATLAS_COLUMNS = 8;
-const TEXTURE_KEY = "chars-art";
+const TEXTURE_KEY_PREFIX = "chars-art";
+
+// Keep each atlas under ~4000 px on its longest side so it loads on the
+// 4096×4096 WebGL floor (iPad Air 2, older Android). Per bucket we pick a
+// column count that yields a roughly-square atlas while respecting the
+// width cap for the bucket's cell size.
+const MAX_ATLAS_DIMENSION = 4000;
+
+function bucketColumns(cellWidth, frameCount) {
+  const widthCap = Math.max(1, Math.floor(MAX_ATLAS_DIMENSION / cellWidth));
+  const square = Math.max(1, Math.ceil(Math.sqrt(frameCount)));
+  return Math.min(widthCap, Math.max(square, 1), frameCount);
+}
+
+function bucketKey(width, height) {
+  return `${TEXTURE_KEY_PREFIX}-${width}x${height}`;
+}
+
+function bucketFiles(width, height) {
+  const key = bucketKey(width, height);
+  return {
+    key,
+    png: path.join(SPRITE_PACK_DIR, `${key}.png`),
+    json: path.join(SPRITE_PACK_DIR, `${key}.json`),
+    publicPath: `${key}.png`,
+  };
+}
 
 const DEFAULT_FRAME_RATES = {
   idle: 4,
@@ -153,19 +177,33 @@ function assertConsistentSize(frames) {
   }
 }
 
+async function pruneOldAtlases() {
+  // Remove any pre-existing chars-art*.{png,json} so renames/regroupings
+  // don't leave orphan files in the public/ tree.
+  if (!(await exists(SPRITE_PACK_DIR))) return;
+  const entries = await fs.readdir(SPRITE_PACK_DIR);
+  for (const name of entries) {
+    if (!/^chars-art(?:-[0-9]+x[0-9]+)?\.(png|json)$/.test(name)) continue;
+    await fs.rm(path.join(SPRITE_PACK_DIR, name), { force: true });
+  }
+}
+
 async function writePlaceholderAtlas() {
+  // Emit a 1×1 chars-art-placeholder.{png,json} so BootScene always has at
+  // least one texture to load even when art/ is empty.
+  const files = bucketFiles(1, 1);
   const img = new Jimp({ width: 1, height: 1, color: 0x00000000 });
-  await fs.mkdir(path.dirname(ATLAS_PNG), { recursive: true });
-  await img.write(ATLAS_PNG);
+  await fs.mkdir(SPRITE_PACK_DIR, { recursive: true });
+  await img.write(files.png);
   await fs.writeFile(
-    ATLAS_JSON,
+    files.json,
     JSON.stringify(
       {
         frames: {},
         meta: {
           app: "article-zero/build-atlas.mjs",
           version: "1",
-          image: "chars-art.png",
+          image: files.publicPath,
           format: "RGBA8888",
           size: { w: 1, h: 1 },
           scale: "1",
@@ -175,27 +213,20 @@ async function writePlaceholderAtlas() {
       2,
     ),
   );
+  return [files];
 }
 
-async function buildAtlas(frames) {
-  if (frames.length === 0) {
-    await writePlaceholderAtlas();
-    return { frameMap: {}, atlasW: 1, atlasH: 1 };
-  }
-
-  // All frames go into a single grid. Cell size = max width × max height
-  // across the whole set. Per-character size is already enforced.
-  let cellW = 0;
-  let cellH = 0;
-  for (const f of frames) {
-    if (f.width > cellW) cellW = f.width;
-    if (f.height > cellH) cellH = f.height;
-  }
-
-  const cols = Math.min(ATLAS_COLUMNS, frames.length);
+/**
+ * Pack a single size-bucket into one atlas. Cell size matches the bucket's
+ * frame dimensions exactly, so there's no waste from larger sprites in
+ * other buckets.
+ */
+async function buildBucketAtlas(width, height, frames) {
+  const files = bucketFiles(width, height);
+  const cols = bucketColumns(width, frames.length);
   const rows = Math.ceil(frames.length / cols);
-  const atlasW = cols * cellW;
-  const atlasH = rows * cellH;
+  const atlasW = cols * width;
+  const atlasH = rows * height;
 
   const atlas = new Jimp({ width: atlasW, height: atlasH, color: 0x00000000 });
   const frameMap = {};
@@ -203,8 +234,8 @@ async function buildAtlas(frames) {
   frames.forEach((f, i) => {
     const col = i % cols;
     const row = Math.floor(i / cols);
-    const x = col * cellW;
-    const y = row * cellH;
+    const x = col * width;
+    const y = row * height;
     atlas.composite(f.image, x, y);
     frameMap[f.key] = {
       frame: { x, y, w: f.width, h: f.height },
@@ -215,17 +246,17 @@ async function buildAtlas(frames) {
     };
   });
 
-  await fs.mkdir(path.dirname(ATLAS_PNG), { recursive: true });
-  await atlas.write(ATLAS_PNG);
+  await fs.mkdir(SPRITE_PACK_DIR, { recursive: true });
+  await atlas.write(files.png);
   await fs.writeFile(
-    ATLAS_JSON,
+    files.json,
     JSON.stringify(
       {
         frames: frameMap,
         meta: {
           app: "article-zero/build-atlas.mjs",
           version: "1",
-          image: "chars-art.png",
+          image: files.publicPath,
           format: "RGBA8888",
           size: { w: atlasW, h: atlasH },
           scale: "1",
@@ -236,10 +267,34 @@ async function buildAtlas(frames) {
     ),
   );
 
-  return { frameMap, atlasW, atlasH };
+  return { ...files, atlasW, atlasH, frameCount: frames.length };
 }
 
-function emitRegistry(groups, meta) {
+async function buildAtlases(frames) {
+  await pruneOldAtlases();
+
+  if (frames.length === 0) {
+    return await writePlaceholderAtlas();
+  }
+
+  // Bucket frames by `${width}x${height}`. Per-character consistency is
+  // already enforced, so a character maps to exactly one bucket.
+  const byBucket = new Map(); // "WxH" -> frames[]
+  for (const f of frames) {
+    const k = `${f.width}x${f.height}`;
+    if (!byBucket.has(k)) byBucket.set(k, []);
+    byBucket.get(k).push(f);
+  }
+
+  const written = [];
+  for (const [size, bucketFrames] of byBucket) {
+    const [w, h] = size.split("x").map((n) => parseInt(n, 10));
+    written.push(await buildBucketAtlas(w, h, bucketFrames));
+  }
+  return written;
+}
+
+function emitRegistry(groups, meta, characterTexture, atlases) {
   // Build CharAnim entries grouped by (character, animation, direction).
   const anims = [];
   for (const g of groups) {
@@ -254,7 +309,8 @@ function emitRegistry(groups, meta) {
         ? `${g.character}/${g.animation}/${g.direction}/${name}`
         : `${g.character}/${g.animation}/${name}`;
     });
-    anims.push({ key, frameRate, repeat, frames: frameNames });
+    const texture = characterTexture.get(g.character) ?? TEXTURE_KEY_PREFIX;
+    anims.push({ key, frameRate, repeat, frames: frameNames, texture });
   }
 
   const body =
@@ -263,18 +319,26 @@ function emitRegistry(groups, meta) {
     "\n" +
     'import type { CharAnim } from "./char-anims";\n' +
     "\n" +
-    "export const GENERATED_ANIMS: CharAnim[] = " +
+    "export interface GeneratedAtlas {\n" +
+    "  key: string;\n" +
+    "  /** Path served from /assets/sprite_pack/ */\n" +
+    "  png: string;\n" +
+    "  json: string;\n" +
+    "}\n" +
+    "\n" +
+    "export const GENERATED_ATLASES: GeneratedAtlas[] = " +
     JSON.stringify(
-      anims.map((a) => ({
+      atlases.map((a) => ({
         key: a.key,
-        frameRate: a.frameRate,
-        repeat: a.repeat,
-        frames: a.frames,
-        texture: TEXTURE_KEY,
+        png: `/assets/sprite_pack/${a.key}.png`,
+        json: `/assets/sprite_pack/${a.key}.json`,
       })),
       null,
       2,
     ) +
+    ";\n\n" +
+    "export const GENERATED_ANIMS: CharAnim[] = " +
+    JSON.stringify(anims, null, 2) +
     ";\n";
   return fs.writeFile(REGISTRY_TS, body);
 }
@@ -283,16 +347,27 @@ async function main() {
   const { groups, meta } = await collect();
   const frames = await loadFrames(groups);
   assertConsistentSize(frames);
-  const { atlasW, atlasH } = await buildAtlas(frames);
-  await emitRegistry(groups, meta);
+  const atlases = await buildAtlases(frames);
+
+  // Map each character to the texture key of its bucket. Per-character size
+  // is already enforced, so a character maps to exactly one bucket.
+  const characterTexture = new Map(); // character -> "chars-art-WxH"
+  for (const f of frames) {
+    if (!characterTexture.has(f.character)) {
+      characterTexture.set(f.character, bucketKey(f.width, f.height));
+    }
+  }
+
+  await emitRegistry(groups, meta, characterTexture, atlases);
 
   const characterCount = new Set(groups.map((g) => g.character)).size;
   console.log(
-    `Atlas: ${frames.length} frames across ${characterCount} character(s) → ${atlasW}×${atlasH} px`,
+    `Atlases: ${frames.length} frames across ${characterCount} character(s) in ${atlases.length} bucket(s):`,
   );
-  console.log(`  ${path.relative(ROOT, ATLAS_PNG)}`);
-  console.log(`  ${path.relative(ROOT, ATLAS_JSON)}`);
-  console.log(`  ${path.relative(ROOT, REGISTRY_TS)}`);
+  for (const a of atlases) {
+    console.log(`  ${a.key}: ${a.frameCount ?? 0} frames → ${a.atlasW ?? 1}×${a.atlasH ?? 1} px`);
+  }
+  console.log(`  registry: ${path.relative(ROOT, REGISTRY_TS)}`);
 }
 
 main().catch((err) => {
