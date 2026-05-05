@@ -87,8 +87,8 @@ export class BranchSelectorScene extends Phaser.Scene {
       color: "#7fa1a8",
     }).setOrigin(0.5, 0);
 
-    const top = 140;
-    const lineH = 110;
+    const top = 110;
+    const lineH = 85;
     CHOICES.forEach((choice, i) => {
       const y = top + i * lineH;
       const titleColor = choice.status === "LIVE" ? "#cfe9ee" : "#5e7a80";
