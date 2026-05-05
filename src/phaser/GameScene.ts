@@ -250,6 +250,8 @@ export class GameScene extends Phaser.Scene {
       // overlays for game-relevant tile kinds, plus a faint dim wash on
       // unseen / remembered cells to communicate FOV.
       if (visible) {
+        this.tileLayer.fillStyle(TILE_COLORS[tile.kind], 0.3);
+        this.tileLayer.fillRect(px, py, TILE_PX - 1, TILE_PX - 1);
         this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile.kind);
       } else if (remembered) {
         this.tileLayer.fillStyle(0x050809, 0.35);

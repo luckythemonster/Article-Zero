@@ -136,6 +136,13 @@ export function eraSeedFromMooseLevel(
     }
   }
 
+  // Floor fallback: if no semantic floor was painted (e.g. the level relies
+  // on autotile rules that v1.5 can't evaluate), make every cell walkable so
+  // Sol can navigate the map for testing purposes.
+  if (!tiles.some(t => !t.solid)) {
+    for (let i = 0; i < tiles.length; i++) tiles[i] = makeTile("FLOOR");
+  }
+
   // Resolve spawn — preference order:
   //   1) explicit options.spawnOverride
   //   2) first non-zero cell in a layer named `spawn`
