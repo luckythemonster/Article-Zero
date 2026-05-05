@@ -56,20 +56,27 @@ function slugify(label) {
   return slug;
 }
 
-function inferStride(sprites) {
-  // Stride is the min positive gap between adjacent X coords on the same row.
-  // Falls back to 33 (the convention from stairs.zip).
-  const baseY = sprites[0]?.Y ?? 0;
-  const xs = sprites
-    .filter((s) => (s.Y ?? 0) === baseY)
-    .map((s) => s.X ?? 0)
-    .sort((a, b) => a - b);
-  let stride = 0;
-  for (let i = 1; i < xs.length; i++) {
-    const d = xs[i] - xs[i - 1];
-    if (d > 0 && (stride === 0 || d < stride)) stride = d;
+function inferStride(sprites, frameWidth) {
+  // Only consider sprites matching frameWidth — mixed-size packed atlases
+  // would otherwise produce cross-contamination between tile sizes.
+  // Scans all rows so single-sprite-per-row layouts still resolve.
+  // Falls back to frameWidth + 1 (standard Ed 1px-gutter convention).
+  const matching = sprites.filter((s) => (s.Width ?? 32) === frameWidth);
+  const byRow = new Map();
+  for (const s of matching) {
+    const y = s.Y ?? 0;
+    if (!byRow.has(y)) byRow.set(y, []);
+    byRow.get(y).push(s.X ?? 0);
   }
-  return stride || 33;
+  let stride = 0;
+  for (const xs of byRow.values()) {
+    xs.sort((a, b) => a - b);
+    for (let i = 1; i < xs.length; i++) {
+      const d = xs[i] - xs[i - 1];
+      if (d > 0 && (stride === 0 || d < stride)) stride = d;
+    }
+  }
+  return stride || frameWidth + 1;
 }
 
 function buildFrames(sprites, stride, frameWidth, frameHeight, sheetWidth, sheetHeight) {
@@ -405,7 +412,7 @@ async function main() {
     if (sprites.length === 0) die("edplay.json: zero sprites");
     const frameWidth = sprites[0].Width ?? 32;
     const frameHeight = sprites[0].Height ?? frameWidth;
-    const stride = inferStride(sprites);
+    const stride = inferStride(sprites, frameWidth);
     const spacing = stride - frameWidth;
     if (spacing < 0) die(`bad stride/frameWidth: ${stride} / ${frameWidth}`);
 

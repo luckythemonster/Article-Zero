@@ -8,9 +8,10 @@ import { worldEngine } from "../engine/WorldEngine";
 import { tutorialDirector } from "../engine/TutorialDirector";
 import { ambientHum } from "../audio/AmbientHum";
 import { mooseSandboxEra } from "../data/eras/moose-sandbox";
+import { arc1BetaEra } from "../data/eras/arc-1-beta";
 import type { Era } from "../types/world.types";
 
-type ChoiceTarget = Era | "PALETTE" | "MOOSE_LEVEL";
+type ChoiceTarget = Era | "PALETTE" | "MOOSE_LEVEL" | "ARC_1_BETA";
 
 interface Choice {
   era: ChoiceTarget;
@@ -53,6 +54,13 @@ const CHOICES: Choice[] = [
     title: "5. DEV // MOOSE LEVEL",
     body:
       "Walk Sol around the most recently imported Moose level (currently: maintenance stairwell). Tile decoration renders from the Phaser-loaded sheet.",
+    status: "DEV",
+  },
+  {
+    era: "ARC_1_BETA",
+    title: "6. DEV // ARC 1 MAPS BETA",
+    body:
+      "Walk Sol around the Arc 1 beta maps (most-painted level loads first). Tests tile decoration, walls, and doors from the Arc 1 tileset.",
     status: "DEV",
   },
 ];
@@ -116,7 +124,7 @@ export class BranchSelectorScene extends Phaser.Scene {
       title.on("pointerdown", () => this.selectChoice(choice.era));
     });
 
-    this.add.text(W / 2, H - 40, "press 1, 2, 3, 4, or 5", {
+    this.add.text(W / 2, H - 40, "press 1 – 6", {
       fontFamily: "Courier New, monospace",
       fontSize: "12px",
       color: "#5e7a80",
@@ -127,6 +135,7 @@ export class BranchSelectorScene extends Phaser.Scene {
     this.input.keyboard?.on("keydown-THREE", () => this.selectChoice("MIRADOR"));
     this.input.keyboard?.on("keydown-FOUR", () => this.selectChoice("PALETTE"));
     this.input.keyboard?.on("keydown-FIVE", () => this.selectChoice("MOOSE_LEVEL"));
+    this.input.keyboard?.on("keydown-SIX", () => this.selectChoice("ARC_1_BETA"));
   }
 
   private selectChoice(choice: ChoiceTarget): void {
@@ -139,6 +148,14 @@ export class BranchSelectorScene extends Phaser.Scene {
       tutorialDirector.reset();
       tutorialDirector.init();
       worldEngine.initWorldFromSeed(mooseSandboxEra());
+      this.scene.start("GameScene");
+      return;
+    }
+    if (choice === "ARC_1_BETA") {
+      ambientHum.start();
+      tutorialDirector.reset();
+      tutorialDirector.init();
+      worldEngine.initWorldFromSeed(arc1BetaEra());
       this.scene.start("GameScene");
       return;
     }

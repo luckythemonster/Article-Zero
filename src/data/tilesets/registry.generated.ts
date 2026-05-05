@@ -6,6 +6,181 @@ import type { MooseTilesetEntry } from "./types";
 
 export const MOOSE_TILESETS: MooseTilesetEntry[] = [
   {
+    "key": "arc_1_maps_beta",
+    "label": "Arc 1 maps beta",
+    "path": "/assets/tilesets/arc_1_maps_beta/sheet.png",
+    "frameWidth": 88,
+    "frameHeight": 88,
+    "spacing": 1,
+    "tileAnims": [
+      {
+        "handle": 2105195760,
+        "label": "light orb",
+        "baseFrame": 132,
+        "settleFrame": 162,
+        "frames": [
+          132,
+          155,
+          169,
+          154,
+          172,
+          160,
+          154,
+          174,
+          156,
+          157,
+          167,
+          155,
+          162
+        ],
+        "frameRate": 15
+      },
+      {
+        "handle": 2233313285,
+        "label": "Field_Monitor1",
+        "baseFrame": 152,
+        "settleFrame": 120,
+        "frames": [
+          152,
+          153,
+          125,
+          65,
+          123,
+          116,
+          121,
+          120
+        ],
+        "frameRate": 4
+      },
+      {
+        "handle": 578845835,
+        "label": "steam pipe",
+        "baseFrame": 165,
+        "settleFrame": 163,
+        "frames": [
+          165,
+          160,
+          162,
+          161,
+          162,
+          161,
+          162,
+          160,
+          164,
+          163,
+          164,
+          165,
+          163
+        ],
+        "frameRate": 8
+      },
+      {
+        "handle": 599969260,
+        "label": "NW_SMAC_01_Office_Door1",
+        "baseFrame": 160,
+        "settleFrame": 164,
+        "frames": [
+          160,
+          164,
+          126,
+          156,
+          163,
+          155,
+          167,
+          170,
+          129,
+          130,
+          164
+        ],
+        "frameRate": 8
+      },
+      {
+        "handle": 1744178855,
+        "label": "office chair",
+        "baseFrame": 148,
+        "settleFrame": 147,
+        "frames": [
+          148,
+          151,
+          149,
+          150,
+          145,
+          146,
+          150,
+          147
+        ],
+        "frameRate": 1
+      },
+      {
+        "handle": 1819564285,
+        "label": "Double_Sliding_Glass_Doors_North",
+        "baseFrame": 88,
+        "settleFrame": 174,
+        "frames": [
+          88,
+          86,
+          175,
+          87,
+          87,
+          174
+        ],
+        "frameRate": 8
+      },
+      {
+        "handle": 3420875140,
+        "label": "NW_SMAC_01_Office_Door2",
+        "baseFrame": 160,
+        "settleFrame": 164,
+        "frames": [
+          160,
+          164,
+          126,
+          156,
+          163,
+          155,
+          167,
+          170,
+          129,
+          130,
+          164
+        ],
+        "frameRate": 8
+      },
+      {
+        "handle": 2905181755,
+        "label": "VENT-4 cooling",
+        "baseFrame": 158,
+        "settleFrame": 159,
+        "frames": [
+          158,
+          158,
+          159,
+          156,
+          157,
+          159,
+          157,
+          159
+        ],
+        "frameRate": 4
+      },
+      {
+        "handle": 4173244025,
+        "label": "breaker",
+        "baseFrame": 118,
+        "settleFrame": 122,
+        "frames": [
+          118,
+          117,
+          66,
+          117,
+          64,
+          122
+        ],
+        "frameRate": 8
+      }
+    ]
+  },
+  {
     "key": "article_zero",
     "label": "Article zero",
     "path": "/assets/tilesets/article_zero/sheet.png",
