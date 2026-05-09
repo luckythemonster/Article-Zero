@@ -64,6 +64,9 @@ export class BranchSelectorScene extends Phaser.Scene {
   }
 
   create(): void {
+    // Announce ourselves so the React side can drop any HUD / modal / tutorial
+    // state left over from a prior run (e.g. after a Vite-HMR Phaser reboot).
+    eventBus.emit("PICKER_OPENED", {});
     const W = this.scale.width;
     const H = this.scale.height;
     this.cameras.main.setBackgroundColor("#050809");

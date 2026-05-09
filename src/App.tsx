@@ -87,6 +87,17 @@ export default function App() {
         // BranchSelectorScene with a populated HUD over it.
         gameRef.current?.scene.start("GameScene");
       }),
+      eventBus.on("PICKER_OPENED", () => {
+        // Phaser is back on the era selector — drop everything React was
+        // showing on top of GameScene so HMR-induced reboots don't leak
+        // the previous run's HUD / tutorial / modals.
+        setWorldReady(false);
+        setModal(null);
+        setAlignmentEntity(null);
+        setAzFullOpen(false);
+        setDrawerOpen(false);
+        tutorialDirector.dispose();
+      }),
       // VENT-4 prompt auto-opens its modal.
       eventBus.on("VENT4_DECISION_REQUIRED", () => setModal("VENT")),
       // Article Zero full reveal — track open state so we can gate input.

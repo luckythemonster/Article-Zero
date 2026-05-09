@@ -136,6 +136,10 @@ export interface EventMap {
 
   // Era / branch
   ERA_SELECTED: { era: Era };
+  /** The BranchSelectorScene became the active Phaser scene. App-level
+   *  React state (worldReady, modals, tutorial subscriptions) should reset
+   *  on this so HMR-induced reboots don't leak the previous run's HUD. */
+  PICKER_OPENED: Record<string, never>;
 
   // Lattice — RUN 01 + insomnia
   RUN_01_TRIGGERED: { turn: number };
