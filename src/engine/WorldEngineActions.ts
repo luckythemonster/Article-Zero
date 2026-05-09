@@ -12,9 +12,19 @@ import { enforcerAI } from "./EnforcerAI";
 import { documentArchive } from "./DocumentArchive";
 import { articleZeroMeta } from "./ArticleZeroMeta";
 import { insomniaSystem } from "./InsomniaSystem";
+import { noiseSystem } from "./NoiseSystem";
+import { cameraAI } from "./CameraAI";
+import { alertSystem } from "./AlertSystem";
 
 const MOVE_AP_COST = 1;
 const INTERACT_AP_COST = 1;
+const RUN_AP_COST = 1;
+const RUN_TILES = 2;
+const RUN_NOISE_RADIUS = 4;
+const KNOCK_AP_COST = 1;
+const KNOCK_NOISE_RADIUS = 5;
+const DOOR_NOISE_RADIUS = 3;
+const CONCEAL_AP_COST = 1;
 // Each ADVANCE inside the InterrogationTerminal consumes a full Era-1 turn.
 // Per the mechanics blueprint: "Send LLM Message (React): 3 AP".
 export const ALIGN_AP_COST = 3;
@@ -58,23 +68,148 @@ function entityAt(state: WorldState, pos: Vec3) {
   return undefined;
 }
 
+/** Entity blocking movement at `pos`. CONCEALMENT entities don't block —
+ *  the player can step onto a crate to hide. */
+function blockingEntityAt(state: WorldState, pos: Vec3) {
+  const e = entityAt(state, pos);
+  if (!e) return undefined;
+  if (e.kind === "CONCEALMENT") return undefined;
+  return e;
+}
+
+function concealmentAt(state: WorldState, pos: Vec3) {
+  for (const entity of state.entities.values()) {
+    if (
+      entity.kind === "CONCEALMENT" &&
+      entity.status === "ACTIVE" &&
+      entity.pos.x === pos.x &&
+      entity.pos.y === pos.y &&
+      entity.pos.z === pos.z
+    ) return entity;
+  }
+  return undefined;
+}
+
+/** Single-tile step. Returns true if the player moved. Pulled out of move()
+ *  so runMove() can take multiple steps without duplicating the validation. */
+function tryStep(state: WorldState, dx: number, dy: number): boolean {
+  const facing = facingFromDelta(dx, dy);
+  if (facing) state.player.facing = facing;
+  const from = state.player.pos;
+  const to: Vec3 = { x: from.x + dx, y: from.y + dy, z: from.z };
+  const t = tileAt(state, to);
+  if (!t || t.solid) return false;
+  if (blockingEntityAt(state, to)) return false;
+  state.player.pos = to;
+  state.player.lastMoveTurn = state.turn;
+  eventBus.emit("PLAYER_MOVED", { from, to });
+  return true;
+}
+
+/** Auto-exit any concealment at the start of a movement action. */
+function autoExitConcealment(state: WorldState): void {
+  if (!state.concealedEntityId) return;
+  const id = state.concealedEntityId;
+  state.concealedEntityId = undefined;
+  eventBus.emit("PLAYER_REVEALED", { entityId: id, pos: state.player.pos });
+}
+
 export const actions = {
   move(state: WorldState, dx: number, dy: number): boolean {
     if (state.detained || state.player.ap < MOVE_AP_COST) return false;
-    const facing = facingFromDelta(dx, dy);
-    if (facing) state.player.facing = facing;
-    const from = state.player.pos;
-    const to: Vec3 = { x: from.x + dx, y: from.y + dy, z: from.z };
-    const t = tileAt(state, to);
-    if (!t || t.solid) return false;
-    const blockingEntity = entityAt(state, to);
-    if (blockingEntity) return false;
-    state.player.pos = to;
+    autoExitConcealment(state);
+    if (!tryStep(state, dx, dy)) return false;
     state.player.ap -= MOVE_AP_COST;
-    state.player.lastMoveTurn = state.turn;
-    eventBus.emit("PLAYER_MOVED", { from, to });
     eventBus.emit("PLAYER_AP_CHANGED", {
       previous: state.player.ap + MOVE_AP_COST,
+      current: state.player.ap,
+    });
+    return true;
+  },
+
+  /** Run: up to RUN_TILES tiles in one direction, 1 AP. Emits a noise at the
+   *  destination so distant enforcers turn to investigate. Stops early on the
+   *  first blocked step but still emits the noise from the last tile reached. */
+  runMove(state: WorldState, dx: number, dy: number): boolean {
+    if (state.detained || state.player.ap < RUN_AP_COST) return false;
+    if (dx !== 0 && dy !== 0) return false; // run is straight-line only
+    if (dx === 0 && dy === 0) return false;
+    autoExitConcealment(state);
+    let stepsTaken = 0;
+    for (let i = 0; i < RUN_TILES; i++) {
+      if (!tryStep(state, dx, dy)) break;
+      stepsTaken += 1;
+    }
+    if (stepsTaken === 0) return false;
+    state.player.ap -= RUN_AP_COST;
+    state.player.running = true;
+    noiseSystem.emit(state, {
+      pos: { ...state.player.pos },
+      radius: RUN_NOISE_RADIUS,
+      source: "RUN",
+    });
+    eventBus.emit("PLAYER_AP_CHANGED", {
+      previous: state.player.ap + RUN_AP_COST,
+      current: state.player.ap,
+    });
+    return true;
+  },
+
+  /** Tap the wall the player is facing to lure an enforcer. 1 AP. Emits a
+   *  KNOCK noise centred on the wall tile. */
+  knockWall(state: WorldState): boolean {
+    if (state.detained || state.player.ap < KNOCK_AP_COST) return false;
+    if (playerHoldsFragmentBox(state)) return false;
+    const facing = state.player.facing;
+    const dx = facing === "east" ? 1 : facing === "west" ? -1 : 0;
+    const dy = facing === "south" ? 1 : facing === "north" ? -1 : 0;
+    const wallPos: Vec3 = {
+      x: state.player.pos.x + dx,
+      y: state.player.pos.y + dy,
+      z: state.player.pos.z,
+    };
+    const t = tileAt(state, wallPos);
+    if (!t || t.kind !== "WALL") return false;
+    state.player.ap -= KNOCK_AP_COST;
+    noiseSystem.emit(state, {
+      pos: wallPos,
+      radius: KNOCK_NOISE_RADIUS,
+      source: "KNOCK",
+    });
+    eventBus.emit("KNOCK_WALL", { pos: wallPos });
+    eventBus.emit("PLAYER_AP_CHANGED", {
+      previous: state.player.ap + KNOCK_AP_COST,
+      current: state.player.ap,
+    });
+    return true;
+  },
+
+  /** Enter the CONCEALMENT entity on the player's tile. 1 AP. */
+  enterConcealment(state: WorldState): boolean {
+    if (state.detained || state.player.ap < CONCEAL_AP_COST) return false;
+    if (state.concealedEntityId) return false;
+    const c = concealmentAt(state, state.player.pos);
+    if (!c) return false;
+    state.concealedEntityId = c.id;
+    state.player.ap -= CONCEAL_AP_COST;
+    eventBus.emit("PLAYER_CONCEALED", { entityId: c.id, pos: state.player.pos });
+    eventBus.emit("PLAYER_AP_CHANGED", {
+      previous: state.player.ap + CONCEAL_AP_COST,
+      current: state.player.ap,
+    });
+    return true;
+  },
+
+  /** Step out of concealment without leaving the tile. 1 AP. */
+  exitConcealment(state: WorldState): boolean {
+    if (state.detained || state.player.ap < CONCEAL_AP_COST) return false;
+    if (!state.concealedEntityId) return false;
+    const id = state.concealedEntityId;
+    state.concealedEntityId = undefined;
+    state.player.ap -= CONCEAL_AP_COST;
+    eventBus.emit("PLAYER_REVEALED", { entityId: id, pos: state.player.pos });
+    eventBus.emit("PLAYER_AP_CHANGED", {
+      previous: state.player.ap + CONCEAL_AP_COST,
       current: state.player.ap,
     });
     return true;
@@ -98,6 +233,7 @@ export const actions = {
         t.opaque = false;
         state.player.ap -= INTERACT_AP_COST;
         eventBus.emit("DOOR_TOGGLED", { pos, open: true });
+        noiseSystem.emit(state, { pos, radius: DOOR_NOISE_RADIUS, source: "DOOR" });
         return true;
       }
       if (t.kind === "DOOR_OPEN") {
@@ -106,6 +242,7 @@ export const actions = {
         t.opaque = true;
         state.player.ap -= INTERACT_AP_COST;
         eventBus.emit("DOOR_TOGGLED", { pos, open: false });
+        noiseSystem.emit(state, { pos, radius: DOOR_NOISE_RADIUS, source: "DOOR" });
         return true;
       }
     }
@@ -163,8 +300,14 @@ export const actions = {
       previous: 0,
       current: state.player.ap,
     });
-    // Tick subsystems
+    // Stealth pipeline: prune noises, run cameras (which can emit alarms),
+    // then enforcers (which read noises + cones), then decay alert timers.
+    noiseSystem.tick(state);
+    cameraAI.tick(state);
     enforcerAI.tick(state);
+    alertSystem.tick(state);
+    state.player.running = false;
+    // Other subsystems
     stitcherTimer.tick(state);
     miradorPersona.tick(state);
     insomniaSystem.tick(state);

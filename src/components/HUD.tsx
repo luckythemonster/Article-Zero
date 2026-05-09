@@ -2,7 +2,26 @@ import { useEffect, useState } from "react";
 import { eventBus } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
 import { articleZeroMeta } from "../engine/ArticleZeroMeta";
-import type { ComplianceStatus, SubjectivityBelief } from "../types/world.types";
+import SolitonRadar from "./SolitonRadar";
+import type {
+  AlertLevel,
+  ComplianceStatus,
+  SubjectivityBelief,
+} from "../types/world.types";
+
+const ALERT_GLYPH: Record<AlertLevel, string> = {
+  NORMAL: "",
+  CAUTION: "?",
+  EVASION: "…",
+  ALERT: "!",
+};
+
+const ALERT_CLASS: Record<AlertLevel, string> = {
+  NORMAL: "",
+  CAUTION: "yellow",
+  EVASION: "yellow",
+  ALERT: "red",
+};
 
 export default function HUD() {
   const [, force] = useState(0);
@@ -24,6 +43,9 @@ export default function HUD() {
       eventBus.on("RESONANCE_SHIFT", refresh),
       eventBus.on("AMBIENT_LIGHT_CHANGED", refresh),
       eventBus.on("ARTICLE_ZERO_RESOLVED", refresh),
+      eventBus.on("ALERT_LEVEL_CHANGED", refresh),
+      eventBus.on("PLAYER_CONCEALED", refresh),
+      eventBus.on("PLAYER_REVEALED", refresh),
     ];
     return () => { for (const off of offs) off(); };
   }, []);
@@ -58,7 +80,12 @@ export default function HUD() {
             {s.player.flashlightOn && <span className="green">FLASHLIGHT {s.player.flashlightBattery}</span>}
             {holdingBox && <span className="red">ENCUMBERED // FRAGMENT BOX</span>}
             {s.alignmentLightActive && <span className="red">LIGHT SPILL</span>}
-            {s.detected && !s.detained && <span className="red">DETECTED</span>}
+            {s.alertLevel !== "NORMAL" && !s.detained && (
+              <span className={ALERT_CLASS[s.alertLevel]}>
+                ALERT {ALERT_GLYPH[s.alertLevel]} {s.alertLevel}
+              </span>
+            )}
+            {s.concealedEntityId && <span className="green">HIDDEN</span>}
             {s.detained && <span className="red">DETAINED</span>}
             {s.redDay && <span className="red">RED_DAY</span>}
           </>
@@ -70,6 +97,7 @@ export default function HUD() {
         if (r === "ACCEPTED") return <span className="green">STATUS: COMPLIANT</span>;
         return null;
       })()}
+      <SolitonRadar />
     </div>
   );
 }

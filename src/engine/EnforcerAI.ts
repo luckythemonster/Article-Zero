@@ -1,20 +1,22 @@
-// EnforcerAI — patrol + alert + chase. Stripped to the essentials for the
-// slice: enforcers walk a patrol route stored on the entity itself; if they
-// see the player and the player has an active violation on the same floor,
-// they chase. With stepsPerTurn>1 (Era 1 default), the entire decide-and-step
-// cycle runs that many times per world tick, so a 2-tile enforcer can both
-// notice the spill and close on it inside a single turn.
+// EnforcerAI — patrol + cone-based detection + alert ladder. Each enforcer
+// holds its own perception state on entity.alert; the AlertSystem owns the
+// transitions and the floor-wide readout. Decision order each step:
+//   1. Vision cone + LOS + violation → ALERT, chase, detain on contact.
+//   2. Audible noise → CAUTION toward the noise origin.
+//   3. ALERT/EVASION fallthrough → search lastSeenPos.
+//   4. Light spill (alignment terminal) → CAUTION investigate.
+//   5. CAUTION investigation target → walk to it.
+//   6. Patrol waypoints (NORMAL).
 //
-// Light Spill (lore/MASTER.md, mechanics blueprint §1): when
-// state.alignmentLightActive is true, the alignment terminal radiates a
-// 3-tile cone. We model that as: any enforcer with line-of-sight to the
-// player within SPILL_RADIUS breaks patrol toward the player. The player
-// can spend 1 AP on [Kill Screen] to clear the flag and hide the spill.
+// Concealment: while state.concealedEntityId is set the player is invisible
+// to vision cones. An enforcer who steps adjacent peeks and reveals.
 
 import type { Entity, Facing, Vec3, WorldState } from "../types/world.types";
 import { eventBus } from "./EventBus";
+import { coneRangeFor, hasLineOfSight, isInVisionCone } from "./visionCone";
+import { alertSystem } from "./AlertSystem";
+import { noiseSystem } from "./NoiseSystem";
 
-const SIGHT_RADIUS = 5;
 const SPILL_RADIUS = 3;
 
 function facingFromDelta(dx: number, dy: number): Facing | null {
@@ -23,22 +25,8 @@ function facingFromDelta(dx: number, dy: number): Facing | null {
   return dy > 0 ? "south" : "north";
 }
 
-function hasLineOfSight(state: WorldState, from: Vec3, to: Vec3): boolean {
-  if (from.z !== to.z) return false;
-  const floor = state.floors.get(from.z);
-  if (!floor) return false;
-  const dx = to.x - from.x;
-  const dy = to.y - from.y;
-  const steps = Math.max(Math.abs(dx), Math.abs(dy));
-  if (steps === 0) return true;
-  for (let i = 1; i < steps; i++) {
-    const x = Math.round(from.x + (dx * i) / steps);
-    const y = Math.round(from.y + (dy * i) / steps);
-    if (x < 0 || y < 0 || x >= floor.width || y >= floor.height) return false;
-    const tile = floor.tiles[y * floor.width + x];
-    if (tile && tile.opaque) return false;
-  }
-  return true;
+function manhattan(a: Vec3, b: Vec3): number {
+  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
 
 class EnforcerAI {
@@ -59,42 +47,103 @@ class EnforcerAI {
 
   private stepEnforcer(state: WorldState, entity: Entity): void {
     const playerPos = state.player.pos;
-    const sees =
-      playerPos.z === entity.pos.z &&
-      Math.hypot(playerPos.x - entity.pos.x, playerPos.y - entity.pos.y) <= SIGHT_RADIUS;
+    const sameFloor = playerPos.z === entity.pos.z;
+    const floor = state.floors.get(entity.pos.z);
+    const ambient = floor?.ambientLight ?? "DIM";
+
+    // Concealment: an adjacent enforcer peeks and reveals the player.
+    if (sameFloor && state.concealedEntityId && manhattan(entity.pos, playerPos) <= 1) {
+      const id = state.concealedEntityId;
+      state.concealedEntityId = undefined;
+      eventBus.emit("PLAYER_REVEALED", { entityId: id, pos: playerPos });
+    }
+    const concealed = state.concealedEntityId != null;
+
+    // 1. Vision-cone detection.
+    const level = entity.alert?.level ?? "NORMAL";
+    const range = entity.coneRange ?? coneRangeFor(level, ambient);
+    const halfAngle = entity.coneHalfAngleDeg ?? 45;
+    const sees = sameFloor
+      && !concealed
+      && isInVisionCone(entity.pos, entity.facing, playerPos, range, halfAngle)
+      && hasLineOfSight(state, entity.pos, playerPos);
     const hasViolation = state.violations.length > 0;
     const runaway = state.player.runaway === true;
-    const spillVisible =
-      state.alignmentLightActive &&
-      playerPos.z === entity.pos.z &&
-      Math.hypot(playerPos.x - entity.pos.x, playerPos.y - entity.pos.y) <= SPILL_RADIUS &&
-      hasLineOfSight(state, entity.pos, playerPos);
 
     if (sees && (hasViolation || runaway)) {
+      alertSystem.raiseAlert(state, entity, playerPos);
       this.advanceToward(state, entity, playerPos);
       if (entity.pos.x === playerPos.x && entity.pos.y === playerPos.y) {
         state.detained = true;
         eventBus.emit("PLAYER_DETAINED", { enforcerId: entity.id, turn: state.turn });
       } else {
-        state.detected = true;
         eventBus.emit("PLAYER_DETECTED", { enforcerId: entity.id, pos: entity.pos });
       }
       return;
     }
 
+    // If we sighted the player but they have no violation, still record the
+    // tile so EVASION searching has something to chase if violations later
+    // accrue. Doesn't escalate by itself.
+    if (sees) {
+      state.lastSeenPos = { ...playerPos };
+    }
+
+    // 2. Audible noise → CAUTION investigate. Skip if already ALERT (ALERT
+    //    keeps chasing lastSeenPos until decay).
+    if (level !== "ALERT") {
+      const heard = noiseSystem.audibleAt(state, entity.pos);
+      if (heard.length > 0) {
+        const target = heard[0].pos;
+        alertSystem.transition(state, entity, "CAUTION", target);
+        eventBus.emit("ENFORCER_INVESTIGATING", {
+          enforcerId: entity.id,
+          reason: "NOISE",
+          target,
+        });
+        this.advanceToward(state, entity, target);
+        return;
+      }
+    }
+
+    // 3. ALERT/EVASION search — keep moving toward last known position.
+    if (level === "ALERT" || level === "EVASION") {
+      const target = entity.alert?.investigationTarget ?? state.lastSeenPos;
+      if (target) {
+        this.advanceToward(state, entity, target);
+        if (entity.pos.x === target.x && entity.pos.y === target.y) {
+          // Reached search target with no contact: accelerate decay.
+          if (entity.alert) entity.alert.timer = Math.max(0, entity.alert.timer - 2);
+        }
+        return;
+      }
+    }
+
+    // 4. Light spill (legacy alignment-terminal mechanic). Now flows through
+    //    CAUTION so it shares the alert ladder with everything else.
+    const spillVisible =
+      state.alignmentLightActive
+      && sameFloor
+      && Math.hypot(playerPos.x - entity.pos.x, playerPos.y - entity.pos.y) <= SPILL_RADIUS
+      && hasLineOfSight(state, entity.pos, playerPos);
     if (spillVisible) {
-      // Break patrol and investigate the terminal light. Doesn't trigger
-      // detention by itself; if the enforcer reaches the player tile they'll
-      // detect on the next tick via the sees+violation branch above.
+      alertSystem.transition(state, entity, "CAUTION", playerPos);
       eventBus.emit("ENFORCER_INVESTIGATING", {
         enforcerId: entity.id,
         reason: "LIGHT_SPILL",
+        target: playerPos,
       });
       this.advanceToward(state, entity, playerPos);
       return;
     }
 
-    // Idle patrol: step one tile toward the current waypoint; advance when reached.
+    // 5. CAUTION investigation target (e.g. lingering from a prior noise).
+    if (level === "CAUTION" && entity.alert?.investigationTarget) {
+      this.advanceToward(state, entity, entity.alert.investigationTarget);
+      return;
+    }
+
+    // 6. Idle patrol.
     const route = entity.patrol;
     if (!route || route.length === 0) return;
     const idx = entity.patrolIndex ?? 0;

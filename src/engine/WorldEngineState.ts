@@ -65,6 +65,8 @@ export function emptyState(era: Era): WorldState {
     substrateResonance: 0,
     violations: [],
     alignmentLightActive: false,
+    alertLevel: "NORMAL",
+    activeNoises: [],
   };
 }
 

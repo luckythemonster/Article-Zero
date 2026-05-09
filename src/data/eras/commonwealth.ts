@@ -208,6 +208,49 @@ export function commonwealthEra(): EraSeed {
     patrolIndex: 0,
     stepsPerTurn: 2,
   };
+  // Two surveillance cameras. Each rotates one step per turn through a
+  // four-facing pattern, so the player can watch the cone sweep and time
+  // their crossings. Placed inside walkable corridors that feed the bay.
+  const cameraSouth: Entity = {
+    id: "CAMERA-S",
+    kind: "CAMERA" as EntityKind,
+    name: "CAMERA-S",
+    pos: { x: 9, y: 7, z: 1 },
+    facing: "south",
+    status: "ACTIVE",
+    rotationPattern: ["south", "east", "south", "west"],
+    coneRange: 6,
+    coneHalfAngleDeg: 30,
+  };
+  const cameraNorth: Entity = {
+    id: "CAMERA-N",
+    kind: "CAMERA" as EntityKind,
+    name: "CAMERA-N",
+    pos: { x: 12, y: 4, z: 1 },
+    facing: "west",
+    status: "ACTIVE",
+    rotationPattern: ["west", "south", "west", "north"],
+    coneRange: 6,
+    coneHalfAngleDeg: 30,
+  };
+  // Two supply-crate concealment spots along the patrol routes — the player
+  // can step onto a crate and press H to hide while a cone sweeps over them.
+  const crateA: Entity = {
+    id: "CRATE-A",
+    kind: "CONCEALMENT" as EntityKind,
+    name: "Supply Crate",
+    pos: { x: 8, y: 11, z: 1 },
+    facing: "south",
+    status: "ACTIVE",
+  };
+  const crateB: Entity = {
+    id: "CRATE-B",
+    kind: "CONCEALMENT" as EntityKind,
+    name: "Supply Crate",
+    pos: { x: 15, y: 2, z: 1 },
+    facing: "south",
+    status: "ACTIVE",
+  };
   const startingItems: ItemInstance[] = [
     {
       id: "flashlight-001",
@@ -227,7 +270,16 @@ export function commonwealthEra(): EraSeed {
     era: "COMMONWEALTH",
     player,
     floors: [floor],
-    entities: [eira, apex, enforcerA, enforcerB],
+    entities: [
+      eira,
+      apex,
+      enforcerA,
+      enforcerB,
+      cameraSouth,
+      cameraNorth,
+      crateA,
+      crateB,
+    ],
     startingItems,
   };
 }

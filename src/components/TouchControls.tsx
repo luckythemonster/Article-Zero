@@ -30,6 +30,8 @@ export default function TouchControls({ onOpenMenu, onOpenAlignment, onOpenArchi
         <button onPointerDown={(e) => { e.preventDefault(); onOpenAlignment(); }} aria-label="Alignment session (F)">F</button>
         <button onPointerDown={(e) => { e.preventDefault(); onOpenArchive(); }} aria-label="Document archive (R)">R</button>
         <button onPointerDown={(e) => { e.preventDefault(); worldEngine.toggleFlashlight(); }} aria-label="Toggle flashlight (L)">L</button>
+        <button onPointerDown={(e) => { e.preventDefault(); worldEngine.knockWall(); }} aria-label="Knock wall (K)">K</button>
+        <button onPointerDown={(e) => { e.preventDefault(); worldEngine.toggleConcealment(); }} aria-label="Hide / emerge (H)">H</button>
         <button onPointerDown={(e) => { e.preventDefault(); onOpenMenu(); }} aria-label="Open menu">≡</button>
       </div>
     </>

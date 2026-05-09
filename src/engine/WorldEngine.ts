@@ -22,6 +22,9 @@ import { stitcherTimer } from "./StitcherTimer";
 import { miradorPersona } from "./MiradorPersona";
 import { ventOptimizer } from "./VentOptimizer";
 import { insomniaSystem } from "./InsomniaSystem";
+import { noiseSystem } from "./NoiseSystem";
+import { cameraAI } from "./CameraAI";
+import { alertSystem } from "./AlertSystem";
 
 class WorldEngine {
   private state: WorldState | null = null;
@@ -51,6 +54,9 @@ class WorldEngine {
     miradorPersona.reset();
     ventOptimizer.reset();
     insomniaSystem.reset();
+    noiseSystem.reset();
+    cameraAI.reset();
+    alertSystem.reset();
   }
 
   /** Mark Sol entangled and unlock the insomnia mechanic. Idempotent. */
@@ -113,6 +119,22 @@ class WorldEngine {
     const ok = actions.toggleFragmentBox(this.getState());
     if (ok) this.recomputeFOV();
     return ok;
+  };
+  runMove = (dx: number, dy: number) => {
+    const ok = actions.runMove(this.getState(), dx, dy);
+    if (ok) this.recomputeFOV();
+    return ok;
+  };
+  knockWall = () => actions.knockWall(this.getState());
+  enterConcealment = () => actions.enterConcealment(this.getState());
+  exitConcealment = () => actions.exitConcealment(this.getState());
+  /** Convenience helper used by the touch HIDE/EMERGE button — toggles
+   *  whichever side currently makes sense based on concealment state. */
+  toggleConcealment = () => {
+    const s = this.getState();
+    return s.concealedEntityId
+      ? actions.exitConcealment(s)
+      : actions.enterConcealment(s);
   };
 
   recomputeFOV(): void {

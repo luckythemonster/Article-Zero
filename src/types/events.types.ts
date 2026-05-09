@@ -2,12 +2,14 @@
 // here. Subsystems publish; Phaser scenes and React components subscribe.
 
 import type {
+  AlertLevel,
   AmbientLightLevel,
   ComplianceStatus,
   EntityId,
   Era,
   FloorIndex,
   ItemType,
+  NoiseSource,
   PersonaMode,
   SubjectivityBelief,
   Vec3,
@@ -59,7 +61,24 @@ export interface EventMap {
   };
   ALIGNMENT_SESSION_COMPLETE: { entityId: EntityId; success: boolean };
   ALIGNMENT_LIGHT_TOGGLED: { active: boolean };
-  ENFORCER_INVESTIGATING: { enforcerId: EntityId; reason: "LIGHT_SPILL" };
+  ENFORCER_INVESTIGATING: {
+    enforcerId: EntityId;
+    reason: "LIGHT_SPILL" | "NOISE" | "LAST_SEEN";
+    target?: Vec3;
+  };
+
+  // Metal-Gear stealth ladder
+  NOISE_EMITTED: { pos: Vec3; radius: number; source: NoiseSource };
+  ALERT_LEVEL_CHANGED: {
+    entityId: EntityId;
+    previous: AlertLevel;
+    current: AlertLevel;
+    floorMax: AlertLevel;
+  };
+  CAMERA_SPOTTED: { cameraId: EntityId; pos: Vec3 };
+  PLAYER_CONCEALED: { entityId: EntityId; pos: Vec3 };
+  PLAYER_REVEALED: { entityId: EntityId; pos: Vec3 };
+  KNOCK_WALL: { pos: Vec3 };
 
   // Encumbrance
   FRAGMENT_BOX_PICKED_UP: { itemId: string; pos: Vec3 };

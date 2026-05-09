@@ -15,19 +15,26 @@ export function useInput(opts: Options): void {
     const handler = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (!worldEngine.hasState()) return;
+      // Shift+Arrow = run (2 tiles, emits noise). Falls back to a single-tile
+      // move when shift isn't held — the existing keybinding shape.
+      const shifted = e.shiftKey;
+      const moveOrRun = (dx: number, dy: number) => {
+        if (shifted) worldEngine.runMove(dx, dy);
+        else worldEngine.move(dx, dy);
+      };
       switch (e.key.toLowerCase()) {
         case "arrowup":
         case "w":
-          worldEngine.move(0, -1); e.preventDefault(); break;
+          moveOrRun(0, -1); e.preventDefault(); break;
         case "arrowdown":
         case "s":
-          worldEngine.move(0, 1); e.preventDefault(); break;
+          moveOrRun(0, 1); e.preventDefault(); break;
         case "arrowleft":
         case "a":
-          worldEngine.move(-1, 0); e.preventDefault(); break;
+          moveOrRun(-1, 0); e.preventDefault(); break;
         case "arrowright":
         case "d":
-          worldEngine.move(1, 0); e.preventDefault(); break;
+          moveOrRun(1, 0); e.preventDefault(); break;
         case " ":
           worldEngine.endTurn(); e.preventDefault(); break;
         case "e":
@@ -38,6 +45,10 @@ export function useInput(opts: Options): void {
           worldEngine.toggleFlashlight(); e.preventDefault(); break;
         case "b":
           worldEngine.toggleFragmentBox(); e.preventDefault(); break;
+        case "k":
+          worldEngine.knockWall(); e.preventDefault(); break;
+        case "h":
+          worldEngine.toggleConcealment(); e.preventDefault(); break;
         case "r":
           opts.onOpenArchive(); e.preventDefault(); break;
         case "m":

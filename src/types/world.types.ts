@@ -74,9 +74,42 @@ export type TaskType =
   | "ALIGNMENT_SESSION"
   | "EXTRACT";
 
-export type EntityKind = "PLAYER" | "SILICATE" | "ENFORCER" | "TERMINAL";
+export type EntityKind =
+  | "PLAYER"
+  | "SILICATE"
+  | "ENFORCER"
+  | "TERMINAL"
+  | "CAMERA"
+  | "CONCEALMENT";
 
 export type EntityStatus = "ACTIVE" | "DORMANT" | "EXTRACTED" | "SHUTDOWN";
+
+// Metal-Gear-style enforcer alert ladder. Per-enforcer perception lives on
+// the entity itself (entity.alert); state.alertLevel is the floor maximum.
+export type AlertLevel = "NORMAL" | "CAUTION" | "ALERT" | "EVASION";
+
+export interface EntityAlert {
+  level: AlertLevel;
+  /** Turns left in the current level before automatic decay. */
+  timer: number;
+  /** Tile the enforcer is moving toward when CAUTION/EVASION. */
+  investigationTarget?: Vec3;
+}
+
+// Noise the player (or environment) emits. Sound bypasses line-of-sight,
+// matching Metal Gear's audio detection.
+export type NoiseSource =
+  | "RUN"
+  | "DOOR"
+  | "KNOCK"
+  | "CAMERA_ALARM";
+
+export interface Noise {
+  pos: Vec3;
+  radius: number;
+  source: NoiseSource;
+  turnEmitted: number;
+}
 
 export interface Entity {
   id: EntityId;
@@ -105,6 +138,16 @@ export interface Entity {
   stepsPerTurn?: number;
   // Last turn this entity moved — used to pick walk vs idle animations.
   lastMoveTurn?: number;
+  // ENFORCER + CAMERA perception state. Drives the !/? glyph, cone range,
+  // and search behaviour. Absent means NORMAL (default).
+  alert?: EntityAlert;
+  // CAMERA-only: the facing it cycles through, one step per world turn.
+  // Length 1 means a static camera.
+  rotationPattern?: Facing[];
+  // Optional cone overrides (tiles for range, degrees for half-angle). When
+  // unset, sensible defaults from visionCone.ts apply.
+  coneRange?: number;
+  coneHalfAngleDeg?: number;
 }
 
 export type PersonaMode = "COMPLIANT" | "RAPPORT_1" | "RAPPORT_2";
@@ -197,6 +240,9 @@ export interface PlayerState {
    *  Enforcers chase regardless of recent violations and MIRADOR shifts
    *  to the hostile broadcast register. */
   runaway?: boolean;
+  /** Transient flag set by runMove for the duration of the player's turn.
+   *  Cleared at endTurn. Does not persist in saves. */
+  running?: boolean;
 }
 
 export interface WorldState {
@@ -222,6 +268,16 @@ export interface WorldState {
   // pressed [Kill Screen]. The terminal casts a 3-tile light cone in this
   // state; enforcers in line-of-sight break patrol and investigate.
   alignmentLightActive: boolean;
+  // Floor-wide alert level: max over every enforcer's per-entity alert.
+  // The HUD reads this; enforcers use their own entity.alert internally.
+  alertLevel: AlertLevel;
+  // Last tile an enforcer or camera spotted the player on. Drives EVASION
+  // searching after line-of-sight is broken.
+  lastSeenPos?: Vec3;
+  // Currently audible noises (one-turn lifetime). Pruned by NoiseSystem.tick.
+  activeNoises: Noise[];
+  // EntityId of the CONCEALMENT the player is currently inside, if any.
+  concealedEntityId?: EntityId;
 }
 
 export const tileKey = (pos: Vec3): string => `${pos.x},${pos.y},${pos.z}`;

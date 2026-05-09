@@ -8,7 +8,35 @@ import { worldEngine } from "../engine/WorldEngine";
 import { mooseAnimKey } from "../data/tilesets/anim-keys";
 import type { MooseTileAnim } from "../data/tilesets/types";
 import { MOOSE_TILESETS } from "../data/tilesets/registry.generated";
-import type { Entity, Facing, Tile, TileKind, Vec3 } from "../types/world.types";
+import type {
+  AlertLevel,
+  Entity,
+  Facing,
+  Tile,
+  TileKind,
+  Vec3,
+} from "../types/world.types";
+
+const FACING_RAD: Record<Facing, number> = {
+  east: 0,
+  south: Math.PI / 2,
+  west: Math.PI,
+  north: -Math.PI / 2,
+};
+
+const ALERT_GLYPH: Record<AlertLevel, string> = {
+  NORMAL: "",
+  CAUTION: "?",
+  EVASION: "·",
+  ALERT: "!",
+};
+
+const ALERT_TINT: Record<AlertLevel, number> = {
+  NORMAL: 0xffffff,
+  CAUTION: 0xffd23a,
+  EVASION: 0xffaa44,
+  ALERT: 0xff5566,
+};
 
 const TILE_PX = 32;
 const SPRITE_SCALE = TILE_PX / 36; // atlas frames are 36×36
@@ -45,6 +73,9 @@ function entityAnimKey(entity: Entity, walking: boolean, chasing: boolean): stri
     if (chasing) return `enforcer_chase_${f}`;
     return walking ? `enforcer_walkcycle_${f}` : `enforcer_rotations_${f}`;
   }
+  // Cameras + concealment crates have no character animations — fall through
+  // to the glyph-rectangle fallback by returning an empty key.
+  if (entity.kind === "CAMERA" || entity.kind === "CONCEALMENT") return "";
   if (entity.id === "EIRA-7") {
     return walking ? `eira7_walkcycle_${f}` : `eira7_rotations_${f}`;
   }
@@ -55,6 +86,17 @@ function entityAnimKey(entity: Entity, walking: boolean, chasing: boolean): stri
   return walking ? `${id}_walkcycle_${f}` : `${id}_idle_${f}`;
 }
 
+function entityRectColor(entity: Entity): { fill: number; stroke: number } {
+  if (entity.kind === "CAMERA") return { fill: 0x402030, stroke: 0xff5566 };
+  if (entity.kind === "CONCEALMENT") return { fill: 0x4a3520, stroke: 0xc8a35d };
+  return { fill: 0x6ad0a4, stroke: 0xe6f0f2 };
+}
+
+function showEnforcerCones(): boolean {
+  if (typeof window === "undefined") return false;
+  return new URLSearchParams(window.location.search).has("cones");
+}
+
 export class GameScene extends Phaser.Scene {
   private tileLayer!: Phaser.GameObjects.Graphics;
   private glyphLayer!: Phaser.GameObjects.Graphics;
@@ -62,6 +104,8 @@ export class GameScene extends Phaser.Scene {
   private playerSprite!: Phaser.GameObjects.Sprite;
   private entitySprites = new Map<string, Phaser.GameObjects.Sprite>();
   private entityRects = new Map<string, Phaser.GameObjects.Rectangle>();
+  private alertGlyphs = new Map<string, Phaser.GameObjects.Text>();
+  private coneGfx!: Phaser.GameObjects.Graphics;
   /** Pool of decoration sprites placed by the moose-import path. Keyed
    *  per `${layerIndex}:${x},${y}` so they can be re-used across redraws.
    *  Phaser.GameObjects.Sprite is an Image subclass, so static cells render
@@ -97,6 +141,8 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor("#050809");
     this.tileLayer = this.add.graphics();
     this.glyphLayer = this.add.graphics();
+    this.coneGfx = this.add.graphics();
+    this.coneGfx.setDepth(3);
     this.overlayLayer = this.add.graphics();
 
     const initialFacing: Facing = worldEngine.hasState()
@@ -126,6 +172,9 @@ export class GameScene extends Phaser.Scene {
     eventBus.on("ENTITY_MOVED", () => this.redraw());
     eventBus.on("TURN_START", () => this.redraw());
     eventBus.on("ENTITY_STATUS_CHANGED", () => this.redraw());
+    eventBus.on("ALERT_LEVEL_CHANGED", () => this.redraw());
+    eventBus.on("PLAYER_CONCEALED", () => this.redraw());
+    eventBus.on("PLAYER_REVEALED", () => this.redraw());
 
     this.redraw();
   }
@@ -218,6 +267,7 @@ export class GameScene extends Phaser.Scene {
     this.tileLayer.clear();
     this.glyphLayer.clear();
     this.overlayLayer.clear();
+    this.coneGfx.clear();
 
     const memoryActive = state.player.entangled === true;
     const useDecoration = !!floor.decoration;
@@ -243,6 +293,10 @@ export class GameScene extends Phaser.Scene {
     for (const rect of this.entityRects.values()) rect.setVisible(false);
 
     const violationsActive = state.violations.length > 0;
+    const enforcerConesEnabled = showEnforcerCones();
+
+    // Hide all alert glyphs first; we re-show what's still relevant.
+    for (const t of this.alertGlyphs.values()) t.setVisible(false);
 
     for (const entity of state.entities.values()) {
       if (entity.kind === "PLAYER" || entity.status !== "ACTIVE") continue;
@@ -270,15 +324,36 @@ export class GameScene extends Phaser.Scene {
         // is still visible. New character art added via `npm run art` will
         // automatically take over once the animation key exists.
         let rect = this.entityRects.get(entity.id);
+        const colors = entityRectColor(entity);
         if (!rect) {
-          rect = this.add.rectangle(px, py, TILE_PX - 8, TILE_PX - 8, 0x6ad0a4);
-          rect.setStrokeStyle(2, 0xe6f0f2);
+          rect = this.add.rectangle(px, py, TILE_PX - 8, TILE_PX - 8, colors.fill);
+          rect.setStrokeStyle(2, colors.stroke);
           rect.setDepth(4);
-          rect.setAlpha(0.5);
+          rect.setAlpha(0.65);
           this.entityRects.set(entity.id, rect);
+        } else {
+          rect.setFillStyle(colors.fill);
+          rect.setStrokeStyle(2, colors.stroke);
         }
         rect.setPosition(px, py);
         rect.setVisible(visible);
+      }
+
+      // Vision cone overlay (always for cameras; ?cones flag for enforcers).
+      const showCone = visible
+        && (entity.kind === "CAMERA" || (entity.kind === "ENFORCER" && enforcerConesEnabled));
+      if (showCone) {
+        this.drawEntityCone(entity, px, py);
+      }
+
+      // Alert glyph (?/·/!) floating above the entity head.
+      const alert = entity.alert?.level ?? "NORMAL";
+      if (visible && alert !== "NORMAL") {
+        const text = this.ensureAlertGlyph(entity.id);
+        text.setPosition(px, py - TILE_PX / 2 - 4);
+        text.setText(ALERT_GLYPH[alert]);
+        text.setColor(`#${ALERT_TINT[alert].toString(16).padStart(6, "0")}`);
+        text.setVisible(true);
       }
     }
 
@@ -485,6 +560,39 @@ export class GameScene extends Phaser.Scene {
       sprite.setFrame(settleAfter);
     });
     sprite.play(key, true);
+  }
+
+  private ensureAlertGlyph(entityId: string): Phaser.GameObjects.Text {
+    let t = this.alertGlyphs.get(entityId);
+    if (t) return t;
+    t = this.add.text(0, 0, "", {
+      fontFamily: "Courier New, monospace",
+      fontSize: "18px",
+      color: "#ff5566",
+    });
+    t.setOrigin(0.5, 1);
+    t.setDepth(20);
+    this.alertGlyphs.set(entityId, t);
+    return t;
+  }
+
+  private drawEntityCone(entity: Entity, cx: number, cy: number): void {
+    const range = entity.coneRange
+      ?? (entity.kind === "CAMERA" ? 6 : 5);
+    const halfAngleDeg = entity.coneHalfAngleDeg
+      ?? (entity.kind === "CAMERA" ? 30 : 45);
+    const baseAngle = FACING_RAD[entity.facing];
+    const half = (halfAngleDeg * Math.PI) / 180;
+    const radius = range * TILE_PX;
+    const tint = ALERT_TINT[entity.alert?.level ?? "NORMAL"];
+    this.coneGfx.fillStyle(tint, 0.12);
+    this.coneGfx.lineStyle(1, tint, 0.5);
+    this.coneGfx.beginPath();
+    this.coneGfx.moveTo(cx, cy);
+    this.coneGfx.arc(cx, cy, radius, baseAngle - half, baseAngle + half);
+    this.coneGfx.closePath();
+    this.coneGfx.fillPath();
+    this.coneGfx.strokePath();
   }
 
   private drawGlyph(cx: number, cy: number, kind: TileKind): void {

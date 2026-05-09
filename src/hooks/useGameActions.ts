@@ -3,6 +3,9 @@ import { worldEngine } from "../engine/WorldEngine";
 
 export interface GameActions {
   move: (dx: number, dy: number) => void;
+  runMove: (dx: number, dy: number) => boolean;
+  knockWall: () => boolean;
+  toggleConcealment: () => boolean;
   interact: () => void;
   endTurn: () => void;
   toggleFlashlight: () => void;
@@ -18,6 +21,15 @@ export function useGameActions(): GameActions {
   return {
     move: useCallback((dx, dy) => {
       worldEngine.move(dx, dy);
+    }, []),
+    runMove: useCallback((dx, dy) => {
+      return worldEngine.runMove(dx, dy);
+    }, []),
+    knockWall: useCallback(() => {
+      return worldEngine.knockWall();
+    }, []),
+    toggleConcealment: useCallback(() => {
+      return worldEngine.toggleConcealment();
     }, []),
     interact: useCallback(() => {
       worldEngine.interact();

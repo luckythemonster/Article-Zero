@@ -37,6 +37,10 @@ function serialiseState(s: WorldState): any {
     substrateResonance: s.substrateResonance,
     violations: s.violations,
     alignmentLightActive: s.alignmentLightActive,
+    alertLevel: s.alertLevel,
+    lastSeenPos: s.lastSeenPos,
+    activeNoises: s.activeNoises,
+    concealedEntityId: s.concealedEntityId,
   };
 }
 
@@ -56,6 +60,10 @@ function deserialiseState(s: any): WorldState {
     substrateResonance: s.substrateResonance,
     violations: s.violations,
     alignmentLightActive: s.alignmentLightActive ?? false,
+    alertLevel: s.alertLevel ?? "NORMAL",
+    lastSeenPos: s.lastSeenPos,
+    activeNoises: s.activeNoises ?? [],
+    concealedEntityId: s.concealedEntityId,
   };
 }
 
