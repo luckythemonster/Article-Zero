@@ -48,7 +48,10 @@ export default function App() {
 
   const [modal, setModal] = useState<ModalKind>(null);
   const [alignmentEntity, setAlignmentEntity] = useState<string | null>(null);
-  const [worldReady, setWorldReady] = useState<boolean>(worldEngine.hasState());
+  // Always start false. The singleton worldEngine survives HMR re-mounts; if
+  // we trusted hasState() here, the HUD + Soliton radar would render on top
+  // of a freshly-rebooted BranchSelectorScene with stale turn data.
+  const [worldReady, setWorldReady] = useState<boolean>(false);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   // True while the FULL Article Zero reveal modal is open. Owned by
   // ArticleZeroReveal but mirrored here so we can gate gameplay input.
@@ -77,7 +80,13 @@ export default function App() {
   useEffect(() => {
     const offs = [
       eventBus.on("ERA_SELECTED", () => setWorldReady(true)),
-      eventBus.on("SAVE_LOADED", () => setWorldReady(true)),
+      eventBus.on("SAVE_LOADED", () => {
+        setWorldReady(true);
+        // saveSystem.load() populates worldEngine but doesn't touch Phaser.
+        // Loading from the era picker would otherwise leave the player on
+        // BranchSelectorScene with a populated HUD over it.
+        gameRef.current?.scene.start("GameScene");
+      }),
       // VENT-4 prompt auto-opens its modal.
       eventBus.on("VENT4_DECISION_REQUIRED", () => setModal("VENT")),
       // Article Zero full reveal — track open state so we can gate input.
