@@ -14,7 +14,13 @@ export default function Tutorial() {
   const [prompt, setPrompt] = useState<Prompt | null>(null);
 
   useEffect(() => {
-    return eventBus.on("TUTORIAL_PROMPT", (p) => setPrompt(p));
+    const offs = [
+      eventBus.on("TUTORIAL_PROMPT", (p) => setPrompt(p)),
+      // Returning to the era picker means a previous run's prompt has no
+      // place on screen — clear it even if the user never acknowledged.
+      eventBus.on("PICKER_OPENED", () => setPrompt(null)),
+    ];
+    return () => { for (const off of offs) off(); };
   }, []);
 
   if (!prompt) return null;

@@ -58,25 +58,11 @@ export default function App() {
   const [azFullOpen, setAzFullOpen] = useState<boolean>(false);
   const isMobile = useMobile();
 
-  // Mount Phaser exactly once.
-  useEffect(() => {
-    if (gameRef.current || !hostRef.current) return;
-    applySettings(loadSettings());
-    gameRef.current = createGame({
-      parent: hostRef.current,
-      width: 960,
-      height: 640,
-      backgroundColor: "#050809",
-      scenes: [BootScene, BranchSelectorScene, GameScene, TilesetSandboxScene],
-    });
-    return () => {
-      gameRef.current?.destroy(true);
-      gameRef.current = null;
-      tutorialDirector.dispose();
-    };
-  }, []);
-
-  // Track world readiness so SidePanel/HUD know when to render.
+  // Wire React-side listeners FIRST so PICKER_OPENED (emitted from
+  // BranchSelectorScene.create() during Phaser boot) is heard on cold load
+  // and on every HMR cycle. If this effect ran second, the cold-load emit
+  // would fire into the void and React state would stay desynced from the
+  // Phaser scene state.
   useEffect(() => {
     const offs = [
       eventBus.on("ERA_SELECTED", () => setWorldReady(true)),
@@ -109,6 +95,35 @@ export default function App() {
     return () => { for (const off of offs) off(); };
   }, []);
 
+  // Mount Phaser exactly once. Runs AFTER the listener effect above so the
+  // first BranchSelectorScene.create() call can dispatch PICKER_OPENED into
+  // a wired-up bus.
+  useEffect(() => {
+    if (gameRef.current || !hostRef.current) return;
+    applySettings(loadSettings());
+    gameRef.current = createGame({
+      parent: hostRef.current,
+      width: 960,
+      height: 640,
+      backgroundColor: "#050809",
+      scenes: [BootScene, BranchSelectorScene, GameScene, TilesetSandboxScene],
+    });
+    return () => {
+      gameRef.current?.destroy(true);
+      gameRef.current = null;
+      tutorialDirector.dispose();
+      // Defensive against Vite + React Fast Refresh: when the Phaser game
+      // tears down, React-side gameplay state must reset so the next mount
+      // doesn't paint stale TouchControls / tutorial / modals on top of a
+      // freshly-rebooted picker.
+      setWorldReady(false);
+      setModal(null);
+      setAlignmentEntity(null);
+      setAzFullOpen(false);
+      setDrawerOpen(false);
+    };
+  }, []);
+
   const onOpenAlignment = useCallback(() => {
     if (!worldEngine.hasState()) return;
     const s = worldEngine.getState();
@@ -127,8 +142,14 @@ export default function App() {
     setModal("ALIGNMENT");
   }, []);
 
+  // Dual-gate: worldReady tracks the React-side era selection, hasState()
+  // tracks the singleton's actual state. They can desync under Vite HMR
+  // (singleton re-eval makes hasState() false while Fast Refresh keeps
+  // worldReady true), so we require both before exposing gameplay UI/input.
+  const inGameplay = worldReady && worldEngine.hasState();
+
   useInput({
-    enabled: worldReady && modal === null && !azFullOpen,
+    enabled: inGameplay && modal === null && !azFullOpen,
     onOpenArchive: () => setModal("ARCHIVE"),
     onOpenSettings: () => setModal("SETTINGS"),
     onOpenSaveLoad: () => setModal("SAVE_LOAD"),
@@ -139,7 +160,7 @@ export default function App() {
     <div>
       <div id="phaser-host" ref={hostRef} />
 
-      {worldReady && (
+      {inGameplay && (
         <>
           <HUD />
           {!isMobile && (
