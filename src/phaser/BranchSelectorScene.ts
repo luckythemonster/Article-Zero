@@ -138,6 +138,7 @@ export class BranchSelectorScene extends Phaser.Scene {
   private selectChoice(choice: ChoiceTarget): void {
     if (choice === "PALETTE") {
       this.scene.start("TilesetSandboxScene");
+      this.scene.stop("BranchSelectorScene");
       return;
     }
     if (choice === "MOOSE_LEVEL") {
@@ -146,6 +147,7 @@ export class BranchSelectorScene extends Phaser.Scene {
       tutorialDirector.init();
       worldEngine.initWorldFromSeed(mooseSandboxEra());
       this.scene.start("GameScene");
+      this.scene.stop("BranchSelectorScene");
       return;
     }
     this.selectEra(choice);
@@ -158,5 +160,10 @@ export class BranchSelectorScene extends Phaser.Scene {
     worldEngine.initWorld(era);
     eventBus.emit("ERA_SELECTED", { era });
     this.scene.start("GameScene");
+    // Phaser 4's scene.start(key) is documented to "shutdown this Scene and
+    // run the given one", but in practice (especially under Vite HMR) the
+    // selector's display list can survive the transition and bleed through
+    // GameScene as ghost text. Force the shutdown explicitly.
+    this.scene.stop("BranchSelectorScene");
   }
 }

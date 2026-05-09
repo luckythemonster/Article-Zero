@@ -138,6 +138,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   create(): void {
+    // Defensive: BranchSelectorScene's display list can survive the
+    // scene.start("GameScene") transition and ghost through as the
+    // era-picker text underneath gameplay. Stop it explicitly here, plus
+    // any other auxiliary scene that shouldn't be co-rendered with us.
+    this.scene.stop("BranchSelectorScene");
+    this.scene.stop("TilesetSandboxScene");
     this.cameras.main.setBackgroundColor("#050809");
     this.tileLayer = this.add.graphics();
     this.glyphLayer = this.add.graphics();
