@@ -7,6 +7,12 @@
 // more PNG sprite sheets. v1.5 only renders sheet 0; multi-sheet exports
 // emit a warning. Project names get slugified to valid JS identifiers
 // (spaces -> underscores, lowercased) so the generated TS module compiles.
+//
+// Frame indexing: sprites are sorted by (Y, X) and assigned sequential
+// indices 0, 1, 2, … Each sprite's exact bounds are recorded so the
+// generated atlas JSON can be fed to Phaser.load.atlas() — this handles
+// packed atlases with mixed sprite sizes (e.g. 88×88 primary + 32×32
+// floor tiles) that the uniform spritesheet loader cannot resolve.
 
 import { promises as fs } from "node:fs";
 import { existsSync } from "node:fs";
@@ -56,79 +62,38 @@ function slugify(label) {
   return slug;
 }
 
-function inferStride(sprites, frameWidth) {
-  // Only consider sprites matching frameWidth — mixed-size packed atlases
-  // would otherwise produce cross-contamination between tile sizes.
-  // Scans all rows so single-sprite-per-row layouts still resolve.
-  // Falls back to frameWidth + 1 (standard Ed 1px-gutter convention).
-  const matching = sprites.filter((s) => (s.Width ?? 32) === frameWidth);
-  const byRow = new Map();
-  for (const s of matching) {
-    const y = s.Y ?? 0;
-    if (!byRow.has(y)) byRow.set(y, []);
-    byRow.get(y).push(s.X ?? 0);
-  }
-  let stride = 0;
-  for (const xs of byRow.values()) {
-    xs.sort((a, b) => a - b);
-    for (let i = 1; i < xs.length; i++) {
-      const d = xs[i] - xs[i - 1];
-      if (d > 0 && (stride === 0 || d < stride)) stride = d;
-    }
-  }
-  return stride || frameWidth + 1;
-}
-
-function buildFrames(sprites, stride, frameWidth, frameHeight, sheetWidth, sheetHeight) {
-  // Phaser slices spritesheets left-to-right, top-to-bottom; index 0 is
-  // top-left, index `cols-1` is top-right, index `cols` is start of row 2.
-  const cols = Math.max(1, Math.floor((sheetWidth + stride - frameWidth) / stride));
-  const byIndex = new Map();
-  for (const s of sprites) {
+// Sort sprites by (Y, X) and assign stable sequential frame indices.
+// Using per-sprite Width/Height for bounds checking lets mixed-size packed
+// atlases include every sprite regardless of the "primary" frame size.
+// Returns { frames, handleToIndex }.
+//   frames:        array of { index, ref, brush, x, y, w, h }
+//   handleToIndex: Map<spriteHandle, frameIndex>
+function buildFrames(sprites, sheetWidth, sheetHeight) {
+  const sorted = [...sprites].sort((a, b) => {
+    const ay = a.Y ?? 0, by = b.Y ?? 0;
+    if (ay !== by) return ay - by;
+    return (a.X ?? 0) - (b.X ?? 0);
+  });
+  const frames = [];
+  const handleToIndex = new Map();
+  for (let i = 0; i < sorted.length; i++) {
+    const s = sorted[i];
     const x = s.X ?? 0;
     const y = s.Y ?? 0;
-    if (x + frameWidth > sheetWidth) continue;
-    if (y + frameHeight > sheetHeight) continue;
-    const col = Math.round(x / stride);
-    const row = Math.round(y / stride);
-    if (col < 0 || row < 0) continue;
-    const idx = row * cols + col;
-    if (byIndex.has(idx)) continue;
-    byIndex.set(idx, { ref: s.Ref ?? null, brush: s.SpriteBrushId ?? null });
+    const w = s.Width ?? 32;
+    const h = s.Height ?? w;
+    if (x + w > sheetWidth || y + h > sheetHeight) continue;
+    frames.push({ index: i, ref: s.Ref ?? null, brush: s.SpriteBrushId ?? null, x, y, w, h });
+    if (s.Handle != null) handleToIndex.set(s.Handle, i);
   }
-  const max = Math.max(-1, ...byIndex.keys());
-  const out = [];
-  for (let i = 0; i <= max; i++) {
-    const f = byIndex.get(i);
-    out.push({ index: i, ref: f?.ref ?? null, brush: f?.brush ?? null });
-  }
-  return out;
+  return { frames, handleToIndex };
 }
 
-// Build sprite-id resolvers shared between level extraction and tile-anim
-// extraction. KeyFrame.SpriteId can be either a Ref string ("south1_0") or
-// the sprite's numeric Handle serialised as a string ("2880196025").
-//
-// Hand-cropped frames in Ed often lack a Ref entirely, so we resolve
-// Handles by computing the Phaser frame index directly from each sprite's
-// X/Y coordinates rather than going through the Ref map.
-function buildSpriteResolvers(sprites, frames, stride, frameWidth, frameHeight, sheetWidth, sheetHeight) {
+// Build sprite-id resolvers. KeyFrame.SpriteId is either a Ref string
+// ("south1_0") or a numeric Handle serialised as a string ("2880196025").
+function buildSpriteResolvers(frames, handleToIndex) {
   const refToIndex = new Map();
   for (const f of frames) if (f.ref) refToIndex.set(f.ref, f.index);
-
-  const cols = Math.max(1, Math.floor((sheetWidth + stride - frameWidth) / stride));
-  const handleToIndex = new Map();
-  for (const s of sprites) {
-    if (s.Handle == null) continue;
-    const x = s.X ?? 0;
-    const y = s.Y ?? 0;
-    if (x + frameWidth > sheetWidth) continue;
-    if (y + frameHeight > sheetHeight) continue;
-    const col = Math.round(x / stride);
-    const row = Math.round(y / stride);
-    if (col < 0 || row < 0) continue;
-    handleToIndex.set(s.Handle, row * cols + col);
-  }
 
   function resolveSpriteId(id) {
     if (typeof id !== "string") return null;
@@ -142,14 +107,33 @@ function buildSpriteResolvers(sprites, frames, stride, frameWidth, frameHeight, 
   return { refToIndex, handleToIndex, resolveSpriteId };
 }
 
+// Generate a Phaser hash-format atlas JSON. Frame names are "f{index}".
+function generateAtlasJson(frames, sheetWidth, sheetHeight) {
+  const framesObj = {};
+  for (const f of frames) {
+    framesObj[`f${f.index}`] = {
+      frame: { x: f.x, y: f.y, w: f.w, h: f.h },
+      rotated: false,
+      trimmed: false,
+      spriteSourceSize: { x: 0, y: 0, w: f.w, h: f.h },
+      sourceSize: { w: f.w, h: f.h },
+    };
+  }
+  return JSON.stringify({
+    frames: framesObj,
+    meta: {
+      image: "sheet.png",
+      size: { w: sheetWidth, h: sheetHeight },
+      scale: "1",
+    },
+  }, null, 2);
+}
+
 // Multi-keyframe TileDefs are state-transition / continuous animations.
 // Single-keyframe TileDefs are the static-render path the level extractor
 // already handles.
-function extractTileAnims(ed, sprites, frames, stride, frameWidth, frameHeight, sheetWidth, sheetHeight) {
+function extractTileAnims(ed, resolveSpriteId) {
   const tileDefs = ed.TileDefs ?? [];
-  const { resolveSpriteId } = buildSpriteResolvers(
-    sprites, frames, stride, frameWidth, frameHeight, sheetWidth, sheetHeight,
-  );
   const anims = [];
   let skipped = 0;
   for (const td of tileDefs) {
@@ -186,28 +170,24 @@ function extractTileAnims(ed, sprites, frames, stride, frameWidth, frameHeight, 
 // Ed's painted level data lives in Levels[].Boards[] — each Board is a
 // layer (sparse Tiles[] plus its own Width/Height/Opacity/Name). Each
 // painted tile carries a Handle that resolves through TileDefs to a
-// SpriteId Ref, which we then map back to our slice-frame index.
-function extractLevels(ed, frames, defaultTileSize, defaultSpacing) {
+// SpriteId, which we then map back to our sequential frame index.
+function extractLevels(ed, resolveSpriteId, defaultTileSize, defaultSpacing) {
   const rawLevels = ed.Levels ?? ed.levels;
   if (!Array.isArray(rawLevels)) return [];
 
-  // SpriteId (Ref string) -> our frame index in the slice order.
-  const refToIndex = new Map();
-  for (const f of frames) if (f.ref) refToIndex.set(f.ref, f.index);
-
-  // TileDef.Handle -> SpriteId Ref of the first keyframe.
+  // TileDef.Handle -> SpriteId of the first keyframe.
   // Some TileDefs (notably the `spawn` marker) have empty KeyFrames — they
   // exist as cell-presence markers, not renderable sprites. We track those
   // separately so the level-extractor can still mark a cell as painted
   // without resolving to a sprite frame.
   const tileDefs = ed.TileDefs ?? [];
-  const handleToRef = new Map();
+  const handleToSpriteId = new Map();
   const markerHandles = new Set();
   for (const td of tileDefs) {
     if (td.Handle == null) continue;
-    const ref = td.Animation?.KeyFrames?.[0]?.SpriteId;
-    if (typeof ref === "string") {
-      handleToRef.set(td.Handle, ref);
+    const spriteId = td.Animation?.KeyFrames?.[0]?.SpriteId;
+    if (spriteId != null) {
+      handleToSpriteId.set(td.Handle, String(spriteId));
     } else {
       markerHandles.add(td.Handle);
     }
@@ -244,8 +224,8 @@ function extractLevels(ed, frames, defaultTileSize, defaultSpacing) {
         const y = t.Y ?? t.y ?? 0;
         if (x < 0 || y < 0 || x >= width || y >= height) continue;
         painted += 1;
-        const ref = handleToRef.get(t.Handle);
-        const idx = ref != null ? refToIndex.get(ref) : undefined;
+        const spriteId = handleToSpriteId.get(t.Handle);
+        const idx = spriteId != null ? resolveSpriteId(spriteId) : undefined;
         if (idx != null) {
           // Tiled / Ed convention: 0 = empty; non-zero = 1-based frame index.
           grid[y][x] = idx + 1;
@@ -309,9 +289,7 @@ function extractLevels(ed, frames, defaultTileSize, defaultSpacing) {
       layers,
     });
 
-    // Empty-semantic-layer warning. The user almost certainly added these
-    // boards on purpose, so a zero-tile board likely means they forgot to
-    // paint. We surface this so the next export round-trip is informed.
+    // Empty-semantic-layer warning.
     const SEMANTIC = new Set([
       "floor", "walls", "doors", "terminals", "vent_control",
       "shared_field", "light_sources", "article_zero", "lattice_exit",
@@ -342,7 +320,7 @@ function extractLevels(ed, frames, defaultTileSize, defaultSpacing) {
       );
     } else if (unresolved > 0) {
       console.warn(
-        `warn: level "${levelName}" has ${unresolved}/${painted} unresolved tile handles (probably autotile rule outputs; v1.5 doesn't evaluate rules).`,
+        `warn: level "${levelName}" has ${unresolved}/${painted} unresolved tile handles.`,
       );
     }
   }
@@ -368,8 +346,9 @@ async function loadExistingRegistry() {
 async function writeRegistry(entries) {
   const body =
     "// AUTO-GENERATED by scripts/import-moose.mjs. Do not hand-edit.\n" +
-    "// Each entry is preloaded by BootScene as a Phaser spritesheet so that\n" +
-    "// any era's Floor.decoration can reference it by `key`.\n" +
+    "// Each entry is preloaded by BootScene. Entries with `atlasJson` use\n" +
+    "// Phaser.load.atlas() with frame names `f{index}`; others use\n" +
+    "// Phaser.load.spritesheet() with integer frame indices.\n" +
     "\n" +
     'import type { MooseTilesetEntry } from "./types";\n' +
     "\n" +
@@ -410,32 +389,35 @@ async function main() {
     }
     const sprites = sheetMeta.Sprites;
     if (sprites.length === 0) die("edplay.json: zero sprites");
+
+    // Representative frame size — used for display-scale calculation in
+    // GameScene and kept in the registry for reference. The atlas JSON
+    // records the actual per-sprite bounds, so the renderer uses those.
     const frameWidth = sprites[0].Width ?? 32;
     const frameHeight = sprites[0].Height ?? frameWidth;
-    const stride = inferStride(sprites, frameWidth);
-    const spacing = stride - frameWidth;
-    if (spacing < 0) die(`bad stride/frameWidth: ${stride} / ${frameWidth}`);
 
     const buf = await fs.readFile(sheetSrc);
     const sheetWidth = buf.readUInt32BE(16);
     const sheetHeight = buf.readUInt32BE(20);
 
-    const frames = buildFrames(sprites, stride, frameWidth, frameHeight, sheetWidth, sheetHeight);
-    const levels = extractLevels(ed, frames, frameWidth, spacing);
-    const tileAnims = extractTileAnims(
-      ed, sprites, frames, stride, frameWidth, frameHeight, sheetWidth, sheetHeight,
-    );
+    const { frames, handleToIndex } = buildFrames(sprites, sheetWidth, sheetHeight);
+    const { resolveSpriteId } = buildSpriteResolvers(frames, handleToIndex);
+    const levels = extractLevels(ed, resolveSpriteId, frameWidth, 0);
+    const tileAnims = extractTileAnims(ed, resolveSpriteId);
+    const atlasJsonStr = generateAtlasJson(frames, sheetWidth, sheetHeight);
 
     const outDir = path.join(TILESETS_DIR, slug);
     await fs.mkdir(outDir, { recursive: true });
     const sheetDest = path.join(outDir, "sheet.png");
     await fs.copyFile(sheetSrc, sheetDest);
+    const atlasDest = path.join(outDir, "atlas.json");
+    await fs.writeFile(atlasDest, atlasJsonStr);
 
     const ident = slug.toUpperCase();
     const dataPath = path.join(DATA_DIR, `${slug}.ts`);
     const dataLines = [
       `// AUTO-GENERATED by scripts/import-moose.mjs from ${path.relative(ROOT, zip)}.`,
-      `// Sheet: ${sheetWidth}x${sheetHeight}, frame ${frameWidth}x${frameHeight}, spacing ${spacing}.`,
+      `// Sheet: ${sheetWidth}x${sheetHeight}, primary frame ${frameWidth}x${frameHeight}.`,
       `// Original project label: ${JSON.stringify(label)}`,
       "",
       'import type { MooseSpriteFrame, MooseTileAnim } from "./types";',
@@ -444,7 +426,6 @@ async function main() {
       `export const ${ident}_LABEL = ${JSON.stringify(label)};`,
       `export const ${ident}_FRAME_WIDTH = ${frameWidth};`,
       `export const ${ident}_FRAME_HEIGHT = ${frameHeight};`,
-      `export const ${ident}_SPACING = ${spacing};`,
       "",
       `export const ${ident}_FRAMES: MooseSpriteFrame[] = ${tsLiteral(frames)};`,
       "",
@@ -472,7 +453,8 @@ async function main() {
       path: `/assets/tilesets/${slug}/sheet.png`,
       frameWidth,
       frameHeight,
-      spacing,
+      spacing: 0,
+      atlasJson: `/assets/tilesets/${slug}/atlas.json`,
     };
     if (tileAnims.length > 0) entry.tileAnims = tileAnims;
     filtered.push(entry);
@@ -487,7 +469,8 @@ async function main() {
 
     console.log(`imported: ${label}`);
     if (slug !== label) console.log(`  slug:    ${slug}`);
-    console.log(`  sheet:   ${path.relative(ROOT, sheetDest)} (${frameWidth}x${frameHeight}, spacing ${spacing})`);
+    console.log(`  sheet:   ${path.relative(ROOT, sheetDest)} (${sheetWidth}x${sheetHeight}, primary frame ${frameWidth}x${frameHeight})`);
+    console.log(`  atlas:   ${path.relative(ROOT, atlasDest)}`);
     console.log(`  frames:  ${frames.length}    levels: ${levels.length}    tile-anims: ${tileAnims.length}`);
     if (tileAnims.length > 0) {
       for (const a of tileAnims) {

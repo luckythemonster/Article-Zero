@@ -70,6 +70,9 @@ export class GameScene extends Phaser.Scene {
    *  texture. Built lazily when the floor's decoration texture changes. */
   private decoAnimByFrame = new Map<number, { textureKey: string; anim: MooseTileAnim }>();
   private decoTextureKey: string | null = null;
+  /** True when the active decoration texture is a Phaser atlas (frame names
+   *  are "f{index}" strings); false for spritesheet (integer indices). */
+  private decoIsAtlas = false;
   /** Door-cell sprite key by `${x},${y},${z}` so DOOR_TOGGLED can locate
    *  the sprite without scanning all decoration cells. */
   private doorSpriteByPos = new Map<string, string>();
@@ -295,6 +298,7 @@ export class GameScene extends Phaser.Scene {
     this.decoAnimByFrame.clear();
     this.decoTextureKey = textureKey;
     const entry = MOOSE_TILESETS.find((t) => t.key === textureKey);
+    this.decoIsAtlas = !!entry?.atlasJson;
     for (const a of entry?.tileAnims ?? []) {
       this.decoAnimByFrame.set(a.baseFrame, { textureKey, anim: a });
       // Settle frames also count — when we restore mid-game from a save
@@ -353,27 +357,30 @@ export class GameScene extends Phaser.Scene {
           const key = `${layerIdx}:${tileKey}`;
           let sprite = this.decoSprites.get(key);
           // Frame index = stored index minus 1 (Tiled/Ed convention).
-          let frame = idx - 1;
+          let frameInt = idx - 1;
           // Doors specifically swap frame based on tile-kind so an open
           // door shows the open art (from doors_open or animation settle).
           if (isDoorLayer) {
-            this.doorClosedFrameByPos.set(tileKey, frame);
+            this.doorClosedFrameByPos.set(tileKey, frameInt);
             const tile = floor.tiles[y * floor.width + x];
             if (tile?.kind === "DOOR_OPEN") {
               const openFrame = this.doorOpenFrameByPos.get(tileKey);
-              const animMeta = this.decoAnimByFrame.get(frame);
-              frame = openFrame ?? animMeta?.anim.settleFrame ?? frame;
+              const animMeta = this.decoAnimByFrame.get(frameInt);
+              frameInt = openFrame ?? animMeta?.anim.settleFrame ?? frameInt;
             }
           }
+          // Atlas textures use string frame names ("f5"); spritesheet textures
+          // use integer indices (5).
+          const frameRef: string | number = this.decoIsAtlas ? `f${frameInt}` : frameInt;
           if (!sprite) {
-            sprite = this.add.sprite(px, py, dec.textureKey, frame);
+            sprite = this.add.sprite(px, py, dec.textureKey, frameRef);
             sprite.setOrigin(0.5, 1);
             sprite.setDepth(layerIdx);
             this.decoSprites.set(key, sprite);
           } else {
             sprite.setPosition(px, py);
             // Don't overwrite frame if the sprite is mid-animation.
-            if (!sprite.anims.isPlaying) sprite.setFrame(frame);
+            if (!sprite.anims.isPlaying) sprite.setFrame(frameRef);
             sprite.setOrigin(0.5, 1);
           }
           sprite.setDisplaySize(TILE_PX, displayHeight);
@@ -402,8 +409,9 @@ export class GameScene extends Phaser.Scene {
     if (!spriteKey) return;
     const sprite = this.decoSprites.get(spriteKey);
     if (!sprite) return;
-    const currentFrame = sprite.frame.name;
-    const frameIdx = Number(currentFrame);
+    // Atlas frame names are "f5"; spritesheet frame names are "5" (numeric string).
+    const rawName = String(sprite.frame.name);
+    const frameIdx = this.decoIsAtlas ? parseInt(rawName.slice(1), 10) : Number(rawName);
     const meta = this.decoAnimByFrame.get(frameIdx)
       ?? (() => {
         // After a save/load the sprite may currently sit on a per-cell
@@ -416,11 +424,12 @@ export class GameScene extends Phaser.Scene {
     const direction = opening ? "open" : "close";
     const key = mooseAnimKey(meta.textureKey, meta.anim.handle, direction);
     if (!this.anims.exists(key)) return;
-    const openFrame = this.doorOpenFrameByPos.get(tileKey) ?? meta.anim.settleFrame;
-    const closedFrame = this.doorClosedFrameByPos.get(tileKey) ?? meta.anim.baseFrame;
-    const settleAfter = opening ? openFrame : closedFrame;
+    const openFrameInt = this.doorOpenFrameByPos.get(tileKey) ?? meta.anim.settleFrame;
+    const closedFrameInt = this.doorClosedFrameByPos.get(tileKey) ?? meta.anim.baseFrame;
+    const settleInt = opening ? openFrameInt : closedFrameInt;
+    const settleRef: string | number = this.decoIsAtlas ? `f${settleInt}` : settleInt;
     sprite.once("animationcomplete", () => {
-      sprite.setFrame(settleAfter);
+      sprite.setFrame(settleRef);
     });
     sprite.play(key, true);
   }

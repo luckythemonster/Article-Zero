@@ -3,12 +3,17 @@
 // GameScene, and the era seed helpers in src/data/eras/from-moose.ts.
 
 export interface MooseSpriteFrame {
-  /** 0-based frame index, matching the Phaser spritesheet slice order. */
+  /** 0-based frame index, used as the atlas frame name `f{index}`. */
   index: number;
   /** Original `Ref` from the Ed export (e.g. "stairwell1_3", "IMG_3722_9"). */
   ref: string | null;
   /** Brush id when the frame is part of an autotile rule-set. */
   brush: string | null;
+  /** Exact sprite bounds within the sheet PNG. */
+  x: number;
+  y: number;
+  w: number;
+  h: number;
 }
 
 export interface MooseLayer {
@@ -37,6 +42,10 @@ export interface MooseTilesetEntry {
   frameWidth: number;
   frameHeight: number;
   spacing: number;
+  /** When present, BootScene loads this as a Phaser texture atlas instead of
+   *  a spritesheet. Frame names are `f{index}` (e.g. `"f5"`). Required for
+   *  packed atlases with mixed sprite sizes. */
+  atlasJson?: string;
   /** Multi-keyframe TileDefs to register as Phaser animations. Empty when
    *  the project has no animated TileDefs. */
   tileAnims?: MooseTileAnim[];

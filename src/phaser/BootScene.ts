@@ -31,15 +31,21 @@ export class BootScene extends Phaser.Scene {
       "/assets/sprite_pack/chars-art.json",
     );
 
-    // Every Moose-imported tileset registered by `npm run moose` becomes a
-    // Phaser spritesheet keyed by its project slug.
+    // Every Moose-imported tileset registered by `npm run moose` is loaded
+    // here. Entries with atlasJson use Phaser.load.atlas() (frame names are
+    // "f{index}"); others fall back to Phaser.load.spritesheet() (integer
+    // frame indices). All current imports generate atlasJson.
     for (const t of MOOSE_TILESETS) {
       if (this.textures.exists(t.key)) continue;
-      this.load.spritesheet(t.key, t.path, {
-        frameWidth: t.frameWidth,
-        frameHeight: t.frameHeight,
-        spacing: t.spacing,
-      });
+      if (t.atlasJson) {
+        this.load.atlas(t.key, t.path, t.atlasJson);
+      } else {
+        this.load.spritesheet(t.key, t.path, {
+          frameWidth: t.frameWidth,
+          frameHeight: t.frameHeight,
+          spacing: t.spacing,
+        });
+      }
     }
   }
 
@@ -59,7 +65,10 @@ export class BootScene extends Phaser.Scene {
     // Register Ed-authored tile animations (e.g. door open/close). Each
     // multi-keyframe TileDef becomes two Phaser anims keyed
     // `<slug>_anim_<handle>_open` / `_close` (close = reversed open).
+    // Atlas tilesets use string frame names ("f5"); spritesheet tilesets
+    // use integer frame indices (5).
     for (const t of MOOSE_TILESETS) {
+      const frameRef = (idx: number): string | number => t.atlasJson ? `f${idx}` : idx;
       const anims = t.tileAnims ?? [];
       for (const anim of anims) {
         const openKey = mooseAnimKey(t.key, anim.handle, "open");
@@ -67,7 +76,7 @@ export class BootScene extends Phaser.Scene {
         if (!this.anims.exists(openKey)) {
           this.anims.create({
             key: openKey,
-            frames: anim.frames.map((idx) => ({ key: t.key, frame: idx })),
+            frames: anim.frames.map((idx) => ({ key: t.key, frame: frameRef(idx) })),
             frameRate: anim.frameRate,
             repeat: 0,
           });
@@ -75,7 +84,7 @@ export class BootScene extends Phaser.Scene {
         if (!this.anims.exists(closeKey)) {
           this.anims.create({
             key: closeKey,
-            frames: [...anim.frames].reverse().map((idx) => ({ key: t.key, frame: idx })),
+            frames: [...anim.frames].reverse().map((idx) => ({ key: t.key, frame: frameRef(idx) })),
             frameRate: anim.frameRate,
             repeat: 0,
           });

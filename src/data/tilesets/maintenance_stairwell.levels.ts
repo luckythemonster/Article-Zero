@@ -8,7 +8,7 @@ export const MAINTENANCE_STAIRWELL_LEVELS: MooseLevel[] = [
     "width": 10,
     "height": 10,
     "tileSize": 32,
-    "spacing": 1,
+    "spacing": 0,
     "layers": [
       {
         "name": "floor",
