@@ -18,6 +18,7 @@ const TILE_COLORS: Record<TileKind, number> = {
   DOOR_OPEN: 0x2a1f12,
   TERMINAL: 0x12303a,
   EXTRACTION_TERMINAL: 0x3f2b3a,
+  EXFIL_POINT: 0x1e3a32,
   LIGHT_SOURCE: 0x4a4220,
 };
 
@@ -81,6 +82,10 @@ export class RoomScene extends Phaser.Scene {
     eventBus.on("GUARD_ALERT_CHANGED", () => this.redraw());
     eventBus.on("EXCLAMATION_TRIGGERED", (p) => this.flashExclamation(p.guardId));
     eventBus.on("TURN_START", () => this.redraw());
+    eventBus.on("ITEM_SPAWNED", () => this.redraw());
+    eventBus.on("ITEM_PICKED_UP", () => this.redraw());
+    eventBus.on("ITEM_FILED", () => this.redraw());
+    eventBus.on("COMPLIANCE_CHANGED", () => this.redraw());
 
     this.redraw();
   }
@@ -151,6 +156,20 @@ export class RoomScene extends Phaser.Scene {
       this.drawEntity(state, entity);
     }
 
+    // Floor items — extraction cubes only, for now.
+    for (const item of state.items.values()) {
+      if (item.itemType !== "EXTRACTION_CUBE") continue;
+      if (item.roomId !== room.id || !item.pos) continue;
+      const visible = state.visibleTiles.has(`${item.pos.x},${item.pos.y}`);
+      if (!visible) continue;
+      const cx = this.offsetX + item.pos.x * TILE_PX + TILE_PX / 2;
+      const cy = this.offsetY + item.pos.y * TILE_PX + TILE_PX / 2;
+      this.glyphLayer.fillStyle(0xc89adb, 0.95);
+      this.glyphLayer.fillRect(cx - 7, cy - 7, 14, 14);
+      this.glyphLayer.lineStyle(1, 0xffffff, 0.9);
+      this.glyphLayer.strokeRect(cx - 7, cy - 7, 14, 14);
+    }
+
     // Player.
     const ppx = this.offsetX + state.player.pos.x * TILE_PX + TILE_PX / 2;
     const ppy = this.offsetY + state.player.pos.y * TILE_PX + TILE_PX / 2;
@@ -184,6 +203,12 @@ export class RoomScene extends Phaser.Scene {
       g.strokeRect(cx - 8, cy - 6, 16, 12);
       g.fillStyle(0xc89adb, 0.5);
       g.fillRect(cx - 6, cy - 4, 12, 8);
+    } else if (kind === "EXFIL_POINT") {
+      // Inward arrow + circular boundary — "drop here".
+      g.lineStyle(2, 0x6ad0a4, 0.95);
+      g.strokeCircle(cx, cy, 9);
+      g.lineStyle(2, 0x6ad0a4, 1);
+      g.strokeTriangle(cx, cy - 5, cx - 5, cy + 4, cx + 5, cy + 4);
     } else if (kind === "LIGHT_SOURCE") {
       g.fillStyle(0xfff0a8, 0.9);
       g.fillCircle(cx, cy, 4);
@@ -232,9 +257,18 @@ export class RoomScene extends Phaser.Scene {
   }
 
   private drawGuardCone(guard: Entity): void {
-    const visible = guardSystem.visibleTiles(worldEngine.getState(), guard);
+    const state = worldEngine.getState();
+    const visible = guardSystem.visibleTiles(state, guard);
     const level = guard.alert?.level ?? "NORMAL";
-    const colour = ALERT_COLORS[level];
+    // Tint by *threat to the player* — when the player is COMPLIANT (GREEN)
+    // the cone is rendered neutrally regardless of guard state, because the
+    // doctrinal mask is intact. YELLOW/RED restore alert-level colors.
+    const tier = state.player.compliance;
+    const baseColour = ALERT_COLORS[level];
+    const colour =
+      tier === "GREEN"
+        ? { fill: 0x9bb1b6, alpha: Math.min(baseColour.alpha, 0.06) }
+        : baseColour;
     this.coneLayer.fillStyle(colour.fill, colour.alpha);
     for (const key of visible) {
       const [xs, ys] = key.split(",");

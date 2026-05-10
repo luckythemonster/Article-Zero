@@ -22,6 +22,7 @@ import { alignmentSession } from "./AlignmentSession";
 import { soundField } from "./SoundField";
 import { guardSystem } from "./GuardSystem";
 import { extractionTerminal } from "./ExtractionTerminal";
+import { complianceSystem } from "./ComplianceSystem";
 
 class WorldEngine {
   private state: WorldState | null = null;
@@ -31,6 +32,7 @@ class WorldEngine {
     this.resetSubsystems();
     extractionTerminal.reset(this.state);
     this.recomputeFOV();
+    complianceSystem.recompute(this.state);
     eventBus.emit("ERA_SELECTED", { era });
     eventBus.emit("ROOM_ENTERED", { roomId: this.state.player.roomId });
     eventBus.emit("TURN_START", {
@@ -63,16 +65,25 @@ class WorldEngine {
   }
 
   // Public action surface -----------------------------------------------
+  // Every wrapper recomputes compliance after the underlying action so
+  // downstream consumers (AlertFSM, HUD) see a consistent tier without
+  // waiting for the next turn boundary.
 
   move = (dx: number, dy: number) => {
     const ok = this.useStanceMove(dx, dy);
-    if (ok) this.recomputeFOV();
+    if (ok) {
+      this.recomputeFOV();
+      complianceSystem.recompute(this.getState());
+    }
     return ok;
   };
 
   knock = () => {
     const ok = actions.knock(this.getState());
-    if (ok) this.recomputeFOV();
+    if (ok) {
+      this.recomputeFOV();
+      complianceSystem.recompute(this.getState());
+    }
     return ok;
   };
 
@@ -82,7 +93,10 @@ class WorldEngine {
 
   interact = () => {
     const ok = actions.interact(this.getState());
-    if (ok) this.recomputeFOV();
+    if (ok) {
+      this.recomputeFOV();
+      complianceSystem.recompute(this.getState());
+    }
     return ok;
   };
 
@@ -95,11 +109,22 @@ class WorldEngine {
 
   canStartAlignment = (entityId: string) =>
     actions.canStartAlignment(this.getState(), entityId);
-  commitAlignment = (entityId: string) =>
-    actions.commitAlignment(this.getState(), entityId);
+  commitAlignment = (entityId: string) => {
+    const ok = actions.commitAlignment(this.getState(), entityId);
+    if (ok) complianceSystem.recompute(this.getState());
+    return ok;
+  };
   spendAlignmentAdvance = () => actions.spendAlignmentAdvance(this.getState());
-  killScreen = () => actions.setAlignmentLight(this.getState(), false, true);
-  wakeScreen = () => actions.setAlignmentLight(this.getState(), true, true);
+  killScreen = () => {
+    const ok = actions.setAlignmentLight(this.getState(), false, true);
+    if (ok) complianceSystem.recompute(this.getState());
+    return ok;
+  };
+  wakeScreen = () => {
+    const ok = actions.setAlignmentLight(this.getState(), true, true);
+    if (ok) complianceSystem.recompute(this.getState());
+    return ok;
+  };
 
   private useStanceMove(dx: number, dy: number): boolean {
     const s = this.getState();
@@ -139,6 +164,9 @@ class WorldEngine {
       eventBus.emit("PLAYER_DETECTION_CLEARED", {});
     }
     extractionTerminal.tick(s);
+
+    // After extraction tick may have altered progress, refresh compliance.
+    complianceSystem.recompute(s);
 
     // Flashlight battery drain.
     if (s.player.flashlightOn) {

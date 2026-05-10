@@ -79,6 +79,9 @@ export function latticeEra(): EraSeed {
     flashlightOn: false, flashlightBattery: 30,
     stance: "WALK",
     name: "SOL IBARRA-CASTRO",
+    qScore: 0,
+    inventory: [],
+    compliance: "GREEN",
   };
   const alfar: Entity = {
     id: "ALFAR-22",

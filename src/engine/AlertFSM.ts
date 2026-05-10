@@ -41,8 +41,15 @@ class AlertFSM {
     const alert = this.ensure(state, guard);
     const prev = alert.level;
 
-    if (input.seesPlayer) {
-      // Confirmed sighting — escalate to ALERT regardless of previous state.
+    // Compliance gate — the cardboard-box mechanic. Sighting a GREEN
+    // player is a no-op; YELLOW degrades to a CAUTION-grade stimulus;
+    // RED is the existing "see-and-chase" behaviour.
+    const tier = state.player.compliance;
+    const sees = input.seesPlayer && tier !== "GREEN";
+    const seesAsAlert = sees && tier === "RED";
+
+    if (seesAsAlert) {
+      // Confirmed sighting against an exposed player — full ALERT.
       alert.lastStimulus = input.playerPos;
       alert.lastStimulusRoom = input.playerRoomId;
       if (alert.level !== "ALERT") {
@@ -53,6 +60,14 @@ class AlertFSM {
           pos: guard.pos,
           roomId: guard.roomId,
         });
+      }
+    } else if (sees) {
+      // YELLOW sighting — orient + investigate, no chase.
+      alert.lastStimulus = input.playerPos;
+      alert.lastStimulusRoom = input.playerRoomId;
+      if (alert.level === "NORMAL") {
+        alert.level = "CAUTION";
+        alert.enteredTurn = state.turn;
       }
     } else if (input.heardIntensity >= ALERT_SOUND_THRESHOLD) {
       // Loud noise — jump straight to ALERT toward the source.

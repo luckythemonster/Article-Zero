@@ -36,6 +36,9 @@ export function miradorEra(): EraSeed {
     flashlightOn: false, flashlightBattery: 30,
     stance: "WALK",
     name: "MARA IBARRA",
+    qScore: 0,
+    inventory: [],
+    compliance: "GREEN",
   };
   return {
     era: "MIRADOR",

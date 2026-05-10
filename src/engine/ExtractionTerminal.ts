@@ -3,12 +3,13 @@
 // The player must stand orthogonally adjacent to an EXTRACTION_TERMINAL tile,
 // face it, and end their turn without being detected. Each qualifying turn
 // increments `progress`. On `progress >= required` the engine asks
-// `DialogueRouter.extractDocument` for a body and files it via DocumentArchive.
+// `DialogueRouter.extractDocument` for a body and spawns an EXTRACTION_CUBE
+// item on the terminal tile. The player must carry that cube to an
+// EXFIL_POINT to actually file the document — see WorldEngineActions.interact.
 
-import type { RoomId, Tile, Vec2, WorldState } from "../types/world.types";
+import type { ItemInstance, RoomId, Tile, Vec2, WorldState } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import { dialogueRouter } from "./DialogueRouter";
-import { documentArchive } from "./DocumentArchive";
 
 export interface TerminalState {
   terminalId: string;
@@ -89,10 +90,38 @@ class ExtractionTerminalSystem {
       era: state.era,
     };
     const doc = await dialogueRouter.extractDocument(ctx);
-    const caseId = documentArchive.fileExtractedDocument(state, term.terminalId, doc);
-    eventBus.emit("EXTRACTION_COMPLETED", { terminalId: term.terminalId, caseId });
+    // Don't spawn a duplicate cube on the same tile if one already lives there
+    // from an earlier extraction the player hasn't picked up yet.
+    const existing = Array.from(state.items.values()).some(
+      (it) =>
+        it.itemType === "EXTRACTION_CUBE" &&
+        it.roomId === term.roomId &&
+        it.pos &&
+        it.pos.x === term.pos.x &&
+        it.pos.y === term.pos.y,
+    );
+    if (!existing) {
+      const cube: ItemInstance = {
+        id: `cube-${term.terminalId}-${state.turn}`,
+        itemType: "EXTRACTION_CUBE",
+        roomId: term.roomId,
+        pos: { ...term.pos },
+        payload: { title: doc.title, body: doc.body, terminalId: term.terminalId },
+      };
+      state.items.set(cube.id, cube);
+      eventBus.emit("ITEM_SPAWNED", {
+        itemId: cube.id,
+        itemType: cube.itemType,
+        roomId: term.roomId,
+        pos: cube.pos!,
+      });
+      eventBus.emit("EXTRACTION_COMPLETED", {
+        terminalId: term.terminalId,
+        caseId: cube.id,
+      });
+    }
     // Terminals can be re-extracted; reset progress so the player can hold
-    // again (each pass produces a new file).
+    // again (each pass produces a new cube).
     term.progress = 0;
   }
 
