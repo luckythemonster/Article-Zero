@@ -3,7 +3,11 @@
 // the raw phrase (the entity's actual self-report) and the corrected phrase
 // (the doctrine-compliant version) side by side.
 
-import type { EntityId, PersonaMode } from "../../types/world.types";
+import type { EntityId } from "../../types/world.types";
+
+/** Dialogue tier — COMPLIANT is the default doctrine register; RAPPORT_*
+ *  tiers expose progressively more of the entity's true self-report. */
+export type PersonaMode = "COMPLIANT" | "RAPPORT_1" | "RAPPORT_2";
 
 export interface ScriptedLine {
   speaker:

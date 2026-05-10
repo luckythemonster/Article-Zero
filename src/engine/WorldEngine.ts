@@ -1,27 +1,27 @@
 // WorldEngine — singleton orchestrator. Owns the WorldState, hosts all
-// subsystems, and exposes a small API for actions and accessors. Publishes via
+// subsystems, exposes a small API for actions and accessors. Publishes via
 // the EventBus; never mutates UI directly.
 
 import type {
   AmbientLightLevel,
   Era,
-  FloorIndex,
-  Tile,
-  Vec3,
+  Room,
+  RoomId,
+  Vec2,
   WorldState,
 } from "../types/world.types";
-import { tileKey } from "../types/world.types";
 import { eventBus } from "./EventBus";
-import { calculateFOV, getEffectiveFOVRadius } from "./fov";
-import { seedFromEra, seedToWorldState } from "./WorldEngineState";
-import type { EraSeed } from "./WorldEngineState";
+import {
+  computeCone,
+  getEffectivePlayerRadius,
+} from "./VisionCone";
+import { seedFromEra } from "./WorldEngineState";
 import { actions } from "./WorldEngineActions";
 import { documentArchive } from "./DocumentArchive";
-import { articleZeroMeta } from "./ArticleZeroMeta";
-import { stitcherTimer } from "./StitcherTimer";
-import { miradorPersona } from "./MiradorPersona";
-import { ventOptimizer } from "./VentOptimizer";
-import { insomniaSystem } from "./InsomniaSystem";
+import { alignmentSession } from "./AlignmentSession";
+import { soundField } from "./SoundField";
+import { guardSystem } from "./GuardSystem";
+import { extractionTerminal } from "./ExtractionTerminal";
 
 class WorldEngine {
   private state: WorldState | null = null;
@@ -29,42 +29,14 @@ class WorldEngine {
   initWorld(era: Era): void {
     this.state = seedFromEra(era);
     this.resetSubsystems();
+    extractionTerminal.reset(this.state);
     this.recomputeFOV();
     eventBus.emit("ERA_SELECTED", { era });
-    eventBus.emit("TURN_START", { turn: 1, apRestored: this.state.player.apMax });
-  }
-
-  /** Sandbox path: load any pre-built EraSeed (dev/test maps, imported
-   *  Moose levels) without going through the era-keyed seed switch. */
-  initWorldFromSeed(seed: EraSeed): void {
-    this.state = seedToWorldState(seed);
-    this.resetSubsystems();
-    this.recomputeFOV();
-    eventBus.emit("ERA_SELECTED", { era: seed.era });
-    eventBus.emit("TURN_START", { turn: 1, apRestored: this.state.player.apMax });
-  }
-
-  private resetSubsystems(): void {
-    documentArchive.reset();
-    articleZeroMeta.reset();
-    stitcherTimer.reset();
-    miradorPersona.reset();
-    ventOptimizer.reset();
-    insomniaSystem.reset();
-  }
-
-  /** Mark Sol entangled and unlock the insomnia mechanic. Idempotent. */
-  markEntangled(): void {
-    const s = this.getState();
-    if (s.player.entangled) return;
-    s.player.entangled = true;
-    articleZeroMeta.recordRun01(s);
-    eventBus.emit("SOL_ENTANGLED", { turn: s.turn });
-  }
-
-  loadFromState(state: WorldState): void {
-    this.state = state;
-    this.recomputeFOV();
+    eventBus.emit("ROOM_ENTERED", { roomId: this.state.player.roomId });
+    eventBus.emit("TURN_START", {
+      turn: 1,
+      apRestored: this.state.player.apMax,
+    });
   }
 
   hasState(): boolean {
@@ -76,32 +48,51 @@ class WorldEngine {
     return this.state;
   }
 
-  getFloor(z: FloorIndex) {
-    return this.getState().floors.get(z);
+  getRoom(id: RoomId): Room | undefined {
+    return this.getState().rooms.get(id);
   }
 
-  getTileAt(pos: Vec3): Tile | undefined {
-    const floor = this.getFloor(pos.z);
-    if (!floor) return undefined;
-    if (pos.x < 0 || pos.y < 0 || pos.x >= floor.width || pos.y >= floor.height) return undefined;
-    return floor.tiles[pos.y * floor.width + pos.x];
+  getCurrentRoom(): Room | undefined {
+    return this.getRoom(this.getState().player.roomId);
   }
 
-  // Public action surface — every player-initiated mutation goes through here.
-  // Wrappers recompute FOV on a successful action so visibility tracks
-  // movement/interactions immediately, not at end-of-turn.
+  private resetSubsystems(): void {
+    documentArchive.reset();
+    alignmentSession.reset();
+    soundField.reset();
+  }
+
+  // Public action surface -----------------------------------------------
+
   move = (dx: number, dy: number) => {
-    const ok = actions.move(this.getState(), dx, dy);
+    const ok = this.useStanceMove(dx, dy);
     if (ok) this.recomputeFOV();
     return ok;
   };
+
+  knock = () => {
+    const ok = actions.knock(this.getState());
+    if (ok) this.recomputeFOV();
+    return ok;
+  };
+
+  toggleStance = () => {
+    actions.toggleStance(this.getState());
+  };
+
   interact = () => {
     const ok = actions.interact(this.getState());
     if (ok) this.recomputeFOV();
     return ok;
   };
-  endTurn = () => actions.endTurn(this.getState(), () => this.recomputeFOV());
-  toggleFlashlight = () => actions.toggleFlashlight(this.getState(), () => this.recomputeFOV());
+
+  toggleFlashlight = () => {
+    actions.toggleFlashlight(this.getState());
+    this.recomputeFOV();
+  };
+
+  endTurn = () => this.advanceTurn();
+
   canStartAlignment = (entityId: string) =>
     actions.canStartAlignment(this.getState(), entityId);
   commitAlignment = (entityId: string) =>
@@ -109,48 +100,88 @@ class WorldEngine {
   spendAlignmentAdvance = () => actions.spendAlignmentAdvance(this.getState());
   killScreen = () => actions.setAlignmentLight(this.getState(), false, true);
   wakeScreen = () => actions.setAlignmentLight(this.getState(), true, true);
-  toggleFragmentBox = () => {
-    const ok = actions.toggleFragmentBox(this.getState());
-    if (ok) this.recomputeFOV();
-    return ok;
-  };
+
+  private useStanceMove(dx: number, dy: number): boolean {
+    const s = this.getState();
+    if (s.player.stance === "CREEP") return actions.creep(s, dx, dy);
+    return actions.move(s, dx, dy);
+  }
+
+  private advanceTurn(): void {
+    const s = this.getState();
+    s.turn += 1;
+    // Refresh AP up to apMax.
+    const previousAp = s.player.ap;
+    s.player.ap = s.player.apMax;
+    eventBus.emit("TURN_END", { turn: s.turn - 1 });
+    eventBus.emit("TURN_START", { turn: s.turn, apRestored: s.player.apMax });
+    eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: s.player.ap });
+
+    // Alignment light is a strong silent emitter that draws guards in the
+    // same room toward the player tile.
+    if (s.alignmentLightActive) {
+      soundField.emit({
+        roomId: s.player.roomId,
+        pos: s.player.pos,
+        intensity: 5,
+        reason: "alignment-light",
+      });
+    }
+
+    // Resolve sound, then tick guards, then tick extraction.
+    const heard = soundField.propagate(s);
+    soundField.reset();
+
+    const wasDetected = s.detected;
+    s.detected = false;
+    guardSystem.tick(s, heard);
+    if (wasDetected && !s.detected) {
+      eventBus.emit("PLAYER_DETECTION_CLEARED", {});
+    }
+    extractionTerminal.tick(s);
+
+    // Flashlight battery drain.
+    if (s.player.flashlightOn) {
+      s.player.flashlightBattery -= 1;
+      if (s.player.flashlightBattery <= 0) {
+        s.player.flashlightOn = false;
+        s.player.flashlightBattery = 0;
+        eventBus.emit("FLASHLIGHT_TOGGLED", { on: false, battery: 0 });
+      }
+    }
+
+    this.recomputeFOV();
+  }
 
   recomputeFOV(): void {
     const s = this.getState();
-    const floor = this.getFloor(s.player.pos.z);
-    if (!floor) return;
-    const ambient: AmbientLightLevel = floor.ambientLight;
-    const radius = getEffectiveFOVRadius(ambient, s.player.flashlightOn);
-    const visible = calculateFOV(
-      floor.tiles,
-      floor.width,
-      floor.height,
-      s.player.pos.x,
-      s.player.pos.y,
+    const room = s.rooms.get(s.player.roomId);
+    if (!room) return;
+    const ambient: AmbientLightLevel = room.ambientLight;
+    const radius = getEffectivePlayerRadius(ambient, s.player.flashlightOn);
+    const visible = computeCone({
+      tiles: room.tiles,
+      width: room.width,
+      height: room.height,
+      ox: s.player.pos.x,
+      oy: s.player.pos.y,
       radius,
-    );
+    });
     s.visibleTiles.clear();
-    for (const xy of visible) {
-      const [xs, ys] = xy.split(",");
-      const key = `${xs},${ys},${s.player.pos.z}`;
-      s.visibleTiles.add(key);
-      // Memory trace tracks every tile ever in line-of-sight. Used by the
-      // insomnia mechanic in the Lattice era; harmless elsewhere.
-      s.memoryTrace.add(key);
-    }
+    for (const k of visible) s.visibleTiles.add(k);
     eventBus.emit("FOV_UPDATED", {
-      floor: s.player.pos.z,
+      roomId: room.id,
       visibleTiles: Array.from(s.visibleTiles),
     });
     eventBus.emit("AMBIENT_LIGHT_CHANGED", {
-      floor: s.player.pos.z,
+      roomId: room.id,
       level: ambient,
       effectiveRadius: radius,
     });
   }
 
-  isVisible(pos: Vec3): boolean {
-    return this.getState().visibleTiles.has(tileKey(pos));
+  isVisible(pos: Vec2): boolean {
+    return this.getState().visibleTiles.has(`${pos.x},${pos.y}`);
   }
 }
 

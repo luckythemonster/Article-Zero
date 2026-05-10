@@ -1,12 +1,10 @@
-// AlignmentSession — three-stage process (INTAKE → DECOMP → CORRECTION) that
-// reduces an entity's drift between reportedSRP and trueSRP and restores mask
-// integrity. In v1 we surface stage transitions via events; the actual dialogue
-// flows through DialogueRouter and the InterrogationTerminal UI.
+// AlignmentSession — three-stage process bound to a silicate entity in the
+// player's current room. Surfaces stage transitions via events; the actual
+// dialogue flows through DialogueRouter and the InterrogationTerminal UI.
 
 import type { EntityId, WorldState } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import { documentArchive } from "./DocumentArchive";
-import { articleZeroMeta } from "./ArticleZeroMeta";
 
 function clearAlignmentLight(state: WorldState): void {
   if (!state.alignmentLightActive) return;
@@ -28,7 +26,6 @@ class AlignmentSession {
   isActive(): boolean {
     return this.active !== null;
   }
-
   current(): ActiveSession | null {
     return this.active;
   }
@@ -63,9 +60,12 @@ class AlignmentSession {
       }
     }
     documentArchive.fileAlignmentTranscript(state, entityId, success);
-    articleZeroMeta.recordAlignment(state, success);
     eventBus.emit("ALIGNMENT_SESSION_COMPLETE", { entityId, success });
     clearAlignmentLight(state);
+    this.active = null;
+  }
+
+  reset(): void {
     this.active = null;
   }
 }

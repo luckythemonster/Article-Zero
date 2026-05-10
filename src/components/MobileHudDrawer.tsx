@@ -8,11 +8,8 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onOpenArchive: () => void;
-  onOpenSaveLoad: () => void;
   onOpenSettings: () => void;
   onOpenAlignment: () => void;
-  onOpenLog: () => void;
-  onOpenVent: () => void;
 }
 
 export default function MobileHudDrawer(p: Props) {
@@ -29,11 +26,8 @@ export default function MobileHudDrawer(p: Props) {
         <div className="az-drawer-body">
           <SidePanel
             onOpenArchive={() => { p.onOpenArchive(); p.onClose(); }}
-            onOpenSaveLoad={() => { p.onOpenSaveLoad(); p.onClose(); }}
             onOpenSettings={() => { p.onOpenSettings(); p.onClose(); }}
             onOpenAlignment={() => { p.onOpenAlignment(); p.onClose(); }}
-            onOpenLog={() => { p.onOpenLog(); p.onClose(); }}
-            onOpenVent={() => { p.onOpenVent(); p.onClose(); }}
           />
         </div>
         <button className="az-drawer-close" onPointerDown={p.onClose}>CLOSE</button>

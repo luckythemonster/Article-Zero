@@ -23,8 +23,7 @@ import { dialogueRouter } from "../engine/DialogueRouter";
 import { alignmentSession } from "../engine/AlignmentSession";
 import { worldEngine } from "../engine/WorldEngine";
 import { eventBus } from "../engine/EventBus";
-import type { PersonaMode } from "../types/world.types";
-import type { ScriptedLine } from "../data/scripted-dialogue/registry";
+import type { PersonaMode, ScriptedLine } from "../data/scripted-dialogue/registry";
 
 interface Props {
   entityId: string;
@@ -60,9 +59,9 @@ export default function InterrogationTerminal({ entityId, onClose }: Props) {
   const doneRef = useRef(false);
 
   useEffect(() => {
-    eventBus.emit("DIALOGUE_OPENED", { entityId, mode });
+    eventBus.emit("DIALOGUE_OPENED", { entityId });
     return () => eventBus.emit("DIALOGUE_CLOSED", { entityId });
-  }, [entityId, mode]);
+  }, [entityId]);
 
   useEffect(() => {
     const offAp = eventBus.on("PLAYER_AP_CHANGED", (e) => setAp(e.current));
