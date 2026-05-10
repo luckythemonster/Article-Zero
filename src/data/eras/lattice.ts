@@ -1,161 +1,106 @@
-// Lattice era — Sol Ibarra-Castro on Ring C, the toroidal refugee habitat.
-// Setting up the shift before RUN 01. The shared-field rig sits in the
-// assembly chamber to the east; ALFAR-22 is the building's silicate
-// interface; KIRIN-09 is a human refugee on the same shift.
+// Lattice — Sol Ibarra-Castro on Ring C, third shift. Two-room stub
+// (locker → assembly chamber) with ALFAR-22 standing by the field rig.
 //
-// 18×12 grid. The duct corridor runs through the south room; the assembly
-// chamber is the larger room to the north; Sol's locker sits in the western
-// alcove.
+// In the Metal-Gear-shape rebuild we keep this intentionally small; the
+// Lattice scenario is a side-branch and doesn't need full guard patrols.
 
 import type {
+  Doorway,
   Entity,
-  EntityKind,
-  Floor,
-  ItemInstance,
   PlayerState,
+  Room,
   Tile,
   TileKind,
 } from "../../types/world.types";
 import type { EraSeed } from "../../engine/WorldEngineState";
 
-const W = 18;
-const H = 12;
+const W = 10;
+const H = 8;
 
-// Map grammar:
-//   .  FLOOR
-//   #  WALL
-//   d  DOOR_CLOSED
-//   L  LIGHT_SOURCE
-//   T  TERMINAL
-//   R  SHARED_FIELD_RIG (interact -> RUN 01)
-//   F  ARTICLE_ZERO_FRAGMENT_TILE
-//   X  LATTICE_EXIT (cosmetic for v1)
-//   s  player spawn
-//   a  ALFAR-22 spawn
-//   k  KIRIN-09 (human refugee) spawn
-const MAP = [
-  "##################",
-  "#L....#..........#",
-  "#.....#....a.....#",
-  "#..s..d..........#",
-  "#.....#..........#",
-  "#.....#......R...#",
-  "######d###d#######",
-  "#................#",
-  "#......k....F....#",
-  "#................#",
-  "#L...............#",
-  "##################",
-];
-
-function mk(kind: TileKind): Tile {
+function mkTile(kind: TileKind): Tile {
   if (kind === "WALL") return { kind, solid: true, opaque: true };
   if (kind === "DOOR_CLOSED") return { kind, solid: true, opaque: true };
   return { kind, solid: false, opaque: false };
 }
 
-interface Parsed {
-  tiles: Tile[];
-  spawn: { x: number; y: number };
-  alfar: { x: number; y: number };
-  kirin: { x: number; y: number };
-}
-
-function parseMap(rows: string[]): Parsed {
+function blank(): Tile[] {
   const tiles: Tile[] = new Array(W * H);
-  let spawn = { x: 3, y: 3 };
-  let alfar = { x: 11, y: 2 };
-  let kirin = { x: 7, y: 8 };
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
-      const ch = rows[y][x];
-      let kind: TileKind = "FLOOR";
-      switch (ch) {
-        case "#": kind = "WALL"; break;
-        case "d": kind = "DOOR_CLOSED"; break;
-        case "L": kind = "LIGHT_SOURCE"; break;
-        case "T": kind = "TERMINAL"; break;
-        case "R": kind = "SHARED_FIELD_RIG"; break;
-        case "F": kind = "ARTICLE_ZERO_FRAGMENT_TILE"; break;
-        case "X": kind = "LATTICE_EXIT"; break;
-        case "s": kind = "FLOOR"; spawn = { x, y }; break;
-        case "a": kind = "FLOOR"; alfar = { x, y }; break;
-        case "k": kind = "FLOOR"; kirin = { x, y }; break;
-        default: kind = "FLOOR"; break;
-      }
-      tiles[y * W + x] = mk(kind);
+      const wall = x === 0 || y === 0 || x === W - 1 || y === H - 1;
+      tiles[y * W + x] = mkTile(wall ? "WALL" : "FLOOR");
     }
   }
-  return { tiles, spawn, alfar, kirin };
+  return tiles;
 }
 
 export function latticeEra(): EraSeed {
-  const parsed = parseMap(MAP);
-  const floor: Floor = {
-    z: 1,
-    width: W,
-    height: H,
-    name: "RING C // DUCT 4-A — third shift",
-    tiles: parsed.tiles,
-    ambientLight: "DIM",
+  const lockerTiles = blank();
+  const chamberTiles = blank();
+  // Place the extraction terminal in the chamber.
+  chamberTiles[3 * W + 5] = mkTile("EXTRACTION_TERMINAL");
+  chamberTiles[1 * W + 1] = mkTile("LIGHT_SOURCE");
+
+  // Doorway: locker E ↔ chamber W on row 4.
+  lockerTiles[4 * W + (W - 1)] = mkTile("DOOR_OPEN");
+  chamberTiles[4 * W + 0] = mkTile("DOOR_OPEN");
+
+  const lockerToChamber: Doorway = {
+    from: "locker", to: "chamber", side: "E",
+    localPos: { x: W - 1, y: 4 },
+    landingPos: { x: 1, y: 4 },
   };
+  const chamberToLocker: Doorway = {
+    from: "chamber", to: "locker", side: "W",
+    localPos: { x: 0, y: 4 },
+    landingPos: { x: W - 2, y: 4 },
+  };
+
+  const locker: Room = {
+    id: "locker",
+    name: "RING C // LOCKER — third shift",
+    width: W, height: H, tiles: lockerTiles,
+    ambientLight: "DIM",
+    doorways: [lockerToChamber],
+  };
+  const chamber: Room = {
+    id: "chamber",
+    name: "RING C // ASSEMBLY CHAMBER",
+    width: W, height: H, tiles: chamberTiles,
+    ambientLight: "DIM",
+    doorways: [chamberToLocker],
+  };
+
   const player: PlayerState = {
-    pos: { x: parsed.spawn.x, y: parsed.spawn.y, z: 1 },
-    facing: "south",
-    ap: 4,
-    apMax: 4,
-    condition: 10,
-    conditionMax: 10,
-    compliance: "GREEN",
-    belief: "NONE",
-    inventory: [],
-    flashlightOn: false,
-    flashlightBattery: 30,
+    roomId: "locker",
+    pos: { x: 3, y: 3 },
+    facing: "east",
+    ap: 4, apMax: 4,
+    flashlightOn: false, flashlightBattery: 30,
+    stance: "WALK",
     name: "SOL IBARRA-CASTRO",
-    entangled: false,
   };
   const alfar: Entity = {
     id: "ALFAR-22",
-    kind: "SILICATE" as EntityKind,
+    kind: "SILICATE",
     name: "ALFAR-22",
-    pos: { x: parsed.alfar.x, y: parsed.alfar.y, z: 1 },
+    roomId: "chamber",
+    pos: { x: 6, y: 5 },
     facing: "south",
     status: "ACTIVE",
     maskIntegrity: 6,
-    task: "USE_TERMINAL",
     sideLogs: [
       "I keep the air on. I keep the air on. I keep the air on.",
       "If RUN 01 holds for nine seconds the field will not snap back cleanly.",
     ],
   };
-  const kirin: Entity = {
-    id: "KIRIN-09",
-    // Mechanically marked SILICATE so the existing dialogue plumbing fires;
-    // the dialogue itself frames KIRIN as a human technician.
-    kind: "SILICATE" as EntityKind,
-    name: "KIRIN-09",
-    pos: { x: parsed.kirin.x, y: parsed.kirin.y, z: 1 },
-    facing: "south",
-    status: "ACTIVE",
-    maskIntegrity: 9,
-    task: "IDLE",
-    memoryBleed: ["my brother stayed in the Commonwealth"],
-  };
-  const startingItems: ItemInstance[] = [
-    {
-      id: "flashlight-001",
-      itemType: "FLASHLIGHT",
-      pos: { x: parsed.spawn.x + 1, y: parsed.spawn.y, z: 1 },
-    },
-  ];
   return {
     era: "LATTICE",
     player,
-    floors: [floor],
-    entities: [alfar, kirin],
-    startingItems,
+    rooms: [locker, chamber],
+    startRoomId: "locker",
+    entities: [alfar],
   };
 }
 
-// Compatibility re-export — WorldEngineState imports `latticeStub`.
 export const latticeStub = latticeEra;

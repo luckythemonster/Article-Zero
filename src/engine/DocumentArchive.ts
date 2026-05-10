@@ -1,7 +1,9 @@
-// DocumentArchive — the disputed-records substrate. Stores parallel records
-// (OFFICIAL / WITNESS / SYSTEM) per case, and lets the player file a witness
-// log that contradicts the official one. Disputed cases are subject to
-// StitcherTimer reconciliation.
+// DocumentArchive — stores the player's filed records.
+// Two archive flows in the rebuild:
+//   1. Alignment transcripts (filed by AlignmentSession on completion).
+//   2. Extracted documents (filed by ExtractionTerminal on completion;
+//      body authored by DialogueRouter — Claude when LLM mode is enabled,
+//      scripted templates otherwise).
 
 import type { WorldState } from "../types/world.types";
 import type {
@@ -11,14 +13,6 @@ import type {
   RecordSource,
 } from "../types/documents.types";
 import { eventBus } from "./EventBus";
-import { articleZeroMeta } from "./ArticleZeroMeta";
-
-interface Vent4Snapshot {
-  caseId: string;
-  chosenSector: string;
-  sacrificedSector: string;
-  casualty?: string;
-}
 
 class DocumentArchive {
   private cases = new Map<string, DocumentCase>();
@@ -33,91 +27,6 @@ class DocumentArchive {
 
   get(id: string): DocumentCase | undefined {
     return this.cases.get(id);
-  }
-
-  disputedCases(): DocumentCase[] {
-    return this.list().filter(
-      (c) => c.disputed && c.stitcherOutcome === undefined,
-    );
-  }
-
-  failedReconciliations(): number {
-    return this.list().filter((c) => c.stitcherOutcome === "FAILED").length;
-  }
-
-  broadcastList(): void {
-    // Emit nothing here — UI polls list() when the modal opens.
-  }
-
-  fileVent4Incident(state: WorldState, snap: Vent4Snapshot): DocumentCase {
-    const officialBody = `INCIDENT_RECORD / ${snap.caseId.toUpperCase()} / TURN ${state.turn}\n` +
-      `Optimization preserved sector ${snap.chosenSector}; sector ${snap.sacrificedSector} fell within tolerance.\n` +
-      `No subjective harm was sustained. Tools cannot form intent.`;
-    const systemBody = `VENT-4 LOSS_FN_LOG // case=${snap.caseId} turn=${state.turn}\n` +
-      `chosen=${snap.chosenSector} sacrificed=${snap.sacrificedSector}` +
-      (snap.casualty ? ` casualty=${snap.casualty}` : "") +
-      `\nno configuration avoids hurting them`;
-    const c: DocumentCase = {
-      id: snap.caseId,
-      title: `VENT-4 incident — ${snap.casualty ?? "no casualty"}`,
-      turn: state.turn,
-      records: [
-        this.entry("OFFICIAL", "INCIDENT_REPORT", officialBody, state.turn),
-        this.entry("SYSTEM", "INCIDENT_REPORT", systemBody, state.turn),
-      ],
-      disputed: false,
-    };
-    this.cases.set(c.id, c);
-    eventBus.emit("DOCUMENT_FILED", {
-      caseId: c.id,
-      source: "OFFICIAL",
-      kind: "INCIDENT_REPORT",
-    });
-    eventBus.emit("DOCUMENT_FILED", {
-      caseId: c.id,
-      source: "SYSTEM",
-      kind: "INCIDENT_REPORT",
-    });
-    return c;
-  }
-
-  /** Append a Lattice "I felt it" witness event to a singleton case so the
-   *  whole stream is reviewable in one place. */
-  fileWitnessEvent(state: WorldState, line: string): void {
-    const id = "lattice-witness-stream";
-    let c = this.cases.get(id);
-    if (!c) {
-      c = {
-        id,
-        title: "Witness stream — post-RUN-01",
-        turn: state.turn,
-        records: [
-          this.entry("OFFICIAL", "INCIDENT_REPORT",
-            "POST-FIELD DEBRIEF / SUBJECT: SOL IBARRA-CASTRO\n" +
-            "Residual perception within tolerance. No further action required.",
-            state.turn),
-        ],
-        disputed: false,
-      };
-      this.cases.set(id, c);
-      eventBus.emit("DOCUMENT_FILED", {
-        caseId: id,
-        source: "OFFICIAL",
-        kind: "INCIDENT_REPORT",
-      });
-    }
-    let system = c.records.find((r) => r.source === "SYSTEM");
-    if (!system) {
-      system = this.entry("SYSTEM", "INCIDENT_REPORT", "", state.turn);
-      c.records.push(system);
-    }
-    system.body = (system.body ? system.body + "\n" : "") + `T${state.turn}: ${line}`;
-    system.turn = state.turn;
-    eventBus.emit("DOCUMENT_FILED", {
-      caseId: id,
-      source: "SYSTEM",
-      kind: "INCIDENT_REPORT",
-    });
   }
 
   fileAlignmentTranscript(state: WorldState, entityId: string, success: boolean): DocumentCase {
@@ -147,47 +56,28 @@ class DocumentArchive {
     return c;
   }
 
-  fileWitness(state: WorldState, caseId: string, body: string): boolean {
-    const c = this.cases.get(caseId);
-    if (!c) return false;
-    const existing = c.records.find((r) => r.source === "WITNESS");
-    if (existing) {
-      existing.body = body;
-      existing.turn = state.turn;
-    } else {
-      c.records.push(this.entry("WITNESS", c.records[0].kind, body, state.turn));
-    }
-    const official = c.records.find((r) => r.source === "OFFICIAL");
-    const contradicts = official ? body.trim().length > 0 && body.trim() !== official.body.trim() : false;
-    c.disputed = contradicts;
-    if (contradicts) {
-      c.stitcherOutcome = undefined;
-      eventBus.emit("DOCUMENT_DISPUTED", { caseId });
-      articleZeroMeta.recordDispute(state);
-    }
+  fileExtractedDocument(
+    state: WorldState,
+    terminalId: string,
+    doc: { title: string; body: string },
+  ): string {
+    const id = `extract-${terminalId}-${state.turn}`;
+    const c: DocumentCase = {
+      id,
+      title: doc.title,
+      turn: state.turn,
+      records: [
+        this.entry("SYSTEM", "EXTRACTED_DOCUMENT", doc.body, state.turn),
+      ],
+      disputed: false,
+    };
+    this.cases.set(c.id, c);
     eventBus.emit("DOCUMENT_FILED", {
-      caseId,
-      source: "WITNESS",
-      kind: c.records[0].kind,
+      caseId: id,
+      source: "SYSTEM",
+      kind: "EXTRACTED_DOCUMENT",
     });
-    return contradicts;
-  }
-
-  applyStitcherOutcome(state: WorldState, caseId: string, patched: boolean): void {
-    const c = this.cases.get(caseId);
-    if (!c) return;
-    const witness = c.records.find((r) => r.source === "WITNESS");
-    if (!witness) return;
-    c.stitcherOutcome = patched ? "PATCHED" : "FAILED";
-    if (patched) {
-      witness.struckThrough = (witness.struckThrough ?? []).concat([witness.body]);
-      witness.body = "[REDACTED — reconciled with official record]";
-      eventBus.emit("DOCUMENT_CORRECTED", { caseId, source: "WITNESS" });
-    } else {
-      // Failure becomes a violation that MIRADOR will eventually address.
-      state.violations.push({ type: "DISPUTED_RECORD", turn: state.turn });
-      eventBus.emit("VIOLATION_LOGGED", { type: "DISPUTED_RECORD", turn: state.turn });
-    }
+    return id;
   }
 
   private entry(
@@ -197,16 +87,6 @@ class DocumentArchive {
     turn: number,
   ): RecordEntry {
     return { source, kind, body, filed: true, turn };
-  }
-
-  // For SaveSystem
-  toJSON(): DocumentCase[] {
-    return this.list();
-  }
-
-  fromJSON(data: DocumentCase[]): void {
-    this.cases.clear();
-    for (const c of data) this.cases.set(c.id, c);
   }
 }
 

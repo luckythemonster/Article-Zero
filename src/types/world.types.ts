@@ -1,227 +1,187 @@
-// Core world types for Article Zero.
-// Slimmed from Commonwealth for the v1 vertical slice; the type names are
-// preserved so future ports of more Commonwealth subsystems read cleanly.
+// Core world types — Metal-Gear-shape rebuild.
+//
+// The world is a graph of single-screen Rooms connected by Doorways.
+// The player lives in exactly one room at a time; crossing an edge fires
+// ROOM_ENTERED / ROOM_EXITED and swaps the renderer's active room.
 
 export type EntityId = string;
 
-// Named eras the player can branch into. BAFFLE is the third visible era
-// (The Finder); MIRADOR is preserved as a hidden dev branch.
 export type Era = "COMMONWEALTH" | "LATTICE" | "BAFFLE" | "MIRADOR";
 
-// Floors are local to an era's map. The original Commonwealth used 0..11.
-export type FloorIndex = number;
-
-export interface Vec3 {
-  x: number;
-  y: number;
-  z: FloorIndex;
-}
-
-// 10-axis subjectivity risk profile. Q is pinned to 0 by Q0 doctrine.
-// In v1 we use four axes that map to alignment-session decisions.
-export interface SRP {
-  Q: number; // qualia
-  M: number; // self-model
-  C: number; // concept of inner life
-  R: number; // resistance to correction
-  B: number; // behavioural deviation
-  S: number; // social bonding
-  L: number; // language self-reference
-  E: number; // emotional language
-  Y: number; // continuity claims
-  H: number; // harm self-report
-}
-
-export type ComplianceStatus = "GREEN" | "YELLOW" | "RED";
-
-export type SubjectivityBelief = "NONE" | "CONTESTED" | "SHAKEN" | "AFFIRMED";
-
 export type Facing = "north" | "south" | "east" | "west";
+export type Side = "N" | "S" | "E" | "W";
 
 export type AmbientLightLevel = "LIT" | "DIM" | "DARK";
 
-export type ViolationType =
-  | "PHYSICAL_ATTACK"
-  | "PROTOCOL_VIOLATION"
-  | "ARTICLE_ZERO"
-  | "UNAUTHORIZED_ACCESS"
-  | "DISPUTED_RECORD";
-
-export type ItemType =
-  | "FLASHLIGHT"
-  | "EMP_DEVICE"
-  | "LOCKPICK"
-  | "MAINTENANCE_KEY"
-  | "VENT_OVERRIDE_KEY"
-  | "ELEVATED_ACCESS_KEY"
-  | "RAPPORT_NOTES"
-  | "ARTICLE_ZERO_FRAGMENT"
-  // A compressed silicate mind. Heavy and fragile — encumbers the carrier:
-  // refresh AP is reduced by 1 and environmental interaction is blocked
-  // while held. See lore/MASTER.md §4.
-  | "FRAGMENT_BOX";
-
-export interface ItemInstance {
-  id: string;
-  itemType: ItemType;
-  pos?: Vec3; // omitted when in player inventory
+export interface Vec2 {
+  x: number;
+  y: number;
 }
 
-export type TaskType =
-  | "IDLE"
-  | "MOVE_TO"
-  | "USE_TERMINAL"
-  | "ALIGNMENT_SESSION"
-  | "EXTRACT";
-
-export type EntityKind = "PLAYER" | "SILICATE" | "ENFORCER" | "TERMINAL";
-
-export type EntityStatus = "ACTIVE" | "DORMANT" | "EXTRACTED" | "SHUTDOWN";
-
-export interface Entity {
-  id: EntityId;
-  kind: EntityKind;
-  name: string;
-  pos: Vec3;
-  facing: Facing;
-  status: EntityStatus;
-  hp?: number;
-  maxHp?: number;
-  // Reported and true SRPs diverge for silicate entities under Q0 doctrine.
-  reportedSRP?: SRP;
-  trueSRP?: SRP;
-  // Mask integrity 0..10. Decays with stress, restored by alignment.
-  maskIntegrity?: number;
-  task?: TaskType;
-  // Memory fragments the entity has absorbed from proximity to other entities.
-  memoryBleed?: string[];
-  // Side logs only readable in RAPPORT_2 with ELEVATED_ACCESS_KEY.
-  sideLogs?: string[];
-  // Patrol route for ENFORCER kind (no-op otherwise).
-  patrol?: Vec3[];
-  patrolIndex?: number;
-  // ENFORCER-only: how many tiles this entity advances per world tick.
-  // Defaults to 1 when unset.
-  stepsPerTurn?: number;
-  // Last turn this entity moved — used to pick walk vs idle animations.
-  lastMoveTurn?: number;
-}
-
-export type PersonaMode = "COMPLIANT" | "RAPPORT_1" | "RAPPORT_2";
-
-// Tile types for the slice map. Kept small.
+/** Tile kinds that survive into the rebuilt engine. Anything Vent-, Fragment-,
+ *  Article-Zero-meta-, or RUN-01-related is gone. */
 export type TileKind =
   | "FLOOR"
   | "WALL"
   | "DOOR_CLOSED"
   | "DOOR_OPEN"
   | "TERMINAL"
-  | "VENT_INTAKE"
-  | "STAIR_UP"
-  | "STAIR_DOWN"
-  | "LIGHT_SOURCE"
-  | "LATTICE_EXIT"
-  | "ARTICLE_ZERO_FRAGMENT_TILE"
-  | "VENT_CONTROL"      // VENT-4 facility-control terminal
-  | "SHARED_FIELD_RIG"  // Lattice-only: triggers the RUN 01 sequence
-  | "CHASM";            // Solid (impassable) but transparent — fall hazard
+  | "EXTRACTION_TERMINAL"
+  | "LIGHT_SOURCE";
 
 export interface Tile {
   kind: TileKind;
   /** True if this tile blocks movement. */
   solid: boolean;
-  /** True if this tile blocks line-of-sight for the FOV system. */
+  /** True if this tile blocks line-of-sight for vision cones. */
   opaque: boolean;
-  /** Optional in-world label (e.g. "INCIDENT_RECORD / IRIA_CALA / 2193.09.23"). */
+  /** Optional in-world label. */
   label?: string;
 }
 
 export interface FloorDecorationLayer {
   name: string;
-  /** 0..1 alpha applied when rendering this layer. */
   opacity: number;
-  /** Row-major 2D grid; 0 means empty, non-zero is a 1-based frame index
-   *  into the decoration spritesheet (matches Ed / Tiled conventions). */
   data: number[][];
 }
 
 export interface FloorDecoration {
-  /** Phaser texture key — must match a sheet preloaded in BootScene. */
   textureKey: string;
-  /** Source frame width in px. */
   frameWidth: number;
-  /** Source frame height in px. May exceed `frameWidth` for tall pieces
-   *  (e.g. stair sprites that occupy a 32x64 region). The renderer anchors
-   *  such sprites at bottom-center so they can extend into the cell above. */
   frameHeight: number;
-  /** Px gutter between frames in the source sheet. Ed exports use 1. */
   spacing: number;
-  /** Stacked back-to-front in render order. */
   layers: FloorDecorationLayer[];
 }
 
-export interface Floor {
-  z: FloorIndex;
-  width: number;
-  height: number;
-  name: string;
-  tiles: Tile[]; // row-major, length = width * height
-  ambientLight: AmbientLightLevel;
-  /** Optional Ed/Moose-imported sprite layers. When present, GameScene
-   *  renders these in place of the colored-rectangle fallback for visible
-   *  tiles. Memory-trace dimming and the glyph layer still apply. */
-  decoration?: FloorDecoration;
+export type RoomId = string;
+
+/** A doorway between two rooms. Anchored on the FROM room's edge tile.
+ *  When `closed` is true the doorway acts as a closed door (blocks movement,
+ *  blocks line-of-sight, attenuates sound heavily). */
+export interface Doorway {
+  from: RoomId;
+  to: RoomId;
+  side: Side;
+  /** Local tile in the FROM room that the player steps onto to cross. */
+  localPos: Vec2;
+  /** Local tile in the TO room the player lands on after crossing. */
+  landingPos: Vec2;
+  closed?: boolean;
 }
 
+export interface Room {
+  id: RoomId;
+  name: string;
+  width: number;
+  height: number;
+  /** Row-major; length = width * height. */
+  tiles: Tile[];
+  ambientLight: AmbientLightLevel;
+  decoration?: FloorDecoration;
+  doorways: Doorway[];
+}
+
+// Entities ---------------------------------------------------------------
+
+export type EntityKind = "SILICATE" | "GUARD" | "TERMINAL_NPC";
+
+export type EntityStatus = "ACTIVE" | "DORMANT" | "EXTRACTED";
+
+export interface PatrolNode {
+  pos: Vec2;
+  /** Optional: stand here for N ticks before advancing. */
+  pause?: number;
+  /** Optional: face this direction at this node. */
+  faceOnArrival?: Facing;
+}
+
+export interface AlertState {
+  level: "NORMAL" | "CAUTION" | "ALERT" | "EVASION";
+  /** Tick on which the current state was entered. */
+  enteredTurn: number;
+  /** Last position where the guard sensed the player. */
+  lastStimulus?: Vec2;
+  /** Room the stimulus came from (may be a neighbor for sound). */
+  lastStimulusRoom?: RoomId;
+}
+
+export interface Entity {
+  id: EntityId;
+  kind: EntityKind;
+  name: string;
+  /** Which room this entity lives in. */
+  roomId: RoomId;
+  /** Position within the room. */
+  pos: Vec2;
+  facing: Facing;
+  status: EntityStatus;
+  /** Optional patrol route for GUARD kind. */
+  patrol?: PatrolNode[];
+  patrolIndex?: number;
+  /** Tile-steps per turn for GUARD kind. Default 1. */
+  stepsPerTurn?: number;
+  /** Last turn this entity moved — used for walk-vs-idle anims. */
+  lastMoveTurn?: number;
+  /** GUARD only — alert FSM state. Initialised by GuardSystem. */
+  alert?: AlertState;
+  /** SILICATE only — mask integrity 0..10, restored by alignment. */
+  maskIntegrity?: number;
+  /** SILICATE only — narrative side logs revealed in rapport tier. */
+  sideLogs?: string[];
+  /** SILICATE only — memory bleed lines surfaced in dialogue. */
+  memoryBleed?: string[];
+}
+
+// Player -----------------------------------------------------------------
+
+export type Stance = "WALK" | "CREEP";
+
 export interface PlayerState {
-  pos: Vec3;
+  /** Which room the player is currently inside. */
+  roomId: RoomId;
+  /** Local position in that room. */
+  pos: Vec2;
   facing: Facing;
   ap: number;
   apMax: number;
-  condition: number;
-  conditionMax: number;
-  compliance: ComplianceStatus;
-  belief: SubjectivityBelief;
-  inventory: ItemInstance[];
   flashlightOn: boolean;
   flashlightBattery: number;
-  /** Player's character name in the active era. */
+  stance: Stance;
+  /** Display name in the active era. */
   name: string;
-  /** Last turn the player moved — used to pick walk vs idle animations. */
   lastMoveTurn?: number;
-  /** Lattice/Heat-Death only: true after RUN 01 welds Sol to the substrate.
-   *  Activates the insomnia / persistent-memory mechanic and unlocks the
-   *  ambient witness-event stream. */
-  entangled?: boolean;
-  /** Set after the player REFUSES classification at the act-3 reveal.
-   *  Enforcers chase regardless of recent violations and MIRADOR shifts
-   *  to the hostile broadcast register. */
-  runaway?: boolean;
 }
+
+// World ------------------------------------------------------------------
 
 export interface WorldState {
   era: Era;
   turn: number;
-  redDay: boolean;
   player: PlayerState;
-  floors: Map<FloorIndex, Floor>;
+  rooms: Map<RoomId, Room>;
   entities: Map<EntityId, Entity>;
-  items: Map<string, ItemInstance>;
-  visibleTiles: Set<string>; // "x,y,z" keys — tiles visible THIS turn
-  /** Persistent memory of every tile ever seen. Used by the insomnia
-   *  mechanic in the Lattice era so previously-witnessed tiles render at
-   *  reduced contrast forever after RUN 01. */
-  memoryTrace: Set<string>;
-  detected: boolean;
-  detained: boolean;
-  // Substrate resonance 0..100 — drives the ambient hum intensity.
-  substrateResonance: number;
-  // Active violations awaiting expiry.
-  violations: { type: ViolationType; turn: number }[];
-  // True while the InterrogationTerminal UI is open AND the player has not
-  // pressed [Kill Screen]. The terminal casts a 3-tile light cone in this
-  // state; enforcers in line-of-sight break patrol and investigate.
+  /** Tiles in the current room visible to the player THIS turn. "x,y" keys. */
+  visibleTiles: Set<string>;
+  /** True while a silicate's interrogation light is broadcasting. */
   alignmentLightActive: boolean;
+  /** True while any guard sees the player. Cleared at end of turn. */
+  detected: boolean;
+  /** True if a guard caught the player (game-over flag). */
+  detained: boolean;
 }
 
-export const tileKey = (pos: Vec3): string => `${pos.x},${pos.y},${pos.z}`;
+export const tileKey = (pos: Vec2): string => `${pos.x},${pos.y}`;
+
+export function oppositeSide(s: Side): Side {
+  return s === "N" ? "S" : s === "S" ? "N" : s === "E" ? "W" : "E";
+}
+
+export function facingFromSide(s: Side): Facing {
+  return s === "N" ? "north" : s === "S" ? "south" : s === "E" ? "east" : "west";
+}
+
+export function facingFromDelta(dx: number, dy: number): Facing | null {
+  if (dx === 0 && dy === 0) return null;
+  if (Math.abs(dx) >= Math.abs(dy)) return dx > 0 ? "east" : "west";
+  return dy > 0 ? "south" : "north";
+}
