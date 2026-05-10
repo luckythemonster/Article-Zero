@@ -99,7 +99,19 @@ export default function App() {
   // first BranchSelectorScene.create() call can dispatch PICKER_OPENED into
   // a wired-up bus.
   useEffect(() => {
-    if (gameRef.current || !hostRef.current) return;
+    if (!hostRef.current) return;
+    // React.StrictMode invokes effects mount → cleanup → mount synchronously.
+    // Phaser.Game#destroy is deferred (it sets pendingDestroy and the actual
+    // teardown / canvas removal happens on the *next* requestAnimationFrame
+    // tick in runDestroy()). Without this guard the StrictMode remount sees
+    // gameRef.current === null but the dying game's canvas is still attached
+    // to #phaser-host, so we end up with two live Phaser games. Game-1's
+    // BranchSelectorScene keeps eating user input + emitting ERA_SELECTED on
+    // the singleton EventBus — flipping React `worldReady` true — while
+    // Game-2's GameScene never gets the click and never starts. Net visible
+    // bug: menu stays rendered and HUD/minimap appear on top of it.
+    if (hostRef.current.querySelector("canvas")) return;
+    if (gameRef.current) return;
     applySettings(loadSettings());
     gameRef.current = createGame({
       parent: hostRef.current,
@@ -108,6 +120,9 @@ export default function App() {
       backgroundColor: "#050809",
       scenes: [BootScene, BranchSelectorScene, GameScene, TilesetSandboxScene],
     });
+    if (typeof window !== "undefined") {
+      (window as unknown as { __phaserGame?: Phaser.Game }).__phaserGame = gameRef.current;
+    }
     return () => {
       gameRef.current?.destroy(true);
       gameRef.current = null;

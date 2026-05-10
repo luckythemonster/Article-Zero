@@ -137,8 +137,7 @@ export class BranchSelectorScene extends Phaser.Scene {
 
   private selectChoice(choice: ChoiceTarget): void {
     if (choice === "PALETTE") {
-      this.scene.start("TilesetSandboxScene");
-      this.scene.stop("BranchSelectorScene");
+      this.handoff("TilesetSandboxScene");
       return;
     }
     if (choice === "MOOSE_LEVEL") {
@@ -146,8 +145,7 @@ export class BranchSelectorScene extends Phaser.Scene {
       tutorialDirector.reset();
       tutorialDirector.init();
       worldEngine.initWorldFromSeed(mooseSandboxEra());
-      this.scene.start("GameScene");
-      this.scene.stop("BranchSelectorScene");
+      this.handoff("GameScene");
       return;
     }
     this.selectEra(choice);
@@ -157,13 +155,19 @@ export class BranchSelectorScene extends Phaser.Scene {
     ambientHum.start();
     tutorialDirector.reset();
     tutorialDirector.init();
+    // initWorld already emits ERA_SELECTED; don't double-fire it.
     worldEngine.initWorld(era);
-    eventBus.emit("ERA_SELECTED", { era });
-    this.scene.start("GameScene");
-    // Phaser 4's scene.start(key) is documented to "shutdown this Scene and
-    // run the given one", but in practice (especially under Vite HMR) the
-    // selector's display list can survive the transition and bleed through
-    // GameScene as ghost text. Force the shutdown explicitly.
-    this.scene.stop("BranchSelectorScene");
+    this.handoff("GameScene");
+  }
+
+  /** Hand off to another scene. Strips our input handlers before queuing
+   *  the transition so a second key/click on the same tick can't re-enter
+   *  selectChoice and start the target twice. ScenePlugin.start() already
+   *  queues a stop-self + start-target pair; no follow-up scene.stop()
+   *  needed. */
+  private handoff(target: "GameScene" | "TilesetSandboxScene"): void {
+    this.input.keyboard?.removeAllListeners();
+    this.input.removeAllListeners();
+    this.scene.start(target);
   }
 }
