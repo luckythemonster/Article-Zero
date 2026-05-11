@@ -27,7 +27,31 @@ export type TileKind =
   | "DOOR_OPEN"
   | "TERMINAL"
   | "EXTRACTION_TERMINAL"
+  | "EXFIL_POINT"
   | "LIGHT_SOURCE";
+
+// Items ------------------------------------------------------------------
+
+export type ItemType = "EXTRACTION_CUBE";
+
+export interface CubePayload {
+  title: string;
+  body: string;
+  terminalId: string;
+}
+
+export interface ItemInstance {
+  id: string;
+  itemType: ItemType;
+  /** Present when the item is on the floor; cleared when held. */
+  roomId?: RoomId;
+  pos?: Vec2;
+  payload?: CubePayload;
+}
+
+// Compliance -------------------------------------------------------------
+
+export type ComplianceTier = "GREEN" | "YELLOW" | "RED";
 
 export interface Tile {
   kind: TileKind;
@@ -150,6 +174,13 @@ export interface PlayerState {
   /** Display name in the active era. */
   name: string;
   lastMoveTurn?: number;
+  /** Q-axis self-report. 0..N. >1 drops compliance to RED. */
+  qScore: number;
+  /** Items the player is carrying. The cardboard-box analog: an
+   *  EXTRACTION_CUBE here drops compliance to RED. */
+  inventory: ItemInstance[];
+  /** Cached compliance tier; written by ComplianceSystem.compute(). */
+  compliance: ComplianceTier;
 }
 
 // World ------------------------------------------------------------------
@@ -160,6 +191,8 @@ export interface WorldState {
   player: PlayerState;
   rooms: Map<RoomId, Room>;
   entities: Map<EntityId, Entity>;
+  /** World-floor items keyed by id. Held items live on player.inventory. */
+  items: Map<string, ItemInstance>;
   /** Tiles in the current room visible to the player THIS turn. "x,y" keys. */
   visibleTiles: Set<string>;
   /** True while a silicate's interrogation light is broadcasting. */

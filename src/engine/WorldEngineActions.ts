@@ -2,12 +2,13 @@
 // the EventBus. One function per verb. Sound emission is centralised here so
 // AlertFSM consumers see a consistent picture of "what the player did".
 
-import type { Tile, Vec2, WorldState } from "../types/world.types";
+import type { ItemInstance, Tile, Vec2, WorldState } from "../types/world.types";
 import { facingFromDelta } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import { roomGraph } from "./RoomGraph";
 import { soundField } from "./SoundField";
 import { alignmentSession } from "./AlignmentSession";
+import { documentArchive } from "./DocumentArchive";
 
 const MOVE_AP_COST = 1;
 const CREEP_AP_COST = 1;
@@ -33,6 +34,16 @@ function entityAt(state: WorldState, roomId: string, p: Vec2) {
     if (entity.status !== "ACTIVE") continue;
     if (entity.roomId !== roomId) continue;
     if (entity.pos.x === p.x && entity.pos.y === p.y) return entity;
+  }
+  return undefined;
+}
+
+function findCubeAt(state: WorldState, roomId: string, p: Vec2): ItemInstance | undefined {
+  for (const item of state.items.values()) {
+    if (item.itemType !== "EXTRACTION_CUBE") continue;
+    if (item.roomId !== roomId) continue;
+    if (!item.pos) continue;
+    if (item.pos.x === p.x && item.pos.y === p.y) return item;
   }
   return undefined;
 }
@@ -143,6 +154,47 @@ export const actions = {
 
   interact(state: WorldState): boolean {
     if (state.detained || state.player.ap < INTERACT_AP_COST) return false;
+
+    // Cube pickup — standing on an EXTRACTION_CUBE that lives in this room
+    // and tile, with an empty inventory, picks it up.
+    const cubeHere = findCubeAt(state, state.player.roomId, state.player.pos);
+    const carryingCube = state.player.inventory.some(
+      (i) => i.itemType === "EXTRACTION_CUBE",
+    );
+    if (cubeHere && !carryingCube) {
+      state.items.delete(cubeHere.id);
+      const held: ItemInstance = { ...cubeHere, roomId: undefined, pos: undefined };
+      state.player.inventory.push(held);
+      const previousAp = state.player.ap;
+      state.player.ap -= INTERACT_AP_COST;
+      eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
+      eventBus.emit("ITEM_PICKED_UP", { itemId: held.id, itemType: held.itemType });
+      return true;
+    }
+
+    // Exfil — standing on an EXFIL_POINT while carrying a cube files the
+    // payload via DocumentArchive and consumes the cube.
+    const here = tileAt(state, state.player.roomId, state.player.pos);
+    if (here?.kind === "EXFIL_POINT" && carryingCube) {
+      const cubeIdx = state.player.inventory.findIndex(
+        (i) => i.itemType === "EXTRACTION_CUBE",
+      );
+      const cube = state.player.inventory[cubeIdx];
+      if (cube && cube.payload) {
+        state.player.inventory.splice(cubeIdx, 1);
+        const caseId = documentArchive.fileExtractedDocument(
+          state,
+          cube.payload.terminalId,
+          { title: cube.payload.title, body: cube.payload.body },
+        );
+        const previousAp = state.player.ap;
+        state.player.ap -= INTERACT_AP_COST;
+        eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
+        eventBus.emit("ITEM_FILED", { itemId: cube.id, caseId });
+        return true;
+      }
+    }
+
     // Adjacent doorway? Toggle it.
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
       const here: Vec2 = {

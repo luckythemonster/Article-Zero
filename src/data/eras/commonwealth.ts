@@ -24,6 +24,7 @@ const H = 8;
 //   #  WALL
 //   T  TERMINAL  (interrogation/document terminal — visual only)
 //   X  EXTRACTION_TERMINAL (sneak-and-hold to download)
+//   P  EXFIL_POINT  (drop a held EXTRACTION_CUBE here to file it)
 //   L  LIGHT_SOURCE
 //   S  player spawn (FLOOR underneath)
 //   A  APEX-19 station (FLOOR)
@@ -47,7 +48,7 @@ const LOCKER: RoomSpec = {
     "#........#",
     "#...S....#",
     "#........#",
-    "#........#",
+    "#..P.....#",
     "#........#",
     "##########",
   ],
@@ -127,6 +128,7 @@ function parseRoom(spec: RoomSpec): ParsedRoom {
         case "#": kind = "WALL"; break;
         case "T": kind = "TERMINAL"; break;
         case "X": kind = "EXTRACTION_TERMINAL"; break;
+        case "P": kind = "EXFIL_POINT"; break;
         case "L": kind = "LIGHT_SOURCE"; break;
         case "S": kind = "FLOOR"; marks.S = { x, y }; break;
         case "A": kind = "FLOOR"; marks.A = { x, y }; break;
@@ -278,6 +280,9 @@ export function commonwealthEra(): EraSeed {
     flashlightBattery: 30,
     stance: "WALK",
     name: "TECH-2 ROWAN-IBARRA",
+    qScore: 0,
+    inventory: [],
+    compliance: "GREEN",
   };
 
   const apex: Entity = {

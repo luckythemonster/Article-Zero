@@ -57,19 +57,34 @@ function slugify(label) {
 }
 
 function inferStride(sprites) {
-  // Stride is the min positive gap between adjacent X coords on the same row.
-  // Falls back to 33 (the convention from stairs.zip).
-  const baseY = sprites[0]?.Y ?? 0;
-  const xs = sprites
-    .filter((s) => (s.Y ?? 0) === baseY)
-    .map((s) => s.X ?? 0)
-    .sort((a, b) => a - b);
-  let stride = 0;
-  for (let i = 1; i < xs.length; i++) {
-    const d = xs[i] - xs[i - 1];
-    if (d > 0 && (stride === 0 || d < stride)) stride = d;
+  // Stride is the most common positive gap between adjacent X coords on the
+  // same row, taken across every row in the sheet. Using the mode (not the
+  // min) tolerates hand-cropped sprites that sit slightly inside or outside
+  // the regular grid. Falls back to 33 (the convention from stairs.zip).
+  const byY = new Map();
+  for (const s of sprites) {
+    const y = s.Y ?? 0;
+    const x = s.X ?? 0;
+    if (!byY.has(y)) byY.set(y, []);
+    byY.get(y).push(x);
   }
-  return stride || 33;
+  const counts = new Map();
+  for (const xs of byY.values()) {
+    xs.sort((a, b) => a - b);
+    for (let i = 1; i < xs.length; i++) {
+      const d = xs[i] - xs[i - 1];
+      if (d > 0) counts.set(d, (counts.get(d) ?? 0) + 1);
+    }
+  }
+  let mode = 0;
+  let best = 0;
+  for (const [d, n] of counts) {
+    if (n > best || (n === best && d < mode)) {
+      mode = d;
+      best = n;
+    }
+  }
+  return mode || 33;
 }
 
 function buildFrames(sprites, stride, frameWidth, frameHeight, sheetWidth, sheetHeight) {

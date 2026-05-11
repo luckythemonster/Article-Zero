@@ -3,9 +3,11 @@
 
 import type {
   AmbientLightLevel,
+  ComplianceTier,
   EntityId,
   Era,
   Facing,
+  ItemType,
   RoomId,
   Vec2,
 } from "./world.types";
@@ -70,6 +72,17 @@ export interface EventMap {
 
   // Documents
   DOCUMENT_FILED: { caseId: string; source: "OFFICIAL" | "WITNESS" | "SYSTEM"; kind: string };
+
+  // Compliance / heist loop
+  COMPLIANCE_CHANGED: {
+    previous: ComplianceTier;
+    current: ComplianceTier;
+    reasons: string[];
+  };
+  Q_SCORE_CHANGED: { previous: number; current: number };
+  ITEM_SPAWNED: { itemId: string; itemType: ItemType; roomId: RoomId; pos: Vec2 };
+  ITEM_PICKED_UP: { itemId: string; itemType: ItemType };
+  ITEM_FILED: { itemId: string; caseId: string };
 
   // Dialogue
   DIALOGUE_OPENED: { entityId: EntityId };

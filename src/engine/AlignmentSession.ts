@@ -5,6 +5,7 @@
 import type { EntityId, WorldState } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import { documentArchive } from "./DocumentArchive";
+import { complianceSystem } from "./ComplianceSystem";
 
 function clearAlignmentLight(state: WorldState): void {
   if (!state.alignmentLightActive) return;
@@ -59,10 +60,24 @@ class AlignmentSession {
         entity.maskIntegrity = Math.max(0, (entity.maskIntegrity ?? 5) - 2);
       }
     }
+    // Failure increments Q-score: walking out of an alignment without
+    // completing the correction is a self-report that the doctrine did
+    // not hold. The compliance system reads qScore on the next tick.
+    if (!success) {
+      const previous = state.player.qScore;
+      state.player.qScore = previous + 1;
+      eventBus.emit("Q_SCORE_CHANGED", {
+        previous,
+        current: state.player.qScore,
+      });
+    }
     documentArchive.fileAlignmentTranscript(state, entityId, success);
     eventBus.emit("ALIGNMENT_SESSION_COMPLETE", { entityId, success });
     clearAlignmentLight(state);
     this.active = null;
+    // qScore may have changed; refresh compliance so the HUD and guards
+    // see the updated tier without waiting for the next turn boundary.
+    complianceSystem.recompute(state);
   }
 
   reset(): void {

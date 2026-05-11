@@ -36,6 +36,9 @@ export function baffleEra(): EraSeed {
     flashlightOn: false, flashlightBattery: 30,
     stance: "WALK",
     name: "THE FINDER",
+    qScore: 0,
+    inventory: [],
+    compliance: "GREEN",
   };
   return {
     era: "BAFFLE",
