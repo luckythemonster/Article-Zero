@@ -10,77 +10,278 @@ export const MOOSE_TILESETS: MooseTilesetEntry[] = [
     "label": "Article zero",
     "path": "/assets/tilesets/article_zero/sheet.png",
     "frameWidth": 32,
-    "frameHeight": 64,
+    "frameHeight": 32,
     "spacing": 1,
     "tileAnims": [
       {
-        "handle": 2081201750,
-        "label": "Office door south",
-        "baseFrame": 130,
-        "settleFrame": 57,
+        "handle": 2964983570,
+        "label": "tdSprite_1_3",
+        "baseFrame": 325,
+        "settleFrame": 338,
         "frames": [
-          130,
-          130,
-          135,
-          130,
-          142,
-          55,
-          59,
-          54,
-          57
+          325,
+          381,
+          272,
+          56,
+          356,
+          169,
+          23,
+          267,
+          338
         ],
-        "frameRate": 8
+        "frameRate": 6
       },
       {
-        "handle": 3147691485,
-        "label": "elevator open",
-        "baseFrame": 140,
-        "settleFrame": 60,
+        "handle": 3459758440,
+        "label": "tdSprite_1_7",
+        "baseFrame": 86,
+        "settleFrame": 53,
         "frames": [
-          140,
-          140,
-          136,
-          131,
-          128,
-          124,
-          126,
-          133,
-          138,
-          60
+          86,
+          326,
+          392,
+          299,
+          112,
+          413,
+          129,
+          110,
+          53
         ],
-        "frameRate": 8
+        "frameRate": 6
       },
       {
-        "handle": 765656860,
-        "label": "tiledef-765656860",
-        "baseFrame": 156,
-        "settleFrame": 150,
+        "handle": 2966051415,
+        "label": "tdSprite_1_9",
+        "baseFrame": 353,
+        "settleFrame": 166,
         "frames": [
-          156,
-          146,
+          353,
+          150,
+          48,
+          58,
           144,
-          154,
-          148,
-          152,
-          150
+          370,
+          27,
+          45,
+          166
         ],
-        "frameRate": 8
+        "frameRate": 6
       },
       {
-        "handle": 3697363465,
-        "label": "Door South ",
-        "baseFrame": 175,
-        "settleFrame": 163,
+        "handle": 2911061560,
+        "label": "tdSprite_1_30",
+        "baseFrame": 287,
+        "settleFrame": 72,
         "frames": [
-          175,
-          184,
-          168,
-          162,
-          158,
-          164,
-          163
+          287,
+          266,
+          258,
+          83,
+          29,
+          368,
+          80,
+          351,
+          72
         ],
-        "frameRate": 8
+        "frameRate": 6
+      },
+      {
+        "handle": 2417273085,
+        "label": "tdSprite_1_11",
+        "baseFrame": 289,
+        "settleFrame": 53,
+        "frames": [
+          289,
+          404,
+          415,
+          7,
+          349,
+          252,
+          122,
+          110,
+          53
+        ],
+        "frameRate": 6
+      },
+      {
+        "handle": 1536530710,
+        "label": "tdSprite_1_25",
+        "baseFrame": 335,
+        "settleFrame": 39,
+        "frames": [
+          335,
+          155,
+          343,
+          33,
+          95,
+          82,
+          355,
+          322,
+          39
+        ],
+        "frameRate": 6
+      },
+      {
+        "handle": 2319068690,
+        "label": "tdSprite_1_12",
+        "baseFrame": 117,
+        "settleFrame": 39,
+        "frames": [
+          117,
+          314,
+          41,
+          352,
+          342,
+          49,
+          88,
+          322,
+          39
+        ],
+        "frameRate": 6
+      },
+      {
+        "handle": 3265993465,
+        "label": "tdSprite_1_0",
+        "baseFrame": 363,
+        "settleFrame": 273,
+        "frames": [
+          363,
+          253,
+          317,
+          372,
+          406,
+          51,
+          92,
+          101,
+          273
+        ],
+        "frameRate": 6
+      },
+      {
+        "handle": 2581226720,
+        "label": "tdSprite_2_17",
+        "baseFrame": 78,
+        "settleFrame": 47,
+        "frames": [
+          78,
+          78,
+          97,
+          330,
+          149,
+          274,
+          345,
+          422,
+          47
+        ],
+        "frameRate": 6
+      },
+      {
+        "handle": 2655082450,
+        "label": "tdSprite_1_27",
+        "baseFrame": 405,
+        "settleFrame": 47,
+        "frames": [
+          405,
+          78,
+          97,
+          330,
+          149,
+          274,
+          345,
+          422,
+          47
+        ],
+        "frameRate": 6
+      },
+      {
+        "handle": 3197205755,
+        "label": "collapse path",
+        "baseFrame": 46,
+        "settleFrame": 39,
+        "frames": [
+          46,
+          145,
+          262,
+          334,
+          107,
+          320,
+          156,
+          322,
+          39
+        ],
+        "frameRate": 6
+      },
+      {
+        "handle": 737336015,
+        "label": "tdSprite_1_2",
+        "baseFrame": 306,
+        "settleFrame": 84,
+        "frames": [
+          306,
+          281,
+          25,
+          42,
+          50,
+          400,
+          146,
+          318,
+          84
+        ],
+        "frameRate": 6
+      },
+      {
+        "handle": 2833259360,
+        "label": "tdSprite_1_19",
+        "baseFrame": 142,
+        "settleFrame": 254,
+        "frames": [
+          142,
+          417,
+          424,
+          153,
+          118,
+          106,
+          17,
+          361,
+          254
+        ],
+        "frameRate": 6
+      },
+      {
+        "handle": 1878465075,
+        "label": "tdSprite_1_6",
+        "baseFrame": 360,
+        "settleFrame": 166,
+        "frames": [
+          360,
+          177,
+          96,
+          139,
+          255,
+          373,
+          294,
+          45,
+          166
+        ],
+        "frameRate": 6
+      },
+      {
+        "handle": 2772221605,
+        "label": "tdSprite_1_18",
+        "baseFrame": 40,
+        "settleFrame": 47,
+        "frames": [
+          40,
+          137,
+          131,
+          328,
+          399,
+          385,
+          15,
+          422,
+          47
+        ],
+        "frameRate": 6
       }
     ]
   },
