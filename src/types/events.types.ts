@@ -88,6 +88,13 @@ export interface EventMap {
   DIALOGUE_OPENED: { entityId: EntityId };
   DIALOGUE_CLOSED: { entityId: EntityId };
   DIALOGUE_LINE: { entityId: EntityId; raw: string; corrected: string };
+
+  // Verb extensions (terminal/vent/hide/peek)
+  TERMINAL_USED: { terminalId: string; roomId: RoomId; pos: Vec2; caseId: string };
+  PLAYER_VENTED: { from: { roomId: RoomId; pos: Vec2 }; to: { roomId: RoomId; pos: Vec2 } };
+  PLAYER_HIDDEN: { roomId: RoomId; pos: Vec2 };
+  PLAYER_UNHIDDEN: { roomId: RoomId; pos: Vec2 };
+  PLAYER_PEEKED: { facing: Facing | null };
 }
 
 export type EventName = keyof EventMap;

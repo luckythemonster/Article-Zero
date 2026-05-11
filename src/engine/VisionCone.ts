@@ -23,7 +23,7 @@ const FACING_VEC: Record<Facing, { dx: number; dy: number }> = {
 
 function blocksLight(tile: Tile | undefined): boolean {
   if (!tile) return true;
-  return tile.kind === "WALL" || tile.kind === "DOOR_CLOSED";
+  return tile.opaque;
 }
 
 interface ConeArgs {

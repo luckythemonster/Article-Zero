@@ -38,6 +38,7 @@ function mkTile(kind: TileKind): Tile {
   switch (kind) {
     case "WALL":
     case "DOOR_CLOSED":
+    case "LOCKER":
       return { kind, solid: true, opaque: true };
     case "DOOR_OPEN":
       return { kind, solid: false, opaque: false };

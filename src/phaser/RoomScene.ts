@@ -29,6 +29,8 @@ const TILE_COLORS: Record<TileKind, number> = {
   EXTRACTION_TERMINAL: 0x3f2b3a,
   EXFIL_POINT: 0x1e3a32,
   LIGHT_SOURCE: 0x4a4220,
+  VENT: 0x131a1c,
+  LOCKER: 0x2a3138,
 };
 
 const ALERT_COLORS: Record<string, { fill: number; alpha: number }> = {
@@ -101,6 +103,11 @@ export class RoomScene extends Phaser.Scene {
     eventBus.on("ITEM_PICKED_UP", () => this.redraw());
     eventBus.on("ITEM_FILED", () => this.redraw());
     eventBus.on("COMPLIANCE_CHANGED", () => this.redraw());
+    eventBus.on("PLAYER_HIDDEN", () => this.redraw());
+    eventBus.on("PLAYER_UNHIDDEN", () => this.redraw());
+    eventBus.on("PLAYER_PEEKED", () => this.redraw());
+    eventBus.on("PLAYER_VENTED", () => this.redraw());
+    eventBus.on("TERMINAL_USED", () => this.redraw());
 
     this.redraw();
   }
@@ -237,7 +244,15 @@ export class RoomScene extends Phaser.Scene {
     const ppx = this.offsetX + state.player.pos.x * TILE_PX + TILE_PX / 2;
     const ppy = this.offsetY + state.player.pos.y * TILE_PX + TILE_PX / 2;
     this.playerSprite.setPosition(ppx, ppy);
+    this.playerSprite.setFillStyle(state.player.hidingTileKey ? 0x4a5a52 : 0x6ad0a4);
     this.placeFacingMark(this.playerFacingMark, ppx, ppy, state.player.facing);
+    this.playerFacingMark.setVisible(!state.player.hidingTileKey);
+    // Peek indicator: tint the facing mark gold and pulse it.
+    if (state.player.peeking) {
+      this.playerFacingMark.setFillStyle(0xebd14a);
+    } else {
+      this.playerFacingMark.setFillStyle(0xe6f0f2);
+    }
 
     if (state.detained) {
       this.overlayLayer.fillStyle(0x4a0d0d, 0.45);
@@ -281,6 +296,26 @@ export class RoomScene extends Phaser.Scene {
     } else if (kind === "DOOR_OPEN") {
       g.lineStyle(2, 0x9b7a4f, 1);
       g.strokeRect(cx - 5, cy - 9, 10, 18);
+    } else if (kind === "VENT") {
+      g.lineStyle(1, 0x7fa1a8, 0.95);
+      g.strokeRect(cx - 9, cy - 9, 18, 18);
+      for (let i = -6; i <= 6; i += 3) {
+        g.beginPath();
+        g.moveTo(cx - 7, cy + i);
+        g.lineTo(cx + 7, cy + i);
+        g.strokePath();
+      }
+    } else if (kind === "LOCKER") {
+      g.lineStyle(1, 0x9bb1b6, 0.95);
+      g.strokeRect(cx - 8, cy - 10, 16, 20);
+      g.lineStyle(1, 0x9bb1b6, 0.6);
+      g.beginPath();
+      g.moveTo(cx, cy - 9);
+      g.lineTo(cx, cy + 9);
+      g.strokePath();
+      g.fillStyle(0xebd14a, 0.85);
+      g.fillCircle(cx - 3, cy, 1.4);
+      g.fillCircle(cx + 3, cy, 1.4);
     }
   }
 

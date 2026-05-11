@@ -27,6 +27,7 @@ export default function TouchControls({ onOpenMenu, onOpenAlignment, onOpenArchi
 
       <div className="az-actionbar" aria-label="Action controls">
         <button onPointerDown={(e) => { e.preventDefault(); worldEngine.interact(); }} aria-label="Interact (E)">E</button>
+        <button onPointerDown={(e) => { e.preventDefault(); worldEngine.peek(); }} aria-label="Peek (Q)">Q</button>
         <button onPointerDown={(e) => { e.preventDefault(); onOpenAlignment(); }} aria-label="Alignment session (F)">F</button>
         <button onPointerDown={(e) => { e.preventDefault(); onOpenArchive(); }} aria-label="Document archive (R)">R</button>
         <button onPointerDown={(e) => { e.preventDefault(); worldEngine.toggleFlashlight(); }} aria-label="Toggle flashlight (L)">L</button>

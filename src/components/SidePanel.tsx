@@ -53,8 +53,9 @@ export default function SidePanel(p: Props) {
       <h3 style={{ marginTop: 10 }}>CONTROLS</h3>
       <pre style={{ fontSize: 11, color: "#7fa1a8", margin: 0 }}>
         WASD/arrows  move
-        E            interact (door)
+        E            interact (door/terminal/vent/locker)
         K            knock (face wall first)
+        Q            peek (extend FOV in facing)
         C            toggle creep
         L            flashlight
         SPACE        end turn

@@ -5,6 +5,7 @@
 import type {
   AmbientLightLevel,
   Era,
+  Facing,
   Room,
   RoomId,
   Vec2,
@@ -105,6 +106,12 @@ class WorldEngine {
     this.recomputeFOV();
   };
 
+  peek = (dir?: Facing) => {
+    const ok = actions.peek(this.getState(), dir);
+    if (ok) this.recomputeFOV();
+    return ok;
+  };
+
   endTurn = () => this.advanceTurn();
 
   canStartAlignment = (entityId: string) =>
@@ -134,6 +141,8 @@ class WorldEngine {
 
   private advanceTurn(): void {
     const s = this.getState();
+    // Peek is one-turn-only.
+    actions.clearPeek(s);
     s.turn += 1;
     // Refresh AP up to apMax.
     const previousAp = s.player.ap;
@@ -187,6 +196,21 @@ class WorldEngine {
     if (!room) return;
     const ambient: AmbientLightLevel = room.ambientLight;
     const radius = getEffectivePlayerRadius(ambient, s.player.flashlightOn);
+    s.visibleTiles.clear();
+    // Inside a locker the player can't see the room — only their own tile.
+    if (s.player.hidingTileKey) {
+      s.visibleTiles.add(`${s.player.pos.x},${s.player.pos.y}`);
+      eventBus.emit("FOV_UPDATED", {
+        roomId: room.id,
+        visibleTiles: Array.from(s.visibleTiles),
+      });
+      eventBus.emit("AMBIENT_LIGHT_CHANGED", {
+        roomId: room.id,
+        level: ambient,
+        effectiveRadius: 0,
+      });
+      return;
+    }
     const visible = computeCone({
       tiles: room.tiles,
       width: room.width,
@@ -195,8 +219,22 @@ class WorldEngine {
       oy: s.player.pos.y,
       radius,
     });
-    s.visibleTiles.clear();
     for (const k of visible) s.visibleTiles.add(k);
+    // Peek: union an extra narrow cone in the peek direction with a +2 radius
+    // bonus, so the player can see further than they could from this tile.
+    if (s.player.peeking) {
+      const peekVisible = computeCone({
+        tiles: room.tiles,
+        width: room.width,
+        height: room.height,
+        ox: s.player.pos.x,
+        oy: s.player.pos.y,
+        radius: radius + 2,
+        facing: s.player.peeking,
+        halfAngle: Math.PI / 3,
+      });
+      for (const k of peekVisible) s.visibleTiles.add(k);
+    }
     eventBus.emit("FOV_UPDATED", {
       roomId: room.id,
       visibleTiles: Array.from(s.visibleTiles),

@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { worldEngine } from "../engine/WorldEngine";
+import type { Facing } from "../types/world.types";
 
 export interface GameActions {
   move: (dx: number, dy: number) => void;
@@ -8,6 +9,7 @@ export interface GameActions {
   toggleFlashlight: () => void;
   toggleStance: () => void;
   knock: () => boolean;
+  peek: (dir?: Facing) => boolean;
   canStartAlignment: (entityId: string) => { ok: boolean; reason?: string };
   commitAlignment: (entityId: string) => boolean;
   spendAlignmentAdvance: () => boolean;
@@ -34,6 +36,9 @@ export function useGameActions(): GameActions {
     }, []),
     knock: useCallback(() => {
       return worldEngine.knock();
+    }, []),
+    peek: useCallback((dir?: Facing) => {
+      return worldEngine.peek(dir);
     }, []),
     canStartAlignment: useCallback((entityId: string) => {
       return worldEngine.canStartAlignment(entityId);

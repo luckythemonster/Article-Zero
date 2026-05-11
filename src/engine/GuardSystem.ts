@@ -77,6 +77,8 @@ class GuardSystem {
 
   private guardSeesPlayer(state: WorldState, guard: Entity): boolean {
     if (state.player.roomId !== guard.roomId) return false;
+    // Hidden in a locker: guards may walk past and not perceive the player.
+    if (state.player.hidingTileKey) return false;
     const room = state.rooms.get(guard.roomId);
     if (!room) return false;
     const visible = this.visibleTiles(state, guard);
