@@ -13,6 +13,7 @@ import { commonwealthEra } from "../data/eras/commonwealth";
 import { latticeEra } from "../data/eras/lattice";
 import { baffleEra } from "../data/eras/baffle.stub";
 import { miradorEra } from "../data/eras/mirador.stub";
+import { arc1Era } from "../data/eras/arc1";
 
 export interface EraSeed {
   era: Era;
@@ -66,6 +67,8 @@ export function seedFromEra(era: Era): WorldState {
       ? latticeEra()
       : era === "BAFFLE"
         ? baffleEra()
-        : miradorEra();
+        : era === "ARC1"
+          ? arc1Era()
+          : miradorEra();
   return seedToWorldState(seed);
 }
