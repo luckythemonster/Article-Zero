@@ -80,7 +80,7 @@ export class BootScene extends Phaser.Scene {
     }
 
     // Boot the world and start the renderer.
-    worldEngine.initWorld("COMMONWEALTH");
+    worldEngine.initWorld("ARC1");
     this.scene.start("RoomScene");
   }
 }

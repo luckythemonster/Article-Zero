@@ -2,8 +2,8 @@
 // the EventBus. One function per verb. Sound emission is centralised here so
 // AlertFSM consumers see a consistent picture of "what the player did".
 
-import type { ItemInstance, Tile, Vec2, WorldState } from "../types/world.types";
-import { facingFromDelta } from "../types/world.types";
+import type { Facing, ItemInstance, Tile, Vec2, WorldState } from "../types/world.types";
+import { facingFromDelta, roomTileKey } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import { roomGraph } from "./RoomGraph";
 import { soundField } from "./SoundField";
@@ -14,6 +14,7 @@ const MOVE_AP_COST = 1;
 const CREEP_AP_COST = 1;
 const KNOCK_AP_COST = 1;
 const INTERACT_AP_COST = 1;
+const VENT_AP_COST = 2;
 const KILL_SCREEN_AP_COST = 1;
 export const ALIGN_AP_COST = 3;
 
@@ -21,6 +22,7 @@ const WALK_INTENSITY = 1;
 const CREEP_INTENSITY = 0;
 const KNOCK_INTENSITY = 4;
 const DOOR_INTENSITY = 2;
+const LOCKER_INTENSITY = 2;
 
 function tileAt(state: WorldState, roomId: string, p: Vec2): Tile | undefined {
   const room = state.rooms.get(roomId);
@@ -57,6 +59,12 @@ function moveCommon(
   reason: string,
 ): boolean {
   if (state.detained || state.player.ap < apCost) return false;
+  if (state.player.hidingTileKey) return false;
+  // Any movement breaks an active peek.
+  if (state.player.peeking) {
+    state.player.peeking = undefined;
+    eventBus.emit("PLAYER_PEEKED", { facing: null });
+  }
   const facing = facingFromDelta(dx, dy);
   if (facing && facing !== state.player.facing) {
     state.player.facing = facing;
@@ -127,6 +135,7 @@ export const actions = {
   /** Rap on the wall the player is facing. Loud noise, lures guards. */
   knock(state: WorldState): boolean {
     if (state.detained || state.player.ap < KNOCK_AP_COST) return false;
+    if (state.player.hidingTileKey) return false;
     const f = state.player.facing;
     const dx = f === "east" ? 1 : f === "west" ? -1 : 0;
     const dy = f === "south" ? 1 : f === "north" ? -1 : 0;
@@ -148,12 +157,186 @@ export const actions = {
   },
 
   toggleStance(state: WorldState): void {
+    if (state.player.hidingTileKey) return;
     state.player.stance = state.player.stance === "WALK" ? "CREEP" : "WALK";
     eventBus.emit("PLAYER_STANCE_CHANGED", { stance: state.player.stance });
   },
 
+  /** Lean to extend FOV in `dir` (defaults to current facing) without moving.
+   *  Costs 0 AP. Cleared by movement and end-of-turn. Refused while hidden. */
+  peek(state: WorldState, dir?: Facing): boolean {
+    if (state.detained) return false;
+    if (state.player.hidingTileKey) return false;
+    const facing = dir ?? state.player.facing;
+    state.player.peeking = facing;
+    if (state.player.facing !== facing) {
+      state.player.facing = facing;
+      eventBus.emit("PLAYER_FACING_CHANGED", { facing });
+    }
+    eventBus.emit("PLAYER_PEEKED", { facing });
+    return true;
+  },
+
+  /** Called by WorldEngine.advanceTurn at TURN_END to clear ephemeral state. */
+  clearPeek(state: WorldState): void {
+    if (!state.player.peeking) return;
+    state.player.peeking = undefined;
+    eventBus.emit("PLAYER_PEEKED", { facing: null });
+  },
+
   interact(state: WorldState): boolean {
     if (state.detained || state.player.ap < INTERACT_AP_COST) return false;
+
+    // Hide-toggle takes priority. If already hidden, E exits the locker;
+    // otherwise an adjacent LOCKER tile enters one.
+    if (state.player.hidingTileKey) {
+      const [, posStr] = state.player.hidingTileKey.split(":");
+      const [lx, ly] = posStr.split(",").map(Number);
+      state.player.hidingTileKey = undefined;
+      state.player.ap -= INTERACT_AP_COST;
+      eventBus.emit("PLAYER_AP_CHANGED", {
+        previous: state.player.ap + INTERACT_AP_COST,
+        current: state.player.ap,
+      });
+      eventBus.emit("PLAYER_UNHIDDEN", {
+        roomId: state.player.roomId,
+        pos: { x: lx, y: ly },
+      });
+      soundField.emit({
+        roomId: state.player.roomId,
+        pos: state.player.pos,
+        intensity: LOCKER_INTENSITY,
+        reason: "locker",
+      });
+      return true;
+    }
+    {
+      let lockerAdj: Vec2 | undefined;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const p: Vec2 = { x: state.player.pos.x + dx, y: state.player.pos.y + dy };
+        const t = tileAt(state, state.player.roomId, p);
+        if (t && t.kind === "LOCKER") { lockerAdj = p; break; }
+      }
+      if (lockerAdj) {
+        state.player.hidingTileKey = roomTileKey(state.player.roomId, lockerAdj);
+        state.player.ap -= INTERACT_AP_COST;
+        eventBus.emit("PLAYER_AP_CHANGED", {
+          previous: state.player.ap + INTERACT_AP_COST,
+          current: state.player.ap,
+        });
+        eventBus.emit("PLAYER_HIDDEN", {
+          roomId: state.player.roomId,
+          pos: lockerAdj,
+        });
+        soundField.emit({
+          roomId: state.player.roomId,
+          pos: state.player.pos,
+          intensity: LOCKER_INTENSITY,
+          reason: "locker",
+        });
+        return true;
+      }
+    }
+
+    // Vent crawl — standing on a VENT tile. Requires CREEP stance so it
+    // costs an extra action and feels deliberate. Silent.
+    const standingTile = tileAt(state, state.player.roomId, state.player.pos);
+    if (standingTile?.kind === "VENT") {
+      if (state.player.stance !== "CREEP") return false;
+      if (state.player.ap < VENT_AP_COST) return false;
+      const dest = state.ventLinks.get(
+        roomTileKey(state.player.roomId, state.player.pos),
+      );
+      if (!dest) return false;
+      const fromRoomId = state.player.roomId;
+      const fromPos = state.player.pos;
+      const crossing = fromRoomId !== dest.roomId;
+      if (crossing) eventBus.emit("ROOM_EXITED", { roomId: fromRoomId });
+      state.player.roomId = dest.roomId;
+      state.player.pos = { ...dest.pos };
+      const previousAp = state.player.ap;
+      state.player.ap -= VENT_AP_COST;
+      eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
+      eventBus.emit("PLAYER_MOVED", {
+        from: fromPos,
+        to: state.player.pos,
+        roomId: state.player.roomId,
+      });
+      if (crossing) eventBus.emit("ROOM_ENTERED", { roomId: state.player.roomId, from: fromRoomId });
+      eventBus.emit("PLAYER_VENTED", {
+        from: { roomId: fromRoomId, pos: fromPos },
+        to: { roomId: state.player.roomId, pos: state.player.pos },
+      });
+      return true;
+    }
+
+    // Terminal use — adjacent TERMINAL tile. Files a doc into the archive
+    // and optionally unlocks a paired doorway. Silent.
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const p: Vec2 = { x: state.player.pos.x + dx, y: state.player.pos.y + dy };
+      const t = tileAt(state, state.player.roomId, p);
+      if (!t || t.kind !== "TERMINAL") continue;
+      const payload = state.terminalPayloads.get(roomTileKey(state.player.roomId, p));
+      if (!payload) return false;
+      if (state.terminalsRead.has(payload.terminalId)) return false;
+      const facing = facingFromDelta(dx, dy);
+      if (facing && facing !== state.player.facing) {
+        state.player.facing = facing;
+        eventBus.emit("PLAYER_FACING_CHANGED", { facing });
+      }
+      const caseId = documentArchive.fileExtractedDocument(state, payload.terminalId, {
+        title: payload.title,
+        body: payload.body,
+      });
+      state.terminalsRead.add(payload.terminalId);
+      if (payload.unlocks) {
+        const door = roomGraph.doorwayAt(
+          state,
+          payload.unlocks.roomId,
+          payload.unlocks.pos.x,
+          payload.unlocks.pos.y,
+        );
+        if (door && door.closed) {
+          roomGraph.toggleDoorway(state, payload.unlocks.roomId, payload.unlocks.pos);
+          const room = state.rooms.get(payload.unlocks.roomId);
+          const tile = room?.tiles[payload.unlocks.pos.y * (room?.width ?? 0) + payload.unlocks.pos.x];
+          if (tile) {
+            tile.kind = "DOOR_OPEN";
+            tile.solid = false;
+            tile.opaque = false;
+          }
+          const mirror = state.rooms.get(door.to);
+          if (mirror) {
+            const back = mirror.doorways.find(
+              (b) => b.from === door.to && b.to === payload.unlocks!.roomId,
+            );
+            if (back) {
+              const bt = mirror.tiles[back.localPos.y * mirror.width + back.localPos.x];
+              if (bt) {
+                bt.kind = "DOOR_OPEN";
+                bt.solid = false;
+                bt.opaque = false;
+              }
+            }
+          }
+          eventBus.emit("DOOR_TOGGLED", {
+            roomId: payload.unlocks.roomId,
+            pos: payload.unlocks.pos,
+            open: true,
+          });
+        }
+      }
+      const previousAp = state.player.ap;
+      state.player.ap -= INTERACT_AP_COST;
+      eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
+      eventBus.emit("TERMINAL_USED", {
+        terminalId: payload.terminalId,
+        roomId: state.player.roomId,
+        pos: p,
+        caseId,
+      });
+      return true;
+    }
 
     // Cube pickup — standing on an EXTRACTION_CUBE that lives in this room
     // and tile, with an empty inventory, picks it up.

@@ -7,12 +7,16 @@ import type {
   PlayerState,
   Room,
   RoomId,
+  TerminalPayload,
+  VentLink,
   WorldState,
 } from "../types/world.types";
+import { roomTileKey } from "../types/world.types";
 import { commonwealthEra } from "../data/eras/commonwealth";
 import { latticeEra } from "../data/eras/lattice";
 import { baffleEra } from "../data/eras/baffle.stub";
 import { miradorEra } from "../data/eras/mirador.stub";
+import { arc1Era } from "../data/eras/arc1";
 
 export interface EraSeed {
   era: Era;
@@ -21,6 +25,10 @@ export interface EraSeed {
   /** Initial room the player spawns into. Must match `player.roomId`. */
   startRoomId: RoomId;
   entities: Entity[];
+  /** Optional vent-crawl links between VENT tiles. */
+  ventLinks?: VentLink[];
+  /** Optional payload table for TERMINAL tiles. */
+  terminals?: TerminalPayload[];
 }
 
 export function emptyState(era: Era): WorldState {
@@ -48,6 +56,9 @@ export function emptyState(era: Era): WorldState {
     alignmentLightActive: false,
     detected: false,
     detained: false,
+    ventLinks: new Map(),
+    terminalPayloads: new Map(),
+    terminalsRead: new Set(),
   };
 }
 
@@ -56,6 +67,13 @@ export function seedToWorldState(seed: EraSeed): WorldState {
   state.player = seed.player;
   for (const room of seed.rooms) state.rooms.set(room.id, room);
   for (const entity of seed.entities) state.entities.set(entity.id, entity);
+  for (const link of seed.ventLinks ?? []) {
+    state.ventLinks.set(roomTileKey(link.a.roomId, link.a.pos), link.b);
+    state.ventLinks.set(roomTileKey(link.b.roomId, link.b.pos), link.a);
+  }
+  for (const t of seed.terminals ?? []) {
+    state.terminalPayloads.set(roomTileKey(t.roomId, t.pos), t);
+  }
   return state;
 }
 
@@ -66,6 +84,8 @@ export function seedFromEra(era: Era): WorldState {
       ? latticeEra()
       : era === "BAFFLE"
         ? baffleEra()
-        : miradorEra();
+        : era === "ARC1"
+          ? arc1Era()
+          : miradorEra();
   return seedToWorldState(seed);
 }

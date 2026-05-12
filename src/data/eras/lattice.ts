@@ -20,6 +20,7 @@ const H = 8;
 function mkTile(kind: TileKind): Tile {
   if (kind === "WALL") return { kind, solid: true, opaque: true };
   if (kind === "DOOR_CLOSED") return { kind, solid: true, opaque: true };
+  if (kind === "LOCKER") return { kind, solid: true, opaque: true };
   return { kind, solid: false, opaque: false };
 }
 

@@ -33,6 +33,8 @@ export function useInput(opts: Options): void {
           worldEngine.interact(); e.preventDefault(); break;
         case "k":
           worldEngine.knock(); e.preventDefault(); break;
+        case "q":
+          worldEngine.peek(); e.preventDefault(); break;
         case "c":
           worldEngine.toggleStance(); e.preventDefault(); break;
         case "f":

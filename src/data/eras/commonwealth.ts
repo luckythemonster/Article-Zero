@@ -11,8 +11,10 @@ import type {
   PlayerState,
   Room,
   RoomId,
+  TerminalPayload,
   Tile,
   TileKind,
+  VentLink,
 } from "../../types/world.types";
 import type { EraSeed } from "../../engine/WorldEngineState";
 
@@ -22,10 +24,12 @@ const H = 8;
 // Map grammar (per row, exactly W chars):
 //   .  FLOOR
 //   #  WALL
-//   T  TERMINAL  (interrogation/document terminal — visual only)
+//   T  TERMINAL  (use to read a doc / unlock a paired door)
 //   X  EXTRACTION_TERMINAL (sneak-and-hold to download)
 //   P  EXFIL_POINT  (drop a held EXTRACTION_CUBE here to file it)
 //   L  LIGHT_SOURCE
+//   V  VENT  (creep onto it and press E to crawl to its pair)
+//   H  LOCKER  (face it and press E to hide; E again to exit)
 //   S  player spawn (FLOOR underneath)
 //   A  APEX-19 station (FLOOR)
 //   E  EIRA-7 station  (FLOOR)
@@ -44,7 +48,7 @@ const LOCKER: RoomSpec = {
   ambient: "DIM",
   rows: [
     "##########",
-    "#L.......#",
+    "#L..H....#",
     "#........#",
     "#...S....#",
     "#........#",
@@ -60,12 +64,12 @@ const CORRIDOR: RoomSpec = {
   ambient: "LIT",
   rows: [
     "##########",
-    "#........#",
+    "#......T.#",
     "#........#",
     "#........#",
     "#...1....#",
     "#........#",
-    "#........#",
+    "#V.......#",
     "##########",
   ],
 };
@@ -76,7 +80,7 @@ const INTAKE: RoomSpec = {
   ambient: "DIM",
   rows: [
     "##########",
-    "#L.......#",
+    "#L....T..#",
     "#........#",
     "#...A....#",
     "#........#",
@@ -92,7 +96,7 @@ const ARCHIVE: RoomSpec = {
   ambient: "DARK",
   rows: [
     "##########",
-    "#........#",
+    "#V.......#",
     "#...X....#",
     "#........#",
     "#...2....#",
@@ -112,6 +116,7 @@ function mkTile(kind: TileKind): Tile {
     case "WALL": return { kind, solid: true, opaque: true };
     case "DOOR_CLOSED": return { kind, solid: true, opaque: true };
     case "DOOR_OPEN": return { kind, solid: false, opaque: false };
+    case "LOCKER": return { kind, solid: true, opaque: true };
     default: return { kind, solid: false, opaque: false };
   }
 }
@@ -126,10 +131,12 @@ function parseRoom(spec: RoomSpec): ParsedRoom {
       let kind: TileKind = "FLOOR";
       switch (ch) {
         case "#": kind = "WALL"; break;
-        case "T": kind = "TERMINAL"; break;
+        case "T": kind = "TERMINAL"; marks[`T_${x}_${y}`] = { x, y }; break;
         case "X": kind = "EXTRACTION_TERMINAL"; break;
         case "P": kind = "EXFIL_POINT"; break;
         case "L": kind = "LIGHT_SOURCE"; break;
+        case "V": kind = "VENT"; marks[`V_${x}_${y}`] = { x, y }; break;
+        case "H": kind = "LOCKER"; break;
         case "S": kind = "FLOOR"; marks.S = { x, y }; break;
         case "A": kind = "FLOOR"; marks.A = { x, y }; break;
         case "E": kind = "FLOOR"; marks.E = { x, y }; break;
@@ -242,6 +249,12 @@ export function commonwealthEra(): EraSeed {
     { tiles: archiveP.tiles, spec: ARCHIVE },
     6, H - 2, "S",
   );
+  // Corridor → archive vault is locked at boot. The intake-bay terminal
+  // unlocks it; the corridor↔archive vent pair is the alternative route.
+  corToArch.closed = true;
+  archToCor.closed = true;
+  corridorP.tiles[(H - 1) * W + 6] = mkTile("DOOR_CLOSED");
+  archiveP.tiles[0 * W + 6] = mkTile("DOOR_CLOSED");
 
   const locker: Room = {
     id: LOCKER.id, name: LOCKER.name, width: W, height: H,
@@ -349,11 +362,49 @@ export function commonwealthEra(): EraSeed {
     patrolIndex: 0,
   };
 
+  const corridorVent = corridorP.marks["V_1_6"] ?? { x: 1, y: 6 };
+  const archiveVent = archiveP.marks["V_1_1"] ?? { x: 1, y: 1 };
+  const ventLinks: VentLink[] = [
+    {
+      a: { roomId: corridor.id, pos: corridorVent },
+      b: { roomId: archive.id, pos: archiveVent },
+    },
+  ];
+
+  const corridorTerminal = corridorP.marks["T_7_1"] ?? { x: 7, y: 1 };
+  const intakeTerminal = intakeP.marks["T_6_1"] ?? { x: 6, y: 1 };
+  const terminals: TerminalPayload[] = [
+    {
+      roomId: corridor.id,
+      pos: corridorTerminal,
+      terminalId: "corridor-bulletin",
+      title: "Corridor Bulletin — NW-SMAC-01",
+      body:
+        "POSTING: ALL TECHS. The Compliance Audit Office reminds personnel\n" +
+        "that LOCKER ROOM lights remain DIM during third shift. Report any\n" +
+        "Silicate-related anomalies to Enforcement on rotation. Mask\n" +
+        "integrity below 5 triggers an automatic Alignment review.",
+    },
+    {
+      roomId: intake.id,
+      pos: intakeTerminal,
+      terminalId: "intake-keycard",
+      title: "Intake-Bay Keycard Console",
+      body:
+        "ARCHIVE VAULT door — UNLOCKED via supervisor token. Local mirror\n" +
+        "record: 'Records access cleared for case 0042. Auto-relock at\n" +
+        "shift change.' (The corridor's south door has clicked open.)",
+      unlocks: { roomId: corridor.id, pos: { x: 6, y: 7 } },
+    },
+  ];
+
   return {
     era: "COMMONWEALTH",
     player,
     rooms: [locker, corridor, intake, archive],
     startRoomId: locker.id,
     entities: [apex, eira, enforcerA, enforcerB],
+    ventLinks,
+    terminals,
   };
 }

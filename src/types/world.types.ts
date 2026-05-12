@@ -6,7 +6,7 @@
 
 export type EntityId = string;
 
-export type Era = "COMMONWEALTH" | "LATTICE" | "BAFFLE" | "MIRADOR";
+export type Era = "COMMONWEALTH" | "LATTICE" | "BAFFLE" | "MIRADOR" | "ARC1";
 
 export type Facing = "north" | "south" | "east" | "west";
 export type Side = "N" | "S" | "E" | "W";
@@ -18,8 +18,7 @@ export interface Vec2 {
   y: number;
 }
 
-/** Tile kinds that survive into the rebuilt engine. Anything Vent-, Fragment-,
- *  Article-Zero-meta-, or RUN-01-related is gone. */
+/** Tile kinds that survive into the rebuilt engine. */
 export type TileKind =
   | "FLOOR"
   | "WALL"
@@ -28,7 +27,9 @@ export type TileKind =
   | "TERMINAL"
   | "EXTRACTION_TERMINAL"
   | "EXFIL_POINT"
-  | "LIGHT_SOURCE";
+  | "LIGHT_SOURCE"
+  | "VENT"
+  | "LOCKER";
 
 // Items ------------------------------------------------------------------
 
@@ -181,6 +182,43 @@ export interface PlayerState {
   inventory: ItemInstance[];
   /** Cached compliance tier; written by ComplianceSystem.compute(). */
   compliance: ComplianceTier;
+  /** Set by `peek`; cleared by movement and end-of-turn. While set, FOV
+   *  extends in this direction. */
+  peeking?: Facing;
+  /** "roomId:x,y" of the LOCKER tile the player has ducked into. While set,
+   *  guard sight ignores the player and most actions are refused. */
+  hidingTileKey?: string;
+}
+
+// Vent links ------------------------------------------------------------
+
+/** A bidirectional crawl-through link between two VENT tiles in (possibly
+ *  different) rooms. Stored on WorldState so RoomGraph/actions can resolve a
+ *  vent tile's destination in O(1). */
+export interface VentEndpoint {
+  roomId: RoomId;
+  pos: Vec2;
+}
+export interface VentLink {
+  a: VentEndpoint;
+  b: VentEndpoint;
+}
+
+// Terminal payloads -----------------------------------------------------
+
+/** Per-TERMINAL-tile payload that "Use Terminal" surfaces. Files a document
+ *  via DocumentArchive; optionally unlatches a paired closed doorway. */
+export interface TerminalPayload {
+  /** Where the TERMINAL tile lives. */
+  roomId: RoomId;
+  pos: Vec2;
+  /** Terminal id, used as the DocumentArchive case key. */
+  terminalId: string;
+  title: string;
+  body: string;
+  /** If set, using this terminal toggles the doorway whose FROM tile is at
+   *  (unlocks.roomId, unlocks.pos). Mirrors `roomGraph.toggleDoorway`. */
+  unlocks?: { roomId: RoomId; pos: Vec2 };
 }
 
 // World ------------------------------------------------------------------
@@ -201,9 +239,18 @@ export interface WorldState {
   detected: boolean;
   /** True if a guard caught the player (game-over flag). */
   detained: boolean;
+  /** Vent endpoint pairs keyed for fast lookup. Key is `roomId:x,y` of one
+   *  end, value is the other end. Both directions are inserted. */
+  ventLinks: Map<string, VentEndpoint>;
+  /** TERMINAL-tile payloads keyed by `roomId:x,y`. */
+  terminalPayloads: Map<string, TerminalPayload>;
+  /** TerminalIds that have already been read once. Reading again is a no-op. */
+  terminalsRead: Set<string>;
 }
 
 export const tileKey = (pos: Vec2): string => `${pos.x},${pos.y}`;
+export const roomTileKey = (roomId: RoomId, pos: Vec2): string =>
+  `${roomId}:${pos.x},${pos.y}`;
 
 export function oppositeSide(s: Side): Side {
   return s === "N" ? "S" : s === "S" ? "N" : s === "E" ? "W" : "E";

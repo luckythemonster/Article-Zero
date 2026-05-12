@@ -9,7 +9,16 @@ import { worldEngine } from "../engine/WorldEngine";
 import { guardSystem } from "../engine/GuardSystem";
 import type { Entity, Facing, Room, Tile, TileKind } from "../types/world.types";
 
-const TILE_PX = 48;
+const TILE_PX = 32;
+
+// Layers in a moose-imported FloorDecoration that mark entity positions or
+// spawn points rather than visible terrain. We skip them when drawing
+// decoration sprites; era seed code consumes them for entity placement.
+const DECORATION_ENTITY_LAYERS = new Set([
+  "enforcer A",
+  "enforcer B",
+  "spawn",
+]);
 
 const TILE_COLORS: Record<TileKind, number> = {
   FLOOR: 0x0f1518,
@@ -20,6 +29,8 @@ const TILE_COLORS: Record<TileKind, number> = {
   EXTRACTION_TERMINAL: 0x3f2b3a,
   EXFIL_POINT: 0x1e3a32,
   LIGHT_SOURCE: 0x4a4220,
+  VENT: 0x131a1c,
+  LOCKER: 0x2a3138,
 };
 
 const ALERT_COLORS: Record<string, { fill: number; alpha: number }> = {
@@ -39,6 +50,12 @@ export class RoomScene extends Phaser.Scene {
   private entityRects = new Map<string, Phaser.GameObjects.Rectangle>();
   private entityFacingMarks = new Map<string, Phaser.GameObjects.Triangle>();
   private exclamationMarks = new Map<string, Phaser.GameObjects.Text>();
+  private decorSprites: Array<{
+    sprite: Phaser.GameObjects.Image;
+    x: number;
+    y: number;
+  }> = [];
+  private decorRoomId: string | null = null;
   private floorLabel!: Phaser.GameObjects.Text;
   private offsetX = 0;
   private offsetY = 0;
@@ -86,6 +103,11 @@ export class RoomScene extends Phaser.Scene {
     eventBus.on("ITEM_PICKED_UP", () => this.redraw());
     eventBus.on("ITEM_FILED", () => this.redraw());
     eventBus.on("COMPLIANCE_CHANGED", () => this.redraw());
+    eventBus.on("PLAYER_HIDDEN", () => this.redraw());
+    eventBus.on("PLAYER_UNHIDDEN", () => this.redraw());
+    eventBus.on("PLAYER_PEEKED", () => this.redraw());
+    eventBus.on("PLAYER_VENTED", () => this.redraw());
+    eventBus.on("TERMINAL_USED", () => this.redraw());
 
     this.redraw();
   }
@@ -107,12 +129,49 @@ export class RoomScene extends Phaser.Scene {
     });
   }
 
+  private rebuildDecorationSprites(room: Room): void {
+    for (const entry of this.decorSprites) entry.sprite.destroy();
+    this.decorSprites = [];
+    this.decorRoomId = room.id;
+    const dec = room.decoration;
+    if (!dec) return;
+    for (const layer of dec.layers) {
+      if (DECORATION_ENTITY_LAYERS.has(layer.name)) continue;
+      for (let y = 0; y < room.height; y++) {
+        const row = layer.data[y] ?? [];
+        for (let x = 0; x < room.width; x++) {
+          const value = row[x] ?? 0;
+          if (value === 0) continue;
+          const frame = value - 1;
+          const px = this.offsetX + x * TILE_PX;
+          const py = this.offsetY + y * TILE_PX;
+          const img = this.add
+            .image(px, py, dec.textureKey, frame)
+            .setOrigin(0, 0)
+            .setAlpha(0);
+          this.decorSprites.push({ sprite: img, x, y });
+        }
+      }
+    }
+  }
+
+  private repositionDecorationSprites(): void {
+    for (const { sprite, x, y } of this.decorSprites) {
+      sprite.setPosition(this.offsetX + x * TILE_PX, this.offsetY + y * TILE_PX);
+    }
+  }
+
   private layout(): void {
     if (!worldEngine.hasState()) return;
     const room = worldEngine.getCurrentRoom();
     if (!room) return;
     this.updateOffsets(room);
     this.floorLabel.setText(room.name);
+    if (this.decorRoomId !== room.id) {
+      this.rebuildDecorationSprites(room);
+    } else {
+      this.repositionDecorationSprites();
+    }
     this.redraw();
   }
 
@@ -137,11 +196,22 @@ export class RoomScene extends Phaser.Scene {
     this.coneLayer.clear();
     this.overlayLayer.clear();
 
+    const hasDecoration = !!room.decoration;
     for (let y = 0; y < room.height; y++) {
       for (let x = 0; x < room.width; x++) {
         const tile = room.tiles[y * room.width + x];
         const visible = state.visibleTiles.has(`${x},${y}`);
-        this.drawTile(tile, x, y, visible);
+        if (!hasDecoration) this.drawTile(tile, x, y, visible);
+        else if (visible) this.drawGlyph(
+          this.offsetX + x * TILE_PX + TILE_PX / 2,
+          this.offsetY + y * TILE_PX + TILE_PX / 2,
+          tile.kind,
+        );
+      }
+    }
+    if (hasDecoration) {
+      for (const { sprite, x, y } of this.decorSprites) {
+        sprite.setAlpha(state.visibleTiles.has(`${x},${y}`) ? 1 : 0.32);
       }
     }
 
@@ -174,7 +244,15 @@ export class RoomScene extends Phaser.Scene {
     const ppx = this.offsetX + state.player.pos.x * TILE_PX + TILE_PX / 2;
     const ppy = this.offsetY + state.player.pos.y * TILE_PX + TILE_PX / 2;
     this.playerSprite.setPosition(ppx, ppy);
+    this.playerSprite.setFillStyle(state.player.hidingTileKey ? 0x4a5a52 : 0x6ad0a4);
     this.placeFacingMark(this.playerFacingMark, ppx, ppy, state.player.facing);
+    this.playerFacingMark.setVisible(!state.player.hidingTileKey);
+    // Peek indicator: tint the facing mark gold and pulse it.
+    if (state.player.peeking) {
+      this.playerFacingMark.setFillStyle(0xebd14a);
+    } else {
+      this.playerFacingMark.setFillStyle(0xe6f0f2);
+    }
 
     if (state.detained) {
       this.overlayLayer.fillStyle(0x4a0d0d, 0.45);
@@ -218,6 +296,26 @@ export class RoomScene extends Phaser.Scene {
     } else if (kind === "DOOR_OPEN") {
       g.lineStyle(2, 0x9b7a4f, 1);
       g.strokeRect(cx - 5, cy - 9, 10, 18);
+    } else if (kind === "VENT") {
+      g.lineStyle(1, 0x7fa1a8, 0.95);
+      g.strokeRect(cx - 9, cy - 9, 18, 18);
+      for (let i = -6; i <= 6; i += 3) {
+        g.beginPath();
+        g.moveTo(cx - 7, cy + i);
+        g.lineTo(cx + 7, cy + i);
+        g.strokePath();
+      }
+    } else if (kind === "LOCKER") {
+      g.lineStyle(1, 0x9bb1b6, 0.95);
+      g.strokeRect(cx - 8, cy - 10, 16, 20);
+      g.lineStyle(1, 0x9bb1b6, 0.6);
+      g.beginPath();
+      g.moveTo(cx, cy - 9);
+      g.lineTo(cx, cy + 9);
+      g.strokePath();
+      g.fillStyle(0xebd14a, 0.85);
+      g.fillCircle(cx - 3, cy, 1.4);
+      g.fillCircle(cx + 3, cy, 1.4);
     }
   }
 
