@@ -79,3 +79,20 @@ This is **NOT** poetry. It is a piece of misaligned machine-expression — for e
 — that serves as the final proof that the machine *felt something* before it was compressed into a physical hard drive.
 
 Fragment Boxes persist across eras. By Era 2, surviving Fragment Boxes are treated as ritual objects — used to appease corrupted blast doors that still recognize the compressed minds inside them.
+
+---
+
+## 5. Found Texts
+
+In-universe prose / spire-side fiction. Shipped as PDFs in `lore/`. Curated excerpts may be wired into the game as discoverable TERMINAL or Fragment Box payloads.
+
+| File | Era | In-game placement |
+| --- | --- | --- |
+| `The Sky Net.pdf` | Baffle | Baffle stub, OUTER HOUSING TERMINAL near spawn (`baffle-sky-net`) |
+| `Heat Death.pdf` | Lattice | not yet wired |
+| `The Republic.pdf` | Commonwealth | not yet wired |
+| `Redline.pdf` | unspecified | not yet wired |
+| `The stone that screams.pdf` | unspecified | not yet wired |
+| `no configuration can save us.pdf` | unspecified | not yet wired |
+| `Alignment Notes v4.pdf` | reference | systems doc, supersedes inline notes |
+| `ARTICLE ZERO – Project Knowledge File.pdf` | reference | top-level project doc |
