@@ -246,6 +246,9 @@ export interface WorldState {
   terminalPayloads: Map<string, TerminalPayload>;
   /** TerminalIds that have already been read once. Reading again is a no-op. */
   terminalsRead: Set<string>;
+  /** Per-room set of "x,y" tile keys the player has ever seen. The renderer
+   *  uses this for the 3-state fog (VISIBLE / EXPLORED / UNSEEN). */
+  exploredTiles: Map<RoomId, Set<string>>;
 }
 
 export const tileKey = (pos: Vec2): string => `${pos.x},${pos.y}`;

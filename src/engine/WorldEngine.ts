@@ -25,6 +25,15 @@ import { guardSystem } from "./GuardSystem";
 import { extractionTerminal } from "./ExtractionTerminal";
 import { complianceSystem } from "./ComplianceSystem";
 
+function rememberVisible(s: WorldState, roomId: RoomId): void {
+  let set = s.exploredTiles.get(roomId);
+  if (!set) {
+    set = new Set();
+    s.exploredTiles.set(roomId, set);
+  }
+  for (const k of s.visibleTiles) set.add(k);
+}
+
 class WorldEngine {
   private state: WorldState | null = null;
 
@@ -200,6 +209,7 @@ class WorldEngine {
     // Inside a locker the player can't see the room — only their own tile.
     if (s.player.hidingTileKey) {
       s.visibleTiles.add(`${s.player.pos.x},${s.player.pos.y}`);
+      rememberVisible(s, room.id);
       eventBus.emit("FOV_UPDATED", {
         roomId: room.id,
         visibleTiles: Array.from(s.visibleTiles),
@@ -235,6 +245,7 @@ class WorldEngine {
       });
       for (const k of peekVisible) s.visibleTiles.add(k);
     }
+    rememberVisible(s, room.id);
     eventBus.emit("FOV_UPDATED", {
       roomId: room.id,
       visibleTiles: Array.from(s.visibleTiles),

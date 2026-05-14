@@ -59,6 +59,7 @@ export function emptyState(era: Era): WorldState {
     ventLinks: new Map(),
     terminalPayloads: new Map(),
     terminalsRead: new Set(),
+    exploredTiles: new Map(),
   };
 }
 

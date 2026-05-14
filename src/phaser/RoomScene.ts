@@ -2,12 +2,18 @@
 // fades out, swaps to the new room, and fades back in. Vision cones for
 // guards in the active room are drawn as faint overlays whose colour
 // follows the AlertFSM level (NORMAL / CAUTION / ALERT / EVASION).
+//
+// World content lives inside `worldContainer`, which we scale + translate
+// to keep the player centered with a zoom that scales with the player's
+// effective FOV radius. UI elements (floor label, detained overlay) live
+// outside the container so they stay fixed-position and fixed-scale.
 
 import { Phaser } from "../engine/EngineAdapter";
 import { eventBus } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
 import { guardSystem } from "../engine/GuardSystem";
-import type { Entity, Facing, Room, Tile, TileKind } from "../types/world.types";
+import { getEffectivePlayerRadius } from "../engine/VisionCone";
+import type { Entity, Facing, Room, Tile, TileKind, WorldState } from "../types/world.types";
 
 const TILE_PX = 32;
 
@@ -40,7 +46,15 @@ const ALERT_COLORS: Record<string, { fill: number; alpha: number }> = {
   EVASION: { fill: 0xff9577, alpha: 0.14 },
 };
 
+const EXPLORED_ALPHA = 0.28;
+const ZOOM_FILL_FRACTION = 0.85;
+const ZOOM_MIN = 1.0;
+const ZOOM_MAX = 6.0;
+
+type Vis = "VISIBLE" | "EXPLORED" | "UNSEEN";
+
 export class RoomScene extends Phaser.Scene {
+  private worldContainer!: Phaser.GameObjects.Container;
   private tileLayer!: Phaser.GameObjects.Graphics;
   private glyphLayer!: Phaser.GameObjects.Graphics;
   private coneLayer!: Phaser.GameObjects.Graphics;
@@ -57,8 +71,6 @@ export class RoomScene extends Phaser.Scene {
   }> = [];
   private decorRoomId: string | null = null;
   private floorLabel!: Phaser.GameObjects.Text;
-  private offsetX = 0;
-  private offsetY = 0;
 
   constructor() {
     super({ key: "RoomScene" });
@@ -66,19 +78,25 @@ export class RoomScene extends Phaser.Scene {
 
   create(): void {
     this.cameras.main.setBackgroundColor("#050809");
+
+    this.worldContainer = this.add.container(0, 0);
+
     this.tileLayer = this.add.graphics();
     this.glyphLayer = this.add.graphics();
     this.coneLayer = this.add.graphics();
     this.coneLayer.setDepth(2);
-    this.overlayLayer = this.add.graphics();
-    this.overlayLayer.setDepth(20);
+    this.worldContainer.add([this.tileLayer, this.glyphLayer, this.coneLayer]);
 
     this.playerSprite = this.add.rectangle(0, 0, TILE_PX - 12, TILE_PX - 12, 0x6ad0a4);
     this.playerSprite.setStrokeStyle(2, 0xe6f0f2);
     this.playerSprite.setDepth(5);
     this.playerFacingMark = this.add.triangle(0, 0, 0, 0, -6, 8, 6, 8, 0xe6f0f2);
     this.playerFacingMark.setDepth(6);
+    this.worldContainer.add([this.playerSprite, this.playerFacingMark]);
 
+    // UI layer — outside the container so it stays fixed.
+    this.overlayLayer = this.add.graphics();
+    this.overlayLayer.setDepth(20);
     this.floorLabel = this.add.text(12, 8, "", {
       fontFamily: "Courier New, monospace",
       fontSize: "14px",
@@ -108,6 +126,8 @@ export class RoomScene extends Phaser.Scene {
     eventBus.on("PLAYER_PEEKED", () => this.redraw());
     eventBus.on("PLAYER_VENTED", () => this.redraw());
     eventBus.on("TERMINAL_USED", () => this.redraw());
+    eventBus.on("FLASHLIGHT_TOGGLED", () => this.redraw());
+    eventBus.on("AMBIENT_LIGHT_CHANGED", () => this.redraw());
 
     this.redraw();
   }
@@ -143,21 +163,14 @@ export class RoomScene extends Phaser.Scene {
           const value = row[x] ?? 0;
           if (value === 0) continue;
           const frame = value - 1;
-          const px = this.offsetX + x * TILE_PX;
-          const py = this.offsetY + y * TILE_PX;
           const img = this.add
-            .image(px, py, dec.textureKey, frame)
+            .image(x * TILE_PX, y * TILE_PX, dec.textureKey, frame)
             .setOrigin(0, 0)
             .setAlpha(0);
+          this.worldContainer.add(img);
           this.decorSprites.push({ sprite: img, x, y });
         }
       }
-    }
-  }
-
-  private repositionDecorationSprites(): void {
-    for (const { sprite, x, y } of this.decorSprites) {
-      sprite.setPosition(this.offsetX + x * TILE_PX, this.offsetY + y * TILE_PX);
     }
   }
 
@@ -165,23 +178,39 @@ export class RoomScene extends Phaser.Scene {
     if (!worldEngine.hasState()) return;
     const room = worldEngine.getCurrentRoom();
     if (!room) return;
-    this.updateOffsets(room);
     this.floorLabel.setText(room.name);
     if (this.decorRoomId !== room.id) {
       this.rebuildDecorationSprites(room);
-    } else {
-      this.repositionDecorationSprites();
     }
     this.redraw();
   }
 
-  private updateOffsets(room: Room): void {
+  /** Pick a zoom that fits the player's current FOV radius into ~85% of the
+   *  smaller screen dimension, then center the world container on the player. */
+  private updateCamera(state: WorldState, room: Room): void {
     const W = this.scale.width;
     const H = this.scale.height;
-    const totalW = room.width * TILE_PX;
-    const totalH = room.height * TILE_PX;
-    this.offsetX = Math.floor((W - totalW) / 2);
-    this.offsetY = Math.floor((H - totalH) / 2);
+    const ambient = room.ambientLight;
+    const baseRadius = getEffectivePlayerRadius(ambient, state.player.flashlightOn);
+    const peekBonus = state.player.peeking ? 2 : 0;
+    const hidingShrink = state.player.hidingTileKey ? 1 : 0;
+    const radius = Math.max(1, baseRadius + peekBonus - hidingShrink);
+    const visibleDiameterPx = (radius * 2 + 1) * TILE_PX;
+    const minDim = Math.min(W, H);
+    let zoom = (minDim * ZOOM_FILL_FRACTION) / visibleDiameterPx;
+    if (!Number.isFinite(zoom) || zoom < ZOOM_MIN) zoom = ZOOM_MIN;
+    if (zoom > ZOOM_MAX) zoom = ZOOM_MAX;
+    const playerWX = state.player.pos.x * TILE_PX + TILE_PX / 2;
+    const playerWY = state.player.pos.y * TILE_PX + TILE_PX / 2;
+    this.worldContainer.setScale(zoom);
+    this.worldContainer.setPosition(W / 2 - playerWX * zoom, H / 2 - playerWY * zoom);
+  }
+
+  private visAt(state: WorldState, roomId: string, x: number, y: number): Vis {
+    const key = `${x},${y}`;
+    if (state.visibleTiles.has(key)) return "VISIBLE";
+    if (state.exploredTiles.get(roomId)?.has(key)) return "EXPLORED";
+    return "UNSEEN";
   }
 
   private redraw(): void {
@@ -189,7 +218,8 @@ export class RoomScene extends Phaser.Scene {
     const state = worldEngine.getState();
     const room = worldEngine.getCurrentRoom();
     if (!room) return;
-    this.updateOffsets(room);
+
+    this.updateCamera(state, room);
 
     this.tileLayer.clear();
     this.glyphLayer.clear();
@@ -200,18 +230,19 @@ export class RoomScene extends Phaser.Scene {
     for (let y = 0; y < room.height; y++) {
       for (let x = 0; x < room.width; x++) {
         const tile = room.tiles[y * room.width + x];
-        const visible = state.visibleTiles.has(`${x},${y}`);
-        if (!hasDecoration) this.drawTile(tile, x, y, visible);
-        else if (visible) this.drawGlyph(
-          this.offsetX + x * TILE_PX + TILE_PX / 2,
-          this.offsetY + y * TILE_PX + TILE_PX / 2,
+        const v = this.visAt(state, room.id, x, y);
+        if (!hasDecoration) this.drawTile(tile, x, y, v);
+        else if (v === "VISIBLE") this.drawGlyph(
+          x * TILE_PX + TILE_PX / 2,
+          y * TILE_PX + TILE_PX / 2,
           tile.kind,
         );
       }
     }
     if (hasDecoration) {
       for (const { sprite, x, y } of this.decorSprites) {
-        sprite.setAlpha(state.visibleTiles.has(`${x},${y}`) ? 1 : 0.32);
+        const v = this.visAt(state, room.id, x, y);
+        sprite.setAlpha(v === "VISIBLE" ? 1 : v === "EXPLORED" ? EXPLORED_ALPHA : 0);
       }
     }
 
@@ -226,14 +257,14 @@ export class RoomScene extends Phaser.Scene {
       this.drawEntity(state, entity);
     }
 
-    // Floor items — extraction cubes only, for now.
+    // Floor items — extraction cubes only, for now. Hidden in fog (no
+    // peeking-at-cubes through the explored memory layer).
     for (const item of state.items.values()) {
       if (item.itemType !== "EXTRACTION_CUBE") continue;
       if (item.roomId !== room.id || !item.pos) continue;
-      const visible = state.visibleTiles.has(`${item.pos.x},${item.pos.y}`);
-      if (!visible) continue;
-      const cx = this.offsetX + item.pos.x * TILE_PX + TILE_PX / 2;
-      const cy = this.offsetY + item.pos.y * TILE_PX + TILE_PX / 2;
+      if (!state.visibleTiles.has(`${item.pos.x},${item.pos.y}`)) continue;
+      const cx = item.pos.x * TILE_PX + TILE_PX / 2;
+      const cy = item.pos.y * TILE_PX + TILE_PX / 2;
       this.glyphLayer.fillStyle(0xc89adb, 0.95);
       this.glyphLayer.fillRect(cx - 7, cy - 7, 14, 14);
       this.glyphLayer.lineStyle(1, 0xffffff, 0.9);
@@ -241,18 +272,13 @@ export class RoomScene extends Phaser.Scene {
     }
 
     // Player.
-    const ppx = this.offsetX + state.player.pos.x * TILE_PX + TILE_PX / 2;
-    const ppy = this.offsetY + state.player.pos.y * TILE_PX + TILE_PX / 2;
+    const ppx = state.player.pos.x * TILE_PX + TILE_PX / 2;
+    const ppy = state.player.pos.y * TILE_PX + TILE_PX / 2;
     this.playerSprite.setPosition(ppx, ppy);
     this.playerSprite.setFillStyle(state.player.hidingTileKey ? 0x4a5a52 : 0x6ad0a4);
     this.placeFacingMark(this.playerFacingMark, ppx, ppy, state.player.facing);
     this.playerFacingMark.setVisible(!state.player.hidingTileKey);
-    // Peek indicator: tint the facing mark gold and pulse it.
-    if (state.player.peeking) {
-      this.playerFacingMark.setFillStyle(0xebd14a);
-    } else {
-      this.playerFacingMark.setFillStyle(0xe6f0f2);
-    }
+    this.playerFacingMark.setFillStyle(state.player.peeking ? 0xebd14a : 0xe6f0f2);
 
     if (state.detained) {
       this.overlayLayer.fillStyle(0x4a0d0d, 0.45);
@@ -260,15 +286,18 @@ export class RoomScene extends Phaser.Scene {
     }
   }
 
-  private drawTile(tile: Tile, x: number, y: number, visible: boolean): void {
-    const px = this.offsetX + x * TILE_PX;
-    const py = this.offsetY + y * TILE_PX;
+  private drawTile(tile: Tile, x: number, y: number, v: Vis): void {
+    if (v === "UNSEEN") return;
+    const px = x * TILE_PX;
+    const py = y * TILE_PX;
     const colour = TILE_COLORS[tile.kind] ?? 0x222d33;
-    this.tileLayer.fillStyle(colour, visible ? 1 : 0.32);
+    const fillAlpha = v === "VISIBLE" ? 1 : EXPLORED_ALPHA;
+    const strokeAlpha = v === "VISIBLE" ? 0.6 : 0.18;
+    this.tileLayer.fillStyle(colour, fillAlpha);
     this.tileLayer.fillRect(px, py, TILE_PX - 1, TILE_PX - 1);
-    this.tileLayer.lineStyle(1, 0x223035, visible ? 0.6 : 0.25);
+    this.tileLayer.lineStyle(1, 0x223035, strokeAlpha);
     this.tileLayer.strokeRect(px, py, TILE_PX - 1, TILE_PX - 1);
-    if (visible) this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile.kind);
+    if (v === "VISIBLE") this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile.kind);
   }
 
   private drawGlyph(cx: number, cy: number, kind: TileKind): void {
@@ -282,7 +311,6 @@ export class RoomScene extends Phaser.Scene {
       g.fillStyle(0xc89adb, 0.5);
       g.fillRect(cx - 6, cy - 4, 12, 8);
     } else if (kind === "EXFIL_POINT") {
-      // Inward arrow + circular boundary — "drop here".
       g.lineStyle(2, 0x6ad0a4, 0.95);
       g.strokeCircle(cx, cy, 9);
       g.lineStyle(2, 0x6ad0a4, 1);
@@ -319,12 +347,9 @@ export class RoomScene extends Phaser.Scene {
     }
   }
 
-  private drawEntity(
-    state: ReturnType<typeof worldEngine.getState>,
-    entity: Entity,
-  ): void {
-    const px = this.offsetX + entity.pos.x * TILE_PX + TILE_PX / 2;
-    const py = this.offsetY + entity.pos.y * TILE_PX + TILE_PX / 2;
+  private drawEntity(state: WorldState, entity: Entity): void {
+    const px = entity.pos.x * TILE_PX + TILE_PX / 2;
+    const py = entity.pos.y * TILE_PX + TILE_PX / 2;
     let rect = this.entityRects.get(entity.id);
     const colour =
       entity.kind === "GUARD" ? 0xff7a6a :
@@ -333,6 +358,7 @@ export class RoomScene extends Phaser.Scene {
       rect = this.add.rectangle(px, py, TILE_PX - 14, TILE_PX - 14, colour);
       rect.setStrokeStyle(2, 0xe6f0f2);
       rect.setDepth(4);
+      this.worldContainer.add(rect);
       this.entityRects.set(entity.id, rect);
     }
     rect.setPosition(px, py);
@@ -344,6 +370,7 @@ export class RoomScene extends Phaser.Scene {
     if (!mark) {
       mark = this.add.triangle(px, py, 0, 0, -6, 8, 6, 8, 0xe6f0f2);
       mark.setDepth(5);
+      this.worldContainer.add(mark);
       this.entityFacingMarks.set(entity.id, mark);
     }
     this.placeFacingMark(mark, px, py, entity.facing);
@@ -356,11 +383,10 @@ export class RoomScene extends Phaser.Scene {
 
   private drawGuardCone(guard: Entity): void {
     const state = worldEngine.getState();
+    // Don't telegraph an unseen guard's vision cone.
+    if (!state.visibleTiles.has(`${guard.pos.x},${guard.pos.y}`)) return;
     const visible = guardSystem.visibleTiles(state, guard);
     const level = guard.alert?.level ?? "NORMAL";
-    // Tint by *threat to the player* — when the player is COMPLIANT (GREEN)
-    // the cone is rendered neutrally regardless of guard state, because the
-    // doctrinal mask is intact. YELLOW/RED restore alert-level colors.
     const tier = state.player.compliance;
     const baseColour = ALERT_COLORS[level];
     const colour =
@@ -372,9 +398,7 @@ export class RoomScene extends Phaser.Scene {
       const [xs, ys] = key.split(",");
       const x = Number(xs);
       const y = Number(ys);
-      const px = this.offsetX + x * TILE_PX;
-      const py = this.offsetY + y * TILE_PX;
-      this.coneLayer.fillRect(px + 2, py + 2, TILE_PX - 5, TILE_PX - 5);
+      this.coneLayer.fillRect(x * TILE_PX + 2, y * TILE_PX + 2, TILE_PX - 5, TILE_PX - 5);
     }
   }
 
@@ -405,8 +429,8 @@ export class RoomScene extends Phaser.Scene {
     const state = worldEngine.getState();
     const guard = state.entities.get(guardId);
     if (!guard || guard.roomId !== state.player.roomId) return;
-    const px = this.offsetX + guard.pos.x * TILE_PX + TILE_PX / 2;
-    const py = this.offsetY + guard.pos.y * TILE_PX - 6;
+    const px = guard.pos.x * TILE_PX + TILE_PX / 2;
+    const py = guard.pos.y * TILE_PX - 6;
     let mark = this.exclamationMarks.get(guardId);
     if (!mark) {
       mark = this.add.text(px, py, "!", {
@@ -416,6 +440,7 @@ export class RoomScene extends Phaser.Scene {
       });
       mark.setOrigin(0.5, 1);
       mark.setDepth(10);
+      this.worldContainer.add(mark);
       this.exclamationMarks.set(guardId, mark);
     }
     mark.setPosition(px, py);
