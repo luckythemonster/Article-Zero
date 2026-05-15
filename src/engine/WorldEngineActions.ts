@@ -76,13 +76,24 @@ function moveCommon(
   // Try a doorway crossing first.
   const crossing = roomGraph.attemptCrossing(state, fromRoomId, fromPos, dx, dy);
   if (crossing) {
+    // Vent-flavoured doorway: must be in CREEP stance, pays VENT_AP_COST,
+    // and crosses silently. The destination room is the crawlspace (or, for
+    // the second hop, the floor on the other side). Standard ROOM_ENTER
+    // /EXIT events fire so the renderer fades and swaps as for any room.
+    const ventDoor = crossing.doorway.kind === "vent";
+    if (ventDoor) {
+      if (state.player.stance !== "CREEP") return false;
+      if (state.player.ap < VENT_AP_COST) return false;
+    }
+    const cost = ventDoor ? VENT_AP_COST : apCost;
     eventBus.emit("ROOM_EXITED", { roomId: fromRoomId });
     state.player.roomId = crossing.toRoom;
     state.player.pos = { ...crossing.landingPos };
-    state.player.ap -= apCost;
+    const previousAp = state.player.ap;
+    state.player.ap -= cost;
     state.player.lastMoveTurn = state.turn;
     eventBus.emit("PLAYER_AP_CHANGED", {
-      previous: state.player.ap + apCost,
+      previous: previousAp,
       current: state.player.ap,
     });
     eventBus.emit("PLAYER_MOVED", {
@@ -94,7 +105,7 @@ function moveCommon(
       roomId: state.player.roomId,
       from: fromRoomId,
     });
-    if (intensity > 0) {
+    if (!ventDoor && intensity > 0) {
       soundField.emit({
         roomId: state.player.roomId,
         pos: state.player.pos,

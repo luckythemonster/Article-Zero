@@ -83,7 +83,13 @@ export type RoomId = string;
 
 /** A doorway between two rooms. Anchored on the FROM room's edge tile.
  *  When `closed` is true the doorway acts as a closed door (blocks movement,
- *  blocks line-of-sight, attenuates sound heavily). */
+ *  blocks line-of-sight, attenuates sound heavily).
+ *
+ *  `kind: "vent"` flags a vent-flavoured doorway: one side is a normal room
+ *  whose `localPos` is a VENT tile; the other side is a `crawlspace: true`
+ *  Room. Traversal requires CREEP stance, costs VENT_AP_COST, and emits no
+ *  sound. (The legacy WorldState.ventLinks teleport path is retained for
+ *  un-ported eras and is unrelated to this field.) */
 export interface Doorway {
   from: RoomId;
   to: RoomId;
@@ -93,6 +99,7 @@ export interface Doorway {
   /** Local tile in the TO room the player lands on after crossing. */
   landingPos: Vec2;
   closed?: boolean;
+  kind?: "vent";
 }
 
 export interface Room {
@@ -105,6 +112,10 @@ export interface Room {
   ambientLight: AmbientLightLevel;
   decoration?: FloorDecoration;
   doorways: Doorway[];
+  /** True for vent crawlspaces — narrow rooms reached only via `kind: "vent"`
+   *  doorways. Treated as ordinary Rooms by the renderer/FOV; flagged here so
+   *  systems can opt into crawl-specific behaviour (e.g. crawl animations). */
+  crawlspace?: boolean;
 }
 
 // Entities ---------------------------------------------------------------
