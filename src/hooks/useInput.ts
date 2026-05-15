@@ -1,18 +1,22 @@
+// Keyboard input for the active Phaser module.
+// Handles only movement / interaction / game verbs; command text is handled
+// by CommandLine.tsx.
+
 import { useEffect } from "react";
 import { worldEngine } from "../engine/WorldEngine";
 
 interface Options {
   enabled: boolean;
-  onOpenArchive: () => void;
-  onOpenSettings: () => void;
-  onOpenAlignment: () => void;
 }
 
-export function useInput(opts: Options): void {
+export function useInput({ enabled }: Options): void {
   useEffect(() => {
-    if (!opts.enabled) return;
+    if (!enabled) return;
     const handler = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      // Don't steal keys while the user is typing in an input/textarea.
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
       if (!worldEngine.hasState()) return;
       switch (e.key.toLowerCase()) {
         case "arrowup":
@@ -37,18 +41,11 @@ export function useInput(opts: Options): void {
           worldEngine.peek(); e.preventDefault(); break;
         case "c":
           worldEngine.toggleStance(); e.preventDefault(); break;
-        case "f":
-          opts.onOpenAlignment(); e.preventDefault(); break;
         case "l":
           worldEngine.toggleFlashlight(); e.preventDefault(); break;
-        case "r":
-          opts.onOpenArchive(); e.preventDefault(); break;
-        case ",":
-        case "<":
-          opts.onOpenSettings(); e.preventDefault(); break;
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [opts]);
+  }, [enabled]);
 }

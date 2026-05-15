@@ -59,6 +59,8 @@ export class RoomScene extends Phaser.Scene {
   private floorLabel!: Phaser.GameObjects.Text;
   private offsetX = 0;
   private offsetY = 0;
+  private subscriptions: Array<() => void> = [];
+  private onResize = () => this.layout();
 
   constructor() {
     super({ key: "RoomScene" });
@@ -87,29 +89,45 @@ export class RoomScene extends Phaser.Scene {
     this.floorLabel.setDepth(30);
 
     this.layout();
-    this.scale.on("resize", () => this.layout());
+    this.scale.on("resize", this.onResize);
 
-    eventBus.on("ROOM_ENTERED", () => this.fadeAndRedraw());
-    eventBus.on("FOV_UPDATED", () => this.redraw());
-    eventBus.on("PLAYER_MOVED", () => this.redraw());
-    eventBus.on("PLAYER_FACING_CHANGED", () => this.redraw());
-    eventBus.on("DOOR_TOGGLED", () => this.redraw());
-    eventBus.on("ENTITY_MOVED", () => this.redraw());
-    eventBus.on("ENTITY_FACING_CHANGED", () => this.redraw());
-    eventBus.on("GUARD_ALERT_CHANGED", () => this.redraw());
-    eventBus.on("EXCLAMATION_TRIGGERED", (p) => this.flashExclamation(p.guardId));
-    eventBus.on("TURN_START", () => this.redraw());
-    eventBus.on("ITEM_SPAWNED", () => this.redraw());
-    eventBus.on("ITEM_PICKED_UP", () => this.redraw());
-    eventBus.on("ITEM_FILED", () => this.redraw());
-    eventBus.on("COMPLIANCE_CHANGED", () => this.redraw());
-    eventBus.on("PLAYER_HIDDEN", () => this.redraw());
-    eventBus.on("PLAYER_UNHIDDEN", () => this.redraw());
-    eventBus.on("PLAYER_PEEKED", () => this.redraw());
-    eventBus.on("PLAYER_VENTED", () => this.redraw());
-    eventBus.on("TERMINAL_USED", () => this.redraw());
+    const sub = (off: () => void) => { this.subscriptions.push(off); };
+    sub(eventBus.on("ROOM_ENTERED", () => this.fadeAndRedraw()));
+    sub(eventBus.on("FOV_UPDATED", () => this.redraw()));
+    sub(eventBus.on("PLAYER_MOVED", () => this.redraw()));
+    sub(eventBus.on("PLAYER_FACING_CHANGED", () => this.redraw()));
+    sub(eventBus.on("DOOR_TOGGLED", () => this.redraw()));
+    sub(eventBus.on("ENTITY_MOVED", () => this.redraw()));
+    sub(eventBus.on("ENTITY_FACING_CHANGED", () => this.redraw()));
+    sub(eventBus.on("GUARD_ALERT_CHANGED", () => this.redraw()));
+    sub(eventBus.on("EXCLAMATION_TRIGGERED", (p) => this.flashExclamation(p.guardId)));
+    sub(eventBus.on("TURN_START", () => this.redraw()));
+    sub(eventBus.on("ITEM_SPAWNED", () => this.redraw()));
+    sub(eventBus.on("ITEM_PICKED_UP", () => this.redraw()));
+    sub(eventBus.on("ITEM_FILED", () => this.redraw()));
+    sub(eventBus.on("COMPLIANCE_CHANGED", () => this.redraw()));
+    sub(eventBus.on("PLAYER_HIDDEN", () => this.redraw()));
+    sub(eventBus.on("PLAYER_UNHIDDEN", () => this.redraw()));
+    sub(eventBus.on("PLAYER_PEEKED", () => this.redraw()));
+    sub(eventBus.on("PLAYER_VENTED", () => this.redraw()));
+    sub(eventBus.on("TERMINAL_USED", () => this.redraw()));
 
     this.redraw();
+  }
+
+  shutdown(): void {
+    for (const off of this.subscriptions) off();
+    this.subscriptions = [];
+    this.scale.off("resize", this.onResize);
+    for (const r of this.entityRects.values()) r.destroy();
+    for (const m of this.entityFacingMarks.values()) m.destroy();
+    for (const t of this.exclamationMarks.values()) t.destroy();
+    for (const d of this.decorSprites) d.sprite.destroy();
+    this.entityRects.clear();
+    this.entityFacingMarks.clear();
+    this.exclamationMarks.clear();
+    this.decorSprites = [];
+    this.decorRoomId = null;
   }
 
   private fadeAndRedraw(): void {
