@@ -9,6 +9,8 @@ export function mkTile(kind: TileKind): Tile {
     case "DOOR_CLOSED":
     case "LOCKER":
       return { kind, solid: true, opaque: true };
+    case "CHASM":
+      return { kind, solid: true, opaque: false };
     default:
       return { kind, solid: false, opaque: false };
   }

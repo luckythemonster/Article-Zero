@@ -52,6 +52,12 @@ export interface MooseRoomMeta {
   ambient: AmbientLightLevel;
   /** Crawlspace flag — reachable only via `kind: "vent"` doorways. */
   crawlspace?: boolean;
+  /** When set, only Ed layers whose name begins with this prefix (matched
+   *  case-insensitively against the raw layer name) are consumed by this
+   *  room; the prefix is stripped before semantic-name lookup. Lets a
+   *  single Ed level produce multiple Rooms by board-name scope (e.g.
+   *  `level -1 ` for a sub-deck, `vent ` for a crawlspace network). */
+  boardPrefix?: string;
 }
 
 export interface MoosePlayerMeta {
@@ -68,7 +74,7 @@ export interface MooseDoorwayMeta {
   localPos: Vec2;
   landingPos: Vec2;
   closed?: boolean;
-  kind?: "vent";
+  kind?: "vent" | "ladder";
 }
 
 export interface MooseEntityMeta {
@@ -128,13 +134,42 @@ const TILE_KIND_LAYERS: Record<string, TileKind> = {
   vent_control: "VENT",
   locker: "LOCKER",
   lockers: "LOCKER",
+  chasm: "CHASM",
+  ladder: "LADDER",
+  ladders: "LADDER",
+  // `shaft` is the navigable interior of a vent crawlspace (`vent shaft 0`
+  // boards). After the "vent " room prefix is stripped these layers
+  // normalise to "shaft" — treat them as FLOOR so the negative space of
+  // `vent walls 0` is walkable.
+  shaft: "FLOOR",
 };
+
+// Layer names recognised as pure-decoration backdrop on this map but whose
+// frames live on spritesheets the importer doesn't load (v1.5 reads only
+// sheet 0). Their painted handles resolve to unrelated frame indices and
+// would paint visual junk — skip them in decoration assembly.
+const DECORATION_SKIP_LAYERS: Set<string> = new Set([
+  "station_hull",
+  "asteroid",
+  "star_bg",
+]);
+
+// Per-layer precedence override. Lets a specific layer outrank its tile
+// kind's nominal score. Reserved for cases where authoring convention
+// disagrees with the kind's default rank.
+const LAYER_PRECEDENCE_OVERRIDE: Record<string, number> = {};
 
 // Higher number wins when two layers paint the same cell. Tuned so that
 // walls always defeat floor underneath, doors defeat walls, lockers defeat
 // floor, and interactables (terminals/vents/light/exfil) sit above floor.
 const TILE_KIND_PRECEDENCE: Record<TileKind, number> = {
+  // FLOOR and CHASM share the base layer: in Ed/Moose authoring, `chasm`
+  // is painted as a sub-deck-visible backdrop everywhere a hole might be,
+  // then `floor` is overlaid on the walkable spots. Ties resolve to the
+  // earlier-iterated layer, and `floor` boards are conventionally painted
+  // before `chasm` — so chasm only "wins" on cells the floor leaves bare.
   FLOOR: 0,
+  CHASM: 0,
   LIGHT_SOURCE: 1,
   EXFIL_POINT: 1,
   TERMINAL: 1,
@@ -144,10 +179,21 @@ const TILE_KIND_PRECEDENCE: Record<TileKind, number> = {
   DOOR_OPEN: 3,
   DOOR_CLOSED: 3,
   WALL: 4,
+  // Ladders are painted on a wall face by convention — they MUST beat
+  // walls so the climb cell isn't blocked by surrounding wall paint.
+  LADDER: 5,
 };
 
 function normalizeLayerName(name: string): string {
-  return name.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  // Strip a trailing " <digits>" Ed-Board suffix (`floor 0` → `floor`,
+  // `vents 0` → `vents`) before whitespace collapse — Ed authors layers
+  // with these numeric suffixes by convention, but they carry no gameplay
+  // meaning.
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/\s+\d+$/, "")
+    .replace(/[\s-]+/g, "_");
 }
 
 function isEntityMarker(name: string): string | null {
@@ -196,11 +242,16 @@ function collectMarkers(level: MooseLevel): MarkerPositions {
 
 // ---------- Tile assembly -------------------------------------------------
 
-function tileLayersFor(level: MooseLevel): Array<{ kind: TileKind; layer: MooseLayer }> {
-  const out: Array<{ kind: TileKind; layer: MooseLayer }> = [];
+function tileLayersFor(
+  level: MooseLevel,
+): Array<{ kind: TileKind; score: number; layer: MooseLayer }> {
+  const out: Array<{ kind: TileKind; score: number; layer: MooseLayer }> = [];
   for (const layer of level.layers) {
-    const kind = TILE_KIND_LAYERS[normalizeLayerName(layer.name)];
-    if (kind) out.push({ kind, layer });
+    const n = normalizeLayerName(layer.name);
+    const kind = TILE_KIND_LAYERS[n];
+    if (!kind) continue;
+    const score = LAYER_PRECEDENCE_OVERRIDE[n] ?? TILE_KIND_PRECEDENCE[kind];
+    out.push({ kind, score, layer });
   }
   return out;
 }
@@ -212,6 +263,7 @@ function decorationLayersFor(level: MooseLevel): MooseLayer[] {
     if (TILE_KIND_LAYERS[n]) continue;
     if (n === "spawn") continue;
     if (n.startsWith("entity:")) continue;
+    if (DECORATION_SKIP_LAYERS.has(n)) continue;
     out.push(layer);
   }
   return out;
@@ -223,8 +275,7 @@ function buildTiles(level: MooseLevel): Tile[] {
   const winnerKind: TileKind[] = new Array(width * height).fill("FLOOR");
   const winnerScore: number[] = new Array(width * height).fill(-1);
 
-  for (const { kind, layer } of tileLayersFor(level)) {
-    const score = TILE_KIND_PRECEDENCE[kind];
+  for (const { kind, score, layer } of tileLayersFor(level)) {
     for (let y = 0; y < Math.min(layer.data.length, height); y++) {
       const row = layer.data[y];
       for (let x = 0; x < Math.min(row.length, width); x++) {
@@ -310,7 +361,15 @@ function emitDoorways(
     // tile back along the opposite side (e.g. a "to" room whose landingPos
     // is (1,4) on its W edge has its door tile at (0,4)).
     const mirrorSide = oppositeSide(d.side);
-    const mirrorLocal = stepFromLandingToEdge(b, d.landingPos, mirrorSide);
+    // Edge-style doorways (no `kind`) sit on the room border; the mirror
+    // lives at the destination's matching border edge. Internal-style
+    // doorways (`kind: "vent" | "ladder"`) sit on an arbitrary interior
+    // cell; the mirror lives at the cell the player landed on, so
+    // re-entering it from any direction crosses back.
+    const isInternal = d.kind === "vent" || d.kind === "ladder";
+    const mirrorLocal = isInternal
+      ? d.landingPos
+      : stepFromLandingToEdge(b, d.landingPos, mirrorSide);
     const mirror: Doorway = {
       from: d.to,
       to: d.from,
@@ -323,10 +382,11 @@ function emitDoorways(
     a.doorways.push(forward);
     b.doorways.push(mirror);
 
-    if (d.kind === "vent") {
-      // The non-crawlspace side's localPos should be a VENT tile; preserve
-      // it. The crawlspace side's localPos is just the entry FLOOR cell —
-      // leave whatever tile was painted there.
+    if (d.kind === "vent" || d.kind === "ladder") {
+      // Vent: the non-crawlspace side's localPos is a painted VENT tile;
+      // preserve it. The crawlspace side just gets the entry cell painted
+      // by the meta-author. Ladder: both sides keep their painted LADDER
+      // tiles (the doorway is the climb, not a door swap).
     } else if (d.closed) {
       paintDoor(a, forward.localPos, "DOOR_CLOSED");
       paintDoor(b, mirror.localPos, "DOOR_CLOSED");
@@ -335,6 +395,35 @@ function emitDoorways(
       paintDoor(b, mirror.localPos, "DOOR_OPEN");
     }
   }
+}
+
+// ---------- Board-prefix filter (multi-Room-per-Ed-level) -----------------
+
+/** Derives a per-room MooseLevel view: drops layers that don't belong to
+ *  this room and strips the matching prefix from layers that do. Lets one
+ *  Ed level back several Rooms via board-name scope. */
+function levelForRoom(
+  level: MooseLevel,
+  roomMeta: MooseRoomMeta,
+  otherPrefixes: string[],
+): MooseLevel {
+  const ownPrefix = roomMeta.boardPrefix?.toLowerCase() ?? null;
+  const filtered: MooseLayer[] = [];
+  for (const layer of level.layers) {
+    const rawLower = layer.name.toLowerCase();
+    if (ownPrefix) {
+      if (!rawLower.startsWith(ownPrefix)) continue;
+      filtered.push({
+        ...layer,
+        name: layer.name.slice(ownPrefix.length),
+      });
+    } else {
+      const stolen = otherPrefixes.some((p) => rawLower.startsWith(p));
+      if (stolen) continue;
+      filtered.push(layer);
+    }
+  }
+  return { ...level, layers: filtered };
 }
 
 function stepFromLandingToEdge(room: Room, landing: Vec2, side: Side): Vec2 {
@@ -355,8 +444,18 @@ export function mooseToEraSeed(levels: MooseLevel[], meta: MooseEraMeta): EraSee
   const roomsById = new Map<RoomId, Room>();
   const markersById = new Map<RoomId, MarkerPositions>();
 
+  // Each prefixed room "claims" its layers; an un-prefixed room reads
+  // everything else minus the claimed ones.
+  const otherPrefixes = meta.rooms
+    .map((r) => r.boardPrefix?.toLowerCase())
+    .filter((p): p is string => !!p);
+
   for (const rm of meta.rooms) {
-    const level = resolveLevel(levels, rm);
+    const sourceLevel = resolveLevel(levels, rm);
+    const ownOthers = otherPrefixes.filter(
+      (p) => p !== rm.boardPrefix?.toLowerCase(),
+    );
+    const level = levelForRoom(sourceLevel, rm, ownOthers);
     const tiles = buildTiles(level);
     const decoration = buildDecoration(level, meta);
     const room: Room = {

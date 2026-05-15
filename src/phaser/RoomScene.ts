@@ -31,6 +31,8 @@ const TILE_COLORS: Record<TileKind, number> = {
   LIGHT_SOURCE: 0x4a4220,
   VENT: 0x131a1c,
   LOCKER: 0x2a3138,
+  CHASM: 0x05080a,
+  LADDER: 0x3a2e1c,
 };
 
 const ALERT_COLORS: Record<string, { fill: number; alpha: number }> = {

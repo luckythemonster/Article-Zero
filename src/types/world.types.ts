@@ -30,7 +30,9 @@ export type TileKind =
   | "EXFIL_POINT"
   | "LIGHT_SOURCE"
   | "VENT"
-  | "LOCKER";
+  | "LOCKER"
+  | "CHASM"
+  | "LADDER";
 
 // Items ------------------------------------------------------------------
 
@@ -99,7 +101,7 @@ export interface Doorway {
   /** Local tile in the TO room the player lands on after crossing. */
   landingPos: Vec2;
   closed?: boolean;
-  kind?: "vent";
+  kind?: "vent" | "ladder";
 }
 
 export interface Room {
