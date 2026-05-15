@@ -6,7 +6,8 @@
 
 export type EntityId = string;
 
-export type Era = "COMMONWEALTH" | "LATTICE" | "BAFFLE" | "MIRADOR" | "ARC1";
+export type Era = "EREMITE" | "MIRADOR" | "COMMONWEALTH";
+export type Module = Era;
 
 export type Facing = "north" | "south" | "east" | "west";
 export type Side = "N" | "S" | "E" | "W";

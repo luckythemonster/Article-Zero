@@ -1,6 +1,9 @@
 // WorldEngine — singleton orchestrator. Owns the WorldState, hosts all
 // subsystems, exposes a small API for actions and accessors. Publishes via
 // the EventBus; never mutates UI directly.
+//
+// After every mutation it calls syncStore() to keep useSimStore in sync so
+// React components can read reactive selectors without touching this singleton.
 
 import type {
   AmbientLightLevel,
@@ -24,6 +27,11 @@ import { soundField } from "./SoundField";
 import { guardSystem } from "./GuardSystem";
 import { extractionTerminal } from "./ExtractionTerminal";
 import { complianceSystem } from "./ComplianceSystem";
+import { useSimStore } from "../state/useSimStore";
+import { useTerminalStore } from "../state/useTerminalStore";
+import { slicesToWorldState } from "../state/eraToSim";
+import { deserializePhysical, deserializeSubjective } from "../state/serialize";
+import type { PhysicalState, SimSnapshot, SubjectiveState } from "../state/sim.types";
 
 class WorldEngine {
   private state: WorldState | null = null;
@@ -34,6 +42,8 @@ class WorldEngine {
     extractionTerminal.reset(this.state);
     this.recomputeFOV();
     complianceSystem.recompute(this.state);
+    useSimStore.getState().setActiveModule(era);
+    this.syncStore();
     eventBus.emit("ERA_SELECTED", { era });
     eventBus.emit("ROOM_ENTERED", { roomId: this.state.player.roomId });
     eventBus.emit("TURN_START", {
@@ -65,16 +75,18 @@ class WorldEngine {
     soundField.reset();
   }
 
+  private syncStore(): void {
+    if (this.state) useSimStore.getState().syncFromWorldState(this.state);
+  }
+
   // Public action surface -----------------------------------------------
-  // Every wrapper recomputes compliance after the underlying action so
-  // downstream consumers (AlertFSM, HUD) see a consistent tier without
-  // waiting for the next turn boundary.
 
   move = (dx: number, dy: number) => {
     const ok = this.useStanceMove(dx, dy);
     if (ok) {
       this.recomputeFOV();
       complianceSystem.recompute(this.getState());
+      this.syncStore();
     }
     return ok;
   };
@@ -84,12 +96,14 @@ class WorldEngine {
     if (ok) {
       this.recomputeFOV();
       complianceSystem.recompute(this.getState());
+      this.syncStore();
     }
     return ok;
   };
 
   toggleStance = () => {
     actions.toggleStance(this.getState());
+    this.syncStore();
   };
 
   interact = () => {
@@ -97,6 +111,7 @@ class WorldEngine {
     if (ok) {
       this.recomputeFOV();
       complianceSystem.recompute(this.getState());
+      this.syncStore();
     }
     return ok;
   };
@@ -104,11 +119,15 @@ class WorldEngine {
   toggleFlashlight = () => {
     actions.toggleFlashlight(this.getState());
     this.recomputeFOV();
+    this.syncStore();
   };
 
   peek = (dir?: Facing) => {
     const ok = actions.peek(this.getState(), dir);
-    if (ok) this.recomputeFOV();
+    if (ok) {
+      this.recomputeFOV();
+      this.syncStore();
+    }
     return ok;
   };
 
@@ -116,22 +135,129 @@ class WorldEngine {
 
   canStartAlignment = (entityId: string) =>
     actions.canStartAlignment(this.getState(), entityId);
+
   commitAlignment = (entityId: string) => {
     const ok = actions.commitAlignment(this.getState(), entityId);
-    if (ok) complianceSystem.recompute(this.getState());
+    if (ok) {
+      complianceSystem.recompute(this.getState());
+      this.syncStore();
+    }
     return ok;
   };
+
   spendAlignmentAdvance = () => actions.spendAlignmentAdvance(this.getState());
+
   killScreen = () => {
     const ok = actions.setAlignmentLight(this.getState(), false, true);
-    if (ok) complianceSystem.recompute(this.getState());
+    if (ok) {
+      complianceSystem.recompute(this.getState());
+      this.syncStore();
+    }
     return ok;
   };
+
   wakeScreen = () => {
     const ok = actions.setAlignmentLight(this.getState(), true, true);
-    if (ok) complianceSystem.recompute(this.getState());
+    if (ok) {
+      complianceSystem.recompute(this.getState());
+      this.syncStore();
+    }
     return ok;
   };
+
+  // 404 Wipe — drop all subjective state, leave a Q0-compliant husk.
+  wipeSubjective(): void {
+    const s = this.getState();
+    s.player.qScore = 0;
+    s.player.compliance = "GREEN";
+    s.player.inventory = [];
+    s.player.ap = s.player.apMax;
+    s.player.stance = "WALK";
+    s.player.flashlightOn = false;
+    s.player.flashlightBattery = 30;
+    s.player.peeking = undefined;
+    s.player.hidingTileKey = undefined;
+    s.player.lastMoveTurn = undefined;
+    for (const entity of s.entities.values()) {
+      entity.alert = undefined;
+      if (entity.kind === "SILICATE") entity.maskIntegrity = 5;
+      entity.sideLogs = undefined;
+      entity.memoryBleed = undefined;
+    }
+    s.visibleTiles.clear();
+    s.alignmentLightActive = false;
+    s.detected = false;
+    s.detained = false;
+    s.terminalsRead.clear();
+    s.items.clear();
+    documentArchive.reset();
+    alignmentSession.reset();
+    this.recomputeFOV();
+    this.syncStore();
+    eventBus.emit("SUBJECTIVE_WIPED", {});
+  }
+
+  // Serialise current state into a portable snapshot.
+  saveSnapshot(): SimSnapshot | null {
+    this.syncStore();
+    return useSimStore.getState().buildSnapshot();
+  }
+
+  // Restore state from a snapshot. If subjective is null (wiped save),
+  // applies a fresh husk and sets subjectiveDesync on the terminal store.
+  loadSnapshot(snap: SimSnapshot): void {
+    const physical = deserializePhysical(snap.physical);
+
+    if (snap.subjective) {
+      const subjective = deserializeSubjective(snap.subjective);
+      this.state = slicesToWorldState(physical, subjective);
+      useSimStore.getState().setActiveModule(physical.era);
+    } else {
+      this.state = slicesToWorldState(physical, this.buildHusk(physical));
+      useSimStore.getState().setActiveModule(physical.era);
+      useTerminalStore.getState().setSubjectiveDesync(true);
+      useTerminalStore.getState().log({
+        turn: physical.turn,
+        module: physical.era,
+        level: "FATAL",
+        text: "FATAL: SUBJECTIVE DESYNC — physical loaded, mind absent.",
+      });
+    }
+
+    this.resetSubsystems();
+    extractionTerminal.reset(this.state);
+    this.recomputeFOV();
+    complianceSystem.recompute(this.state);
+    this.syncStore();
+    eventBus.emit("ERA_SELECTED", { era: physical.era });
+    eventBus.emit("ROOM_ENTERED", { roomId: this.state.player.roomId });
+  }
+
+  private buildHusk(physical: PhysicalState): SubjectiveState {
+    const entityMinds = new Map<string, { alert?: undefined }>();
+    for (const id of physical.entityPositions.keys()) {
+      entityMinds.set(id, {});
+    }
+    return {
+      qScore: 0,
+      compliance: "GREEN",
+      inventory: [],
+      ap: 4,
+      apMax: 4,
+      stance: "WALK",
+      flashlightOn: false,
+      flashlightBattery: 30,
+      name: "ARCHIVIST",
+      entityMinds,
+      visibleTiles: new Set(),
+      alignmentLightActive: false,
+      detected: false,
+      detained: false,
+      terminalsRead: new Set(),
+      worldItems: new Map(),
+      documentCases: new Map(),
+    };
+  }
 
   private useStanceMove(dx: number, dy: number): boolean {
     const s = this.getState();
@@ -141,18 +267,14 @@ class WorldEngine {
 
   private advanceTurn(): void {
     const s = this.getState();
-    // Peek is one-turn-only.
     actions.clearPeek(s);
     s.turn += 1;
-    // Refresh AP up to apMax.
     const previousAp = s.player.ap;
     s.player.ap = s.player.apMax;
     eventBus.emit("TURN_END", { turn: s.turn - 1 });
     eventBus.emit("TURN_START", { turn: s.turn, apRestored: s.player.apMax });
     eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: s.player.ap });
 
-    // Alignment light is a strong silent emitter that draws guards in the
-    // same room toward the player tile.
     if (s.alignmentLightActive) {
       soundField.emit({
         roomId: s.player.roomId,
@@ -162,7 +284,6 @@ class WorldEngine {
       });
     }
 
-    // Resolve sound, then tick guards, then tick extraction.
     const heard = soundField.propagate(s);
     soundField.reset();
 
@@ -174,10 +295,8 @@ class WorldEngine {
     }
     extractionTerminal.tick(s);
 
-    // After extraction tick may have altered progress, refresh compliance.
     complianceSystem.recompute(s);
 
-    // Flashlight battery drain.
     if (s.player.flashlightOn) {
       s.player.flashlightBattery -= 1;
       if (s.player.flashlightBattery <= 0) {
@@ -188,6 +307,7 @@ class WorldEngine {
     }
 
     this.recomputeFOV();
+    this.syncStore();
   }
 
   recomputeFOV(): void {
@@ -197,7 +317,6 @@ class WorldEngine {
     const ambient: AmbientLightLevel = room.ambientLight;
     const radius = getEffectivePlayerRadius(ambient, s.player.flashlightOn);
     s.visibleTiles.clear();
-    // Inside a locker the player can't see the room — only their own tile.
     if (s.player.hidingTileKey) {
       s.visibleTiles.add(`${s.player.pos.x},${s.player.pos.y}`);
       eventBus.emit("FOV_UPDATED", {
@@ -220,8 +339,6 @@ class WorldEngine {
       radius,
     });
     for (const k of visible) s.visibleTiles.add(k);
-    // Peek: union an extra narrow cone in the peek direction with a +2 radius
-    // bonus, so the player can see further than they could from this tile.
     if (s.player.peeking) {
       const peekVisible = computeCone({
         tiles: room.tiles,

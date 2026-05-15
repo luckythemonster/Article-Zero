@@ -13,10 +13,8 @@ import type {
 } from "../types/world.types";
 import { roomTileKey } from "../types/world.types";
 import { commonwealthEra } from "../data/eras/commonwealth";
-import { latticeEra } from "../data/eras/lattice";
-import { baffleEra } from "../data/eras/baffle.stub";
 import { miradorEra } from "../data/eras/mirador.stub";
-import { arc1Era } from "../data/eras/arc1";
+import { eremiteEra } from "../data/eras/eremite";
 
 export interface EraSeed {
   era: Era;
@@ -78,14 +76,11 @@ export function seedToWorldState(seed: EraSeed): WorldState {
 }
 
 export function seedFromEra(era: Era): WorldState {
-  const seed = era === "COMMONWEALTH"
-    ? commonwealthEra()
-    : era === "LATTICE"
-      ? latticeEra()
-      : era === "BAFFLE"
-        ? baffleEra()
-        : era === "ARC1"
-          ? arc1Era()
-          : miradorEra();
+  const seed =
+    era === "EREMITE"
+      ? eremiteEra()
+      : era === "MIRADOR"
+        ? miradorEra()
+        : commonwealthEra();
   return seedToWorldState(seed);
 }

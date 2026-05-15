@@ -84,6 +84,9 @@ export interface EventMap {
   ITEM_PICKED_UP: { itemId: string; itemType: ItemType };
   ITEM_FILED: { itemId: string; caseId: string };
 
+  // 404 Wipe
+  SUBJECTIVE_WIPED: Record<string, never>;
+
   // Dialogue
   DIALOGUE_OPENED: { entityId: EntityId };
   DIALOGUE_CLOSED: { entityId: EntityId };
