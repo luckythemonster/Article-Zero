@@ -7,7 +7,7 @@ import { useSimStore } from "../state/useSimStore";
 import { useTerminalStore } from "../state/useTerminalStore";
 import type { Module } from "../types/world.types";
 
-const MODULES: Module[] = ["EREMITE", "MIRADOR", "COMMONWEALTH"];
+const MODULES: Module[] = ["EREMITE", "MIRADOR", "COMMONWEALTH", "NW_SMAC_01"];
 
 function isModule(s: string): s is Module {
   return MODULES.includes(s as Module);

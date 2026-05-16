@@ -15,6 +15,7 @@ import { roomTileKey } from "../types/world.types";
 import { commonwealthEra } from "../data/eras/commonwealth";
 import { miradorEra } from "../data/eras/mirador.stub";
 import { eremiteEra } from "../data/eras/eremite";
+import { nwSmac01Era } from "../data/eras/nwSmac01";
 
 export interface EraSeed {
   era: Era;
@@ -81,6 +82,8 @@ export function seedFromEra(era: Era): WorldState {
       ? eremiteEra()
       : era === "MIRADOR"
         ? miradorEra()
-        : commonwealthEra();
+        : era === "NW_SMAC_01"
+          ? nwSmac01Era()
+          : commonwealthEra();
   return seedToWorldState(seed);
 }

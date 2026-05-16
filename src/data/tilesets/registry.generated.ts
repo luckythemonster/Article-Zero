@@ -359,6 +359,14 @@ export const MOOSE_TILESETS: MooseTilesetEntry[] = [
     ]
   },
   {
+    "key": "nw_smac_01",
+    "label": "nw-smac-01",
+    "path": "/assets/tilesets/nw_smac_01/sheet.png",
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "spacing": 1
+  },
+  {
     "key": "stairs",
     "label": "stairs",
     "path": "/assets/tilesets/stairs/sheet.png",

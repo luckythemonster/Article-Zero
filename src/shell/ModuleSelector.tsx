@@ -2,7 +2,7 @@ import { useTerminalStore } from "../state/useTerminalStore";
 import { dispatch } from "./commands";
 import type { Module } from "../types/world.types";
 
-const VISIBLE_MODULES: Module[] = ["EREMITE", "MIRADOR"];
+const VISIBLE_MODULES: Module[] = ["EREMITE", "MIRADOR", "NW_SMAC_01"];
 
 export default function ModuleSelector() {
   const modules = useTerminalStore((s) => s.modules);

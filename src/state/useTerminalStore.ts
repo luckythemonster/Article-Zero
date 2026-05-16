@@ -94,6 +94,11 @@ export const useTerminalStore = create<TerminalStore>()(
           label: "COMMONWEALTH (archived)",
           decrypted: false,
         },
+        NW_SMAC_01: {
+          id: "NW_SMAC_01",
+          label: "NW-SMAC-01 (test)",
+          decrypted: false,
+        },
       },
       activeModuleId: null,
       auditLog: [],
@@ -142,6 +147,21 @@ export const useTerminalStore = create<TerminalStore>()(
 
       resetRun: () => set({ runFlags: { ...DEFAULT_RUN_FLAGS } }),
     }),
-    { name: "article-zero:terminal" }
+    {
+      name: "article-zero:terminal",
+      // Persisted snapshots from before NW_SMAC_01 was added lack that key
+      // in `modules`. Merge persisted state on top of fresh initial state so
+      // newly-added modules surface without requiring users to clear
+      // localStorage.
+      merge: (persisted, current) => {
+        if (!persisted || typeof persisted !== "object") return current;
+        const p = persisted as Partial<TerminalStore>;
+        return {
+          ...current,
+          ...p,
+          modules: { ...current.modules, ...(p.modules ?? {}) },
+        };
+      },
+    }
   )
 );
