@@ -64,3 +64,33 @@ Alarm
   "sample_rate": 44100,
   "sample_size": 16
 }
+Scan
+{
+  "oldParams": true,
+  "wave_type": 1,
+  "p_env_attack": 0.462,
+  "p_env_sustain": 1,
+  "p_env_punch": 0.015,
+  "p_env_decay": 0.643,
+  "p_base_freq": 0.823,
+  "p_freq_limit": 0,
+  "p_freq_ramp": -0.019,
+  "p_freq_dramp": -0.152,
+  "p_vib_strength": 0.224,
+  "p_vib_speed": 0.11,
+  "p_arp_mod": 0.266,
+  "p_arp_speed": 0.234,
+  "p_duty": 0.776,
+  "p_duty_ramp": -0.247,
+  "p_repeat_speed": 0.262,
+  "p_pha_offset": -0.913,
+  "p_pha_ramp": 0.361,
+  "p_lpf_freq": 0.462,
+  "p_lpf_ramp": 0.437,
+  "p_lpf_resonance": 1,
+  "p_hpf_freq": 0.557,
+  "p_hpf_ramp": -0.171,
+  "sound_vol": 0.406,
+  "sample_rate": 44100,
+  "sample_size": 16
+}
