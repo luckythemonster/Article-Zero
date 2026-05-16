@@ -42,6 +42,10 @@ export function dispatch(raw: string): void {
       if (!term.modules[id]?.decrypted) { log("WARN", `module ${id} not yet decrypted`); return; }
       worldEngine.initWorld(id);
       term.setActiveModule(id);
+      // Drop out of the Archivist FRAME so the Phaser canvas can mount.
+      // COMMONWEALTH gets the full narrative phase loop via ArchivistIntro;
+      // EREMITE/MIRADOR side trips just need FLOOR.
+      term.setPhase("FLOOR");
       log("INFO", `module ${id} loaded`);
       break;
     }
@@ -51,6 +55,8 @@ export function dispatch(raw: string): void {
       const prev = term.activeModuleId;
       term.setActiveModule(null);
       useSimStore.getState().setActiveModule(null);
+      term.setPhase("FRAME");
+      term.resetRun();
       log("INFO", `module ${prev} unloaded`);
       break;
     }

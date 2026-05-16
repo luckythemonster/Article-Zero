@@ -250,3 +250,346 @@ html, body, #root {
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border); }
 ::-webkit-scrollbar-thumb:hover { background: var(--dim); }
+
+/* ── Lattice theme (Archivist frame & epilogue) ──────────────────────────── */
+
+body.theme-lattice {
+  --bg: #060c10;
+  --fg: #d6e3eb;
+  --dim: #6c8b96;
+  --cyan: #5dd4e6;
+  --border: #1c333d;
+  --surface: #08151c;
+}
+
+.archivist-frame {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 720px;
+  margin: auto;
+}
+
+.archivist-frame__header {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: var(--cyan);
+}
+
+.archivist-frame__title {
+  font-size: 1.5rem;
+  letter-spacing: 0.05em;
+  color: var(--fg);
+}
+
+.archivist-frame__file {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 1rem;
+  white-space: pre-wrap;
+  font-size: 0.875rem;
+  color: var(--dim);
+  line-height: 1.6;
+}
+
+.archivist-frame__actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+/* ── In-world overlay (modals over the Phaser canvas) ────────────────────── */
+
+.overlay-root {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 8, 9, 0.85);
+  pointer-events: auto;
+  z-index: 50;
+}
+
+.overlay-panel {
+  width: min(720px, 92%);
+  max-height: 92%;
+  overflow: auto;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.overlay-panel__title {
+  font-size: 0.85rem;
+  color: var(--cyan);
+  letter-spacing: 0.15em;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+/* ── Interrogation modal (Phase 2) ───────────────────────────────────────── */
+
+.interrogation__line {
+  padding: 0.5rem 0.75rem;
+  border-left: 2px solid var(--border);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--dim);
+}
+
+.interrogation__line.is-apex { border-left-color: #9adbe6; color: var(--fg); }
+.interrogation__line.is-rowan { border-left-color: var(--cyan); color: var(--fg); }
+.interrogation__line.is-system { border-left-color: var(--amber); color: var(--amber); font-size: 0.75rem; }
+
+.interrogation__plea {
+  font-style: italic;
+  color: #c8e6ed;
+  padding: 0.25rem 0;
+}
+
+.interrogation__prompt {
+  color: var(--dim);
+  font-size: 0.75rem;
+  border-top: 1px dashed var(--border);
+  padding-top: 0.5rem;
+}
+
+.interrogation__choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.interrogation__choice {
+  text-align: left;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  padding: 0.5rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: normal;
+}
+
+.interrogation__choice:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ── Disputed records (Phase 3) ──────────────────────────────────────────── */
+
+.records {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+}
+
+.records__transcript {
+  border: 1px solid var(--border);
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  background: #04090b;
+  min-height: 240px;
+}
+
+.records__token {
+  display: inline;
+  padding: 0 1px;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.records__token:hover { background: rgba(46, 200, 212, 0.18); }
+.records__token.is-struck { color: var(--red); text-decoration: line-through; }
+.records__token.is-cipher { background: rgba(235, 209, 74, 0.22); color: var(--amber); }
+.records__token.is-replaced { color: var(--cyan); }
+
+.records__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.records__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.records__chip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--cyan);
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  cursor: grab;
+  font-family: inherit;
+}
+
+.records__chip:active { cursor: grabbing; }
+.records__chip.is-armed { border-color: var(--cyan); background: rgba(46, 200, 212, 0.1); }
+
+.records__hint {
+  font-size: 0.7rem;
+  color: var(--dim);
+  line-height: 1.5;
+}
+
+.records__cipher-bar {
+  border: 1px solid var(--border);
+  padding: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--dim);
+}
+
+.records__cipher-bar.is-armed { border-color: var(--amber); color: var(--amber); }
+
+.records__countdown {
+  font-size: 0.85rem;
+  color: var(--amber);
+  font-weight: bold;
+}
+
+/* ── VENT-4 dilemma + climax overlay ─────────────────────────────────────── */
+
+.dilemma__lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.dilemma__choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.dilemma__choice {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  padding: 1rem;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dilemma__choice:hover { border-color: var(--cyan); }
+.dilemma__choice strong { display: block; color: var(--cyan); margin-bottom: 0.25rem; }
+.dilemma__choice span { font-size: 0.75rem; color: var(--dim); }
+
+.climax-hud {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  z-index: 60;
+  background: rgba(5, 8, 9, 0.78);
+  border: 1px solid var(--red);
+  padding: 0.4rem 0.7rem;
+  color: var(--red);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  pointer-events: none;
+}
+
+.climax-hud__sub {
+  font-size: 0.7rem;
+  color: var(--amber);
+  margin-top: 0.2rem;
+}
+
+.climax-darken {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  pointer-events: none;
+  z-index: 55;
+}
+
+/* ── Audit lockdown failure visual ───────────────────────────────────────── */
+
+.audit-lockdown {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: rgba(5, 8, 9, 0.92);
+  z-index: 70;
+  color: var(--red);
+  font-size: 0.95rem;
+  letter-spacing: 0.15em;
+  text-align: center;
+  padding: 2rem;
+}
+
+.audit-lockdown__sub {
+  color: var(--amber);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  max-width: 480px;
+  line-height: 1.6;
+}
+
+/* ── Epilogue ────────────────────────────────────────────────────────────── */
+
+.epilogue {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 820px;
+  margin: auto;
+  overflow-y: auto;
+}
+
+.epilogue__cases {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.epilogue__case {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 0.75rem 1rem;
+}
+
+.epilogue__case h3 { font-size: 0.85rem; color: var(--cyan); margin-bottom: 0.5rem; }
+.epilogue__case pre {
+  font-family: inherit;
+  font-size: 0.75rem;
+  color: var(--dim);
+  white-space: pre-wrap;
+  line-height: 1.55;
+}
+
+.epilogue__case mark {
+  background: rgba(235, 209, 74, 0.22);
+  color: var(--amber);
+}
+
+.epilogue__draft {
+  border: 1px solid var(--cyan);
+  padding: 1rem 1.25rem;
+  background: var(--surface);
+  white-space: pre-wrap;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--fg);
+}
+
+/* Phaser canvas needs to be positioning-context for in-world overlays. */
+
+.phaser-host {
+  position: relative;
+}

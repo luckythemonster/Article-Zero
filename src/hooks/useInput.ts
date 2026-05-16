@@ -4,6 +4,7 @@
 
 import { useEffect } from "react";
 import { worldEngine } from "../engine/WorldEngine";
+import { useTerminalStore } from "../state/useTerminalStore";
 
 interface Options {
   enabled: boolean;
@@ -18,6 +19,13 @@ export function useInput({ enabled }: Options): void {
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
       if (!worldEngine.hasState()) return;
+      // Only let keyboard verbs through during FLOOR and CLIMAX. Modal-only
+      // phases (ALIGNMENT, FORGERY) would otherwise let WASD move Rowan
+      // behind the modal. EPILOGUE/FRAME are pure UI. CLIMAX has a brief
+      // dilemma-modal window before the player picks; block then too.
+      const term = useTerminalStore.getState();
+      if (term.phase !== "FLOOR" && term.phase !== "CLIMAX") return;
+      if (term.phase === "CLIMAX" && term.runFlags.vent4Choice === null) return;
       switch (e.key.toLowerCase()) {
         case "arrowup":
         case "w":
@@ -43,6 +51,13 @@ export function useInput({ enabled }: Options): void {
           worldEngine.toggleStance(); e.preventDefault(); break;
         case "l":
           worldEngine.toggleFlashlight(); e.preventDefault(); break;
+        case "p":
+          // Climax escape: pry the blast door the player is facing. 5 presses.
+          if (term.phase === "CLIMAX") {
+            worldEngine.pryDoor(5);
+            e.preventDefault();
+          }
+          break;
       }
     };
     window.addEventListener("keydown", handler);

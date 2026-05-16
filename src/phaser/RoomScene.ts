@@ -61,6 +61,8 @@ export class RoomScene extends Phaser.Scene {
   private floorLabel!: Phaser.GameObjects.Text;
   private subscriptions: Array<() => void> = [];
   private onResize = () => this.layout();
+  /** 0..1 darkening factor driven by OXYGEN_TICK during the climax. */
+  private oxygenDarken = 0;
 
   constructor() {
     super({ key: "RoomScene" });
@@ -118,6 +120,20 @@ export class RoomScene extends Phaser.Scene {
     sub(eventBus.on("PLAYER_PEEKED", () => this.redraw()));
     sub(eventBus.on("PLAYER_VENTED", () => this.redraw()));
     sub(eventBus.on("TERMINAL_USED", () => this.redraw()));
+    sub(eventBus.on("OXYGEN_TICK", (p) => {
+      const total = Math.max(1, p.totalSeconds);
+      const elapsed = total - p.remainingSeconds;
+      this.oxygenDarken = Math.max(0, Math.min(0.85, elapsed / total));
+      this.redraw();
+    }));
+    sub(eventBus.on("CLIMAX_ESCAPED", () => {
+      this.oxygenDarken = 0;
+      this.redraw();
+    }));
+    sub(eventBus.on("PHASE_RESTART_REQUESTED", () => {
+      this.oxygenDarken = 0;
+      this.redraw();
+    }));
 
     this.redraw();
   }
@@ -267,8 +283,16 @@ export class RoomScene extends Phaser.Scene {
       this.playerFacingMark.setFillStyle(0xe6f0f2);
     }
 
+    // Audit lockdown failure visual — keep a faint red wash so the player
+    // can see the world dim under the React `<AuditLockdown/>` overlay that
+    // narrates the actual "AUDIT FLAG RAISED / O2 PURGING" text.
     if (state.detained) {
-      this.overlayLayer.fillStyle(0x4a0d0d, 0.45);
+      this.overlayLayer.fillStyle(0x1a0404, 0.55);
+      this.overlayLayer.fillRect(0, 0, this.scale.width, this.scale.height);
+    }
+    // Climax oxygen darken — independent of detention.
+    if (this.oxygenDarken > 0) {
+      this.overlayLayer.fillStyle(0x000000, this.oxygenDarken);
       this.overlayLayer.fillRect(0, 0, this.scale.width, this.scale.height);
     }
   }
@@ -339,9 +363,13 @@ export class RoomScene extends Phaser.Scene {
     const px = entity.pos.x * TILE_PX + TILE_PX / 2;
     const py = entity.pos.y * TILE_PX + TILE_PX / 2;
     let rect = this.entityRects.get(entity.id);
+    // VENT-4 (Environmental Optimizer) gets the deep-maroon palette of its
+    // placeholder atlas frame; other silicates stay on the cyan baseline.
     const colour =
       entity.kind === "GUARD" ? 0xff7a6a :
-        entity.kind === "SILICATE" ? 0x9adbe6 : 0xc8dbe6;
+        entity.kind === "SILICATE"
+          ? entity.id === "VENT-4" ? 0x9b2c2c : 0x9adbe6
+          : 0xc8dbe6;
     if (!rect) {
       rect = this.add.rectangle(px, py, TILE_PX - 14, TILE_PX - 14, colour);
       rect.setStrokeStyle(2, 0xe6f0f2);

@@ -2,7 +2,7 @@
 // Destroys and recreates the game whenever moduleId changes so atlas
 // registrations and EventBus handles never bleed across modules.
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import type * as PhaserTypes from "phaser";
 import { createGame } from "../engine/EngineAdapter";
 import { eventBus } from "../engine/EventBus";
@@ -14,9 +14,10 @@ import type { Module } from "../types/world.types";
 
 interface Props {
   moduleId: Module;
+  children?: ReactNode;
 }
 
-export function PhaserCanvas({ moduleId }: Props) {
+export function PhaserCanvas({ moduleId, children }: Props) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const gameRef = useRef<PhaserTypes.Game | null>(null);
 
@@ -47,5 +48,9 @@ export function PhaserCanvas({ moduleId }: Props) {
 
   useInput({ enabled: true });
 
-  return <div ref={hostRef} className="phaser-host" />;
+  return (
+    <div ref={hostRef} className="phaser-host">
+      {children}
+    </div>
+  );
 }

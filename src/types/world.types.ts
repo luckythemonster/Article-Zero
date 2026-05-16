@@ -260,6 +260,9 @@ export interface WorldState {
   terminalPayloads: Map<string, TerminalPayload>;
   /** TerminalIds that have already been read once. Reading again is a no-op. */
   terminalsRead: Set<string>;
+  /** Number of times the player has pried at the current blast door this run.
+   *  Reset to 0 on door-opens. Used by the climax escape. */
+  pryProgress?: number;
 }
 
 export const tileKey = (pos: Vec2): string => `${pos.x},${pos.y}`;

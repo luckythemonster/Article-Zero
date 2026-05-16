@@ -98,6 +98,13 @@ export interface EventMap {
   PLAYER_HIDDEN: { roomId: RoomId; pos: Vec2 };
   PLAYER_UNHIDDEN: { roomId: RoomId; pos: Vec2 };
   PLAYER_PEEKED: { facing: Facing | null };
+  PLAYER_PRIED_DOOR: { roomId: RoomId; pos: Vec2; presses: number; required: number };
+
+  // Vertical-slice phase orchestration
+  AUDIT_LOCKDOWN_TRIGGERED: { reason: string };
+  PHASE_RESTART_REQUESTED: { reason: string };
+  OXYGEN_TICK: { remainingSeconds: number; totalSeconds: number };
+  CLIMAX_ESCAPED: Record<string, never>;
 }
 
 export type EventName = keyof EventMap;

@@ -389,6 +389,43 @@ export const actions = {
       }
     }
 
+    // Adjacent silicate? Start an alignment session (Phase 2 trigger).
+    // Skipped if a session is already active. APEX-19 is the only valid
+    // alignment subject in this slice; EIRA-7 is the operator console (the
+    // alignment's against APEX-19 even when the player is adjacent to EIRA-7).
+    // VENT-4 is gated by the climax dilemma modal, not by adjacent interact.
+    if (!alignmentSession.isActive()) {
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const p: Vec2 = { x: state.player.pos.x + dx, y: state.player.pos.y + dy };
+        const e = entityAt(state, state.player.roomId, p);
+        if (!e || e.kind !== "SILICATE") continue;
+        if (e.id === "VENT-4") continue;
+        // Both APEX-19 and EIRA-7 in INTAKE-BAY route to the APEX-19 session;
+        // any other silicate is ignored for now.
+        const targetId =
+          e.id === "APEX-19" || e.id === "EIRA-7" ? "APEX-19" : null;
+        if (!targetId) continue;
+        const facing = facingFromDelta(dx, dy);
+        if (facing && facing !== state.player.facing) {
+          state.player.facing = facing;
+          eventBus.emit("PLAYER_FACING_CHANGED", { facing });
+        }
+        // Existence + adjacency check is satisfied by entityAt above. We
+        // bypass canStartAlignment because that would refuse APEX-19 when
+        // the player is adjacent to EIRA-7 (different entity than target).
+        if (state.player.ap < ALIGN_AP_COST) return false;
+        const previous = state.player.ap;
+        state.player.ap -= ALIGN_AP_COST;
+        eventBus.emit("PLAYER_AP_CHANGED", { previous, current: state.player.ap });
+        alignmentSession.start(state, targetId);
+        if (!state.alignmentLightActive) {
+          state.alignmentLightActive = true;
+          eventBus.emit("ALIGNMENT_LIGHT_TOGGLED", { active: true });
+        }
+        return true;
+      }
+    }
+
     // Adjacent doorway? Toggle it.
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
       const here: Vec2 = {
@@ -462,6 +499,62 @@ export const actions = {
       }
     }
     return false;
+  },
+
+  /** Pry the blast door the player is facing. Used during the VENT-4
+   *  upload-climax escape: each press chips off one of `required` resistance
+   *  points; the door opens when presses reach required. Pry costs 0 AP so a
+   *  suffocating, AP-starved player still has a way out. Mirrors the open
+   *  state to the doorway on both sides. */
+  pryDoor(state: WorldState, required = 5): { ok: boolean; opened: boolean; presses: number } {
+    if (state.detained) return { ok: false, opened: false, presses: 0 };
+    const f = state.player.facing;
+    const dx = f === "east" ? 1 : f === "west" ? -1 : 0;
+    const dy = f === "south" ? 1 : f === "north" ? -1 : 0;
+    const target: Vec2 = { x: state.player.pos.x + dx, y: state.player.pos.y + dy };
+    const tile = tileAt(state, state.player.roomId, target);
+    if (!tile || tile.kind !== "DOOR_CLOSED") return { ok: false, opened: false, presses: 0 };
+    state.pryProgress = (state.pryProgress ?? 0) + 1;
+    const presses = state.pryProgress;
+    const opened = presses >= required;
+    if (opened) {
+      tile.kind = "DOOR_OPEN";
+      tile.solid = false;
+      tile.opaque = false;
+      state.pryProgress = 0;
+      // Open the doorway record (and its mirror) so attemptCrossing lets
+      // the player walk through the now-open edge.
+      const door = roomGraph.doorwayAt(state, state.player.roomId, target.x, target.y);
+      if (door && door.closed) {
+        roomGraph.toggleDoorway(state, state.player.roomId, target);
+        const mirror = state.rooms.get(door.to);
+        if (mirror) {
+          const back = mirror.doorways.find(
+            (b) => b.from === door.to && b.to === state.player.roomId,
+          );
+          if (back) {
+            const bt = mirror.tiles[back.localPos.y * mirror.width + back.localPos.x];
+            if (bt) {
+              bt.kind = "DOOR_OPEN";
+              bt.solid = false;
+              bt.opaque = false;
+            }
+          }
+        }
+      }
+      eventBus.emit("DOOR_TOGGLED", {
+        roomId: state.player.roomId,
+        pos: target,
+        open: true,
+      });
+    }
+    eventBus.emit("PLAYER_PRIED_DOOR", {
+      roomId: state.player.roomId,
+      pos: target,
+      presses,
+      required,
+    });
+    return { ok: true, opened, presses };
   },
 
   toggleFlashlight(state: WorldState): void {

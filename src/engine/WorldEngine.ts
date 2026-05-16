@@ -122,6 +122,15 @@ class WorldEngine {
     this.syncStore();
   };
 
+  pryDoor = (required = 5) => {
+    const result = actions.pryDoor(this.getState(), required);
+    if (result.ok) {
+      this.recomputeFOV();
+      this.syncStore();
+    }
+    return result;
+  };
+
   peek = (dir?: Facing) => {
     const ok = actions.peek(this.getState(), dir);
     if (ok) {
