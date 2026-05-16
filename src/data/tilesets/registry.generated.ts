@@ -364,7 +364,27 @@ export const MOOSE_TILESETS: MooseTilesetEntry[] = [
     "path": "/assets/tilesets/nw_smac_01/sheet.png",
     "frameWidth": 32,
     "frameHeight": 32,
-    "spacing": 1
+    "spacing": 1,
+    "tileAnims": [
+      {
+        "handle": 1129070735,
+        "label": "tdDoor_East_West1_0",
+        "baseFrame": 431,
+        "settleFrame": 427,
+        "frames": [
+          431,
+          59,
+          55,
+          425,
+          241,
+          57,
+          245,
+          53,
+          427
+        ],
+        "frameRate": 8
+      }
+    ]
   },
   {
     "key": "stairs",

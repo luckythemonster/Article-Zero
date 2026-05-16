@@ -1,16 +1,7 @@
-// NW-SMAC-01 — Moose-imported test module. Single-room walkable preview of
-// the new Ed export; iterate the meta (doorways, entities, terminals, vent
-// crawlspace via boardPrefix) after a first dev-run lap.
-//
-// Layer-name notes from the first import pass:
-//   recognized:    floor, walls, doors, vents, ladders
-//   decoration:    main_lights (rename to `light_sources` in Ed to wire up
-//                   LIGHT_SOURCE tiles), vent walls / vents floor (rename
-//                   under a `vent ` boardPrefix to expose as a crawlspace
-//                   room — see eremite.ts), player_spawn (rename to `spawn`
-//                   for the spawn marker; until then Rowan drops on the
-//                   first walkable floor cell).
-// Level 2 in the export is a blank scratch board — we pin levelIndex: 0.
+// NW-SMAC-01 — The Ibarra Uploads (The Vacuum Trap).
+// Two Ed levels: "Main Floor" (the facility grid) and "Ducts" (the
+// sub-floor vent network). Four vent openings on the main floor connect
+// to matching ladder cells in the Ducts at the same grid coordinates.
 
 import { mooseToEraSeed } from "./from-moose";
 import type { MooseEraMeta } from "./from-moose";
@@ -32,15 +23,57 @@ export function nwSmac01Era(): EraSeed {
     spacing: NW_SMAC_01_SPACING,
     rooms: [
       {
-        levelIndex: 0,
-        id: "vestibule",
-        displayName: "NW-SMAC-01 // VESTIBULE (TEST)",
+        levelName: "Main Floor",
+        id: "main",
+        displayName: "NW-SMAC-01 // MAIN FLOOR",
         ambient: "DIM",
       },
+      {
+        levelName: "Ducts",
+        id: "ducts",
+        displayName: "NW-SMAC-01 // DUCTS",
+        ambient: "DARK",
+        crawlspace: true,
+      },
     ],
-    startRoomId: "vestibule",
+    startRoomId: "main",
     player: { name: "TECH-2 ROWAN-IBARRA" },
-    doorways: [],
+    doorways: [
+      // Four vent openings on the main floor, each paired 1:1 with the
+      // matching ladder cell in the Ducts at the same grid coordinate.
+      {
+        from: "main",
+        to: "ducts",
+        side: "N",
+        localPos: { x: 4, y: 3 },
+        landingPos: { x: 4, y: 3 },
+        kind: "vent",
+      },
+      {
+        from: "main",
+        to: "ducts",
+        side: "N",
+        localPos: { x: 26, y: 4 },
+        landingPos: { x: 26, y: 4 },
+        kind: "vent",
+      },
+      {
+        from: "main",
+        to: "ducts",
+        side: "N",
+        localPos: { x: 4, y: 13 },
+        landingPos: { x: 4, y: 13 },
+        kind: "vent",
+      },
+      {
+        from: "main",
+        to: "ducts",
+        side: "N",
+        localPos: { x: 26, y: 14 },
+        landingPos: { x: 26, y: 14 },
+        kind: "vent",
+      },
+    ],
     entities: [],
   };
   return mooseToEraSeed(NW_SMAC_01_LEVELS, meta);

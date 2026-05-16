@@ -468,6 +468,7 @@ async function main() {
       `export const ${ident}_FRAME_HEIGHT = ${frameHeight};`,
       `export const ${ident}_SPACING = ${spacing};`,
       "",
+      `// @ts-ignore — large generated literal; union complexity exceeds TS limit but runtime types are correct.`,
       `export const ${ident}_FRAMES: MooseSpriteFrame[] = ${tsLiteral(frames)};`,
       "",
       `export const ${ident}_TILE_ANIMS: MooseTileAnim[] = ${tsLiteral(tileAnims)};`,
