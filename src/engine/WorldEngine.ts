@@ -284,6 +284,17 @@ class WorldEngine {
     eventBus.emit("TURN_START", { turn: s.turn, apRestored: s.player.apMax });
     eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: s.player.ap });
 
+    if (s.lockdown) {
+      s.lockdown.turnsRemaining -= 1;
+      if (
+        s.lockdown.turnsRemaining <= 0 &&
+        s.player.roomId === s.lockdown.roomId
+      ) {
+        s.detained = true;
+        eventBus.emit("PLAYER_DETAINED", { guardId: "lockdown", turn: s.turn });
+      }
+    }
+
     if (s.alignmentLightActive) {
       soundField.emit({
         roomId: s.player.roomId,

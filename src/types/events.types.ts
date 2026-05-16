@@ -102,6 +102,7 @@ export interface EventMap {
 
   // Vertical-slice phase orchestration
   AUDIT_LOCKDOWN_TRIGGERED: { reason: string };
+  LOCKDOWN_TRIGGERED: { roomId: RoomId; turnsRemaining: number };
   PHASE_RESTART_REQUESTED: { reason: string };
   OXYGEN_TICK: { remainingSeconds: number; totalSeconds: number };
   CLIMAX_ESCAPED: Record<string, never>;

@@ -8,8 +8,11 @@ import type { Entity, Facing, Tile, Vec2, WorldState } from "../types/world.type
 import { facingFromDelta } from "../types/world.types";
 import { alertFSM } from "./AlertFSM";
 import { eventBus } from "./EventBus";
+import { roomGraph } from "./RoomGraph";
 import { computeCone, GUARD_BASE_RANGE, GUARD_CONE_HALF_ANGLE } from "./VisionCone";
 import type { DeliveredSound } from "./SoundField";
+
+const LOCKDOWN_TURNS = 5;
 
 class GuardSystem {
   /** Compute the visible-tile set for one guard inside its current room. */
@@ -39,6 +42,9 @@ class GuardSystem {
 
   private tickOne(state: WorldState, guard: Entity, heard?: DeliveredSound): void {
     const sees = this.guardSeesPlayer(state, guard);
+    if (sees && !state.lockdown) {
+      this.triggerLockdown(state);
+    }
     alertFSM.step(state, guard, {
       seesPlayer: sees,
       heardIntensity: heard?.intensity ?? 0,
@@ -83,6 +89,45 @@ class GuardSystem {
     if (!room) return false;
     const visible = this.visibleTiles(state, guard);
     return visible.has(`${state.player.pos.x},${state.player.pos.y}`);
+  }
+
+  /** Seal every doorway in the player's current room and start the vacuum
+   *  countdown. Mirrors the closure to each back-doorway so guards on the
+   *  far side can't open them either. */
+  private triggerLockdown(state: WorldState): void {
+    const roomId = state.player.roomId;
+    const room = state.rooms.get(roomId);
+    if (!room) return;
+    state.lockdown = { roomId, turnsRemaining: LOCKDOWN_TURNS };
+    for (const d of room.doorways) {
+      if (d.closed) continue;
+      roomGraph.toggleDoorway(state, roomId, d.localPos);
+      const tile = room.tiles[d.localPos.y * room.width + d.localPos.x];
+      if (tile && (tile.kind === "DOOR_OPEN" || tile.kind === "DOOR_CLOSED")) {
+        tile.kind = "DOOR_CLOSED";
+        tile.solid = true;
+        tile.opaque = true;
+      }
+      const dst = state.rooms.get(d.to);
+      if (dst) {
+        const back = dst.doorways.find(
+          (b) => b.from === d.to && b.to === roomId,
+        );
+        if (back) {
+          const bt = dst.tiles[back.localPos.y * dst.width + back.localPos.x];
+          if (bt && (bt.kind === "DOOR_OPEN" || bt.kind === "DOOR_CLOSED")) {
+            bt.kind = "DOOR_CLOSED";
+            bt.solid = true;
+            bt.opaque = true;
+          }
+        }
+      }
+      eventBus.emit("DOOR_TOGGLED", { roomId, pos: d.localPos, open: false });
+    }
+    eventBus.emit("LOCKDOWN_TRIGGERED", {
+      roomId,
+      turnsRemaining: LOCKDOWN_TURNS,
+    });
   }
 
   private coneRange(ambient: "LIT" | "DIM" | "DARK"): number {

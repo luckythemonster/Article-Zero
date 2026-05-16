@@ -263,6 +263,12 @@ export interface WorldState {
   /** Number of times the player has pried at the current blast door this run.
    *  Reset to 0 on door-opens. Used by the climax escape. */
   pryProgress?: number;
+  /** Vacuum-lockdown trap: when a guard first spots the player, the current
+   *  room seals and the player has `turnsRemaining` end-of-turns to pry open
+   *  a doorway and cross out before suffocating. Cleared by crossing into a
+   *  different room; resolves to `detained = true` if the timer reaches 0
+   *  while the player is still inside the sealed room. */
+  lockdown?: { roomId: RoomId; turnsRemaining: number };
 }
 
 export const tileKey = (pos: Vec2): string => `${pos.x},${pos.y}`;

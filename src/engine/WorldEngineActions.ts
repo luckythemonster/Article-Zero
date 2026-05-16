@@ -16,6 +16,7 @@ const KNOCK_AP_COST = 1;
 const INTERACT_AP_COST = 1;
 const VENT_AP_COST = 2;
 const KILL_SCREEN_AP_COST = 1;
+const PRY_LOCKDOWN_AP_COST = 2;
 export const ALIGN_AP_COST = 3;
 
 const WALK_INTENSITY = 1;
@@ -23,6 +24,7 @@ const CREEP_INTENSITY = 0;
 const KNOCK_INTENSITY = 4;
 const DOOR_INTENSITY = 2;
 const LOCKER_INTENSITY = 2;
+const PRY_LOCKDOWN_INTENSITY = 6;
 
 function tileAt(state: WorldState, roomId: string, p: Vec2): Tile | undefined {
   const room = state.rooms.get(roomId);
@@ -88,6 +90,9 @@ function moveCommon(
     const cost = ventDoor ? VENT_AP_COST : apCost;
     eventBus.emit("ROOM_EXITED", { roomId: fromRoomId });
     state.player.roomId = crossing.toRoom;
+    if (state.lockdown && state.lockdown.roomId !== crossing.toRoom) {
+      state.lockdown = undefined;
+    }
     state.player.pos = { ...crossing.landingPos };
     const previousAp = state.player.ap;
     state.player.ap -= cost;
@@ -422,6 +427,62 @@ export const actions = {
           state.alignmentLightActive = true;
           eventBus.emit("ALIGNMENT_LIGHT_TOGGLED", { active: true });
         }
+        return true;
+      }
+    }
+
+    // Vacuum-lockdown pry: while a lockdown is active and the player faces a
+    // sealed doorway, force it open for 2 AP with a high-intensity sound.
+    // Takes priority over the normal door toggle so the pry path runs even
+    // when an open adjacent doorway sits in some other direction.
+    if (state.lockdown && state.player.ap >= PRY_LOCKDOWN_AP_COST) {
+      const f = state.player.facing;
+      const fdx = f === "east" ? 1 : f === "west" ? -1 : 0;
+      const fdy = f === "south" ? 1 : f === "north" ? -1 : 0;
+      const target: Vec2 = {
+        x: state.player.pos.x + fdx,
+        y: state.player.pos.y + fdy,
+      };
+      const sealed = roomGraph.doorwayAt(state, state.player.roomId, target.x, target.y);
+      if (sealed && sealed.closed) {
+        roomGraph.toggleDoorway(state, state.player.roomId, target);
+        const tile = tileAt(state, state.player.roomId, target);
+        if (tile) {
+          tile.kind = "DOOR_OPEN";
+          tile.solid = false;
+          tile.opaque = false;
+        }
+        const mirror = state.rooms.get(sealed.to);
+        if (mirror) {
+          const back = mirror.doorways.find(
+            (b) => b.from === sealed.to && b.to === state.player.roomId,
+          );
+          if (back) {
+            const bt = mirror.tiles[back.localPos.y * mirror.width + back.localPos.x];
+            if (bt) {
+              bt.kind = "DOOR_OPEN";
+              bt.solid = false;
+              bt.opaque = false;
+            }
+          }
+        }
+        const previousAp = state.player.ap;
+        state.player.ap -= PRY_LOCKDOWN_AP_COST;
+        eventBus.emit("PLAYER_AP_CHANGED", {
+          previous: previousAp,
+          current: state.player.ap,
+        });
+        eventBus.emit("DOOR_TOGGLED", {
+          roomId: state.player.roomId,
+          pos: target,
+          open: true,
+        });
+        soundField.emit({
+          roomId: state.player.roomId,
+          pos: target,
+          intensity: PRY_LOCKDOWN_INTENSITY,
+          reason: "pry-lockdown",
+        });
         return true;
       }
     }
