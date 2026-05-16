@@ -194,30 +194,42 @@ function extractTileAnims(ed, sprites, frames, stride, frameWidth, frameHeight, 
 // Ed's painted level data lives in Levels[].Boards[] — each Board is a
 // layer (sparse Tiles[] plus its own Width/Height/Opacity/Name). Each
 // painted tile carries a Handle that resolves through TileDefs to a
-// SpriteId Ref, which we then map back to our slice-frame index.
-function extractLevels(ed, frames, defaultTileSize, defaultSpacing) {
+// SpriteId, which we then map back to our slice-frame index. SpriteId
+// may be either a sprite `Ref` string (e.g. "IMG_4004_24") or the
+// sprite's numeric `Handle` serialised as a string (e.g. "2725293265") —
+// the latter is used for hand-cropped composites that Ed didn't auto-Ref.
+function extractLevels(ed, sprites, frames, stride, frameWidth, frameHeight, sheetWidth, sheetHeight, defaultTileSize, defaultSpacing) {
   const rawLevels = ed.Levels ?? ed.levels;
   if (!Array.isArray(rawLevels)) return [];
 
-  // SpriteId (Ref string) -> our frame index in the slice order.
-  const refToIndex = new Map();
-  for (const f of frames) if (f.ref) refToIndex.set(f.ref, f.index);
+  const { resolveSpriteId } = buildSpriteResolvers(
+    sprites, frames, stride, frameWidth, frameHeight, sheetWidth, sheetHeight,
+  );
 
-  // TileDef.Handle -> SpriteId Ref of the first keyframe.
+  // TileDef.Handle -> Phaser frame index, resolved via SpriteId.
   // Some TileDefs (notably the `spawn` marker) have empty KeyFrames — they
   // exist as cell-presence markers, not renderable sprites. We track those
   // separately so the level-extractor can still mark a cell as painted
   // without resolving to a sprite frame.
   const tileDefs = ed.TileDefs ?? [];
-  const handleToRef = new Map();
+  const handleToFrameIndex = new Map();
   const markerHandles = new Set();
+  const compositeWarnings = new Map();
   for (const td of tileDefs) {
     if (td.Handle == null) continue;
-    const ref = td.Animation?.KeyFrames?.[0]?.SpriteId;
-    if (typeof ref === "string") {
-      handleToRef.set(td.Handle, ref);
-    } else {
+    const sid = td.Animation?.KeyFrames?.[0]?.SpriteId;
+    if (sid == null) {
       markerHandles.add(td.Handle);
+      continue;
+    }
+    const idx = resolveSpriteId(sid);
+    if (idx != null) {
+      handleToFrameIndex.set(td.Handle, idx);
+    } else {
+      // Hand-cropped sprites that fall outside the regular slice grid
+      // (e.g. composites overlapping the sheet's right/bottom margin) can
+      // resolve only partially — record once for the post-extract warning.
+      compositeWarnings.set(td.Handle, td.Ref ?? `tiledef-${td.Handle}`);
     }
   }
 
@@ -252,8 +264,7 @@ function extractLevels(ed, frames, defaultTileSize, defaultSpacing) {
         const y = t.Y ?? t.y ?? 0;
         if (x < 0 || y < 0 || x >= width || y >= height) continue;
         painted += 1;
-        const ref = handleToRef.get(t.Handle);
-        const idx = ref != null ? refToIndex.get(ref) : undefined;
+        const idx = handleToFrameIndex.get(t.Handle);
         if (idx != null) {
           // Tiled / Ed convention: 0 = empty; non-zero = 1-based frame index.
           grid[y][x] = idx + 1;
@@ -349,8 +360,9 @@ function extractLevels(ed, frames, defaultTileSize, defaultSpacing) {
         `warn: level "${levelName}" has ${painted} painted tiles but none resolved through TileDefs — check that the project has been saved (Ed sometimes elides TileDefs in unsaved projects).`,
       );
     } else if (unresolved > 0) {
+      const composites = [...compositeWarnings.values()].slice(0, 4).join(", ");
       console.warn(
-        `warn: level "${levelName}" has ${unresolved}/${painted} unresolved tile handles (probably autotile rule outputs; v1.5 doesn't evaluate rules).`,
+        `warn: level "${levelName}" has ${unresolved}/${painted} unresolved tile handles — sprites without a Ref or X/Y outside the slice grid. ${compositeWarnings.size > 0 ? `Suspect TileDefs: ${composites}${compositeWarnings.size > 4 ? ", …" : ""}.` : ""}`,
       );
     }
   }
@@ -429,7 +441,9 @@ async function main() {
     const sheetHeight = buf.readUInt32BE(20);
 
     const frames = buildFrames(sprites, stride, frameWidth, frameHeight, sheetWidth, sheetHeight);
-    const levels = extractLevels(ed, frames, frameWidth, spacing);
+    const levels = extractLevels(
+      ed, sprites, frames, stride, frameWidth, frameHeight, sheetWidth, sheetHeight, frameWidth, spacing,
+    );
     const tileAnims = extractTileAnims(
       ed, sprites, frames, stride, frameWidth, frameHeight, sheetWidth, sheetHeight,
     );
