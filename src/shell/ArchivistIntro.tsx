@@ -27,6 +27,22 @@ export default function ArchivistIntro() {
     });
   };
 
+  const loadTestModule = () => {
+    const term = useTerminalStore.getState();
+    if (!term.modules.NW_SMAC_01.decrypted) {
+      term.decryptModule("NW_SMAC_01");
+    }
+    term.setActiveModule("NW_SMAC_01");
+    worldEngine.initWorld("NW_SMAC_01");
+    term.setPhase("FLOOR");
+    term.log({
+      turn: 0,
+      module: "NW_SMAC_01",
+      level: "INFO",
+      text: "TEST MAP LOADED — NW-SMAC-01 vestibule (type 'unload' to return)",
+    });
+  };
+
   return (
     <div className="archivist-frame">
       <div className="archivist-frame__header">CITIZEN LATTICE // ARCHIVIST CONSOLE</div>
@@ -35,6 +51,9 @@ export default function ArchivistIntro() {
       <div className="archivist-frame__actions">
         <button className="btn btn--primary" onClick={reconstruct}>
           RECONSTRUCT MEMORY
+        </button>
+        <button className="btn" onClick={loadTestModule}>
+          TEST MAP — NW_SMAC_01
         </button>
       </div>
     </div>

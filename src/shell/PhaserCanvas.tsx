@@ -11,6 +11,7 @@ import { RoomScene } from "../phaser/RoomScene";
 import { useSimStore } from "../state/useSimStore";
 import { useInput } from "../hooks/useInput";
 import { installDebugEventTap } from "../engine/DebugEventTap";
+import TouchControls from "../components/TouchControls";
 import type { Module } from "../types/world.types";
 
 interface Props {
@@ -57,6 +58,7 @@ export function PhaserCanvas({ moduleId, children }: Props) {
   return (
     <div ref={hostRef} className="phaser-host">
       {children}
+      <TouchControls />
     </div>
   );
 }

@@ -15,6 +15,7 @@ import { worldEngine } from "./WorldEngine";
 import { playerStateMachine } from "./PlayerStateMachine";
 import { guardSystem } from "./GuardSystem";
 import { eventBus } from "./EventBus";
+import { touchInput } from "./touchInput";
 import {
   FRAME_SIGHT_CHECK_MS,
   STAIRS_DOWN_FACTOR,
@@ -149,10 +150,10 @@ export class PlayerPhysicsBridge {
     let dy = 0;
     const c = this.cursors;
     const w = this.wasd;
-    if (c?.left.isDown || w?.A.isDown) dx -= 1;
-    if (c?.right.isDown || w?.D.isDown) dx += 1;
-    if (c?.up.isDown || w?.W.isDown) dy -= 1;
-    if (c?.down.isDown || w?.S.isDown) dy += 1;
+    if (c?.left.isDown || w?.A.isDown || touchInput.left) dx -= 1;
+    if (c?.right.isDown || w?.D.isDown || touchInput.right) dx += 1;
+    if (c?.up.isDown || w?.W.isDown || touchInput.up) dy -= 1;
+    if (c?.down.isDown || w?.S.isDown || touchInput.down) dy += 1;
     return [dx, dy];
   }
 

@@ -69,6 +69,7 @@ html, body, #root {
 }
 
 .phaser-host {
+  position: relative;
   width: 100%;
   height: 100%;
   display: flex;
@@ -80,6 +81,93 @@ html, body, #root {
   display: block;
   max-width: 100%;
   max-height: 100%;
+  touch-action: none;
+}
+
+/* ── Touch controls ──────────────────────────────────────────────────────── */
+
+.touch-controls {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .touch-controls {
+    display: block;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+  }
+}
+
+.touch-dpad {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  display: grid;
+  grid-template-columns: 56px 56px 56px;
+  grid-template-rows: 56px 56px 56px;
+  gap: 4px;
+  pointer-events: auto;
+}
+
+.touch-dpad__btn {
+  background: rgba(5, 8, 9, 0.7);
+  border: 1px solid var(--cyan, #6ad0a4);
+  color: var(--cyan, #6ad0a4);
+  font-family: "Berkeley Mono", "Courier New", monospace;
+  font-size: 1.25rem;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.touch-dpad__btn:active {
+  background: rgba(106, 208, 164, 0.18);
+}
+
+.touch-dpad__btn--up    { grid-column: 2; grid-row: 1; }
+.touch-dpad__btn--left  { grid-column: 1; grid-row: 2; }
+.touch-dpad__btn--right { grid-column: 3; grid-row: 2; }
+.touch-dpad__btn--down  { grid-column: 2; grid-row: 3; }
+
+.touch-actions {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  display: grid;
+  grid-template-columns: 56px 56px;
+  gap: 4px;
+  pointer-events: auto;
+}
+
+.touch-actions__btn {
+  background: rgba(5, 8, 9, 0.7);
+  border: 1px solid var(--cyan, #6ad0a4);
+  color: var(--cyan, #6ad0a4);
+  font-family: "Berkeley Mono", "Courier New", monospace;
+  font-size: 0.9rem;
+  height: 56px;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0 0.4rem;
+}
+
+.touch-actions__btn:active {
+  background: rgba(106, 208, 164, 0.18);
+}
+
+.touch-actions__btn--wide {
+  grid-column: span 2;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
 }
 
 /* ── Module selector ─────────────────────────────────────────────────────── */
