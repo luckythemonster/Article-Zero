@@ -5,6 +5,7 @@
 import { useEffect } from "react";
 import { worldEngine } from "../engine/WorldEngine";
 import { useTerminalStore } from "../state/useTerminalStore";
+import { useDebugStore } from "../state/useDebugStore";
 
 interface Options {
   enabled: boolean;
@@ -15,6 +16,15 @@ export function useInput({ enabled }: Options): void {
     if (!enabled) return;
     const handler = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      // Debug overlay toggle (~). Works regardless of focus + phase so the
+      // archivist can always inspect mid-modal.
+      if (e.code === "Backquote") {
+        useDebugStore.getState().toggleVisible();
+        e.preventDefault();
+        return;
+      }
+
       // Don't steal keys while the user is typing in an input/textarea.
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
@@ -26,19 +36,9 @@ export function useInput({ enabled }: Options): void {
       const term = useTerminalStore.getState();
       if (term.phase !== "FLOOR" && term.phase !== "CLIMAX") return;
       if (term.phase === "CLIMAX" && term.runFlags.vent4Choice === null) return;
+      // WASD/arrows are now consumed by Phaser's cursor keys inside
+      // RoomScene.update via PlayerPhysicsBridge. Action verbs remain here.
       switch (e.key.toLowerCase()) {
-        case "arrowup":
-        case "w":
-          worldEngine.move(0, -1); e.preventDefault(); break;
-        case "arrowdown":
-        case "s":
-          worldEngine.move(0, 1); e.preventDefault(); break;
-        case "arrowleft":
-        case "a":
-          worldEngine.move(-1, 0); e.preventDefault(); break;
-        case "arrowright":
-        case "d":
-          worldEngine.move(1, 0); e.preventDefault(); break;
         case " ":
           worldEngine.endTurn(); e.preventDefault(); break;
         case "e":

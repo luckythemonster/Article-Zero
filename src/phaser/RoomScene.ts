@@ -7,9 +7,18 @@ import { Phaser } from "../engine/EngineAdapter";
 import { eventBus } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
 import { guardSystem } from "../engine/GuardSystem";
+import { playerPhysicsBridge } from "../engine/PlayerPhysicsBridge";
+import { debugFlags } from "../engine/debugFlags";
+import { ELEVATION_PX_PER_STEP } from "../engine/PhysicsConfig";
 import type { Entity, Facing, Room, Tile, TileKind } from "../types/world.types";
 
 const TILE_PX = 32;
+
+/** The player rect after physics.add.existing() — Phaser attaches a `.body`
+ *  but the TypeScript typings keep the property nullable. This narrows it. */
+type PhysicsRect = Phaser.GameObjects.Rectangle & {
+  body: Phaser.Physics.Arcade.Body;
+};
 
 // Layers in a moose-imported FloorDecoration that mark entity positions or
 // spawn points rather than visible terrain. We skip them when drawing
@@ -33,6 +42,7 @@ const TILE_COLORS: Record<TileKind, number> = {
   LOCKER: 0x2a3138,
   CHASM: 0x05080a,
   LADDER: 0x3a2e1c,
+  STAIRS: 0x2a221a,
 };
 
 const ALERT_COLORS: Record<string, { fill: number; alpha: number }> = {
@@ -59,6 +69,8 @@ export class RoomScene extends Phaser.Scene {
   }> = [];
   private decorRoomId: string | null = null;
   private floorLabel!: Phaser.GameObjects.Text;
+  private debugLayer!: Phaser.GameObjects.Graphics;
+  private elevationTextPool: Phaser.GameObjects.Text[] = [];
   private subscriptions: Array<() => void> = [];
   private onResize = () => this.layout();
   /** 0..1 darkening factor driven by OXYGEN_TICK during the climax. */
@@ -84,8 +96,18 @@ export class RoomScene extends Phaser.Scene {
     this.playerSprite = this.add.rectangle(0, 0, TILE_PX - 12, TILE_PX - 12, 0x6ad0a4);
     this.playerSprite.setStrokeStyle(2, 0xe6f0f2);
     this.playerSprite.setDepth(5);
+    // Attach an Arcade Physics body so PlayerPhysicsBridge can drive
+    // movement via velocity. The body's size matches the visual rect.
+    this.physics.add.existing(this.playerSprite);
+    const body = this.playerSprite.body as Phaser.Physics.Arcade.Body;
+    body.setCollideWorldBounds(false);
+    body.setSize(TILE_PX - 12, TILE_PX - 12);
+    playerPhysicsBridge.attach(this, this.playerSprite as PhysicsRect);
+    playerPhysicsBridge.recenter();
     this.playerFacingMark = this.add.triangle(0, 0, 0, 0, -6, 8, 6, 8, 0xe6f0f2);
     this.playerFacingMark.setDepth(6);
+    this.debugLayer = this.add.graphics();
+    this.debugLayer.setDepth(25);
 
     this.cameras.main.startFollow(this.playerSprite, true, 0.18, 0.18);
 
@@ -146,11 +168,89 @@ export class RoomScene extends Phaser.Scene {
     for (const m of this.entityFacingMarks.values()) m.destroy();
     for (const t of this.exclamationMarks.values()) t.destroy();
     for (const d of this.decorSprites) d.sprite.destroy();
+    for (const t of this.elevationTextPool) t.destroy();
+    this.elevationTextPool = [];
     this.entityRects.clear();
     this.entityFacingMarks.clear();
     this.exclamationMarks.clear();
     this.decorSprites = [];
     this.decorRoomId = null;
+    playerPhysicsBridge.detach();
+  }
+
+  /** Phaser-driven per-frame tick. Drives the physics bridge and applies
+   *  visual elevation offset + debug overlays. The redraw() path stays
+   *  event-driven (PLAYER_MOVED, FOV_UPDATED, etc.) for the tile/cone
+   *  layers; only ephemeral overlays + sprite y-offset live here. */
+  update(_time: number, delta: number): void {
+    if (!worldEngine.hasState()) return;
+    playerPhysicsBridge.update(delta);
+
+    // Apply visual elevation offset to the player sprite. The physics body
+    // stays floor-projected (collision + FOV use the unoffset position); we
+    // only shift the displayed y. Physics will resync the rect to body
+    // position on the next step, so we re-apply the offset every frame.
+    const elev = playerPhysicsBridge.currentElevation;
+    const visualOffset = elev * ELEVATION_PX_PER_STEP;
+    if (visualOffset !== 0) {
+      this.playerSprite.y -= visualOffset;
+      const facingY = this.playerFacingMark.y - visualOffset;
+      this.playerFacingMark.y = facingY;
+    }
+
+    this.drawDebugOverlays();
+  }
+
+  private drawDebugOverlays(): void {
+    this.debugLayer.clear();
+    // Hide pooled text by default; only show when showTileElevation is on.
+    for (const t of this.elevationTextPool) t.setVisible(false);
+
+    if (!debugFlags.showHitboxes && !debugFlags.showTileElevation) return;
+    if (!worldEngine.hasState()) return;
+    const room = worldEngine.getCurrentRoom();
+    if (!room) return;
+
+    if (debugFlags.showHitboxes) {
+      this.debugLayer.lineStyle(1, 0xff5050, 0.6);
+      for (let y = 0; y < room.height; y++) {
+        for (let x = 0; x < room.width; x++) {
+          const tile = room.tiles[y * room.width + x];
+          if (!tile.solid) continue;
+          this.debugLayer.strokeRect(x * TILE_PX, y * TILE_PX, TILE_PX - 1, TILE_PX - 1);
+        }
+      }
+      // Player body rect.
+      const body = this.playerSprite.body as Phaser.Physics.Arcade.Body | null;
+      if (body) {
+        this.debugLayer.lineStyle(1, 0x6ad0a4, 0.9);
+        this.debugLayer.strokeRect(body.x, body.y, body.width, body.height);
+      }
+    }
+
+    if (debugFlags.showTileElevation) {
+      let i = 0;
+      for (let y = 0; y < room.height; y++) {
+        for (let x = 0; x < room.width; x++) {
+          const tile = room.tiles[y * room.width + x];
+          if (tile.elevation === 0 && tile.kind !== "STAIRS") continue;
+          let text = this.elevationTextPool[i];
+          if (!text) {
+            text = this.add.text(0, 0, "", {
+              fontFamily: "Courier New, monospace",
+              fontSize: "9px",
+              color: "#ebd14a",
+            });
+            text.setDepth(26);
+            this.elevationTextPool.push(text);
+          }
+          text.setText(String(tile.elevation));
+          text.setPosition(x * TILE_PX + 2, y * TILE_PX + 2);
+          text.setVisible(true);
+          i++;
+        }
+      }
+    }
   }
 
   private fadeAndRedraw(): void {
@@ -166,6 +266,10 @@ export class RoomScene extends Phaser.Scene {
         this.entityFacingMarks.delete(id);
       }
       this.layout();
+      // Snap the physics body to the new room's spawn (crossDoorway in the
+      // bridge already does this, but `fadeAndRedraw` also fires on initial
+      // ROOM_ENTERED, where the bridge hasn't run yet).
+      playerPhysicsBridge.recenter();
       // Snap onto the new room's player position so the fade-in doesn't
       // briefly flash from the old scroll position before startFollow's
       // lerp catches up.
@@ -189,7 +293,8 @@ export class RoomScene extends Phaser.Scene {
           if (value === 0) continue;
           const frame = value - 1;
           const px = x * TILE_PX;
-          const py = y * TILE_PX;
+          const tileElev = room.tiles[y * room.width + x]?.elevation ?? 0;
+          const py = y * TILE_PX - tileElev * ELEVATION_PX_PER_STEP;
           const img = this.add
             .image(px, py, dec.textureKey, frame)
             .setOrigin(0, 0)
@@ -269,12 +374,15 @@ export class RoomScene extends Phaser.Scene {
       this.glyphLayer.strokeRect(cx - 7, cy - 7, 14, 14);
     }
 
-    // Player.
-    const ppx = state.player.pos.x * TILE_PX + TILE_PX / 2;
-    const ppy = state.player.pos.y * TILE_PX + TILE_PX / 2;
-    this.playerSprite.setPosition(ppx, ppy);
+    // Player. Position is driven by the physics body now; redraw only
+    // updates color + facing mark anchored to the sprite's current x/y.
     this.playerSprite.setFillStyle(state.player.hidingTileKey ? 0x4a5a52 : 0x6ad0a4);
-    this.placeFacingMark(this.playerFacingMark, ppx, ppy, state.player.facing);
+    this.placeFacingMark(
+      this.playerFacingMark,
+      this.playerSprite.x,
+      this.playerSprite.y,
+      state.player.facing,
+    );
     this.playerFacingMark.setVisible(!state.player.hidingTileKey);
     // Peek indicator: tint the facing mark gold and pulse it.
     if (state.player.peeking) {
@@ -360,8 +468,10 @@ export class RoomScene extends Phaser.Scene {
     state: ReturnType<typeof worldEngine.getState>,
     entity: Entity,
   ): void {
+    const room = state.rooms.get(entity.roomId);
+    const tileElev = room?.tiles[entity.pos.y * room.width + entity.pos.x]?.elevation ?? 0;
     const px = entity.pos.x * TILE_PX + TILE_PX / 2;
-    const py = entity.pos.y * TILE_PX + TILE_PX / 2;
+    const py = entity.pos.y * TILE_PX + TILE_PX / 2 - tileElev * ELEVATION_PX_PER_STEP;
     let rect = this.entityRects.get(entity.id);
     // VENT-4 (Environmental Optimizer) gets the deep-maroon palette of its
     // placeholder atlas frame; other silicates stay on the cyan baseline.

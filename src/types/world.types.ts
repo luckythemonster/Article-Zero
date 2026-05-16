@@ -32,7 +32,8 @@ export type TileKind =
   | "VENT"
   | "LOCKER"
   | "CHASM"
-  | "LADDER";
+  | "LADDER"
+  | "STAIRS";
 
 // Items ------------------------------------------------------------------
 
@@ -57,12 +58,38 @@ export interface ItemInstance {
 
 export type ComplianceTier = "GREEN" | "YELLOW" | "RED";
 
+// Player state machine -------------------------------------------------
+
+export type PlayerStateName = "WALK" | "CREEP" | "DUCT_CRAWL" | "HIDING" | "CLIMBING";
+export type PlayerActionId =
+  | "move"
+  | "knock"
+  | "peek"
+  | "interact"
+  | "endTurn"
+  | "toggleStance"
+  | "pryDoor"
+  | "toggleFlashlight";
+export type PlayerMotionResult =
+  | { kind: "VELOCITY"; vx: number; vy: number }
+  | { kind: "TELEPORT"; roomId: RoomId; pos: Vec2 }
+  | { kind: "BLOCKED" };
+
 export interface Tile {
   kind: TileKind;
   /** True if this tile blocks movement. */
   solid: boolean;
   /** True if this tile blocks line-of-sight for vision cones. */
   opaque: boolean;
+  /** Integer step count above the room's base floor. Catwalks and stair
+   *  summits carry positive values; chasm interiors carry negative ones.
+   *  Read by the physics bridge to bias velocity and to offset sprite y for
+   *  the catwalk-readability fix. Default 0. */
+  elevation: number;
+  /** STAIRS only — the side the stair *rises* toward. Climbing in that
+   *  direction applies STAIRS_UP_FACTOR; the reverse applies STAIRS_DOWN_FACTOR.
+   *  Perpendicular travel is unaffected. */
+  direction?: Side;
   /** Optional in-world label. */
   label?: string;
 }

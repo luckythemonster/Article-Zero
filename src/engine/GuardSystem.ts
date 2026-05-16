@@ -11,6 +11,7 @@ import { eventBus } from "./EventBus";
 import { roomGraph } from "./RoomGraph";
 import { computeCone, GUARD_BASE_RANGE, GUARD_CONE_HALF_ANGLE } from "./VisionCone";
 import type { DeliveredSound } from "./SoundField";
+import { debugFlags } from "./debugFlags";
 
 const LOCKDOWN_TURNS = 5;
 
@@ -34,9 +35,29 @@ class GuardSystem {
   /** Per-tick step: integrate sound + sight into AlertFSM, then act. */
   tick(state: WorldState, sounds: Map<string, DeliveredSound>): void {
     if (state.detained) return;
+    if (debugFlags.disableEnforcerAI) return;
     for (const entity of state.entities.values()) {
       if (entity.kind !== "GUARD" || entity.status !== "ACTIVE") continue;
       this.tickOne(state, entity, sounds.get(entity.id));
+    }
+  }
+
+  /** Real-time safety net: while the player moves continuously between
+   *  turn ticks, guards still get to detect a cone intrusion immediately.
+   *  Called every ~250ms from PlayerPhysicsBridge.update. Only triggers
+   *  lockdown — guards do NOT move on this path. */
+  frameSightCheck(state: WorldState): void {
+    if (state.detained) return;
+    if (state.lockdown) return;
+    if (debugFlags.disableEnforcerAI) return;
+    for (const entity of state.entities.values()) {
+      if (entity.kind !== "GUARD" || entity.status !== "ACTIVE") continue;
+      if (entity.roomId !== state.player.roomId) continue;
+      if (!this.guardSeesPlayer(state, entity)) continue;
+      this.triggerLockdown(state);
+      eventBus.emit("PLAYER_DETECTED", { guardId: entity.id, pos: entity.pos });
+      state.detected = true;
+      return;
     }
   }
 

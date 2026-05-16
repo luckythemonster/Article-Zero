@@ -25,6 +25,10 @@ export interface EventMap {
   PLAYER_AP_CHANGED: { previous: number; current: number };
   PLAYER_FACING_CHANGED: { facing: Facing };
   PLAYER_STANCE_CHANGED: { stance: "WALK" | "CREEP" };
+  PLAYER_STATE_CHANGED: {
+    from: "WALK" | "CREEP" | "DUCT_CRAWL" | "HIDING" | "CLIMBING";
+    to: "WALK" | "CREEP" | "DUCT_CRAWL" | "HIDING" | "CLIMBING";
+  };
   PLAYER_DETECTED: { guardId: EntityId; pos: Vec2 };
   PLAYER_DETECTION_CLEARED: Record<string, never>;
   PLAYER_DETAINED: { guardId: EntityId; turn: number };

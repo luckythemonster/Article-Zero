@@ -9,6 +9,7 @@ import { roomGraph } from "./RoomGraph";
 import { soundField } from "./SoundField";
 import { alignmentSession } from "./AlignmentSession";
 import { documentArchive } from "./DocumentArchive";
+import { playerStateMachine } from "./PlayerStateMachine";
 
 const MOVE_AP_COST = 1;
 const CREEP_AP_COST = 1;
@@ -150,6 +151,7 @@ export const actions = {
 
   /** Rap on the wall the player is facing. Loud noise, lures guards. */
   knock(state: WorldState): boolean {
+    if (!playerStateMachine.canPerform(state, "knock")) return false;
     if (state.detained || state.player.ap < KNOCK_AP_COST) return false;
     if (state.player.hidingTileKey) return false;
     const f = state.player.facing;
@@ -181,6 +183,7 @@ export const actions = {
   /** Lean to extend FOV in `dir` (defaults to current facing) without moving.
    *  Costs 0 AP. Cleared by movement and end-of-turn. Refused while hidden. */
   peek(state: WorldState, dir?: Facing): boolean {
+    if (!playerStateMachine.canPerform(state, "peek")) return false;
     if (state.detained) return false;
     if (state.player.hidingTileKey) return false;
     const facing = dir ?? state.player.facing;

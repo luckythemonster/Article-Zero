@@ -93,6 +93,14 @@ export interface MooseEntityMeta {
 
 export interface MooseTerminalMeta extends TerminalPayload {}
 
+/** Per-cell elevation override for a single room. Ed cannot paint numeric
+ *  values, so stair/catwalk elevations are supplied here and applied
+ *  post-buildTiles. Unspecified cells stay at elevation 0. */
+export interface MooseElevationMeta {
+  roomId: RoomId;
+  cells: Array<{ pos: Vec2; elevation: number }>;
+}
+
 export interface MooseEraMeta {
   era: Era;
   /** Phaser texture key the renderer uses for `Room.decoration`. Must match
@@ -109,6 +117,7 @@ export interface MooseEraMeta {
   doorways: MooseDoorwayMeta[];
   entities: MooseEntityMeta[];
   terminals?: MooseTerminalMeta[];
+  elevations?: MooseElevationMeta[];
 }
 
 // ---------- Layer-name → semantics ----------------------------------------
@@ -137,11 +146,27 @@ const TILE_KIND_LAYERS: Record<string, TileKind> = {
   chasm: "CHASM",
   ladder: "LADDER",
   ladders: "LADDER",
+  // Stair layers — direction is inferred from the suffix at buildTiles time.
+  // Bare `stairs` defaults to N-rising; per-cell elevation is supplied via
+  // MooseEraMeta.elevations since Ed cannot paint numeric values.
+  stairs: "STAIRS",
+  stairs_n: "STAIRS",
+  stairs_s: "STAIRS",
+  stairs_e: "STAIRS",
+  stairs_w: "STAIRS",
   // `shaft` is the navigable interior of a vent crawlspace (`vent shaft 0`
   // boards). After the "vent " room prefix is stripped these layers
   // normalise to "shaft" — treat them as FLOOR so the negative space of
   // `vent walls 0` is walkable.
   shaft: "FLOOR",
+};
+
+const STAIRS_DIRECTION_BY_LAYER: Record<string, Side> = {
+  stairs: "N",
+  stairs_n: "N",
+  stairs_s: "S",
+  stairs_e: "E",
+  stairs_w: "W",
 };
 
 // Layer names recognised as pure-decoration backdrop on this map but whose
@@ -182,6 +207,9 @@ const TILE_KIND_PRECEDENCE: Record<TileKind, number> = {
   // Ladders are painted on a wall face by convention — they MUST beat
   // walls so the climb cell isn't blocked by surrounding wall paint.
   LADDER: 5,
+  // Stairs are walkable and own their tile outright; same rank as ladders
+  // since they're often painted atop a floor or wall edge.
+  STAIRS: 5,
 };
 
 function normalizeLayerName(name: string): string {
@@ -244,14 +272,15 @@ function collectMarkers(level: MooseLevel): MarkerPositions {
 
 function tileLayersFor(
   level: MooseLevel,
-): Array<{ kind: TileKind; score: number; layer: MooseLayer }> {
-  const out: Array<{ kind: TileKind; score: number; layer: MooseLayer }> = [];
+): Array<{ kind: TileKind; score: number; layer: MooseLayer; direction?: Side }> {
+  const out: Array<{ kind: TileKind; score: number; layer: MooseLayer; direction?: Side }> = [];
   for (const layer of level.layers) {
     const n = normalizeLayerName(layer.name);
     const kind = TILE_KIND_LAYERS[n];
     if (!kind) continue;
     const score = LAYER_PRECEDENCE_OVERRIDE[n] ?? TILE_KIND_PRECEDENCE[kind];
-    out.push({ kind, score, layer });
+    const direction = kind === "STAIRS" ? STAIRS_DIRECTION_BY_LAYER[n] : undefined;
+    out.push({ kind, score, layer, direction });
   }
   return out;
 }
@@ -274,8 +303,9 @@ function buildTiles(level: MooseLevel): Tile[] {
   const tiles: Tile[] = new Array(width * height);
   const winnerKind: TileKind[] = new Array(width * height).fill("FLOOR");
   const winnerScore: number[] = new Array(width * height).fill(-1);
+  const winnerDirection: Array<Side | undefined> = new Array(width * height).fill(undefined);
 
-  for (const { kind, score, layer } of tileLayersFor(level)) {
+  for (const { kind, score, layer, direction } of tileLayersFor(level)) {
     for (let y = 0; y < Math.min(layer.data.length, height); y++) {
       const row = layer.data[y];
       for (let x = 0; x < Math.min(row.length, width); x++) {
@@ -284,13 +314,14 @@ function buildTiles(level: MooseLevel): Tile[] {
         if (score > winnerScore[idx]) {
           winnerScore[idx] = score;
           winnerKind[idx] = kind;
+          winnerDirection[idx] = direction;
         }
       }
     }
   }
 
   for (let i = 0; i < tiles.length; i++) {
-    tiles[i] = mkTile(winnerKind[i]);
+    tiles[i] = mkTile(winnerKind[i], { direction: winnerDirection[i] });
   }
   return tiles;
 }
@@ -475,6 +506,20 @@ export function mooseToEraSeed(levels: MooseLevel[], meta: MooseEraMeta): EraSee
 
   // Wire up doorways with mirroring.
   emitDoorways(roomsById, meta.doorways);
+
+  // Apply per-cell elevation overrides. Ed cannot paint numeric values, so
+  // catwalks and stair summits carry their heights via meta.
+  if (meta.elevations) {
+    for (const el of meta.elevations) {
+      const room = roomsById.get(el.roomId);
+      if (!room) throw new Error(`from-moose: elevation override for unknown room "${el.roomId}"`);
+      for (const { pos, elevation } of el.cells) {
+        const idx = pos.y * room.width + pos.x;
+        if (idx < 0 || idx >= room.tiles.length) continue;
+        room.tiles[idx].elevation = elevation;
+      }
+    }
+  }
 
   // Build entities by pairing meta records with their entity:<id> markers.
   const entities: Entity[] = [];

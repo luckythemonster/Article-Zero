@@ -115,11 +115,11 @@ interface ParsedRoom {
 
 function mkTile(kind: TileKind): Tile {
   switch (kind) {
-    case "WALL": return { kind, solid: true, opaque: true };
-    case "DOOR_CLOSED": return { kind, solid: true, opaque: true };
-    case "DOOR_OPEN": return { kind, solid: false, opaque: false };
-    case "LOCKER": return { kind, solid: true, opaque: true };
-    default: return { kind, solid: false, opaque: false };
+    case "WALL": return { kind, solid: true, opaque: true, elevation: 0 };
+    case "DOOR_CLOSED": return { kind, solid: true, opaque: true, elevation: 0 };
+    case "DOOR_OPEN": return { kind, solid: false, opaque: false, elevation: 0 };
+    case "LOCKER": return { kind, solid: true, opaque: true, elevation: 0 };
+    default: return { kind, solid: false, opaque: false, elevation: 0 };
   }
 }
 

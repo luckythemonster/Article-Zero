@@ -23,10 +23,18 @@ export function serializePhysical(p: PhysicalState): SerializedPhysical {
 }
 
 export function deserializePhysical(s: SerializedPhysical): PhysicalState {
+  const rooms = new Map(s.rooms);
+  // Migration: older snapshots predate Tile.elevation. Default-fill so the
+  // physics layer doesn't trip over NaN when reading a saved room.
+  for (const room of rooms.values()) {
+    for (const tile of room.tiles) {
+      if (typeof tile.elevation !== "number") tile.elevation = 0;
+    }
+  }
   return {
     era: s.era,
     turn: s.turn,
-    rooms: new Map(s.rooms),
+    rooms,
     ventLinks: new Map(s.ventLinks),
     terminalPayloads: new Map(s.terminalPayloads),
     playerRoomId: s.playerRoomId,

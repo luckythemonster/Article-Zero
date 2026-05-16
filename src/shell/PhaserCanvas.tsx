@@ -10,6 +10,7 @@ import { BootScene } from "../phaser/BootScene";
 import { RoomScene } from "../phaser/RoomScene";
 import { useSimStore } from "../state/useSimStore";
 import { useInput } from "../hooks/useInput";
+import { installDebugEventTap } from "../engine/DebugEventTap";
 import type { Module } from "../types/world.types";
 
 interface Props {
@@ -38,7 +39,12 @@ export function PhaserCanvas({ moduleId, children }: Props) {
     game.registry.set("moduleId", moduleId);
     gameRef.current = game;
 
+    // Install debug tap AFTER eventBus.clear so its handlers survive the
+    // canvas lifecycle. Detach on unmount before the next clear.
+    const offTap = installDebugEventTap();
+
     return () => {
+      offTap();
       gameRef.current?.destroy(true);
       gameRef.current = null;
       eventBus.clear();

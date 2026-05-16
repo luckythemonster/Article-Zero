@@ -14,6 +14,7 @@ import Vent4DilemmaModal from "../components/Vent4DilemmaModal";
 import ClimaxOverlay from "../components/ClimaxOverlay";
 import AuditLockdown from "../components/AuditLockdown";
 import ArchiveEpilogue from "../components/ArchiveEpilogue";
+import DebugOverlay from "../components/DebugOverlay";
 
 export default function TerminalShell() {
   const activeModule = useTerminalStore((s) => s.activeModuleId);
@@ -72,6 +73,7 @@ export default function TerminalShell() {
         <AuditLog />
         <CommandLine />
       </footer>
+      <DebugOverlay />
     </div>
   );
 }
