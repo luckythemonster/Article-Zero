@@ -146,10 +146,13 @@ class WorldEngine {
 
   endTurn = () => this.advanceTurn();
 
-  /** Real-time physics path: silent tile-coord sync. Does NOT spend AP and
-   *  does NOT fire PLAYER_MOVED for sub-tile motion. Called by
-   *  PlayerPhysicsBridge each time the body's center crosses a tile boundary.
-   *  Triggers FOV recompute since visible-set keys tiles. */
+  /** Real-time physics path: tile-coord sync with footstep sound emission.
+   *  Does NOT spend AP. Called by PlayerPhysicsBridge each time the body's
+   *  center crosses a tile boundary. WALK stance emits an intensity-1
+   *  footstep; SNEAK emits 0 (radical predictability — the enforcer's CAUTION
+   *  is a direct, mathematically readable consequence of being in WALK).
+   *  Triggers FOV recompute, sound propagation, and a perception-only guard
+   *  tick so enforcers transition to CAUTION immediately on a footstep. */
   setPlayerTilePos = (to: Vec2) => {
     const s = this.getState();
     if (to.x === s.player.pos.x && to.y === s.player.pos.y) return;
@@ -158,6 +161,26 @@ class WorldEngine {
     eventBus.emit("PLAYER_MOVED", { from, to, roomId: s.player.roomId });
     this.recomputeFOV();
     complianceSystem.recompute(s);
+
+    // Real-time footstep emission. WALK stance is the only one that fires;
+    // SNEAK zeroes intensity, HIDING/DUCT_CRAWL/ACTION_LOCKED can't produce
+    // a tile-coord change. CLIMBING preserves stance, so a SNEAK player on
+    // stairs stays quiet — by design.
+    if (s.player.stance === "WALK") {
+      soundField.emit({
+        roomId: s.player.roomId,
+        pos: to,
+        intensity: 1,
+        reason: "walk",
+      });
+      const heard = soundField.propagate(s);
+      soundField.reset();
+      // Perception-only — guards transition alert level but do not move on
+      // this path. Movement still batches through the per-turn tick to keep
+      // enforcers from sprinting at 60fps.
+      guardSystem.framePerceptionCheck(s, heard);
+    }
+
     this.syncStore();
   };
 
@@ -237,6 +260,7 @@ class WorldEngine {
     s.player.flashlightBattery = 30;
     s.player.peeking = undefined;
     s.player.hidingTileKey = undefined;
+    s.player.actionLock = undefined;
     s.player.lastMoveTurn = undefined;
     for (const entity of s.entities.values()) {
       entity.alert = undefined;
@@ -322,7 +346,7 @@ class WorldEngine {
 
   private useStanceMove(dx: number, dy: number): boolean {
     const s = this.getState();
-    if (s.player.stance === "CREEP") return actions.creep(s, dx, dy);
+    if (s.player.stance === "SNEAK") return actions.sneak(s, dx, dy);
     return actions.move(s, dx, dy);
   }
 

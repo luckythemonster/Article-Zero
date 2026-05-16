@@ -26,6 +26,9 @@ import type { DocumentCase } from "../types/documents.types";
 export interface EntityPhysical {
   roomId: RoomId;
   pos: Vec2;
+  /** Z-elevation slice. Optional in snapshots for backwards compat with
+   *  pre-realtime saves; deserialiser defaults to 0. */
+  z?: number;
   facing: Facing;
   status: EntityStatus;
   patrol?: PatrolNode[];
@@ -47,6 +50,8 @@ export interface PhysicalState {
   terminalPayloads: Map<string, TerminalPayload>;
   playerRoomId: RoomId;
   playerPos: Vec2;
+  /** Player Z-elevation slice. Optional for backwards compat. */
+  playerZ?: number;
   playerFacing: Facing;
   entityPositions: Map<EntityId, EntityPhysical>;
   entityKinds: Map<EntityId, EntityKindInfo>;
@@ -94,6 +99,7 @@ export interface SerializedPhysical {
   terminalPayloads: [string, TerminalPayload][];
   playerRoomId: RoomId;
   playerPos: Vec2;
+  playerZ?: number;
   playerFacing: Facing;
   entityPositions: [EntityId, EntityPhysical][];
   entityKinds: [EntityId, EntityKindInfo][];

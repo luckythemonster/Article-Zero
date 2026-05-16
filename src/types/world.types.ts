@@ -60,7 +60,13 @@ export type ComplianceTier = "GREEN" | "YELLOW" | "RED";
 
 // Player state machine -------------------------------------------------
 
-export type PlayerStateName = "WALK" | "CREEP" | "DUCT_CRAWL" | "HIDING" | "CLIMBING";
+export type PlayerStateName =
+  | "WALK"
+  | "SNEAK"
+  | "DUCT_CRAWL"
+  | "HIDING"
+  | "CLIMBING"
+  | "ACTION_LOCKED";
 export type PlayerActionId =
   | "move"
   | "knock"
@@ -84,8 +90,15 @@ export interface Tile {
   /** Integer step count above the room's base floor. Catwalks and stair
    *  summits carry positive values; chasm interiors carry negative ones.
    *  Read by the physics bridge to bias velocity and to offset sprite y for
-   *  the catwalk-readability fix. Default 0. */
+   *  the catwalk-readability fix. Default 0.
+   *
+   *  Authoring: an Ed layer suffixed with `_z<N>` (e.g. `floor_z1`) sets
+   *  this directly during from-moose's buildTiles. STAIRS layers may also
+   *  carry an `elevationTo` (`stairs_z0_z1` → from=0, to=1). */
   elevation: number;
+  /** STAIRS only — destination elevation reached at the far side of the
+   *  stair tile. Encodes the `_z<from>_z<to>` half of a stair layer suffix. */
+  elevationTo?: number;
   /** STAIRS only — the side the stair *rises* toward. Climbing in that
    *  direction applies STAIRS_UP_FACTOR; the reverse applies STAIRS_DOWN_FACTOR.
    *  Perpendicular travel is unaffected. */
@@ -116,7 +129,7 @@ export type RoomId = string;
  *
  *  `kind: "vent"` flags a vent-flavoured doorway: one side is a normal room
  *  whose `localPos` is a VENT tile; the other side is a `crawlspace: true`
- *  Room. Traversal requires CREEP stance, costs VENT_AP_COST, and emits no
+ *  Room. Traversal requires SNEAK stance, costs VENT_AP_COST, and emits no
  *  sound. (The legacy WorldState.ventLinks teleport path is retained for
  *  un-ported eras and is unrelated to this field.) */
 export interface Doorway {
@@ -179,6 +192,9 @@ export interface Entity {
   roomId: RoomId;
   /** Position within the room. */
   pos: Vec2;
+  /** Z-elevation slice the entity currently occupies. Entity-vs-entity
+   *  collision only fires when both share the same z. Default 0. */
+  z: number;
   facing: Facing;
   status: EntityStatus;
   /** Optional patrol route for GUARD kind. */
@@ -200,13 +216,29 @@ export interface Entity {
 
 // Player -----------------------------------------------------------------
 
-export type Stance = "WALK" | "CREEP";
+export type Stance = "WALK" | "SNEAK";
+
+/** Active timed action that suspends player input. Set by WorldEngineActions
+ *  on terminal use, vent crawl, etc.; consumed by ActionLockedState which
+ *  drives the React progress bar and unwinds the lock when elapsed reaches
+ *  duration. */
+export interface ActionLock {
+  actionId: string;
+  /** ms */
+  duration: number;
+  /** ms accumulated by PlayerStateMachine.update */
+  elapsed: number;
+  /** Stance state to return to once the lock releases. */
+  returnState: "WALK" | "SNEAK";
+}
 
 export interface PlayerState {
   /** Which room the player is currently inside. */
   roomId: RoomId;
   /** Local position in that room. */
   pos: Vec2;
+  /** Z-elevation slice the player currently occupies. Default 0. */
+  z: number;
   facing: Facing;
   ap: number;
   apMax: number;
@@ -229,6 +261,10 @@ export interface PlayerState {
   /** "roomId:x,y" of the LOCKER tile the player has ducked into. While set,
    *  guard sight ignores the player and most actions are refused. */
   hidingTileKey?: string;
+  /** Active timed action lock. While set the PlayerStateMachine routes to
+   *  ACTION_LOCKED, motion returns BLOCKED, and ACTION_PROGRESS events fire
+   *  for the React progress bar. */
+  actionLock?: ActionLock;
 }
 
 // Vent links ------------------------------------------------------------

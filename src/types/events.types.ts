@@ -24,11 +24,20 @@ export interface EventMap {
   PLAYER_MOVED: { from: Vec2; to: Vec2; roomId: RoomId };
   PLAYER_AP_CHANGED: { previous: number; current: number };
   PLAYER_FACING_CHANGED: { facing: Facing };
-  PLAYER_STANCE_CHANGED: { stance: "WALK" | "CREEP" };
+  PLAYER_STANCE_CHANGED: { stance: "WALK" | "SNEAK" };
   PLAYER_STATE_CHANGED: {
-    from: "WALK" | "CREEP" | "DUCT_CRAWL" | "HIDING" | "CLIMBING";
-    to: "WALK" | "CREEP" | "DUCT_CRAWL" | "HIDING" | "CLIMBING";
+    from: "WALK" | "SNEAK" | "DUCT_CRAWL" | "HIDING" | "CLIMBING" | "ACTION_LOCKED";
+    to: "WALK" | "SNEAK" | "DUCT_CRAWL" | "HIDING" | "CLIMBING" | "ACTION_LOCKED";
   };
+  PLAYER_Z_CHANGED: { from: number; to: number };
+
+  // Action-lock (real-time terminal/vent commit)
+  ACTION_LOCK_STARTED: { actionId: string; duration: number };
+  ACTION_PROGRESS: { actionId: string; progress: number; duration: number };
+  ACTION_LOCK_RELEASED: { actionId: string; completed: boolean };
+
+  // Lattice Override (tactical bullet time)
+  LATTICE_FOCUS_ACTIVE: { active: boolean };
   PLAYER_DETECTED: { guardId: EntityId; pos: Vec2 };
   PLAYER_DETECTION_CLEARED: Record<string, never>;
   PLAYER_DETAINED: { guardId: EntityId; turn: number };

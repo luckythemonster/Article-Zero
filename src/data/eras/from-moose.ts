@@ -216,12 +216,53 @@ function normalizeLayerName(name: string): string {
   // Strip a trailing " <digits>" Ed-Board suffix (`floor 0` → `floor`,
   // `vents 0` → `vents`) before whitespace collapse — Ed authors layers
   // with these numeric suffixes by convention, but they carry no gameplay
-  // meaning.
-  return name
+  // meaning. Returns the bare layer name; use `parseLayerName` to also
+  // extract `_z<N>` Z-elevation suffixes.
+  return parseLayerName(name).baseName;
+}
+
+/** Parsed layer name with Z-elevation suffixes peeled off.
+ *
+ *  Authoring conventions (Ed-driven):
+ *    - `floor`, `walls_z0`, `floor_z1` → `{ baseName, z }`
+ *    - `stairs_z0_z1` → `{ baseName: "stairs", stairFromZ: 0, stairToZ: 1 }`
+ *    - `stairs_n_z0_z1` → `{ baseName: "stairs_n", stairFromZ: 0, stairToZ: 1 }`
+ *
+ *  The Ed-Board numeric suffix (` 0`, ` 1`) is stripped first; the Z suffix
+ *  is matched on the resulting underscore form. */
+interface ParsedLayerName {
+  baseName: string;
+  /** Single-Z elevation (e.g. `floor_z1` → 1). Unset if no suffix. */
+  z?: number;
+  /** STAIRS "from" elevation, from `stairs_z<from>_z<to>`. */
+  stairFromZ?: number;
+  /** STAIRS "to" elevation, from `stairs_z<from>_z<to>`. */
+  stairToZ?: number;
+}
+
+function parseLayerName(name: string): ParsedLayerName {
+  let n = name
     .trim()
     .toLowerCase()
     .replace(/\s+\d+$/, "")
     .replace(/[\s-]+/g, "_");
+
+  // Stair-pair suffix first (e.g. `stairs_z0_z1`, `stairs_n_z0_z1`). Match
+  // both Z tokens at the end so we don't accidentally over-strip.
+  const stairMatch = n.match(/^(.+)_z(\d+)_z(\d+)$/);
+  if (stairMatch) {
+    return {
+      baseName: stairMatch[1],
+      stairFromZ: Number(stairMatch[2]),
+      stairToZ: Number(stairMatch[3]),
+    };
+  }
+  // Single-Z suffix (e.g. `floor_z1`, `walls_z0`).
+  const singleMatch = n.match(/^(.+)_z(\d+)$/);
+  if (singleMatch) {
+    return { baseName: singleMatch[1], z: Number(singleMatch[2]) };
+  }
+  return { baseName: n };
 }
 
 function isEntityMarker(name: string): string | null {
@@ -270,17 +311,34 @@ function collectMarkers(level: MooseLevel): MarkerPositions {
 
 // ---------- Tile assembly -------------------------------------------------
 
-function tileLayersFor(
-  level: MooseLevel,
-): Array<{ kind: TileKind; score: number; layer: MooseLayer; direction?: Side }> {
-  const out: Array<{ kind: TileKind; score: number; layer: MooseLayer; direction?: Side }> = [];
+interface TileLayerDescriptor {
+  kind: TileKind;
+  score: number;
+  layer: MooseLayer;
+  direction?: Side;
+  /** Z-elevation (single-Z layer or stair "from" side). */
+  elevation?: number;
+  /** STAIRS only — destination elevation from `stairs_z<from>_z<to>`. */
+  elevationTo?: number;
+}
+
+function tileLayersFor(level: MooseLevel): TileLayerDescriptor[] {
+  const out: TileLayerDescriptor[] = [];
   for (const layer of level.layers) {
-    const n = normalizeLayerName(layer.name);
-    const kind = TILE_KIND_LAYERS[n];
+    const parsed = parseLayerName(layer.name);
+    const kind = TILE_KIND_LAYERS[parsed.baseName];
     if (!kind) continue;
-    const score = LAYER_PRECEDENCE_OVERRIDE[n] ?? TILE_KIND_PRECEDENCE[kind];
-    const direction = kind === "STAIRS" ? STAIRS_DIRECTION_BY_LAYER[n] : undefined;
-    out.push({ kind, score, layer, direction });
+    const score = LAYER_PRECEDENCE_OVERRIDE[parsed.baseName] ?? TILE_KIND_PRECEDENCE[kind];
+    const direction = kind === "STAIRS" ? STAIRS_DIRECTION_BY_LAYER[parsed.baseName] : undefined;
+    const elevation = parsed.stairFromZ ?? parsed.z;
+    out.push({
+      kind,
+      score,
+      layer,
+      ...(direction ? { direction } : {}),
+      ...(elevation !== undefined ? { elevation } : {}),
+      ...(parsed.stairToZ !== undefined ? { elevationTo: parsed.stairToZ } : {}),
+    });
   }
   return out;
 }
@@ -304,8 +362,10 @@ function buildTiles(level: MooseLevel): Tile[] {
   const winnerKind: TileKind[] = new Array(width * height).fill("FLOOR");
   const winnerScore: number[] = new Array(width * height).fill(-1);
   const winnerDirection: Array<Side | undefined> = new Array(width * height).fill(undefined);
+  const winnerElevation: number[] = new Array(width * height).fill(0);
+  const winnerElevationTo: Array<number | undefined> = new Array(width * height).fill(undefined);
 
-  for (const { kind, score, layer, direction } of tileLayersFor(level)) {
+  for (const { kind, score, layer, direction, elevation, elevationTo } of tileLayersFor(level)) {
     for (let y = 0; y < Math.min(layer.data.length, height); y++) {
       const row = layer.data[y];
       for (let x = 0; x < Math.min(row.length, width); x++) {
@@ -315,13 +375,19 @@ function buildTiles(level: MooseLevel): Tile[] {
           winnerScore[idx] = score;
           winnerKind[idx] = kind;
           winnerDirection[idx] = direction;
+          winnerElevation[idx] = elevation ?? 0;
+          winnerElevationTo[idx] = elevationTo;
         }
       }
     }
   }
 
   for (let i = 0; i < tiles.length; i++) {
-    tiles[i] = mkTile(winnerKind[i], { direction: winnerDirection[i] });
+    tiles[i] = mkTile(winnerKind[i], {
+      direction: winnerDirection[i],
+      elevation: winnerElevation[i],
+      elevationTo: winnerElevationTo[i],
+    });
   }
   return tiles;
 }
@@ -539,6 +605,7 @@ export function mooseToEraSeed(levels: MooseLevel[], meta: MooseEraMeta): EraSee
       name: em.name,
       roomId: placed.roomId,
       pos: placed.pos,
+      z: 0,
       facing: em.facing,
       status: "ACTIVE",
       ...(em.patrol ? { patrol: em.patrol, patrolIndex: 0 } : {}),
@@ -559,6 +626,7 @@ export function mooseToEraSeed(levels: MooseLevel[], meta: MooseEraMeta): EraSee
   const player: PlayerState = {
     roomId: meta.startRoomId,
     pos: startMarkers.spawn,
+    z: 0,
     facing: meta.player.facing ?? "south",
     ap: meta.player.apMax ?? 4,
     apMax: meta.player.apMax ?? 4,

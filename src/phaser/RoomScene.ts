@@ -9,7 +9,7 @@ import { worldEngine } from "../engine/WorldEngine";
 import { guardSystem } from "../engine/GuardSystem";
 import { playerPhysicsBridge } from "../engine/PlayerPhysicsBridge";
 import { debugFlags } from "../engine/debugFlags";
-import { ELEVATION_PX_PER_STEP } from "../engine/PhysicsConfig";
+import { ELEVATION_PX_PER_STEP, LATTICE_FOCUS_TIMESCALE } from "../engine/PhysicsConfig";
 import type { Entity, Facing, Room, Tile, TileKind } from "../types/world.types";
 
 const TILE_PX = 32;
@@ -56,7 +56,15 @@ export class RoomScene extends Phaser.Scene {
   private tileLayer!: Phaser.GameObjects.Graphics;
   private glyphLayer!: Phaser.GameObjects.Graphics;
   private coneLayer!: Phaser.GameObjects.Graphics;
+  /** Pulsing line from a CAUTION-level enforcer to its lastStimulus tile.
+   *  Drawn per-frame in update() with a sine-wave alpha so the line endpoint
+   *  can change as stimulus updates (a tween would have to be rebuilt each
+   *  time). Sits above coneLayer, below the player. */
+  private telegraphLayer!: Phaser.GameObjects.Graphics;
   private overlayLayer!: Phaser.GameObjects.Graphics;
+  /** True while the Lattice Override (Shift) key is held. Drives the physics
+   *  world timeScale and emits LATTICE_FOCUS_ACTIVE for the React overlay. */
+  private latticeFocusActive = false;
   private playerSprite!: Phaser.GameObjects.Rectangle;
   private playerFacingMark!: Phaser.GameObjects.Triangle;
   private entityRects = new Map<string, Phaser.GameObjects.Rectangle>();
@@ -87,6 +95,8 @@ export class RoomScene extends Phaser.Scene {
     this.glyphLayer = this.add.graphics();
     this.coneLayer = this.add.graphics();
     this.coneLayer.setDepth(2);
+    this.telegraphLayer = this.add.graphics();
+    this.telegraphLayer.setDepth(3);
     this.overlayLayer = this.add.graphics();
     this.overlayLayer.setDepth(20);
     // Detained red flash fills the viewport, not the world — keep it
@@ -108,6 +118,28 @@ export class RoomScene extends Phaser.Scene {
     this.playerFacingMark.setDepth(6);
     this.debugLayer = this.add.graphics();
     this.debugLayer.setDepth(25);
+
+    // Lattice Override (tactical bullet time). Hold Shift to drop the physics
+    // world timeScale to 5% while the React overlay paints tactical data.
+    // Refused while an ActionLock is active so the player can't dodge timed
+    // animations with slow-motion.
+    const shiftKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+    if (shiftKey) {
+      shiftKey.on("down", () => {
+        if (!worldEngine.hasState()) return;
+        if (worldEngine.getState().player.actionLock) return;
+        if (this.latticeFocusActive) return;
+        this.latticeFocusActive = true;
+        this.physics.world.timeScale = LATTICE_FOCUS_TIMESCALE;
+        eventBus.emit("LATTICE_FOCUS_ACTIVE", { active: true });
+      });
+      shiftKey.on("up", () => {
+        if (!this.latticeFocusActive) return;
+        this.latticeFocusActive = false;
+        this.physics.world.timeScale = 1.0;
+        eventBus.emit("LATTICE_FOCUS_ACTIVE", { active: false });
+      });
+    }
 
     this.cameras.main.startFollow(this.playerSprite, true, 0.18, 0.18);
 
@@ -182,7 +214,7 @@ export class RoomScene extends Phaser.Scene {
    *  visual elevation offset + debug overlays. The redraw() path stays
    *  event-driven (PLAYER_MOVED, FOV_UPDATED, etc.) for the tile/cone
    *  layers; only ephemeral overlays + sprite y-offset live here. */
-  update(_time: number, delta: number): void {
+  update(time: number, delta: number): void {
     if (!worldEngine.hasState()) return;
     playerPhysicsBridge.update(delta);
 
@@ -198,7 +230,44 @@ export class RoomScene extends Phaser.Scene {
       this.playerFacingMark.y = facingY;
     }
 
+    this.drawGuardTelegraphs(time);
     this.drawDebugOverlays();
+  }
+
+  /** Draw a pulsing yellow line from every CAUTION-level enforcer in the
+   *  current room to its `lastStimulus` tile. This is the radical-
+   *  predictability telegraph: the player can read the exact pathfinding
+   *  target before the guard moves. Pulses via a stateless sine-wave so the
+   *  endpoint can change frame-to-frame as stimulus updates. */
+  private drawGuardTelegraphs(time: number): void {
+    this.telegraphLayer.clear();
+    if (!worldEngine.hasState()) return;
+    const state = worldEngine.getState();
+    const room = worldEngine.getCurrentRoom();
+    if (!room) return;
+    const pulse = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(time / 180));
+    for (const e of state.entities.values()) {
+      if (e.kind !== "GUARD" || e.status !== "ACTIVE") continue;
+      if (e.roomId !== room.id) continue;
+      if (e.alert?.level !== "CAUTION") continue;
+      const tgt = e.alert.lastStimulus;
+      if (!tgt) continue;
+      // Cross-room stimuli get telegraphed only on the room they happened
+      // in; for the other side, the guard just orients toward the doorway.
+      if (e.alert.lastStimulusRoom && e.alert.lastStimulusRoom !== room.id) continue;
+      const x1 = e.pos.x * TILE_PX + TILE_PX / 2;
+      const y1 = e.pos.y * TILE_PX + TILE_PX / 2;
+      const x2 = tgt.x * TILE_PX + TILE_PX / 2;
+      const y2 = tgt.y * TILE_PX + TILE_PX / 2;
+      this.telegraphLayer.lineStyle(2, 0xebd14a, 0.7 * pulse);
+      this.telegraphLayer.beginPath();
+      this.telegraphLayer.moveTo(x1, y1);
+      this.telegraphLayer.lineTo(x2, y2);
+      this.telegraphLayer.strokePath();
+      // Endpoint pip — marks the pathfind target.
+      this.telegraphLayer.fillStyle(0xebd14a, pulse);
+      this.telegraphLayer.fillCircle(x2, y2, 3);
+    }
   }
 
   private drawDebugOverlays(): void {
@@ -328,6 +397,7 @@ export class RoomScene extends Phaser.Scene {
     this.tileLayer.clear();
     this.glyphLayer.clear();
     this.coneLayer.clear();
+    this.telegraphLayer.clear();
     this.overlayLayer.clear();
 
     const hasDecoration = !!room.decoration;

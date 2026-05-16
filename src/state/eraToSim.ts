@@ -23,6 +23,7 @@ export function worldStateToSlices(ws: WorldState): {
     entityPositions.set(id, {
       roomId: e.roomId,
       pos: e.pos,
+      z: e.z,
       facing: e.facing,
       status: e.status,
       patrol: e.patrol,
@@ -47,6 +48,7 @@ export function worldStateToSlices(ws: WorldState): {
     terminalPayloads: new Map(ws.terminalPayloads),
     playerRoomId: ws.player.roomId,
     playerPos: ws.player.pos,
+    playerZ: ws.player.z,
     playerFacing: ws.player.facing,
     entityPositions,
     entityKinds,
@@ -93,6 +95,7 @@ export function slicesToWorldState(
       name: kind?.name ?? id,
       roomId: phys.roomId,
       pos: phys.pos,
+      z: phys.z ?? 0,
       facing: phys.facing,
       status: phys.status,
       patrol: phys.patrol,
@@ -112,6 +115,7 @@ export function slicesToWorldState(
     player: {
       roomId: physical.playerRoomId,
       pos: physical.playerPos,
+      z: physical.playerZ ?? 0,
       facing: physical.playerFacing,
       ap: subjective.ap,
       apMax: subjective.apMax,

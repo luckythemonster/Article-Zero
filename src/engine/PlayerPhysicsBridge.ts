@@ -90,7 +90,7 @@ export class PlayerPhysicsBridge {
 
     let motion = playerStateMachine.motion(state, dx, dy);
 
-    // Stair velocity scaling — applied here so it works in WALK, CREEP, or
+    // Stair velocity scaling — applied here so it works in WALK, SNEAK, or
     // CLIMBING. The state machine only governs canPerform; the speed bias
     // is a property of the tile, not the state.
     if (motion.kind === "VELOCITY") {
@@ -216,23 +216,43 @@ export class PlayerPhysicsBridge {
     const baseElevation = here.elevation;
     // For STAIRS tiles, lerp between this cell's elevation and the next
     // cell's elevation along the stair direction, using sub-tile body
-    // position as the lerp factor.
+    // position as the lerp factor. The target elevation is either:
+    //   - the explicit `elevationTo` from a `stairs_z<from>_z<to>` layer
+    //   - or the neighbor tile's elevation (legacy/inferred path)
     if (here.kind === "STAIRS" && here.direction) {
       const sd = SIDE_DIR[here.direction];
       const nx = state.player.pos.x + sd.dx;
       const ny = state.player.pos.y + sd.dy;
       const next = this.tileAtCoord(state, nx, ny);
-      if (next) {
-        const dNext = next.elevation - baseElevation;
-        const cellOriginX = state.player.pos.x * TILE_PX;
-        const cellOriginY = state.player.pos.y * TILE_PX;
-        const subX = (this.sprite.x - cellOriginX) / TILE_PX; // 0..1
-        const subY = (this.sprite.y - cellOriginY) / TILE_PX;
-        const t = sd.dx !== 0
-          ? (sd.dx > 0 ? subX : 1 - subX)
-          : (sd.dy > 0 ? subY : 1 - subY);
-        return baseElevation + dNext * Math.max(0, Math.min(1, t));
+      const targetElevation = here.elevationTo ?? next?.elevation ?? baseElevation;
+      const cellOriginX = state.player.pos.x * TILE_PX;
+      const cellOriginY = state.player.pos.y * TILE_PX;
+      const subX = (this.sprite.x - cellOriginX) / TILE_PX; // 0..1
+      const subY = (this.sprite.y - cellOriginY) / TILE_PX;
+      const t = sd.dx !== 0
+        ? (sd.dx > 0 ? subX : 1 - subX)
+        : (sd.dy > 0 ? subY : 1 - subY);
+      const clamped = Math.max(0, Math.min(1, t));
+      const dTarget = targetElevation - baseElevation;
+      // Update player.z with hysteresis so we don't oscillate at the midpoint
+      // when the body straddles the boundary frame-to-frame.
+      const prevZ = state.player.z;
+      const nextZ =
+        clamped > 0.6 ? Math.max(baseElevation, targetElevation)
+          : clamped < 0.4 ? Math.min(baseElevation, targetElevation)
+          : prevZ;
+      if (nextZ !== prevZ) {
+        state.player.z = nextZ;
+        eventBus.emit("PLAYER_Z_CHANGED", { from: prevZ, to: nextZ });
       }
+      return baseElevation + dTarget * clamped;
+    }
+    // Off-stairs: snap player.z to the floor's elevation so we don't carry a
+    // stale Z if the player walks straight off a catwalk edge.
+    if (state.player.z !== baseElevation) {
+      const prevZ = state.player.z;
+      state.player.z = baseElevation;
+      eventBus.emit("PLAYER_Z_CHANGED", { from: prevZ, to: baseElevation });
     }
     return baseElevation;
   }
@@ -259,6 +279,10 @@ export class PlayerPhysicsBridge {
     for (const e of state.entities.values()) {
       if (e.status !== "ACTIVE") continue;
       if (e.roomId !== state.player.roomId) continue;
+      // Z-elevation collision filter: entities at different Z slices don't
+      // collide (a catwalk patrol doesn't block ground-level traversal and
+      // vice versa).
+      if (e.z !== state.player.z) continue;
       if (e.pos.x === tx && e.pos.y === ty) return true;
     }
     return false;

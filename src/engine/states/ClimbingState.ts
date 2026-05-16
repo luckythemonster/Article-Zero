@@ -6,7 +6,7 @@
 //   - velocity opposed to stair direction → STAIRS_DOWN_FACTOR (fast)
 //   - perpendicular → unchanged
 // The scaling itself lives in PlayerPhysicsBridge so it can be applied
-// regardless of which state issued the motion (e.g. CREEP up a stair).
+// regardless of which state issued the motion (e.g. SNEAK up a stair).
 
 import type {
   PlayerActionId,

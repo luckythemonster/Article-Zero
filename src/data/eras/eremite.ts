@@ -7,7 +7,7 @@
 //   lower       — `level -1 *` boards, visible through the main-deck
 //                  chasms; reached via two ladders
 //   crawlspace  — `vent *` boards (vent walls, vent shaft, vent light
-//                  source); reached only from CREEP at the painted vent
+//                  source); reached only from SNEAK at the painted vent
 //                  cells on main
 //
 // The painted DOOR_CLOSED cells on main are NOT yet paired in meta — the
@@ -84,7 +84,7 @@ export function eremiteEra(): EraSeed {
       // at (9,20) is shadowed by a ladder there (same cell) — the
       // ladder doorway wins doorwayAt lookup, so a second vent doorway
       // would be dead code. Single vent path is enough for v1.
-      // CREEP stance + VENT_AP_COST enforced by WorldEngineActions.
+      // SNEAK stance + VENT_AP_COST enforced by WorldEngineActions.
       {
         from: "main",
         to: "crawlspace",

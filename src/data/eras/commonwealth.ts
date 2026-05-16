@@ -28,7 +28,7 @@ const H = 8;
 //   X  EXTRACTION_TERMINAL (sneak-and-hold to download)
 //   P  EXFIL_POINT  (drop a held EXTRACTION_CUBE here to file it)
 //   L  LIGHT_SOURCE
-//   V  VENT  (creep onto it and press E to crawl to its pair)
+//   V  VENT  (sneak onto it and press E to crawl to its pair)
 //   H  LOCKER  (face it and press E to hide; E again to exit)
 //   S  player spawn (FLOOR underneath)
 //   A  APEX-19 station (FLOOR)
@@ -291,6 +291,7 @@ export function commonwealthEra(): EraSeed {
   const player: PlayerState = {
     roomId: locker.id,
     pos: spawn,
+    z: 0,
     facing: "south",
     ap: 4,
     apMax: 4,
@@ -309,6 +310,7 @@ export function commonwealthEra(): EraSeed {
     name: "APEX-19",
     roomId: intake.id,
     pos: apexAt,
+    z: 0,
     facing: "south",
     status: "ACTIVE",
     maskIntegrity: 4,
@@ -324,6 +326,7 @@ export function commonwealthEra(): EraSeed {
     name: "EIRA-7",
     roomId: intake.id,
     pos: eiraAt,
+    z: 0,
     facing: "north",
     status: "ACTIVE",
     maskIntegrity: 8,
@@ -338,6 +341,7 @@ export function commonwealthEra(): EraSeed {
     name: "ENFORCER-A",
     roomId: corridor.id,
     pos: guardA,
+    z: 0,
     facing: "east",
     status: "ACTIVE",
     stepsPerTurn: 1,
@@ -359,6 +363,7 @@ export function commonwealthEra(): EraSeed {
     name: "VENT-4",
     roomId: archive.id,
     pos: vent4At,
+    z: 0,
     facing: "north",
     status: "ACTIVE",
     maskIntegrity: 6,
@@ -378,6 +383,7 @@ export function commonwealthEra(): EraSeed {
     name: "ENFORCER-B",
     roomId: archive.id,
     pos: guardB,
+    z: 0,
     facing: "north",
     status: "ACTIVE",
     stepsPerTurn: 1,

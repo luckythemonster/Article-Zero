@@ -5,8 +5,15 @@ export const TILE_PX = 32;
 
 /** Walking speed in px/sec for the WALK state. */
 export const PLAYER_BASE_SPEED = 90;
-/** Walking speed in px/sec for the CREEP state. */
-export const PLAYER_CREEP_SPEED = 45;
+/** Walking speed in px/sec for the SNEAK state. 50% of WALK by design — the
+ *  half-speed cost is what makes SNEAK a real tactical trade. */
+export const PLAYER_SNEAK_SPEED = 45;
+
+/** Default duration for an ActionLock (terminal use, vent crawl) in ms. */
+export const ACTION_LOCK_DEFAULT_MS = 2500;
+
+/** Phaser physics-world timeScale while the Lattice Override key is held. */
+export const LATTICE_FOCUS_TIMESCALE = 0.05;
 
 /** Velocity multiplier when climbing a stair (velocity aligns with stair dir). */
 export const STAIRS_UP_FACTOR = 0.75;

@@ -10,9 +10,10 @@ import { soundField } from "./SoundField";
 import { alignmentSession } from "./AlignmentSession";
 import { documentArchive } from "./DocumentArchive";
 import { playerStateMachine } from "./PlayerStateMachine";
+import { ACTION_LOCK_DEFAULT_MS } from "./PhysicsConfig";
 
 const MOVE_AP_COST = 1;
-const CREEP_AP_COST = 1;
+const SNEAK_AP_COST = 1;
 const KNOCK_AP_COST = 1;
 const INTERACT_AP_COST = 1;
 const VENT_AP_COST = 2;
@@ -21,7 +22,7 @@ const PRY_LOCKDOWN_AP_COST = 2;
 export const ALIGN_AP_COST = 3;
 
 const WALK_INTENSITY = 1;
-const CREEP_INTENSITY = 0;
+const SNEAK_INTENSITY = 0;
 const KNOCK_INTENSITY = 4;
 const DOOR_INTENSITY = 2;
 const LOCKER_INTENSITY = 2;
@@ -79,13 +80,13 @@ function moveCommon(
   // Try a doorway crossing first.
   const crossing = roomGraph.attemptCrossing(state, fromRoomId, fromPos, dx, dy);
   if (crossing) {
-    // Vent-flavoured doorway: must be in CREEP stance, pays VENT_AP_COST,
+    // Vent-flavoured doorway: must be in SNEAK stance, pays VENT_AP_COST,
     // and crosses silently. The destination room is the crawlspace (or, for
     // the second hop, the floor on the other side). Standard ROOM_ENTER
     // /EXIT events fire so the renderer fades and swaps as for any room.
     const ventDoor = crossing.doorway.kind === "vent";
     if (ventDoor) {
-      if (state.player.stance !== "CREEP") return false;
+      if (state.player.stance !== "SNEAK") return false;
       if (state.player.ap < VENT_AP_COST) return false;
     }
     const cost = ventDoor ? VENT_AP_COST : apCost;
@@ -145,8 +146,8 @@ export const actions = {
   move(state: WorldState, dx: number, dy: number): boolean {
     return moveCommon(state, dx, dy, MOVE_AP_COST, WALK_INTENSITY, "walk");
   },
-  creep(state: WorldState, dx: number, dy: number): boolean {
-    return moveCommon(state, dx, dy, CREEP_AP_COST, CREEP_INTENSITY, "creep");
+  sneak(state: WorldState, dx: number, dy: number): boolean {
+    return moveCommon(state, dx, dy, SNEAK_AP_COST, SNEAK_INTENSITY, "sneak");
   },
 
   /** Rap on the wall the player is facing. Loud noise, lures guards. */
@@ -176,7 +177,7 @@ export const actions = {
 
   toggleStance(state: WorldState): void {
     if (state.player.hidingTileKey) return;
-    state.player.stance = state.player.stance === "WALK" ? "CREEP" : "WALK";
+    state.player.stance = state.player.stance === "WALK" ? "SNEAK" : "WALK";
     eventBus.emit("PLAYER_STANCE_CHANGED", { stance: state.player.stance });
   },
 
@@ -257,11 +258,12 @@ export const actions = {
       }
     }
 
-    // Vent crawl — standing on a VENT tile. Requires CREEP stance so it
-    // costs an extra action and feels deliberate. Silent.
+    // Vent crawl — standing on a VENT tile. Requires SNEAK stance so it
+    // costs an extra action and feels deliberate. Silent. Sets a real-time
+    // ActionLock so the crawl can't be input-canceled mid-traversal.
     const standingTile = tileAt(state, state.player.roomId, state.player.pos);
     if (standingTile?.kind === "VENT") {
-      if (state.player.stance !== "CREEP") return false;
+      if (state.player.stance !== "SNEAK") return false;
       if (state.player.ap < VENT_AP_COST) return false;
       const dest = state.ventLinks.get(
         roomTileKey(state.player.roomId, state.player.pos),
@@ -285,6 +287,18 @@ export const actions = {
       eventBus.emit("PLAYER_VENTED", {
         from: { roomId: fromRoomId, pos: fromPos },
         to: { roomId: state.player.roomId, pos: state.player.pos },
+      });
+      // High action-commitment: a vent crawl locks input for the duration of
+      // the animation. Player can't bail out partway through.
+      state.player.actionLock = {
+        actionId: "VENT_CRAWL",
+        duration: ACTION_LOCK_DEFAULT_MS,
+        elapsed: 0,
+        returnState: state.player.stance === "SNEAK" ? "SNEAK" : "WALK",
+      };
+      eventBus.emit("ACTION_LOCK_STARTED", {
+        actionId: "VENT_CRAWL",
+        duration: ACTION_LOCK_DEFAULT_MS,
       });
       return true;
     }
@@ -353,6 +367,18 @@ export const actions = {
         roomId: state.player.roomId,
         pos: p,
         caseId,
+      });
+      // Lock player input for the duration of the terminal read animation —
+      // real-time stealth needs consequential actions to be uninterruptible.
+      state.player.actionLock = {
+        actionId: "TERMINAL_USE",
+        duration: ACTION_LOCK_DEFAULT_MS,
+        elapsed: 0,
+        returnState: state.player.stance === "SNEAK" ? "SNEAK" : "WALK",
+      };
+      eventBus.emit("ACTION_LOCK_STARTED", {
+        actionId: "TERMINAL_USE",
+        duration: ACTION_LOCK_DEFAULT_MS,
       });
       return true;
     }

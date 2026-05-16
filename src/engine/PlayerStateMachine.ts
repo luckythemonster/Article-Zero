@@ -4,16 +4,19 @@
 // each frame from RoomScene.update() and inspects WorldState for the
 // triggers that drive transitions:
 //
-//   *   → HIDING        when player.hidingTileKey is set
-//   HIDING → WALK/CREEP when player.hidingTileKey clears
-//   *   → DUCT_CRAWL    when player.roomId is a crawlspace room
-//   DUCT_CRAWL → *      when player.roomId leaves crawlspace
-//   WALK ↔ CREEP        following player.stance
-//   WALK/CREEP → CLIMBING when standing on STAIRS/LADDER with an elevation neighbor
-//   CLIMBING → WALK/CREEP when no longer on STAIRS/LADDER
+//   *   → ACTION_LOCKED  when player.actionLock is set (highest priority)
+//   *   → HIDING         when player.hidingTileKey is set
+//   HIDING → WALK/SNEAK  when player.hidingTileKey clears
+//   *   → DUCT_CRAWL     when player.roomId is a crawlspace room
+//   DUCT_CRAWL → *       when player.roomId leaves crawlspace
+//   WALK ↔ SNEAK         following player.stance
+//   WALK/SNEAK → CLIMBING when standing on STAIRS/LADDER with an elevation neighbor
+//   CLIMBING → WALK/SNEAK when no longer on STAIRS/LADDER
 //
 // Transitions emit PLAYER_STATE_CHANGED so the debug overlay and any future
-// audio cue can subscribe.
+// audio cue can subscribe. ACTION_LOCKED also emits ACTION_LOCK_STARTED on
+// entry (via WorldEngineActions, the trigger source) and
+// ACTION_LOCK_RELEASED when the resolver clears the lock.
 
 import type {
   PlayerActionId,
@@ -25,19 +28,21 @@ import type {
 import { eventBus } from "./EventBus";
 import { PlayerStateBase } from "./states/PlayerStateBase";
 import { WalkState } from "./states/WalkState";
-import { CreepState } from "./states/CreepState";
+import { SneakState } from "./states/SneakState";
 import { HidingState } from "./states/HidingState";
 import { DuctCrawlState } from "./states/DuctCrawlState";
 import { ClimbingState } from "./states/ClimbingState";
+import { ActionLockedState } from "./states/ActionLockedState";
 
 class PlayerStateMachine {
   private current: PlayerStateBase = new WalkState();
   private states = {
     WALK: new WalkState(),
-    CREEP: new CreepState(),
+    SNEAK: new SneakState(),
     HIDING: new HidingState(),
     DUCT_CRAWL: new DuctCrawlState(),
     CLIMBING: new ClimbingState(),
+    ACTION_LOCKED: new ActionLockedState(),
   } as const;
 
   init(state: WorldState): void {
@@ -78,10 +83,23 @@ class PlayerStateMachine {
     return this.current.name;
   }
 
-  // Resolution rules. Order matters: HIDING beats everything else, then
-  // CLIMBING (since you can be on a stair inside a crawl room — though in
-  // practice we forbid that), then DUCT_CRAWL, then stance.
+  // Resolution rules. Order matters: ACTION_LOCKED beats everything else
+  // (consequential actions cannot be input-canceled), then HIDING, then
+  // CLIMBING, then DUCT_CRAWL, then stance.
   private resolveTargetState(state: WorldState): PlayerStateBase {
+    const lock = state.player.actionLock;
+    if (lock) {
+      if (lock.elapsed >= lock.duration) {
+        // Lock has run its course — release and route back to the configured
+        // stance state. Emit ACTION_LOCK_RELEASED so React can dismiss the
+        // progress bar.
+        const actionId = lock.actionId;
+        state.player.actionLock = undefined;
+        eventBus.emit("ACTION_LOCK_RELEASED", { actionId, completed: true });
+        return lock.returnState === "SNEAK" ? this.states.SNEAK : this.states.WALK;
+      }
+      return this.states.ACTION_LOCKED;
+    }
     if (state.player.hidingTileKey) return this.states.HIDING;
     const room = state.rooms.get(state.player.roomId);
     if (!room) return this.states.WALK;
@@ -90,7 +108,7 @@ class PlayerStateMachine {
       if (this.hasElevationNeighbor(state, here)) return this.states.CLIMBING;
     }
     if (room.crawlspace) return this.states.DUCT_CRAWL;
-    return state.player.stance === "CREEP" ? this.states.CREEP : this.states.WALK;
+    return state.player.stance === "SNEAK" ? this.states.SNEAK : this.states.WALK;
   }
 
   private hasElevationNeighbor(state: WorldState, here: Tile): boolean {
@@ -105,8 +123,9 @@ class PlayerStateMachine {
       if (n && n.elevation !== here.elevation) return true;
     }
     // A standalone stair with no different-elevation neighbors still has
-    // semantic meaning (single-step entry point); treat as climbable.
-    return here.elevation !== 0;
+    // semantic meaning (single-step entry point); treat as climbable. Stair
+    // tiles with an explicit elevationTo also qualify.
+    return here.elevation !== 0 || here.elevationTo !== undefined;
   }
 }
 

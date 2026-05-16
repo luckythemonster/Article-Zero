@@ -32,6 +32,7 @@ export function miradorEra(): EraSeed {
   const player: PlayerState = {
     roomId: "booth",
     pos: { x: 3, y: 2 },
+    z: 0,
     facing: "south",
     ap: 4, apMax: 4,
     flashlightOn: false, flashlightBattery: 30,
