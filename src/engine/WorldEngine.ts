@@ -19,7 +19,7 @@ import {
   computeCone,
   getEffectivePlayerRadius,
 } from "./VisionCone";
-import { seedFromEra } from "./WorldEngineState";
+import { SEED_VERSIONS, seedFromEra } from "./WorldEngineState";
 import { actions } from "./WorldEngineActions";
 import { documentArchive } from "./DocumentArchive";
 import { alignmentSession } from "./AlignmentSession";
@@ -289,7 +289,22 @@ class WorldEngine {
 
   // Restore state from a snapshot. If subjective is null (wiped save),
   // applies a fresh husk and sets subjectiveDesync on the terminal store.
+  // If the snapshot's seedVersion doesn't match the era's current schema,
+  // the saved rooms reflect a stale map shape — fall back to a fresh seed
+  // and log a WARN so the player can see why their save didn't load.
   loadSnapshot(snap: SimSnapshot): void {
+    const era = snap.physical.era;
+    const expected = SEED_VERSIONS[era];
+    if (snap.seedVersion !== expected) {
+      useTerminalStore.getState().log({
+        turn: 0,
+        module: era,
+        level: "WARN",
+        text: `snapshot stale (seed v${snap.seedVersion ?? "?"} ≠ current v${expected}) — loading fresh map for ${era}.`,
+      });
+      this.initWorld(era);
+      return;
+    }
     const physical = deserializePhysical(snap.physical);
 
     if (snap.subjective) {

@@ -17,6 +17,17 @@ import { miradorEra } from "../data/eras/mirador.stub";
 import { eremiteEra } from "../data/eras/eremite";
 import { nwSmac01Era } from "../data/eras/nwSmac01";
 
+/** Seed schema version per era. Bump when an era's level data changes shape
+ *  (room geometry, layer set, doorways) — saved snapshots with a mismatched
+ *  version are rejected by `WorldEngine.loadSnapshot` and the engine falls
+ *  back to a fresh seed instead of restoring stale rooms. */
+export const SEED_VERSIONS: Record<Era, number> = {
+  COMMONWEALTH: 1,
+  EREMITE: 1,
+  MIRADOR: 1,
+  NW_SMAC_01: 2,
+};
+
 export interface EraSeed {
   era: Era;
   player: PlayerState;

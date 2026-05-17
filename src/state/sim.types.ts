@@ -133,4 +133,9 @@ export interface SimSnapshot {
   subjective: SerializedSubjective | null;
   /** True if subjective was deliberately wiped (404 Wipe) rather than never saved. */
   subjectiveWiped: boolean;
+  /** Era seed schema version at save time. Compared against
+   *  `SEED_VERSIONS[era]` on restore; mismatch triggers a fresh seed.
+   *  Optional for back-compat with snapshots persisted before this field
+   *  was added — `undefined` is treated as stale. */
+  seedVersion?: number;
 }

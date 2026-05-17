@@ -8,6 +8,7 @@ import type { WorldState } from "../types/world.types";
 import type { PhysicalState, SimSnapshot, SubjectiveState } from "./sim.types";
 import { worldStateToSlices } from "./eraToSim";
 import { serializePhysical, serializeSubjective } from "./serialize";
+import { SEED_VERSIONS } from "../engine/WorldEngineState";
 
 interface SimStore {
   physical: PhysicalState | null;
@@ -41,6 +42,7 @@ export const useSimStore = create<SimStore>((set, get) => ({
       physical: serializePhysical(physical),
       subjective: subjective ? serializeSubjective(subjective) : null,
       subjectiveWiped: subjective === null,
+      seedVersion: SEED_VERSIONS[physical.era],
     };
   },
 }));
