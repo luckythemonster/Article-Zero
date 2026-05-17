@@ -43,7 +43,6 @@ export function installDebugEventTap(): () => void {
   offs.push(eventBus.on("PLAYER_MOVED", (p) => push("PLAYER_MOVED", p)));
   offs.push(eventBus.on("PLAYER_FACING_CHANGED", (p) => push("PLAYER_FACING_CHANGED", p)));
   offs.push(eventBus.on("PLAYER_STANCE_CHANGED", (p) => push("PLAYER_STANCE_CHANGED", p)));
-  offs.push(eventBus.on("PLAYER_STATE_CHANGED", (p) => push("PLAYER_STATE_CHANGED", p)));
   offs.push(eventBus.on("PLAYER_HIDDEN", (p) => push("PLAYER_HIDDEN", p)));
   offs.push(eventBus.on("PLAYER_UNHIDDEN", (p) => push("PLAYER_UNHIDDEN", p)));
   offs.push(eventBus.on("PLAYER_PEEKED", (p) => push("PLAYER_PEEKED", p)));

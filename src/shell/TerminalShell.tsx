@@ -15,8 +15,6 @@ import ClimaxOverlay from "../components/ClimaxOverlay";
 import AuditLockdown from "../components/AuditLockdown";
 import ArchiveEpilogue from "../components/ArchiveEpilogue";
 import DebugOverlay from "../components/DebugOverlay";
-import ActionProgressBar from "../components/ActionProgressBar";
-import LatticeFocusOverlay from "../components/LatticeFocusOverlay";
 
 export default function TerminalShell() {
   const activeModule = useTerminalStore((s) => s.activeModuleId);
@@ -66,8 +64,6 @@ export default function TerminalShell() {
               </>
             )}
             <AuditLockdown />
-            <ActionProgressBar />
-            <LatticeFocusOverlay />
           </PhaserCanvas>
         ) : (
           <ModuleSelector />

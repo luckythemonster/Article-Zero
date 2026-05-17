@@ -32,9 +32,6 @@ import { useTerminalStore } from "../state/useTerminalStore";
 import { slicesToWorldState } from "../state/eraToSim";
 import { deserializePhysical, deserializeSubjective } from "../state/serialize";
 import type { PhysicalState, SimSnapshot, SubjectiveState } from "../state/sim.types";
-import { playerStateMachine } from "./PlayerStateMachine";
-import { roomGraph } from "./RoomGraph";
-import { facingFromDelta } from "../types/world.types";
 
 class WorldEngine {
   private state: WorldState | null = null;
@@ -45,7 +42,6 @@ class WorldEngine {
     extractionTerminal.reset(this.state);
     this.recomputeFOV();
     complianceSystem.recompute(this.state);
-    playerStateMachine.init(this.state);
     useSimStore.getState().setActiveModule(era);
     this.syncStore();
     eventBus.emit("ERA_SELECTED", { era });
@@ -146,76 +142,6 @@ class WorldEngine {
 
   endTurn = () => this.advanceTurn();
 
-  /** Real-time physics path: tile-coord sync with footstep sound emission.
-   *  Does NOT spend AP. Called by PlayerPhysicsBridge each time the body's
-   *  center crosses a tile boundary. WALK stance emits an intensity-1
-   *  footstep; SNEAK emits 0 (radical predictability — the enforcer's CAUTION
-   *  is a direct, mathematically readable consequence of being in WALK).
-   *  Triggers FOV recompute, sound propagation, and a perception-only guard
-   *  tick so enforcers transition to CAUTION immediately on a footstep. */
-  setPlayerTilePos = (to: Vec2) => {
-    const s = this.getState();
-    if (to.x === s.player.pos.x && to.y === s.player.pos.y) return;
-    const from = s.player.pos;
-    s.player.pos = to;
-    eventBus.emit("PLAYER_MOVED", { from, to, roomId: s.player.roomId });
-    this.recomputeFOV();
-    complianceSystem.recompute(s);
-
-    // Real-time footstep emission. WALK stance is the only one that fires;
-    // SNEAK zeroes intensity, HIDING/DUCT_CRAWL/ACTION_LOCKED can't produce
-    // a tile-coord change. CLIMBING preserves stance, so a SNEAK player on
-    // stairs stays quiet — by design.
-    if (s.player.stance === "WALK") {
-      soundField.emit({
-        roomId: s.player.roomId,
-        pos: to,
-        intensity: 1,
-        reason: "walk",
-      });
-      const heard = soundField.propagate(s);
-      soundField.reset();
-      // Perception-only — guards transition alert level but do not move on
-      // this path. Movement still batches through the per-turn tick to keep
-      // enforcers from sprinting at 60fps.
-      guardSystem.framePerceptionCheck(s, heard);
-    }
-
-    this.syncStore();
-  };
-
-  /** Real-time physics path: doorway crossing. Wraps roomGraph.attemptCrossing
-   *  and routes the player to the landing tile. Does NOT spend AP — movement
-   *  is free in the real-time layer. Returns true if a crossing fired. */
-  crossDoorway = (fromPos: Vec2, dx: number, dy: number): boolean => {
-    const s = this.getState();
-    const crossing = roomGraph.attemptCrossing(s, s.player.roomId, fromPos, dx, dy);
-    if (!crossing) return false;
-    const fromRoomId = s.player.roomId;
-    const facing = facingFromDelta(dx, dy);
-    if (facing && facing !== s.player.facing) {
-      s.player.facing = facing;
-      eventBus.emit("PLAYER_FACING_CHANGED", { facing });
-    }
-    eventBus.emit("ROOM_EXITED", { roomId: fromRoomId });
-    s.player.roomId = crossing.toRoom;
-    if (s.lockdown && s.lockdown.roomId !== crossing.toRoom) {
-      s.lockdown = undefined;
-    }
-    s.player.pos = { ...crossing.landingPos };
-    s.player.lastMoveTurn = s.turn;
-    eventBus.emit("PLAYER_MOVED", {
-      from: fromPos,
-      to: s.player.pos,
-      roomId: s.player.roomId,
-    });
-    eventBus.emit("ROOM_ENTERED", { roomId: s.player.roomId, from: fromRoomId });
-    this.recomputeFOV();
-    complianceSystem.recompute(s);
-    this.syncStore();
-    return true;
-  };
-
   canStartAlignment = (entityId: string) =>
     actions.canStartAlignment(this.getState(), entityId);
 
@@ -260,7 +186,6 @@ class WorldEngine {
     s.player.flashlightBattery = 30;
     s.player.peeking = undefined;
     s.player.hidingTileKey = undefined;
-    s.player.actionLock = undefined;
     s.player.lastMoveTurn = undefined;
     for (const entity of s.entities.values()) {
       entity.alert = undefined;
@@ -327,7 +252,6 @@ class WorldEngine {
     extractionTerminal.reset(this.state);
     this.recomputeFOV();
     complianceSystem.recompute(this.state);
-    playerStateMachine.init(this.state);
     this.syncStore();
     eventBus.emit("ERA_SELECTED", { era: physical.era });
     eventBus.emit("ROOM_ENTERED", { roomId: this.state.player.roomId });

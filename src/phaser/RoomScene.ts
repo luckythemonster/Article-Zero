@@ -7,18 +7,11 @@ import { Phaser } from "../engine/EngineAdapter";
 import { eventBus } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
 import { guardSystem } from "../engine/GuardSystem";
-import { playerPhysicsBridge } from "../engine/PlayerPhysicsBridge";
 import { debugFlags } from "../engine/debugFlags";
-import { ELEVATION_PX_PER_STEP, LATTICE_FOCUS_TIMESCALE } from "../engine/PhysicsConfig";
 import type { Entity, Facing, Room, Tile, TileKind } from "../types/world.types";
 
 const TILE_PX = 32;
-
-/** The player rect after physics.add.existing() — Phaser attaches a `.body`
- *  but the TypeScript typings keep the property nullable. This narrows it. */
-type PhysicsRect = Phaser.GameObjects.Rectangle & {
-  body: Phaser.Physics.Arcade.Body;
-};
+const ELEVATION_PX_PER_STEP = 8;
 
 // Layers in a moose-imported FloorDecoration that mark entity positions or
 // spawn points rather than visible terrain. We skip them when drawing
@@ -56,15 +49,8 @@ export class RoomScene extends Phaser.Scene {
   private tileLayer!: Phaser.GameObjects.Graphics;
   private glyphLayer!: Phaser.GameObjects.Graphics;
   private coneLayer!: Phaser.GameObjects.Graphics;
-  /** Pulsing line from a CAUTION-level enforcer to its lastStimulus tile.
-   *  Drawn per-frame in update() with a sine-wave alpha so the line endpoint
-   *  can change as stimulus updates (a tween would have to be rebuilt each
-   *  time). Sits above coneLayer, below the player. */
   private telegraphLayer!: Phaser.GameObjects.Graphics;
   private overlayLayer!: Phaser.GameObjects.Graphics;
-  /** True while the Lattice Override (Shift) key is held. Drives the physics
-   *  world timeScale and emits LATTICE_FOCUS_ACTIVE for the React overlay. */
-  private latticeFocusActive = false;
   private playerSprite!: Phaser.GameObjects.Rectangle;
   private playerFacingMark!: Phaser.GameObjects.Triangle;
   private entityRects = new Map<string, Phaser.GameObjects.Rectangle>();
@@ -106,40 +92,14 @@ export class RoomScene extends Phaser.Scene {
     this.playerSprite = this.add.rectangle(0, 0, TILE_PX - 12, TILE_PX - 12, 0x6ad0a4);
     this.playerSprite.setStrokeStyle(2, 0xe6f0f2);
     this.playerSprite.setDepth(5);
-    // Attach an Arcade Physics body so PlayerPhysicsBridge can drive
-    // movement via velocity. The body's size matches the visual rect.
-    this.physics.add.existing(this.playerSprite);
-    const body = this.playerSprite.body as Phaser.Physics.Arcade.Body;
-    body.setCollideWorldBounds(false);
-    body.setSize(TILE_PX - 12, TILE_PX - 12);
-    playerPhysicsBridge.attach(this, this.playerSprite as PhysicsRect);
-    playerPhysicsBridge.recenter();
+    if (worldEngine.hasState()) {
+      const pos = worldEngine.getState().player.pos;
+      this.playerSprite.setPosition(pos.x * TILE_PX + TILE_PX / 2, pos.y * TILE_PX + TILE_PX / 2);
+    }
     this.playerFacingMark = this.add.triangle(0, 0, 0, 0, -6, 8, 6, 8, 0xe6f0f2);
     this.playerFacingMark.setDepth(6);
     this.debugLayer = this.add.graphics();
     this.debugLayer.setDepth(25);
-
-    // Lattice Override (tactical bullet time). Hold Shift to drop the physics
-    // world timeScale to 5% while the React overlay paints tactical data.
-    // Refused while an ActionLock is active so the player can't dodge timed
-    // animations with slow-motion.
-    const shiftKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
-    if (shiftKey) {
-      shiftKey.on("down", () => {
-        if (!worldEngine.hasState()) return;
-        if (worldEngine.getState().player.actionLock) return;
-        if (this.latticeFocusActive) return;
-        this.latticeFocusActive = true;
-        this.physics.world.timeScale = LATTICE_FOCUS_TIMESCALE;
-        eventBus.emit("LATTICE_FOCUS_ACTIVE", { active: true });
-      });
-      shiftKey.on("up", () => {
-        if (!this.latticeFocusActive) return;
-        this.latticeFocusActive = false;
-        this.physics.world.timeScale = 1.0;
-        eventBus.emit("LATTICE_FOCUS_ACTIVE", { active: false });
-      });
-    }
 
     this.cameras.main.startFollow(this.playerSprite, true, 0.18, 0.18);
 
@@ -207,45 +167,17 @@ export class RoomScene extends Phaser.Scene {
     this.exclamationMarks.clear();
     this.decorSprites = [];
     this.decorRoomId = null;
-    playerPhysicsBridge.detach();
   }
 
-  /** Phaser-driven per-frame tick. Drives the physics bridge and applies
-   *  visual elevation offset + debug overlays. The redraw() path stays
-   *  event-driven (PLAYER_MOVED, FOV_UPDATED, etc.) for the tile/cone
-   *  layers; only ephemeral overlays + sprite y-offset live here. */
-  update(time: number, delta: number): void {
-    if (!worldEngine.hasState()) return;
-    playerPhysicsBridge.update(delta);
-
-    // Apply visual elevation offset to the player sprite. The physics body
-    // stays floor-projected (collision + FOV use the unoffset position); we
-    // only shift the displayed y. Physics will resync the rect to body
-    // position on the next step, so we re-apply the offset every frame.
-    const elev = playerPhysicsBridge.currentElevation;
-    const visualOffset = elev * ELEVATION_PX_PER_STEP;
-    if (visualOffset !== 0) {
-      this.playerSprite.y -= visualOffset;
-      const facingY = this.playerFacingMark.y - visualOffset;
-      this.playerFacingMark.y = facingY;
-    }
-
-    this.drawGuardTelegraphs(time);
-    this.drawDebugOverlays();
-  }
-
-  /** Draw a pulsing yellow line from every CAUTION-level enforcer in the
-   *  current room to its `lastStimulus` tile. This is the radical-
-   *  predictability telegraph: the player can read the exact pathfinding
-   *  target before the guard moves. Pulses via a stateless sine-wave so the
-   *  endpoint can change frame-to-frame as stimulus updates. */
-  private drawGuardTelegraphs(time: number): void {
+  /** Draw a yellow line from every CAUTION-level enforcer in the current room
+   *  to its `lastStimulus` tile — the radical-predictability telegraph. */
+  private drawGuardTelegraphs(): void {
     this.telegraphLayer.clear();
     if (!worldEngine.hasState()) return;
     const state = worldEngine.getState();
     const room = worldEngine.getCurrentRoom();
     if (!room) return;
-    const pulse = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(time / 180));
+    const pulse = 1.0;
     for (const e of state.entities.values()) {
       if (e.kind !== "GUARD" || e.status !== "ACTIVE") continue;
       if (e.roomId !== room.id) continue;
@@ -289,12 +221,14 @@ export class RoomScene extends Phaser.Scene {
           this.debugLayer.strokeRect(x * TILE_PX, y * TILE_PX, TILE_PX - 1, TILE_PX - 1);
         }
       }
-      // Player body rect.
-      const body = this.playerSprite.body as Phaser.Physics.Arcade.Body | null;
-      if (body) {
-        this.debugLayer.lineStyle(1, 0x6ad0a4, 0.9);
-        this.debugLayer.strokeRect(body.x, body.y, body.width, body.height);
-      }
+      // Player sprite rect.
+      this.debugLayer.lineStyle(1, 0x6ad0a4, 0.9);
+      this.debugLayer.strokeRect(
+        this.playerSprite.x - (TILE_PX - 12) / 2,
+        this.playerSprite.y - (TILE_PX - 12) / 2,
+        TILE_PX - 12,
+        TILE_PX - 12,
+      );
     }
 
     if (debugFlags.showTileElevation) {
@@ -335,13 +269,15 @@ export class RoomScene extends Phaser.Scene {
         this.entityFacingMarks.delete(id);
       }
       this.layout();
-      // Snap the physics body to the new room's spawn (crossDoorway in the
-      // bridge already does this, but `fadeAndRedraw` also fires on initial
-      // ROOM_ENTERED, where the bridge hasn't run yet).
-      playerPhysicsBridge.recenter();
-      // Snap onto the new room's player position so the fade-in doesn't
-      // briefly flash from the old scroll position before startFollow's
-      // lerp catches up.
+      // Snap the sprite to the new room's player position so the fade-in
+      // doesn't briefly flash from the old scroll position.
+      if (worldEngine.hasState()) {
+        const pos = worldEngine.getState().player.pos;
+        this.playerSprite.setPosition(
+          pos.x * TILE_PX + TILE_PX / 2,
+          pos.y * TILE_PX + TILE_PX / 2,
+        );
+      }
       this.cameras.main.centerOn(this.playerSprite.x, this.playerSprite.y);
       this.cameras.main.fadeIn(120, 5, 8, 9);
     });
@@ -444,13 +380,18 @@ export class RoomScene extends Phaser.Scene {
       this.glyphLayer.strokeRect(cx - 7, cy - 7, 14, 14);
     }
 
-    // Player. Position is driven by the physics body now; redraw only
-    // updates color + facing mark anchored to the sprite's current x/y.
+    // Player. Position is driven by WorldState; redraw is the authoritative
+    // writer. Elevation offset applied on top for stair tiles.
+    const here = room.tiles[state.player.pos.y * room.width + state.player.pos.x];
+    const elev = here?.elevation ?? 0;
+    const playerCx = state.player.pos.x * TILE_PX + TILE_PX / 2;
+    const playerCy = state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP;
+    this.playerSprite.setPosition(playerCx, playerCy);
     this.playerSprite.setFillStyle(state.player.hidingTileKey ? 0x4a5a52 : 0x6ad0a4);
     this.placeFacingMark(
       this.playerFacingMark,
-      this.playerSprite.x,
-      this.playerSprite.y,
+      playerCx,
+      playerCy,
       state.player.facing,
     );
     this.playerFacingMark.setVisible(!state.player.hidingTileKey);
@@ -473,6 +414,9 @@ export class RoomScene extends Phaser.Scene {
       this.overlayLayer.fillStyle(0x000000, this.oxygenDarken);
       this.overlayLayer.fillRect(0, 0, this.scale.width, this.scale.height);
     }
+
+    this.drawGuardTelegraphs();
+    this.drawDebugOverlays();
   }
 
   private drawTile(tile: Tile, x: number, y: number, visible: boolean): void {

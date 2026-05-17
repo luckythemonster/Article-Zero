@@ -36,9 +36,19 @@ export function useInput({ enabled }: Options): void {
       const term = useTerminalStore.getState();
       if (term.phase !== "FLOOR" && term.phase !== "CLIMAX") return;
       if (term.phase === "CLIMAX" && term.runFlags.vent4Choice === null) return;
-      // WASD/arrows are now consumed by Phaser's cursor keys inside
-      // RoomScene.update via PlayerPhysicsBridge. Action verbs remain here.
       switch (e.key.toLowerCase()) {
+        case "arrowup":
+        case "w":
+          worldEngine.move(0, -1); e.preventDefault(); break;
+        case "arrowdown":
+        case "s":
+          worldEngine.move(0, 1); e.preventDefault(); break;
+        case "arrowleft":
+        case "a":
+          worldEngine.move(-1, 0); e.preventDefault(); break;
+        case "arrowright":
+        case "d":
+          worldEngine.move(1, 0); e.preventDefault(); break;
         case " ":
           worldEngine.endTurn(); e.preventDefault(); break;
         case "e":

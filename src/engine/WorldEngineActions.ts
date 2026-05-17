@@ -9,8 +9,6 @@ import { roomGraph } from "./RoomGraph";
 import { soundField } from "./SoundField";
 import { alignmentSession } from "./AlignmentSession";
 import { documentArchive } from "./DocumentArchive";
-import { playerStateMachine } from "./PlayerStateMachine";
-import { ACTION_LOCK_DEFAULT_MS } from "./PhysicsConfig";
 
 const MOVE_AP_COST = 1;
 const SNEAK_AP_COST = 1;
@@ -152,7 +150,6 @@ export const actions = {
 
   /** Rap on the wall the player is facing. Loud noise, lures guards. */
   knock(state: WorldState): boolean {
-    if (!playerStateMachine.canPerform(state, "knock")) return false;
     if (state.detained || state.player.ap < KNOCK_AP_COST) return false;
     if (state.player.hidingTileKey) return false;
     const f = state.player.facing;
@@ -184,7 +181,6 @@ export const actions = {
   /** Lean to extend FOV in `dir` (defaults to current facing) without moving.
    *  Costs 0 AP. Cleared by movement and end-of-turn. Refused while hidden. */
   peek(state: WorldState, dir?: Facing): boolean {
-    if (!playerStateMachine.canPerform(state, "peek")) return false;
     if (state.detained) return false;
     if (state.player.hidingTileKey) return false;
     const facing = dir ?? state.player.facing;
@@ -288,18 +284,6 @@ export const actions = {
         from: { roomId: fromRoomId, pos: fromPos },
         to: { roomId: state.player.roomId, pos: state.player.pos },
       });
-      // High action-commitment: a vent crawl locks input for the duration of
-      // the animation. Player can't bail out partway through.
-      state.player.actionLock = {
-        actionId: "VENT_CRAWL",
-        duration: ACTION_LOCK_DEFAULT_MS,
-        elapsed: 0,
-        returnState: state.player.stance === "SNEAK" ? "SNEAK" : "WALK",
-      };
-      eventBus.emit("ACTION_LOCK_STARTED", {
-        actionId: "VENT_CRAWL",
-        duration: ACTION_LOCK_DEFAULT_MS,
-      });
       return true;
     }
 
@@ -367,18 +351,6 @@ export const actions = {
         roomId: state.player.roomId,
         pos: p,
         caseId,
-      });
-      // Lock player input for the duration of the terminal read animation —
-      // real-time stealth needs consequential actions to be uninterruptible.
-      state.player.actionLock = {
-        actionId: "TERMINAL_USE",
-        duration: ACTION_LOCK_DEFAULT_MS,
-        elapsed: 0,
-        returnState: state.player.stance === "SNEAK" ? "SNEAK" : "WALK",
-      };
-      eventBus.emit("ACTION_LOCK_STARTED", {
-        actionId: "TERMINAL_USE",
-        duration: ACTION_LOCK_DEFAULT_MS,
       });
       return true;
     }

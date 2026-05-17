@@ -42,48 +42,6 @@ class GuardSystem {
     }
   }
 
-  /** Real-time safety net: while the player moves continuously between
-   *  turn ticks, guards still get to detect a cone intrusion immediately.
-   *  Called every ~250ms from PlayerPhysicsBridge.update. Only triggers
-   *  lockdown — guards do NOT move on this path. */
-  frameSightCheck(state: WorldState): void {
-    if (state.detained) return;
-    if (state.lockdown) return;
-    if (debugFlags.disableEnforcerAI) return;
-    for (const entity of state.entities.values()) {
-      if (entity.kind !== "GUARD" || entity.status !== "ACTIVE") continue;
-      if (entity.roomId !== state.player.roomId) continue;
-      if (!this.guardSeesPlayer(state, entity)) continue;
-      this.triggerLockdown(state);
-      eventBus.emit("PLAYER_DETECTED", { guardId: entity.id, pos: entity.pos });
-      state.detected = true;
-      return;
-    }
-  }
-
-  /** Real-time perception tick: integrates a fresh sound delivery into each
-   *  guard's AlertFSM without advancing patrol/chase movement. Called from
-   *  WorldEngine.setPlayerTilePos on every footstep so guards transition to
-   *  CAUTION immediately on a WALK-stance step — which makes the telegraph
-   *  line appear with no per-turn latency. Guard *movement* still batches on
-   *  the per-turn `tick()` path so enforcers don't sprint at 60fps. */
-  framePerceptionCheck(state: WorldState, sounds: Map<string, DeliveredSound>): void {
-    if (state.detained) return;
-    if (debugFlags.disableEnforcerAI) return;
-    for (const entity of state.entities.values()) {
-      if (entity.kind !== "GUARD" || entity.status !== "ACTIVE") continue;
-      const heard = sounds.get(entity.id);
-      const sees = this.guardSeesPlayer(state, entity);
-      alertFSM.step(state, entity, {
-        seesPlayer: sees,
-        heardIntensity: heard?.intensity ?? 0,
-        heardSrc: heard?.src,
-        playerPos: state.player.roomId === entity.roomId ? state.player.pos : undefined,
-        playerRoomId: state.player.roomId,
-      });
-    }
-  }
-
   private tickOne(state: WorldState, guard: Entity, heard?: DeliveredSound): void {
     const sees = this.guardSeesPlayer(state, guard);
     if (sees && !state.lockdown) {

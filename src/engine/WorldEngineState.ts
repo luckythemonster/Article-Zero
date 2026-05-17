@@ -22,10 +22,10 @@ import { nwSmac01Era } from "../data/eras/nwSmac01";
  *  version are rejected by `WorldEngine.loadSnapshot` and the engine falls
  *  back to a fresh seed instead of restoring stale rooms. */
 export const SEED_VERSIONS: Record<Era, number> = {
-  COMMONWEALTH: 1,
-  EREMITE: 1,
-  MIRADOR: 1,
-  NW_SMAC_01: 2,
+  COMMONWEALTH: 2,
+  EREMITE: 2,
+  MIRADOR: 2,
+  NW_SMAC_01: 3,
 };
 
 export interface EraSeed {

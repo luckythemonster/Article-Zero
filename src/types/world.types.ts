@@ -58,29 +58,6 @@ export interface ItemInstance {
 
 export type ComplianceTier = "GREEN" | "YELLOW" | "RED";
 
-// Player state machine -------------------------------------------------
-
-export type PlayerStateName =
-  | "WALK"
-  | "SNEAK"
-  | "DUCT_CRAWL"
-  | "HIDING"
-  | "CLIMBING"
-  | "ACTION_LOCKED";
-export type PlayerActionId =
-  | "move"
-  | "knock"
-  | "peek"
-  | "interact"
-  | "endTurn"
-  | "toggleStance"
-  | "pryDoor"
-  | "toggleFlashlight";
-export type PlayerMotionResult =
-  | { kind: "VELOCITY"; vx: number; vy: number }
-  | { kind: "TELEPORT"; roomId: RoomId; pos: Vec2 }
-  | { kind: "BLOCKED" };
-
 export interface Tile {
   kind: TileKind;
   /** True if this tile blocks movement. */
@@ -218,20 +195,6 @@ export interface Entity {
 
 export type Stance = "WALK" | "SNEAK";
 
-/** Active timed action that suspends player input. Set by WorldEngineActions
- *  on terminal use, vent crawl, etc.; consumed by ActionLockedState which
- *  drives the React progress bar and unwinds the lock when elapsed reaches
- *  duration. */
-export interface ActionLock {
-  actionId: string;
-  /** ms */
-  duration: number;
-  /** ms accumulated by PlayerStateMachine.update */
-  elapsed: number;
-  /** Stance state to return to once the lock releases. */
-  returnState: "WALK" | "SNEAK";
-}
-
 export interface PlayerState {
   /** Which room the player is currently inside. */
   roomId: RoomId;
@@ -261,10 +224,6 @@ export interface PlayerState {
   /** "roomId:x,y" of the LOCKER tile the player has ducked into. While set,
    *  guard sight ignores the player and most actions are refused. */
   hidingTileKey?: string;
-  /** Active timed action lock. While set the PlayerStateMachine routes to
-   *  ACTION_LOCKED, motion returns BLOCKED, and ACTION_PROGRESS events fire
-   *  for the React progress bar. */
-  actionLock?: ActionLock;
 }
 
 // Vent links ------------------------------------------------------------
