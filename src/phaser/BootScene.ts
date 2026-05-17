@@ -1,14 +1,13 @@
 // BootScene — preload textures, register character animations, then start
-// directly into the rebuilt RoomScene with the Commonwealth era.
-//
-// In the rebuild the era branch selector is gone; we boot straight into the
-// playable slice. Future eras can be picked from a debug overlay.
+// into the RoomScene for whichever module was passed via Phaser registry.
+// Falls back to "EREMITE" when launched standalone (dev convenience).
 
 import { Phaser } from "../engine/EngineAdapter";
 import { CHAR_ANIMS } from "../data/char-anims";
 import { MOOSE_TILESETS } from "../data/tilesets/registry.generated";
 import { mooseAnimKey } from "../data/tilesets/anim-keys";
 import { worldEngine } from "../engine/WorldEngine";
+import type { Era } from "../types/world.types";
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -80,7 +79,8 @@ export class BootScene extends Phaser.Scene {
     }
 
     // Boot the world and start the renderer.
-    worldEngine.initWorld("ARC1");
+    const moduleId = (this.registry.get("moduleId") as Era | undefined) ?? "EREMITE";
+    worldEngine.initWorld(moduleId);
     this.scene.start("RoomScene");
   }
 }

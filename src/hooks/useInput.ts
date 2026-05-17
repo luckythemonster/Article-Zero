@@ -1,19 +1,41 @@
+// Keyboard input for the active Phaser module.
+// Handles only movement / interaction / game verbs; command text is handled
+// by CommandLine.tsx.
+
 import { useEffect } from "react";
 import { worldEngine } from "../engine/WorldEngine";
+import { useTerminalStore } from "../state/useTerminalStore";
+import { useDebugStore } from "../state/useDebugStore";
 
 interface Options {
   enabled: boolean;
-  onOpenArchive: () => void;
-  onOpenSettings: () => void;
-  onOpenAlignment: () => void;
 }
 
-export function useInput(opts: Options): void {
+export function useInput({ enabled }: Options): void {
   useEffect(() => {
-    if (!opts.enabled) return;
+    if (!enabled) return;
     const handler = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      // Debug overlay toggle (~). Works regardless of focus + phase so the
+      // archivist can always inspect mid-modal.
+      if (e.code === "Backquote") {
+        useDebugStore.getState().toggleVisible();
+        e.preventDefault();
+        return;
+      }
+
+      // Don't steal keys while the user is typing in an input/textarea.
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
       if (!worldEngine.hasState()) return;
+      // Only let keyboard verbs through during FLOOR and CLIMAX. Modal-only
+      // phases (ALIGNMENT, FORGERY) would otherwise let WASD move Rowan
+      // behind the modal. EPILOGUE/FRAME are pure UI. CLIMAX has a brief
+      // dilemma-modal window before the player picks; block then too.
+      const term = useTerminalStore.getState();
+      if (term.phase !== "FLOOR" && term.phase !== "CLIMAX") return;
+      if (term.phase === "CLIMAX" && term.runFlags.vent4Choice === null) return;
       switch (e.key.toLowerCase()) {
         case "arrowup":
         case "w":
@@ -37,18 +59,18 @@ export function useInput(opts: Options): void {
           worldEngine.peek(); e.preventDefault(); break;
         case "c":
           worldEngine.toggleStance(); e.preventDefault(); break;
-        case "f":
-          opts.onOpenAlignment(); e.preventDefault(); break;
         case "l":
           worldEngine.toggleFlashlight(); e.preventDefault(); break;
-        case "r":
-          opts.onOpenArchive(); e.preventDefault(); break;
-        case ",":
-        case "<":
-          opts.onOpenSettings(); e.preventDefault(); break;
+        case "p":
+          // Climax escape: pry the blast door the player is facing. 5 presses.
+          if (term.phase === "CLIMAX") {
+            worldEngine.pryDoor(5);
+            e.preventDefault();
+          }
+          break;
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [opts]);
+  }, [enabled]);
 }

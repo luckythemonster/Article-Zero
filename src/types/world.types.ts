@@ -6,7 +6,8 @@
 
 export type EntityId = string;
 
-export type Era = "COMMONWEALTH" | "LATTICE" | "BAFFLE" | "MIRADOR" | "ARC1";
+export type Era = "EREMITE" | "MIRADOR" | "COMMONWEALTH" | "NW_SMAC_01";
+export type Module = Era;
 
 export type Facing = "north" | "south" | "east" | "west";
 export type Side = "N" | "S" | "E" | "W";
@@ -29,7 +30,10 @@ export type TileKind =
   | "EXFIL_POINT"
   | "LIGHT_SOURCE"
   | "VENT"
-  | "LOCKER";
+  | "LOCKER"
+  | "CHASM"
+  | "LADDER"
+  | "STAIRS";
 
 // Items ------------------------------------------------------------------
 
@@ -60,6 +64,22 @@ export interface Tile {
   solid: boolean;
   /** True if this tile blocks line-of-sight for vision cones. */
   opaque: boolean;
+  /** Integer step count above the room's base floor. Catwalks and stair
+   *  summits carry positive values; chasm interiors carry negative ones.
+   *  Read by the physics bridge to bias velocity and to offset sprite y for
+   *  the catwalk-readability fix. Default 0.
+   *
+   *  Authoring: an Ed layer suffixed with `_z<N>` (e.g. `floor_z1`) sets
+   *  this directly during from-moose's buildTiles. STAIRS layers may also
+   *  carry an `elevationTo` (`stairs_z0_z1` → from=0, to=1). */
+  elevation: number;
+  /** STAIRS only — destination elevation reached at the far side of the
+   *  stair tile. Encodes the `_z<from>_z<to>` half of a stair layer suffix. */
+  elevationTo?: number;
+  /** STAIRS only — the side the stair *rises* toward. Climbing in that
+   *  direction applies STAIRS_UP_FACTOR; the reverse applies STAIRS_DOWN_FACTOR.
+   *  Perpendicular travel is unaffected. */
+  direction?: Side;
   /** Optional in-world label. */
   label?: string;
 }
@@ -82,7 +102,13 @@ export type RoomId = string;
 
 /** A doorway between two rooms. Anchored on the FROM room's edge tile.
  *  When `closed` is true the doorway acts as a closed door (blocks movement,
- *  blocks line-of-sight, attenuates sound heavily). */
+ *  blocks line-of-sight, attenuates sound heavily).
+ *
+ *  `kind: "vent"` flags a vent-flavoured doorway: one side is a normal room
+ *  whose `localPos` is a VENT tile; the other side is a `crawlspace: true`
+ *  Room. Traversal requires SNEAK stance, costs VENT_AP_COST, and emits no
+ *  sound. (The legacy WorldState.ventLinks teleport path is retained for
+ *  un-ported eras and is unrelated to this field.) */
 export interface Doorway {
   from: RoomId;
   to: RoomId;
@@ -92,6 +118,7 @@ export interface Doorway {
   /** Local tile in the TO room the player lands on after crossing. */
   landingPos: Vec2;
   closed?: boolean;
+  kind?: "vent" | "ladder";
 }
 
 export interface Room {
@@ -104,6 +131,10 @@ export interface Room {
   ambientLight: AmbientLightLevel;
   decoration?: FloorDecoration;
   doorways: Doorway[];
+  /** True for vent crawlspaces — narrow rooms reached only via `kind: "vent"`
+   *  doorways. Treated as ordinary Rooms by the renderer/FOV; flagged here so
+   *  systems can opt into crawl-specific behaviour (e.g. crawl animations). */
+  crawlspace?: boolean;
 }
 
 // Entities ---------------------------------------------------------------
@@ -138,6 +169,9 @@ export interface Entity {
   roomId: RoomId;
   /** Position within the room. */
   pos: Vec2;
+  /** Z-elevation slice the entity currently occupies. Entity-vs-entity
+   *  collision only fires when both share the same z. Default 0. */
+  z: number;
   facing: Facing;
   status: EntityStatus;
   /** Optional patrol route for GUARD kind. */
@@ -159,13 +193,15 @@ export interface Entity {
 
 // Player -----------------------------------------------------------------
 
-export type Stance = "WALK" | "CREEP";
+export type Stance = "WALK" | "SNEAK";
 
 export interface PlayerState {
   /** Which room the player is currently inside. */
   roomId: RoomId;
   /** Local position in that room. */
   pos: Vec2;
+  /** Z-elevation slice the player currently occupies. Default 0. */
+  z: number;
   facing: Facing;
   ap: number;
   apMax: number;
@@ -246,6 +282,15 @@ export interface WorldState {
   terminalPayloads: Map<string, TerminalPayload>;
   /** TerminalIds that have already been read once. Reading again is a no-op. */
   terminalsRead: Set<string>;
+  /** Number of times the player has pried at the current blast door this run.
+   *  Reset to 0 on door-opens. Used by the climax escape. */
+  pryProgress?: number;
+  /** Vacuum-lockdown trap: when a guard first spots the player, the current
+   *  room seals and the player has `turnsRemaining` end-of-turns to pry open
+   *  a doorway and cross out before suffocating. Cleared by crossing into a
+   *  different room; resolves to `detained = true` if the timer reaches 0
+   *  while the player is still inside the sealed room. */
+  lockdown?: { roomId: RoomId; turnsRemaining: number };
 }
 
 export const tileKey = (pos: Vec2): string => `${pos.x},${pos.y}`;

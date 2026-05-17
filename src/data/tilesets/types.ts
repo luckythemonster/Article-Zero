@@ -1,6 +1,6 @@
 // Shared types for assets imported from Ed / Chilling Moose.
 // Populated by `npm run moose <project>.zip`; consumed by BootScene,
-// GameScene, and the era seed helpers in src/data/eras/from-moose.ts.
+// GameScene, and the era seed loader at src/data/eras/from-moose.ts.
 
 export interface MooseSpriteFrame {
   /** 0-based frame index, matching the Phaser spritesheet slice order. */

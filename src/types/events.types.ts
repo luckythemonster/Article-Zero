@@ -24,7 +24,7 @@ export interface EventMap {
   PLAYER_MOVED: { from: Vec2; to: Vec2; roomId: RoomId };
   PLAYER_AP_CHANGED: { previous: number; current: number };
   PLAYER_FACING_CHANGED: { facing: Facing };
-  PLAYER_STANCE_CHANGED: { stance: "WALK" | "CREEP" };
+  PLAYER_STANCE_CHANGED: { stance: "WALK" | "SNEAK" };
   PLAYER_DETECTED: { guardId: EntityId; pos: Vec2 };
   PLAYER_DETECTION_CLEARED: Record<string, never>;
   PLAYER_DETAINED: { guardId: EntityId; turn: number };
@@ -84,6 +84,9 @@ export interface EventMap {
   ITEM_PICKED_UP: { itemId: string; itemType: ItemType };
   ITEM_FILED: { itemId: string; caseId: string };
 
+  // 404 Wipe
+  SUBJECTIVE_WIPED: Record<string, never>;
+
   // Dialogue
   DIALOGUE_OPENED: { entityId: EntityId };
   DIALOGUE_CLOSED: { entityId: EntityId };
@@ -95,6 +98,14 @@ export interface EventMap {
   PLAYER_HIDDEN: { roomId: RoomId; pos: Vec2 };
   PLAYER_UNHIDDEN: { roomId: RoomId; pos: Vec2 };
   PLAYER_PEEKED: { facing: Facing | null };
+  PLAYER_PRIED_DOOR: { roomId: RoomId; pos: Vec2; presses: number; required: number };
+
+  // Vertical-slice phase orchestration
+  AUDIT_LOCKDOWN_TRIGGERED: { reason: string };
+  LOCKDOWN_TRIGGERED: { roomId: RoomId; turnsRemaining: number };
+  PHASE_RESTART_REQUESTED: { reason: string };
+  OXYGEN_TICK: { remainingSeconds: number; totalSeconds: number };
+  CLIMAX_ESCAPED: Record<string, never>;
 }
 
 export type EventName = keyof EventMap;

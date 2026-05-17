@@ -7,10 +7,10 @@ const W = 10;
 const H = 6;
 
 function mk(kind: TileKind): Tile {
-  if (kind === "WALL") return { kind, solid: true, opaque: true };
-  if (kind === "DOOR_CLOSED") return { kind, solid: true, opaque: true };
-  if (kind === "LOCKER") return { kind, solid: true, opaque: true };
-  return { kind, solid: false, opaque: false };
+  if (kind === "WALL") return { kind, solid: true, opaque: true, elevation: 0 };
+  if (kind === "DOOR_CLOSED") return { kind, solid: true, opaque: true, elevation: 0 };
+  if (kind === "LOCKER") return { kind, solid: true, opaque: true, elevation: 0 };
+  return { kind, solid: false, opaque: false, elevation: 0 };
 }
 
 export function miradorEra(): EraSeed {
@@ -32,6 +32,7 @@ export function miradorEra(): EraSeed {
   const player: PlayerState = {
     roomId: "booth",
     pos: { x: 3, y: 2 },
+    z: 0,
     facing: "south",
     ap: 4, apMax: 4,
     flashlightOn: false, flashlightBattery: 30,

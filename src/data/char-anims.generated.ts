@@ -6399,5 +6399,41 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "thefinder/walkcycle/west/08"
     ],
     "texture": "chars-art"
+  },
+  {
+    "key": "vent4_idle_east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "vent4/idle/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "vent4_idle_north",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "vent4/idle/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "vent4_idle_south",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "vent4/idle/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "vent4_idle_west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "vent4/idle/west/01"
+    ],
+    "texture": "chars-art"
   }
 ];

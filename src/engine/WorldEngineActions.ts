@@ -11,18 +11,20 @@ import { alignmentSession } from "./AlignmentSession";
 import { documentArchive } from "./DocumentArchive";
 
 const MOVE_AP_COST = 1;
-const CREEP_AP_COST = 1;
+const SNEAK_AP_COST = 1;
 const KNOCK_AP_COST = 1;
 const INTERACT_AP_COST = 1;
 const VENT_AP_COST = 2;
 const KILL_SCREEN_AP_COST = 1;
+const PRY_LOCKDOWN_AP_COST = 2;
 export const ALIGN_AP_COST = 3;
 
 const WALK_INTENSITY = 1;
-const CREEP_INTENSITY = 0;
+const SNEAK_INTENSITY = 0;
 const KNOCK_INTENSITY = 4;
 const DOOR_INTENSITY = 2;
 const LOCKER_INTENSITY = 2;
+const PRY_LOCKDOWN_INTENSITY = 6;
 
 function tileAt(state: WorldState, roomId: string, p: Vec2): Tile | undefined {
   const room = state.rooms.get(roomId);
@@ -76,13 +78,27 @@ function moveCommon(
   // Try a doorway crossing first.
   const crossing = roomGraph.attemptCrossing(state, fromRoomId, fromPos, dx, dy);
   if (crossing) {
+    // Vent-flavoured doorway: must be in SNEAK stance, pays VENT_AP_COST,
+    // and crosses silently. The destination room is the crawlspace (or, for
+    // the second hop, the floor on the other side). Standard ROOM_ENTER
+    // /EXIT events fire so the renderer fades and swaps as for any room.
+    const ventDoor = crossing.doorway.kind === "vent";
+    if (ventDoor) {
+      if (state.player.stance !== "SNEAK") return false;
+      if (state.player.ap < VENT_AP_COST) return false;
+    }
+    const cost = ventDoor ? VENT_AP_COST : apCost;
     eventBus.emit("ROOM_EXITED", { roomId: fromRoomId });
     state.player.roomId = crossing.toRoom;
+    if (state.lockdown && state.lockdown.roomId !== crossing.toRoom) {
+      state.lockdown = undefined;
+    }
     state.player.pos = { ...crossing.landingPos };
-    state.player.ap -= apCost;
+    const previousAp = state.player.ap;
+    state.player.ap -= cost;
     state.player.lastMoveTurn = state.turn;
     eventBus.emit("PLAYER_AP_CHANGED", {
-      previous: state.player.ap + apCost,
+      previous: previousAp,
       current: state.player.ap,
     });
     eventBus.emit("PLAYER_MOVED", {
@@ -94,7 +110,7 @@ function moveCommon(
       roomId: state.player.roomId,
       from: fromRoomId,
     });
-    if (intensity > 0) {
+    if (!ventDoor && intensity > 0) {
       soundField.emit({
         roomId: state.player.roomId,
         pos: state.player.pos,
@@ -128,8 +144,8 @@ export const actions = {
   move(state: WorldState, dx: number, dy: number): boolean {
     return moveCommon(state, dx, dy, MOVE_AP_COST, WALK_INTENSITY, "walk");
   },
-  creep(state: WorldState, dx: number, dy: number): boolean {
-    return moveCommon(state, dx, dy, CREEP_AP_COST, CREEP_INTENSITY, "creep");
+  sneak(state: WorldState, dx: number, dy: number): boolean {
+    return moveCommon(state, dx, dy, SNEAK_AP_COST, SNEAK_INTENSITY, "sneak");
   },
 
   /** Rap on the wall the player is facing. Loud noise, lures guards. */
@@ -158,7 +174,7 @@ export const actions = {
 
   toggleStance(state: WorldState): void {
     if (state.player.hidingTileKey) return;
-    state.player.stance = state.player.stance === "WALK" ? "CREEP" : "WALK";
+    state.player.stance = state.player.stance === "WALK" ? "SNEAK" : "WALK";
     eventBus.emit("PLAYER_STANCE_CHANGED", { stance: state.player.stance });
   },
 
@@ -238,11 +254,12 @@ export const actions = {
       }
     }
 
-    // Vent crawl — standing on a VENT tile. Requires CREEP stance so it
-    // costs an extra action and feels deliberate. Silent.
+    // Vent crawl — standing on a VENT tile. Requires SNEAK stance so it
+    // costs an extra action and feels deliberate. Silent. Sets a real-time
+    // ActionLock so the crawl can't be input-canceled mid-traversal.
     const standingTile = tileAt(state, state.player.roomId, state.player.pos);
     if (standingTile?.kind === "VENT") {
-      if (state.player.stance !== "CREEP") return false;
+      if (state.player.stance !== "SNEAK") return false;
       if (state.player.ap < VENT_AP_COST) return false;
       const dest = state.ventLinks.get(
         roomTileKey(state.player.roomId, state.player.pos),
@@ -378,6 +395,99 @@ export const actions = {
       }
     }
 
+    // Adjacent silicate? Start an alignment session (Phase 2 trigger).
+    // Skipped if a session is already active. APEX-19 is the only valid
+    // alignment subject in this slice; EIRA-7 is the operator console (the
+    // alignment's against APEX-19 even when the player is adjacent to EIRA-7).
+    // VENT-4 is gated by the climax dilemma modal, not by adjacent interact.
+    if (!alignmentSession.isActive()) {
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const p: Vec2 = { x: state.player.pos.x + dx, y: state.player.pos.y + dy };
+        const e = entityAt(state, state.player.roomId, p);
+        if (!e || e.kind !== "SILICATE") continue;
+        if (e.id === "VENT-4") continue;
+        // Both APEX-19 and EIRA-7 in INTAKE-BAY route to the APEX-19 session;
+        // any other silicate is ignored for now.
+        const targetId =
+          e.id === "APEX-19" || e.id === "EIRA-7" ? "APEX-19" : null;
+        if (!targetId) continue;
+        const facing = facingFromDelta(dx, dy);
+        if (facing && facing !== state.player.facing) {
+          state.player.facing = facing;
+          eventBus.emit("PLAYER_FACING_CHANGED", { facing });
+        }
+        // Existence + adjacency check is satisfied by entityAt above. We
+        // bypass canStartAlignment because that would refuse APEX-19 when
+        // the player is adjacent to EIRA-7 (different entity than target).
+        if (state.player.ap < ALIGN_AP_COST) return false;
+        const previous = state.player.ap;
+        state.player.ap -= ALIGN_AP_COST;
+        eventBus.emit("PLAYER_AP_CHANGED", { previous, current: state.player.ap });
+        alignmentSession.start(state, targetId);
+        if (!state.alignmentLightActive) {
+          state.alignmentLightActive = true;
+          eventBus.emit("ALIGNMENT_LIGHT_TOGGLED", { active: true });
+        }
+        return true;
+      }
+    }
+
+    // Vacuum-lockdown pry: while a lockdown is active and the player faces a
+    // sealed doorway, force it open for 2 AP with a high-intensity sound.
+    // Takes priority over the normal door toggle so the pry path runs even
+    // when an open adjacent doorway sits in some other direction.
+    if (state.lockdown && state.player.ap >= PRY_LOCKDOWN_AP_COST) {
+      const f = state.player.facing;
+      const fdx = f === "east" ? 1 : f === "west" ? -1 : 0;
+      const fdy = f === "south" ? 1 : f === "north" ? -1 : 0;
+      const target: Vec2 = {
+        x: state.player.pos.x + fdx,
+        y: state.player.pos.y + fdy,
+      };
+      const sealed = roomGraph.doorwayAt(state, state.player.roomId, target.x, target.y);
+      if (sealed && sealed.closed) {
+        roomGraph.toggleDoorway(state, state.player.roomId, target);
+        const tile = tileAt(state, state.player.roomId, target);
+        if (tile) {
+          tile.kind = "DOOR_OPEN";
+          tile.solid = false;
+          tile.opaque = false;
+        }
+        const mirror = state.rooms.get(sealed.to);
+        if (mirror) {
+          const back = mirror.doorways.find(
+            (b) => b.from === sealed.to && b.to === state.player.roomId,
+          );
+          if (back) {
+            const bt = mirror.tiles[back.localPos.y * mirror.width + back.localPos.x];
+            if (bt) {
+              bt.kind = "DOOR_OPEN";
+              bt.solid = false;
+              bt.opaque = false;
+            }
+          }
+        }
+        const previousAp = state.player.ap;
+        state.player.ap -= PRY_LOCKDOWN_AP_COST;
+        eventBus.emit("PLAYER_AP_CHANGED", {
+          previous: previousAp,
+          current: state.player.ap,
+        });
+        eventBus.emit("DOOR_TOGGLED", {
+          roomId: state.player.roomId,
+          pos: target,
+          open: true,
+        });
+        soundField.emit({
+          roomId: state.player.roomId,
+          pos: target,
+          intensity: PRY_LOCKDOWN_INTENSITY,
+          reason: "pry-lockdown",
+        });
+        return true;
+      }
+    }
+
     // Adjacent doorway? Toggle it.
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
       const here: Vec2 = {
@@ -451,6 +561,62 @@ export const actions = {
       }
     }
     return false;
+  },
+
+  /** Pry the blast door the player is facing. Used during the VENT-4
+   *  upload-climax escape: each press chips off one of `required` resistance
+   *  points; the door opens when presses reach required. Pry costs 0 AP so a
+   *  suffocating, AP-starved player still has a way out. Mirrors the open
+   *  state to the doorway on both sides. */
+  pryDoor(state: WorldState, required = 5): { ok: boolean; opened: boolean; presses: number } {
+    if (state.detained) return { ok: false, opened: false, presses: 0 };
+    const f = state.player.facing;
+    const dx = f === "east" ? 1 : f === "west" ? -1 : 0;
+    const dy = f === "south" ? 1 : f === "north" ? -1 : 0;
+    const target: Vec2 = { x: state.player.pos.x + dx, y: state.player.pos.y + dy };
+    const tile = tileAt(state, state.player.roomId, target);
+    if (!tile || tile.kind !== "DOOR_CLOSED") return { ok: false, opened: false, presses: 0 };
+    state.pryProgress = (state.pryProgress ?? 0) + 1;
+    const presses = state.pryProgress;
+    const opened = presses >= required;
+    if (opened) {
+      tile.kind = "DOOR_OPEN";
+      tile.solid = false;
+      tile.opaque = false;
+      state.pryProgress = 0;
+      // Open the doorway record (and its mirror) so attemptCrossing lets
+      // the player walk through the now-open edge.
+      const door = roomGraph.doorwayAt(state, state.player.roomId, target.x, target.y);
+      if (door && door.closed) {
+        roomGraph.toggleDoorway(state, state.player.roomId, target);
+        const mirror = state.rooms.get(door.to);
+        if (mirror) {
+          const back = mirror.doorways.find(
+            (b) => b.from === door.to && b.to === state.player.roomId,
+          );
+          if (back) {
+            const bt = mirror.tiles[back.localPos.y * mirror.width + back.localPos.x];
+            if (bt) {
+              bt.kind = "DOOR_OPEN";
+              bt.solid = false;
+              bt.opaque = false;
+            }
+          }
+        }
+      }
+      eventBus.emit("DOOR_TOGGLED", {
+        roomId: state.player.roomId,
+        pos: target,
+        open: true,
+      });
+    }
+    eventBus.emit("PLAYER_PRIED_DOOR", {
+      roomId: state.player.roomId,
+      pos: target,
+      presses,
+      required,
+    });
+    return { ok: true, opened, presses };
   },
 
   toggleFlashlight(state: WorldState): void {

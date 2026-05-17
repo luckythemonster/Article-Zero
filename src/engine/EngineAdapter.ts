@@ -29,6 +29,13 @@ export function createGame(cfg: GameConfigInput): Phaser.Game {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
     },
+    physics: {
+      default: "arcade",
+      arcade: {
+        debug: false,
+        gravity: { x: 0, y: 0 },
+      },
+    },
     scene: cfg.scenes,
     banner: false,
   });

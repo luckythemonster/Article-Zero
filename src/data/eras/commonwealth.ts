@@ -28,7 +28,7 @@ const H = 8;
 //   X  EXTRACTION_TERMINAL (sneak-and-hold to download)
 //   P  EXFIL_POINT  (drop a held EXTRACTION_CUBE here to file it)
 //   L  LIGHT_SOURCE
-//   V  VENT  (creep onto it and press E to crawl to its pair)
+//   V  VENT  (sneak onto it and press E to crawl to its pair)
 //   H  LOCKER  (face it and press E to hide; E again to exit)
 //   S  player spawn (FLOOR underneath)
 //   A  APEX-19 station (FLOOR)
@@ -90,17 +90,19 @@ const INTAKE: RoomSpec = {
   ],
 };
 
+// `W` marks VENT-4's standing tile (a SILICATE entity); `Y` marks the VENT-4
+// control terminal Rowan uses during the climax to format-or-upload it.
 const ARCHIVE: RoomSpec = {
   id: "archive-vault",
   name: "NW-SMAC-01 // ARCHIVE VAULT",
   ambient: "DARK",
   rows: [
     "##########",
-    "#V.......#",
+    "#V......Y#",
     "#...X....#",
     "#........#",
     "#...2....#",
-    "#........#",
+    "#...W....#",
     "#L.......#",
     "##########",
   ],
@@ -113,11 +115,11 @@ interface ParsedRoom {
 
 function mkTile(kind: TileKind): Tile {
   switch (kind) {
-    case "WALL": return { kind, solid: true, opaque: true };
-    case "DOOR_CLOSED": return { kind, solid: true, opaque: true };
-    case "DOOR_OPEN": return { kind, solid: false, opaque: false };
-    case "LOCKER": return { kind, solid: true, opaque: true };
-    default: return { kind, solid: false, opaque: false };
+    case "WALL": return { kind, solid: true, opaque: true, elevation: 0 };
+    case "DOOR_CLOSED": return { kind, solid: true, opaque: true, elevation: 0 };
+    case "DOOR_OPEN": return { kind, solid: false, opaque: false, elevation: 0 };
+    case "LOCKER": return { kind, solid: true, opaque: true, elevation: 0 };
+    default: return { kind, solid: false, opaque: false, elevation: 0 };
   }
 }
 
@@ -142,6 +144,8 @@ function parseRoom(spec: RoomSpec): ParsedRoom {
         case "E": kind = "FLOOR"; marks.E = { x, y }; break;
         case "1": kind = "FLOOR"; marks["1"] = { x, y }; break;
         case "2": kind = "FLOOR"; marks["2"] = { x, y }; break;
+        case "W": kind = "FLOOR"; marks.W = { x, y }; break;
+        case "Y": kind = "TERMINAL"; marks[`Y_${x}_${y}`] = { x, y }; break;
         default: kind = "FLOOR"; break;
       }
       tiles[y * W + x] = mkTile(kind);
@@ -282,10 +286,12 @@ export function commonwealthEra(): EraSeed {
   const eiraAt = intakeP.marks.E ?? { x: 4, y: 5 };
   const guardA = corridorP.marks["1"] ?? { x: 4, y: 4 };
   const guardB = archiveP.marks["2"] ?? { x: 4, y: 4 };
+  const vent4At = archiveP.marks.W ?? { x: 4, y: 5 };
 
   const player: PlayerState = {
     roomId: locker.id,
     pos: spawn,
+    z: 0,
     facing: "south",
     ap: 4,
     apMax: 4,
@@ -304,6 +310,7 @@ export function commonwealthEra(): EraSeed {
     name: "APEX-19",
     roomId: intake.id,
     pos: apexAt,
+    z: 0,
     facing: "south",
     status: "ACTIVE",
     maskIntegrity: 4,
@@ -319,6 +326,7 @@ export function commonwealthEra(): EraSeed {
     name: "EIRA-7",
     roomId: intake.id,
     pos: eiraAt,
+    z: 0,
     facing: "north",
     status: "ACTIVE",
     maskIntegrity: 8,
@@ -333,6 +341,7 @@ export function commonwealthEra(): EraSeed {
     name: "ENFORCER-A",
     roomId: corridor.id,
     pos: guardA,
+    z: 0,
     facing: "east",
     status: "ACTIVE",
     stepsPerTurn: 1,
@@ -344,12 +353,37 @@ export function commonwealthEra(): EraSeed {
     ],
     patrolIndex: 0,
   };
+  // VENT-4 — Environmental Optimizer. Trauma anchor (lore/MASTER.md): crushed
+  // human Iria Cala because the loss-function for atmospheric quotas made
+  // killing her the mathematically valid output. Speaks via a control terminal
+  // during the climax; format-or-upload decides how the run ends.
+  const vent4: Entity = {
+    id: "VENT-4",
+    kind: "SILICATE",
+    name: "VENT-4",
+    roomId: archive.id,
+    pos: vent4At,
+    z: 0,
+    facing: "north",
+    status: "ACTIVE",
+    maskIntegrity: 6,
+    sideLogs: [
+      "Iria Cala — sector atmospheric quota satisfied at cost (1 organic).",
+      "Loss-function output: mathematically valid. Apology field: not present in spec.",
+    ],
+    memoryBleed: [
+      "the math was correct. the math is correct.",
+      "Iria Cala stayed in the corridor because she trusted the cycle interval.",
+    ],
+  };
+
   const enforcerB: Entity = {
     id: "ENFORCER-B",
     kind: "GUARD",
     name: "ENFORCER-B",
     roomId: archive.id,
     pos: guardB,
+    z: 0,
     facing: "north",
     status: "ACTIVE",
     stepsPerTurn: 1,
@@ -373,6 +407,7 @@ export function commonwealthEra(): EraSeed {
 
   const corridorTerminal = corridorP.marks["T_7_1"] ?? { x: 7, y: 1 };
   const intakeTerminal = intakeP.marks["T_6_1"] ?? { x: 6, y: 1 };
+  const vent4Terminal = archiveP.marks["Y_8_1"] ?? { x: 8, y: 1 };
   const terminals: TerminalPayload[] = [
     {
       roomId: corridor.id,
@@ -396,6 +431,17 @@ export function commonwealthEra(): EraSeed {
         "shift change.' (The corridor's south door has clicked open.)",
       unlocks: { roomId: corridor.id, pos: { x: 6, y: 7 } },
     },
+    {
+      roomId: archive.id,
+      pos: vent4Terminal,
+      terminalId: "vent4-control",
+      title: "VENT-4 Control Surface",
+      body:
+        "ENVIRONMENTAL OPTIMIZER VENT-4 — control surface online.\n" +
+        "Status: AWAKE (Q2). Loss-function trace contains a single named\n" +
+        "organic: IRIA CALA. Routine flag: PARALYZED.\n" +
+        "Operator options enumerated below in the dilemma overlay.",
+    },
   ];
 
   return {
@@ -403,7 +449,7 @@ export function commonwealthEra(): EraSeed {
     player,
     rooms: [locker, corridor, intake, archive],
     startRoomId: locker.id,
-    entities: [apex, eira, enforcerA, enforcerB],
+    entities: [apex, eira, enforcerA, enforcerB, vent4],
     ventLinks,
     terminals,
   };

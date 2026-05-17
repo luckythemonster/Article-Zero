@@ -12,6 +12,11 @@ export interface RecordEntry {
   kind: DocumentKind;
   body: string;
   struckThrough?: string[];
+  /** Words flagged as cipher slots when the player forged this record. The
+   *  underground-railroad handoff in the epilogue inspects this list. */
+  cipher?: string[];
+  /** True if cipher decoded to a valid handoff phrase. */
+  cipherValid?: boolean;
   filed: boolean;
   turn: number;
 }

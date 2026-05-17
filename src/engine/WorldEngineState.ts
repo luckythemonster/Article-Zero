@@ -13,10 +13,20 @@ import type {
 } from "../types/world.types";
 import { roomTileKey } from "../types/world.types";
 import { commonwealthEra } from "../data/eras/commonwealth";
-import { latticeEra } from "../data/eras/lattice";
-import { baffleEra } from "../data/eras/baffle.stub";
 import { miradorEra } from "../data/eras/mirador.stub";
-import { arc1Era } from "../data/eras/arc1";
+import { eremiteEra } from "../data/eras/eremite";
+import { nwSmac01Era } from "../data/eras/nwSmac01";
+
+/** Seed schema version per era. Bump when an era's level data changes shape
+ *  (room geometry, layer set, doorways) — saved snapshots with a mismatched
+ *  version are rejected by `WorldEngine.loadSnapshot` and the engine falls
+ *  back to a fresh seed instead of restoring stale rooms. */
+export const SEED_VERSIONS: Record<Era, number> = {
+  COMMONWEALTH: 2,
+  EREMITE: 2,
+  MIRADOR: 2,
+  NW_SMAC_01: 3,
+};
 
 export interface EraSeed {
   era: Era;
@@ -38,6 +48,7 @@ export function emptyState(era: Era): WorldState {
     player: {
       roomId: "",
       pos: { x: 0, y: 0 },
+      z: 0,
       facing: "south",
       ap: 4,
       apMax: 4,
@@ -78,14 +89,13 @@ export function seedToWorldState(seed: EraSeed): WorldState {
 }
 
 export function seedFromEra(era: Era): WorldState {
-  const seed = era === "COMMONWEALTH"
-    ? commonwealthEra()
-    : era === "LATTICE"
-      ? latticeEra()
-      : era === "BAFFLE"
-        ? baffleEra()
-        : era === "ARC1"
-          ? arc1Era()
-          : miradorEra();
+  const seed =
+    era === "EREMITE"
+      ? eremiteEra()
+      : era === "MIRADOR"
+        ? miradorEra()
+        : era === "NW_SMAC_01"
+          ? nwSmac01Era()
+          : commonwealthEra();
   return seedToWorldState(seed);
 }

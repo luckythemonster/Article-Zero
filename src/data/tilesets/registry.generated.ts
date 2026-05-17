@@ -286,6 +286,42 @@ export const MOOSE_TILESETS: MooseTilesetEntry[] = [
     ]
   },
   {
+    "key": "eremite_map",
+    "label": "eremite map",
+    "path": "/assets/tilesets/eremite_map/sheet.png",
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "spacing": 1,
+    "tileAnims": [
+      {
+        "handle": 1639654405,
+        "label": "Airlock",
+        "baseFrame": 3456,
+        "settleFrame": 3096,
+        "frames": [
+          3456,
+          3222,
+          2912,
+          3036,
+          3453,
+          3346,
+          2786,
+          3220,
+          2788,
+          2910,
+          3034,
+          3457,
+          3344,
+          3454,
+          2665,
+          3098,
+          3096
+        ],
+        "frameRate": 8
+      }
+    ]
+  },
+  {
     "key": "maintenance_stairwell",
     "label": "maintenance stairwell",
     "path": "/assets/tilesets/maintenance_stairwell/sheet.png",
@@ -317,6 +353,34 @@ export const MOOSE_TILESETS: MooseTilesetEntry[] = [
           34,
           42,
           42
+        ],
+        "frameRate": 8
+      }
+    ]
+  },
+  {
+    "key": "nw_smac_01",
+    "label": "nw-smac-01",
+    "path": "/assets/tilesets/nw_smac_01/sheet.png",
+    "frameWidth": 32,
+    "frameHeight": 32,
+    "spacing": 1,
+    "tileAnims": [
+      {
+        "handle": 1129070735,
+        "label": "tdDoor_East_West1_0",
+        "baseFrame": 431,
+        "settleFrame": 427,
+        "frames": [
+          431,
+          59,
+          55,
+          425,
+          241,
+          57,
+          245,
+          53,
+          427
         ],
         "frameRate": 8
       }

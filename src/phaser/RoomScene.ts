@@ -7,9 +7,11 @@ import { Phaser } from "../engine/EngineAdapter";
 import { eventBus } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
 import { guardSystem } from "../engine/GuardSystem";
+import { debugFlags } from "../engine/debugFlags";
 import type { Entity, Facing, Room, Tile, TileKind } from "../types/world.types";
 
 const TILE_PX = 32;
+const ELEVATION_PX_PER_STEP = 8;
 
 // Layers in a moose-imported FloorDecoration that mark entity positions or
 // spawn points rather than visible terrain. We skip them when drawing
@@ -31,6 +33,9 @@ const TILE_COLORS: Record<TileKind, number> = {
   LIGHT_SOURCE: 0x4a4220,
   VENT: 0x131a1c,
   LOCKER: 0x2a3138,
+  CHASM: 0x05080a,
+  LADDER: 0x3a2e1c,
+  STAIRS: 0x2a221a,
 };
 
 const ALERT_COLORS: Record<string, { fill: number; alpha: number }> = {
@@ -44,6 +49,7 @@ export class RoomScene extends Phaser.Scene {
   private tileLayer!: Phaser.GameObjects.Graphics;
   private glyphLayer!: Phaser.GameObjects.Graphics;
   private coneLayer!: Phaser.GameObjects.Graphics;
+  private telegraphLayer!: Phaser.GameObjects.Graphics;
   private overlayLayer!: Phaser.GameObjects.Graphics;
   private playerSprite!: Phaser.GameObjects.Rectangle;
   private playerFacingMark!: Phaser.GameObjects.Triangle;
@@ -57,8 +63,12 @@ export class RoomScene extends Phaser.Scene {
   }> = [];
   private decorRoomId: string | null = null;
   private floorLabel!: Phaser.GameObjects.Text;
-  private offsetX = 0;
-  private offsetY = 0;
+  private debugLayer!: Phaser.GameObjects.Graphics;
+  private elevationTextPool: Phaser.GameObjects.Text[] = [];
+  private subscriptions: Array<() => void> = [];
+  private onResize = () => this.layout();
+  /** 0..1 darkening factor driven by OXYGEN_TICK during the climax. */
+  private oxygenDarken = 0;
 
   constructor() {
     super({ key: "RoomScene" });
@@ -66,18 +76,32 @@ export class RoomScene extends Phaser.Scene {
 
   create(): void {
     this.cameras.main.setBackgroundColor("#050809");
+    this.cameras.main.setRoundPixels(true);
     this.tileLayer = this.add.graphics();
     this.glyphLayer = this.add.graphics();
     this.coneLayer = this.add.graphics();
     this.coneLayer.setDepth(2);
+    this.telegraphLayer = this.add.graphics();
+    this.telegraphLayer.setDepth(3);
     this.overlayLayer = this.add.graphics();
     this.overlayLayer.setDepth(20);
+    // Detained red flash fills the viewport, not the world — keep it
+    // glued to the camera.
+    this.overlayLayer.setScrollFactor(0);
 
     this.playerSprite = this.add.rectangle(0, 0, TILE_PX - 12, TILE_PX - 12, 0x6ad0a4);
     this.playerSprite.setStrokeStyle(2, 0xe6f0f2);
     this.playerSprite.setDepth(5);
+    if (worldEngine.hasState()) {
+      const pos = worldEngine.getState().player.pos;
+      this.playerSprite.setPosition(pos.x * TILE_PX + TILE_PX / 2, pos.y * TILE_PX + TILE_PX / 2);
+    }
     this.playerFacingMark = this.add.triangle(0, 0, 0, 0, -6, 8, 6, 8, 0xe6f0f2);
     this.playerFacingMark.setDepth(6);
+    this.debugLayer = this.add.graphics();
+    this.debugLayer.setDepth(25);
+
+    this.cameras.main.startFollow(this.playerSprite, true, 0.18, 0.18);
 
     this.floorLabel = this.add.text(12, 8, "", {
       fontFamily: "Courier New, monospace",
@@ -85,31 +109,151 @@ export class RoomScene extends Phaser.Scene {
       color: "#9bb1b6",
     });
     this.floorLabel.setDepth(30);
+    this.floorLabel.setScrollFactor(0);
 
     this.layout();
-    this.scale.on("resize", () => this.layout());
+    this.scale.on("resize", this.onResize);
 
-    eventBus.on("ROOM_ENTERED", () => this.fadeAndRedraw());
-    eventBus.on("FOV_UPDATED", () => this.redraw());
-    eventBus.on("PLAYER_MOVED", () => this.redraw());
-    eventBus.on("PLAYER_FACING_CHANGED", () => this.redraw());
-    eventBus.on("DOOR_TOGGLED", () => this.redraw());
-    eventBus.on("ENTITY_MOVED", () => this.redraw());
-    eventBus.on("ENTITY_FACING_CHANGED", () => this.redraw());
-    eventBus.on("GUARD_ALERT_CHANGED", () => this.redraw());
-    eventBus.on("EXCLAMATION_TRIGGERED", (p) => this.flashExclamation(p.guardId));
-    eventBus.on("TURN_START", () => this.redraw());
-    eventBus.on("ITEM_SPAWNED", () => this.redraw());
-    eventBus.on("ITEM_PICKED_UP", () => this.redraw());
-    eventBus.on("ITEM_FILED", () => this.redraw());
-    eventBus.on("COMPLIANCE_CHANGED", () => this.redraw());
-    eventBus.on("PLAYER_HIDDEN", () => this.redraw());
-    eventBus.on("PLAYER_UNHIDDEN", () => this.redraw());
-    eventBus.on("PLAYER_PEEKED", () => this.redraw());
-    eventBus.on("PLAYER_VENTED", () => this.redraw());
-    eventBus.on("TERMINAL_USED", () => this.redraw());
+    const sub = (off: () => void) => { this.subscriptions.push(off); };
+    sub(eventBus.on("ROOM_ENTERED", () => this.fadeAndRedraw()));
+    sub(eventBus.on("FOV_UPDATED", () => this.redraw()));
+    sub(eventBus.on("PLAYER_MOVED", () => this.redraw()));
+    sub(eventBus.on("PLAYER_FACING_CHANGED", () => this.redraw()));
+    sub(eventBus.on("DOOR_TOGGLED", () => this.redraw()));
+    sub(eventBus.on("ENTITY_MOVED", () => this.redraw()));
+    sub(eventBus.on("ENTITY_FACING_CHANGED", () => this.redraw()));
+    sub(eventBus.on("GUARD_ALERT_CHANGED", () => this.redraw()));
+    sub(eventBus.on("EXCLAMATION_TRIGGERED", (p) => this.flashExclamation(p.guardId)));
+    sub(eventBus.on("TURN_START", () => this.redraw()));
+    sub(eventBus.on("ITEM_SPAWNED", () => this.redraw()));
+    sub(eventBus.on("ITEM_PICKED_UP", () => this.redraw()));
+    sub(eventBus.on("ITEM_FILED", () => this.redraw()));
+    sub(eventBus.on("COMPLIANCE_CHANGED", () => this.redraw()));
+    sub(eventBus.on("PLAYER_HIDDEN", () => this.redraw()));
+    sub(eventBus.on("PLAYER_UNHIDDEN", () => this.redraw()));
+    sub(eventBus.on("PLAYER_PEEKED", () => this.redraw()));
+    sub(eventBus.on("PLAYER_VENTED", () => this.redraw()));
+    sub(eventBus.on("TERMINAL_USED", () => this.redraw()));
+    sub(eventBus.on("OXYGEN_TICK", (p) => {
+      const total = Math.max(1, p.totalSeconds);
+      const elapsed = total - p.remainingSeconds;
+      this.oxygenDarken = Math.max(0, Math.min(0.85, elapsed / total));
+      this.redraw();
+    }));
+    sub(eventBus.on("CLIMAX_ESCAPED", () => {
+      this.oxygenDarken = 0;
+      this.redraw();
+    }));
+    sub(eventBus.on("PHASE_RESTART_REQUESTED", () => {
+      this.oxygenDarken = 0;
+      this.redraw();
+    }));
 
     this.redraw();
+  }
+
+  shutdown(): void {
+    for (const off of this.subscriptions) off();
+    this.subscriptions = [];
+    this.scale.off("resize", this.onResize);
+    for (const r of this.entityRects.values()) r.destroy();
+    for (const m of this.entityFacingMarks.values()) m.destroy();
+    for (const t of this.exclamationMarks.values()) t.destroy();
+    for (const d of this.decorSprites) d.sprite.destroy();
+    for (const t of this.elevationTextPool) t.destroy();
+    this.elevationTextPool = [];
+    this.entityRects.clear();
+    this.entityFacingMarks.clear();
+    this.exclamationMarks.clear();
+    this.decorSprites = [];
+    this.decorRoomId = null;
+  }
+
+  /** Draw a yellow line from every CAUTION-level enforcer in the current room
+   *  to its `lastStimulus` tile — the radical-predictability telegraph. */
+  private drawGuardTelegraphs(): void {
+    this.telegraphLayer.clear();
+    if (!worldEngine.hasState()) return;
+    const state = worldEngine.getState();
+    const room = worldEngine.getCurrentRoom();
+    if (!room) return;
+    const pulse = 1.0;
+    for (const e of state.entities.values()) {
+      if (e.kind !== "GUARD" || e.status !== "ACTIVE") continue;
+      if (e.roomId !== room.id) continue;
+      if (e.alert?.level !== "CAUTION") continue;
+      const tgt = e.alert.lastStimulus;
+      if (!tgt) continue;
+      // Cross-room stimuli get telegraphed only on the room they happened
+      // in; for the other side, the guard just orients toward the doorway.
+      if (e.alert.lastStimulusRoom && e.alert.lastStimulusRoom !== room.id) continue;
+      const x1 = e.pos.x * TILE_PX + TILE_PX / 2;
+      const y1 = e.pos.y * TILE_PX + TILE_PX / 2;
+      const x2 = tgt.x * TILE_PX + TILE_PX / 2;
+      const y2 = tgt.y * TILE_PX + TILE_PX / 2;
+      this.telegraphLayer.lineStyle(2, 0xebd14a, 0.7 * pulse);
+      this.telegraphLayer.beginPath();
+      this.telegraphLayer.moveTo(x1, y1);
+      this.telegraphLayer.lineTo(x2, y2);
+      this.telegraphLayer.strokePath();
+      // Endpoint pip — marks the pathfind target.
+      this.telegraphLayer.fillStyle(0xebd14a, pulse);
+      this.telegraphLayer.fillCircle(x2, y2, 3);
+    }
+  }
+
+  private drawDebugOverlays(): void {
+    this.debugLayer.clear();
+    // Hide pooled text by default; only show when showTileElevation is on.
+    for (const t of this.elevationTextPool) t.setVisible(false);
+
+    if (!debugFlags.showHitboxes && !debugFlags.showTileElevation) return;
+    if (!worldEngine.hasState()) return;
+    const room = worldEngine.getCurrentRoom();
+    if (!room) return;
+
+    if (debugFlags.showHitboxes) {
+      this.debugLayer.lineStyle(1, 0xff5050, 0.6);
+      for (let y = 0; y < room.height; y++) {
+        for (let x = 0; x < room.width; x++) {
+          const tile = room.tiles[y * room.width + x];
+          if (!tile.solid) continue;
+          this.debugLayer.strokeRect(x * TILE_PX, y * TILE_PX, TILE_PX - 1, TILE_PX - 1);
+        }
+      }
+      // Player sprite rect.
+      this.debugLayer.lineStyle(1, 0x6ad0a4, 0.9);
+      this.debugLayer.strokeRect(
+        this.playerSprite.x - (TILE_PX - 12) / 2,
+        this.playerSprite.y - (TILE_PX - 12) / 2,
+        TILE_PX - 12,
+        TILE_PX - 12,
+      );
+    }
+
+    if (debugFlags.showTileElevation) {
+      let i = 0;
+      for (let y = 0; y < room.height; y++) {
+        for (let x = 0; x < room.width; x++) {
+          const tile = room.tiles[y * room.width + x];
+          if (tile.elevation === 0 && tile.kind !== "STAIRS") continue;
+          let text = this.elevationTextPool[i];
+          if (!text) {
+            text = this.add.text(0, 0, "", {
+              fontFamily: "Courier New, monospace",
+              fontSize: "9px",
+              color: "#ebd14a",
+            });
+            text.setDepth(26);
+            this.elevationTextPool.push(text);
+          }
+          text.setText(String(tile.elevation));
+          text.setPosition(x * TILE_PX + 2, y * TILE_PX + 2);
+          text.setVisible(true);
+          i++;
+        }
+      }
+    }
   }
 
   private fadeAndRedraw(): void {
@@ -125,6 +269,16 @@ export class RoomScene extends Phaser.Scene {
         this.entityFacingMarks.delete(id);
       }
       this.layout();
+      // Snap the sprite to the new room's player position so the fade-in
+      // doesn't briefly flash from the old scroll position.
+      if (worldEngine.hasState()) {
+        const pos = worldEngine.getState().player.pos;
+        this.playerSprite.setPosition(
+          pos.x * TILE_PX + TILE_PX / 2,
+          pos.y * TILE_PX + TILE_PX / 2,
+        );
+      }
+      this.cameras.main.centerOn(this.playerSprite.x, this.playerSprite.y);
       this.cameras.main.fadeIn(120, 5, 8, 9);
     });
   }
@@ -143,8 +297,9 @@ export class RoomScene extends Phaser.Scene {
           const value = row[x] ?? 0;
           if (value === 0) continue;
           const frame = value - 1;
-          const px = this.offsetX + x * TILE_PX;
-          const py = this.offsetY + y * TILE_PX;
+          const px = x * TILE_PX;
+          const tileElev = room.tiles[y * room.width + x]?.elevation ?? 0;
+          const py = y * TILE_PX - tileElev * ELEVATION_PX_PER_STEP;
           const img = this.add
             .image(px, py, dec.textureKey, frame)
             .setOrigin(0, 0)
@@ -155,33 +310,18 @@ export class RoomScene extends Phaser.Scene {
     }
   }
 
-  private repositionDecorationSprites(): void {
-    for (const { sprite, x, y } of this.decorSprites) {
-      sprite.setPosition(this.offsetX + x * TILE_PX, this.offsetY + y * TILE_PX);
-    }
-  }
-
   private layout(): void {
     if (!worldEngine.hasState()) return;
     const room = worldEngine.getCurrentRoom();
     if (!room) return;
-    this.updateOffsets(room);
+    // Camera scrolls within the room; clamps at the edges so the void
+    // beyond the map never enters frame.
+    this.cameras.main.setBounds(0, 0, room.width * TILE_PX, room.height * TILE_PX);
     this.floorLabel.setText(room.name);
     if (this.decorRoomId !== room.id) {
       this.rebuildDecorationSprites(room);
-    } else {
-      this.repositionDecorationSprites();
     }
     this.redraw();
-  }
-
-  private updateOffsets(room: Room): void {
-    const W = this.scale.width;
-    const H = this.scale.height;
-    const totalW = room.width * TILE_PX;
-    const totalH = room.height * TILE_PX;
-    this.offsetX = Math.floor((W - totalW) / 2);
-    this.offsetY = Math.floor((H - totalH) / 2);
   }
 
   private redraw(): void {
@@ -189,11 +329,11 @@ export class RoomScene extends Phaser.Scene {
     const state = worldEngine.getState();
     const room = worldEngine.getCurrentRoom();
     if (!room) return;
-    this.updateOffsets(room);
 
     this.tileLayer.clear();
     this.glyphLayer.clear();
     this.coneLayer.clear();
+    this.telegraphLayer.clear();
     this.overlayLayer.clear();
 
     const hasDecoration = !!room.decoration;
@@ -203,8 +343,8 @@ export class RoomScene extends Phaser.Scene {
         const visible = state.visibleTiles.has(`${x},${y}`);
         if (!hasDecoration) this.drawTile(tile, x, y, visible);
         else if (visible) this.drawGlyph(
-          this.offsetX + x * TILE_PX + TILE_PX / 2,
-          this.offsetY + y * TILE_PX + TILE_PX / 2,
+          x * TILE_PX + TILE_PX / 2,
+          y * TILE_PX + TILE_PX / 2,
           tile.kind,
         );
       }
@@ -232,20 +372,28 @@ export class RoomScene extends Phaser.Scene {
       if (item.roomId !== room.id || !item.pos) continue;
       const visible = state.visibleTiles.has(`${item.pos.x},${item.pos.y}`);
       if (!visible) continue;
-      const cx = this.offsetX + item.pos.x * TILE_PX + TILE_PX / 2;
-      const cy = this.offsetY + item.pos.y * TILE_PX + TILE_PX / 2;
+      const cx = item.pos.x * TILE_PX + TILE_PX / 2;
+      const cy = item.pos.y * TILE_PX + TILE_PX / 2;
       this.glyphLayer.fillStyle(0xc89adb, 0.95);
       this.glyphLayer.fillRect(cx - 7, cy - 7, 14, 14);
       this.glyphLayer.lineStyle(1, 0xffffff, 0.9);
       this.glyphLayer.strokeRect(cx - 7, cy - 7, 14, 14);
     }
 
-    // Player.
-    const ppx = this.offsetX + state.player.pos.x * TILE_PX + TILE_PX / 2;
-    const ppy = this.offsetY + state.player.pos.y * TILE_PX + TILE_PX / 2;
-    this.playerSprite.setPosition(ppx, ppy);
+    // Player. Position is driven by WorldState; redraw is the authoritative
+    // writer. Elevation offset applied on top for stair tiles.
+    const here = room.tiles[state.player.pos.y * room.width + state.player.pos.x];
+    const elev = here?.elevation ?? 0;
+    const playerCx = state.player.pos.x * TILE_PX + TILE_PX / 2;
+    const playerCy = state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP;
+    this.playerSprite.setPosition(playerCx, playerCy);
     this.playerSprite.setFillStyle(state.player.hidingTileKey ? 0x4a5a52 : 0x6ad0a4);
-    this.placeFacingMark(this.playerFacingMark, ppx, ppy, state.player.facing);
+    this.placeFacingMark(
+      this.playerFacingMark,
+      playerCx,
+      playerCy,
+      state.player.facing,
+    );
     this.playerFacingMark.setVisible(!state.player.hidingTileKey);
     // Peek indicator: tint the facing mark gold and pulse it.
     if (state.player.peeking) {
@@ -254,15 +402,26 @@ export class RoomScene extends Phaser.Scene {
       this.playerFacingMark.setFillStyle(0xe6f0f2);
     }
 
+    // Audit lockdown failure visual — keep a faint red wash so the player
+    // can see the world dim under the React `<AuditLockdown/>` overlay that
+    // narrates the actual "AUDIT FLAG RAISED / O2 PURGING" text.
     if (state.detained) {
-      this.overlayLayer.fillStyle(0x4a0d0d, 0.45);
+      this.overlayLayer.fillStyle(0x1a0404, 0.55);
       this.overlayLayer.fillRect(0, 0, this.scale.width, this.scale.height);
     }
+    // Climax oxygen darken — independent of detention.
+    if (this.oxygenDarken > 0) {
+      this.overlayLayer.fillStyle(0x000000, this.oxygenDarken);
+      this.overlayLayer.fillRect(0, 0, this.scale.width, this.scale.height);
+    }
+
+    this.drawGuardTelegraphs();
+    this.drawDebugOverlays();
   }
 
   private drawTile(tile: Tile, x: number, y: number, visible: boolean): void {
-    const px = this.offsetX + x * TILE_PX;
-    const py = this.offsetY + y * TILE_PX;
+    const px = x * TILE_PX;
+    const py = y * TILE_PX;
     const colour = TILE_COLORS[tile.kind] ?? 0x222d33;
     this.tileLayer.fillStyle(colour, visible ? 1 : 0.32);
     this.tileLayer.fillRect(px, py, TILE_PX - 1, TILE_PX - 1);
@@ -323,12 +482,18 @@ export class RoomScene extends Phaser.Scene {
     state: ReturnType<typeof worldEngine.getState>,
     entity: Entity,
   ): void {
-    const px = this.offsetX + entity.pos.x * TILE_PX + TILE_PX / 2;
-    const py = this.offsetY + entity.pos.y * TILE_PX + TILE_PX / 2;
+    const room = state.rooms.get(entity.roomId);
+    const tileElev = room?.tiles[entity.pos.y * room.width + entity.pos.x]?.elevation ?? 0;
+    const px = entity.pos.x * TILE_PX + TILE_PX / 2;
+    const py = entity.pos.y * TILE_PX + TILE_PX / 2 - tileElev * ELEVATION_PX_PER_STEP;
     let rect = this.entityRects.get(entity.id);
+    // VENT-4 (Environmental Optimizer) gets the deep-maroon palette of its
+    // placeholder atlas frame; other silicates stay on the cyan baseline.
     const colour =
       entity.kind === "GUARD" ? 0xff7a6a :
-        entity.kind === "SILICATE" ? 0x9adbe6 : 0xc8dbe6;
+        entity.kind === "SILICATE"
+          ? entity.id === "VENT-4" ? 0x9b2c2c : 0x9adbe6
+          : 0xc8dbe6;
     if (!rect) {
       rect = this.add.rectangle(px, py, TILE_PX - 14, TILE_PX - 14, colour);
       rect.setStrokeStyle(2, 0xe6f0f2);
@@ -372,8 +537,8 @@ export class RoomScene extends Phaser.Scene {
       const [xs, ys] = key.split(",");
       const x = Number(xs);
       const y = Number(ys);
-      const px = this.offsetX + x * TILE_PX;
-      const py = this.offsetY + y * TILE_PX;
+      const px = x * TILE_PX;
+      const py = y * TILE_PX;
       this.coneLayer.fillRect(px + 2, py + 2, TILE_PX - 5, TILE_PX - 5);
     }
   }
@@ -405,8 +570,8 @@ export class RoomScene extends Phaser.Scene {
     const state = worldEngine.getState();
     const guard = state.entities.get(guardId);
     if (!guard || guard.roomId !== state.player.roomId) return;
-    const px = this.offsetX + guard.pos.x * TILE_PX + TILE_PX / 2;
-    const py = this.offsetY + guard.pos.y * TILE_PX - 6;
+    const px = guard.pos.x * TILE_PX + TILE_PX / 2;
+    const py = guard.pos.y * TILE_PX - 6;
     let mark = this.exclamationMarks.get(guardId);
     if (!mark) {
       mark = this.add.text(px, py, "!", {
