@@ -366,7 +366,7 @@ class WorldEngine {
    *  whose bleed changed so the next `LightField.getOrCompute` rebuilds it. */
   applyCrossRoomLightBleed(): void {
     const s = this.getState();
-    const BLEED_RADIUS = 2;
+    const BLEED_RADIUS = 3;
     // Snapshot prior bleed-light ownership so we can invalidate caches for any
     // room whose bleed set changes (gained or lost emissions).
     const hadBleed = new Set<RoomId>();

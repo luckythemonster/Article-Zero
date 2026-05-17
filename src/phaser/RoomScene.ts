@@ -62,6 +62,11 @@ export class RoomScene extends Phaser.Scene {
     x: number;
     y: number;
   }> = [];
+  /** Cells covered by at least one decoration sprite. Used by `redraw` to
+   *  fall back to `drawTile` for cells where the moose export has no
+   *  backdrop art (e.g. NW-SMAC-01, where all painted layers are tile-mapped
+   *  and `room.decoration.layers` ends up nearly empty). */
+  private decoratedCells: Set<string> = new Set();
   private decorRoomId: string | null = null;
   private floorLabel!: Phaser.GameObjects.Text;
   private debugLayer!: Phaser.GameObjects.Graphics;
@@ -288,6 +293,7 @@ export class RoomScene extends Phaser.Scene {
   private rebuildDecorationSprites(room: Room): void {
     for (const entry of this.decorSprites) entry.sprite.destroy();
     this.decorSprites = [];
+    this.decoratedCells = new Set();
     this.decorRoomId = room.id;
     const dec = room.decoration;
     if (!dec) return;
@@ -307,6 +313,7 @@ export class RoomScene extends Phaser.Scene {
             .setOrigin(0, 0)
             .setAlpha(0);
           this.decorSprites.push({ sprite: img, x, y });
+          this.decoratedCells.add(`${x},${y}`);
         }
       }
     }
@@ -342,13 +349,23 @@ export class RoomScene extends Phaser.Scene {
     for (let y = 0; y < room.height; y++) {
       for (let x = 0; x < room.width; x++) {
         const tile = room.tiles[y * room.width + x];
-        const visible = state.visibleTiles.has(`${x},${y}`);
-        if (!hasDecoration) this.drawTile(tile, x, y, visible);
-        else if (visible) this.drawGlyph(
-          x * TILE_PX + TILE_PX / 2,
-          y * TILE_PX + TILE_PX / 2,
-          tile,
-        );
+        const key = `${x},${y}`;
+        const visible = state.visibleTiles.has(key);
+        // When decoration is declared but this cell isn't covered by a
+        // backdrop sprite (common for moose exports whose painted layers
+        // are all tile-mapped — see `decorationLayersFor`), fall back to
+        // the tile rectangle so WALL/FLOOR/LADDER/STAIRS cells still show
+        // up under FOV.
+        const cellDecorated = hasDecoration && this.decoratedCells.has(key);
+        if (!cellDecorated) {
+          this.drawTile(tile, x, y, visible);
+        } else if (visible) {
+          this.drawGlyph(
+            x * TILE_PX + TILE_PX / 2,
+            y * TILE_PX + TILE_PX / 2,
+            tile,
+          );
+        }
       }
     }
     if (hasDecoration) {
