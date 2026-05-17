@@ -42,6 +42,7 @@ class WorldEngine {
     this.state = seedFromEra(era);
     this.resetSubsystems();
     extractionTerminal.reset(this.state);
+    this.applyCrossRoomLightBleed();
     this.recomputeFOV();
     complianceSystem.recompute(this.state);
     useSimStore.getState().setActiveModule(era);
@@ -111,6 +112,13 @@ class WorldEngine {
   interact = () => {
     const ok = actions.interact(this.getState());
     if (ok) {
+      // A successful interact may have flipped a light switch (or a terminal
+      // with a `lightToggle` payload). The toggle path inside actions.interact
+      // invalidates the source room's lit cache directly, but it can't
+      // recompute cross-room bleed because that pulls in every vent doorway
+      // in the world. Re-run the bleed pass here; it's a no-op for interacts
+      // that didn't touch lights.
+      this.applyCrossRoomLightBleed();
       this.recomputeFOV();
       complianceSystem.recompute(this.getState());
       this.syncStore();
@@ -252,6 +260,7 @@ class WorldEngine {
 
     this.resetSubsystems();
     extractionTerminal.reset(this.state);
+    this.applyCrossRoomLightBleed();
     this.recomputeFOV();
     complianceSystem.recompute(this.state);
     this.syncStore();
@@ -345,6 +354,51 @@ class WorldEngine {
 
     this.recomputeFOV();
     this.syncStore();
+  }
+
+  /** Recompute the `bleedLights` array on every room based on the current
+   *  light state of any room with `kind: "vent"` doorways into it. Lights
+   *  above a vent let a small pool of light spill into the destination
+   *  crawlspace cell; flipping the source lights off extinguishes the pool.
+   *
+   *  Called from `initWorld`, `loadSnapshot`, and after every `applyLightToggle`
+   *  via `interact`. Invalidates the lit-tile cache of every destination room
+   *  whose bleed changed so the next `LightField.getOrCompute` rebuilds it. */
+  applyCrossRoomLightBleed(): void {
+    const s = this.getState();
+    const BLEED_RADIUS = 2;
+    // Snapshot prior bleed-light ownership so we can invalidate caches for any
+    // room whose bleed set changes (gained or lost emissions).
+    const hadBleed = new Set<RoomId>();
+    for (const room of s.rooms.values()) {
+      if (room.bleedLights && room.bleedLights.length > 0) hadBleed.add(room.id);
+      room.bleedLights = undefined;
+    }
+    // Force compute source-room lit sets so the doorway lookup below is
+    // deterministic. Cached after first call; cheap on subsequent passes.
+    for (const room of s.rooms.values()) {
+      lightField.getOrCompute(room);
+    }
+    for (const fromRoom of s.rooms.values()) {
+      for (const door of fromRoom.doorways) {
+        if (door.kind !== "vent") continue;
+        const toRoom = s.rooms.get(door.to);
+        if (!toRoom) continue;
+        // Only bleed DOWNWARD — into crawlspaces, never back up into a
+        // regular room. Vent doorways are mirrored on both rooms, but only
+        // the floor-side → crawlspace direction makes narrative sense.
+        if (!toRoom.crawlspace) continue;
+        const sourceKey = `${door.localPos.x},${door.localPos.y}`;
+        if (!fromRoom.litTiles?.has(sourceKey)) continue;
+        if (!toRoom.bleedLights) toRoom.bleedLights = [];
+        toRoom.bleedLights.push({ pos: door.landingPos, radius: BLEED_RADIUS });
+      }
+    }
+    // Invalidate the lit cache for every room whose bleed changed shape.
+    for (const room of s.rooms.values()) {
+      const hasBleed = !!(room.bleedLights && room.bleedLights.length > 0);
+      if (hasBleed || hadBleed.has(room.id)) lightField.invalidate(room);
+    }
   }
 
   recomputeFOV(): void {

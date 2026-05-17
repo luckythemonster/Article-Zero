@@ -28,10 +28,11 @@ function fullyLit(room: Room): Set<string> {
 }
 
 function compute(room: Room): Set<string> {
-  // Opt-in: rooms only use per-tile light gating when `lightSwitches` is
-  // defined (even empty). Existing maps without the field stay fully lit;
+  // Opt-in: rooms only use per-tile light gating when they declare some
+  // light infrastructure — either painted switches or virtual cross-room
+  // bleed emissions. Existing maps without any of those stay fully lit and
   // their LIGHT_SOURCE tiles render as decorative glyphs as before.
-  if (!room.lightSwitches) return fullyLit(room);
+  if (!room.lightSwitches && !room.bleedLights) return fullyLit(room);
   const lit = new Set<string>();
   for (let y = 0; y < room.height; y++) {
     for (let x = 0; x < room.width; x++) {
@@ -46,6 +47,19 @@ function compute(room: Room): Set<string> {
         ox: x,
         oy: y,
         radius: r,
+      });
+      for (const k of fromHere) lit.add(k);
+    }
+  }
+  if (room.bleedLights) {
+    for (const b of room.bleedLights) {
+      const fromHere = computeCone({
+        tiles: room.tiles,
+        width: room.width,
+        height: room.height,
+        ox: b.pos.x,
+        oy: b.pos.y,
+        radius: b.radius,
       });
       for (const k of fromHere) lit.add(k);
     }

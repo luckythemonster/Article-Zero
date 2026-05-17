@@ -99,6 +99,15 @@ export interface LightSwitch {
   controls: Vec2[];
 }
 
+/** A virtual cross-room light emission — e.g. a floor vent letting light from
+ *  the room above bleed into a crawlspace below. Computed by WorldEngine
+ *  after every light toggle, never authored by hand or persisted in saves.
+ *  Treated by LightField identically to a LIGHT_SOURCE tile at `pos`. */
+export interface BleedLight {
+  pos: Vec2;
+  radius: number;
+}
+
 export interface FloorDecorationLayer {
   name: string;
   opacity: number;
@@ -154,6 +163,11 @@ export interface Room {
    *  LIGHT_SOURCE tiles it controls (empty `controls` = all lights in this
    *  room). Omitted means no switches; LIGHT_SOURCE tiles are permanently on. */
   lightSwitches?: LightSwitch[];
+  /** Cross-room virtual emissions (e.g. floor vents leaking light into a
+   *  crawlspace below). Computed by WorldEngine.applyCrossRoomLightBleed,
+   *  NOT by the era seed. LightField unions these with LIGHT_SOURCE tiles.
+   *  Recomputed after every light toggle; never persisted in saves. */
+  bleedLights?: BleedLight[];
   /** Cached lit-tile set (keys "x,y"). Invalidated by setting to undefined on
    *  any light toggle; LightField.getOrCompute lazily fills it. Never persist. */
   litTiles?: Set<string>;

@@ -10,9 +10,11 @@ import type {
 
 export function serializePhysical(p: PhysicalState): SerializedPhysical {
   // The `litTiles` cache is a transient Set computed lazily by LightField; it
-  // doesn't JSON-stringify and would corrupt the cache on rehydrate. Strip it.
+  // doesn't JSON-stringify and would corrupt the cache on rehydrate. Strip
+  // it. `bleedLights` is also runtime-derived (recomputed by WorldEngine
+  // after every toggle and at load time), so strip that too.
   const sanitisedRooms: [string, Room][] = Array.from(p.rooms.entries()).map(
-    ([id, r]) => [id, { ...r, litTiles: undefined }],
+    ([id, r]) => [id, { ...r, litTiles: undefined, bleedLights: undefined }],
   );
   return {
     era: p.era,

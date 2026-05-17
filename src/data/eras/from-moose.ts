@@ -26,6 +26,7 @@ import type {
   Facing,
   FloorDecoration,
   FloorDecorationLayer,
+  LightSwitch,
   PatrolNode,
   PlayerState,
   Room,
@@ -65,6 +66,10 @@ export interface MoosePlayerMeta {
   apMax?: number;
   flashlightBattery?: number;
   facing?: Facing;
+  /** Optional spawn override. When set, this position is used as the player's
+   *  start in the start room and the `spawn` marker layer is not required.
+   *  Useful for eras whose Ed export hasn't been painted with a spawn yet. */
+  startPos?: Vec2;
 }
 
 export interface MooseDoorwayMeta {
@@ -138,6 +143,8 @@ const TILE_KIND_LAYERS: Record<string, TileKind> = {
   exfil: "EXFIL_POINT",
   light_sources: "LIGHT_SOURCE",
   light_source: "LIGHT_SOURCE",
+  light_switch: "LIGHT_SWITCH",
+  light_switches: "LIGHT_SWITCH",
   vent: "VENT",
   vents: "VENT",
   vent_control: "VENT",
@@ -557,6 +564,18 @@ export function mooseToEraSeed(levels: MooseLevel[], meta: MooseEraMeta): EraSee
     const level = levelForRoom(sourceLevel, rm, ownOthers);
     const tiles = buildTiles(level);
     const decoration = buildDecoration(level, meta);
+    // Auto-wire any painted LIGHT_SWITCH tiles into the room's lightSwitches
+    // list with default (empty) `controls` — which `resolveSwitchTargets`
+    // expands to "every LIGHT_SOURCE in this room." Era authors who need
+    // per-switch granularity can override `room.lightSwitches` after the seed.
+    const switches: LightSwitch[] = [];
+    for (let y = 0; y < level.height; y++) {
+      for (let x = 0; x < level.width; x++) {
+        if (tiles[y * level.width + x].kind === "LIGHT_SWITCH") {
+          switches.push({ pos: { x, y }, controls: [] });
+        }
+      }
+    }
     const room: Room = {
       id: rm.id,
       name: rm.displayName,
@@ -567,6 +586,7 @@ export function mooseToEraSeed(levels: MooseLevel[], meta: MooseEraMeta): EraSee
       doorways: [],
       ...(decoration ? { decoration } : {}),
       ...(rm.crawlspace ? { crawlspace: true } : {}),
+      ...(switches.length > 0 ? { lightSwitches: switches } : {}),
     };
     roomsById.set(rm.id, room);
     markersById.set(rm.id, collectMarkers(level));
@@ -619,15 +639,19 @@ export function mooseToEraSeed(levels: MooseLevel[], meta: MooseEraMeta): EraSee
     entities.push(ent);
   }
 
-  // Player spawn from the start room.
+  // Player spawn from the start room. Either the meta-side `startPos`
+  // override or a painted `spawn` marker layer must supply the position.
   const startMarkers = markersById.get(meta.startRoomId);
   if (!startMarkers) throw new Error(`from-moose: startRoomId "${meta.startRoomId}" not found in rooms`);
-  if (!startMarkers.spawn) {
-    throw new Error(`from-moose: start room "${meta.startRoomId}" has no "spawn" marker layer`);
+  const spawnPos = meta.player.startPos ?? startMarkers.spawn;
+  if (!spawnPos) {
+    throw new Error(
+      `from-moose: start room "${meta.startRoomId}" has no "spawn" marker layer and meta.player.startPos is unset`,
+    );
   }
   const player: PlayerState = {
     roomId: meta.startRoomId,
-    pos: startMarkers.spawn,
+    pos: spawnPos,
     z: 0,
     facing: meta.player.facing ?? "south",
     ap: meta.player.apMax ?? 4,
