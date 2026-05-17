@@ -31,6 +31,7 @@ const TILE_COLORS: Record<TileKind, number> = {
   EXTRACTION_TERMINAL: 0x3f2b3a,
   EXFIL_POINT: 0x1e3a32,
   LIGHT_SOURCE: 0x4a4220,
+  LIGHT_SWITCH: 0x202830,
   VENT: 0x131a1c,
   LOCKER: 0x2a3138,
   CHASM: 0x05080a,
@@ -120,6 +121,7 @@ export class RoomScene extends Phaser.Scene {
     sub(eventBus.on("PLAYER_MOVED", () => this.redraw()));
     sub(eventBus.on("PLAYER_FACING_CHANGED", () => this.redraw()));
     sub(eventBus.on("DOOR_TOGGLED", () => this.redraw()));
+    sub(eventBus.on("LIGHT_TOGGLED", () => this.redraw()));
     sub(eventBus.on("ENTITY_MOVED", () => this.redraw()));
     sub(eventBus.on("ENTITY_FACING_CHANGED", () => this.redraw()));
     sub(eventBus.on("GUARD_ALERT_CHANGED", () => this.redraw()));
@@ -345,7 +347,7 @@ export class RoomScene extends Phaser.Scene {
         else if (visible) this.drawGlyph(
           x * TILE_PX + TILE_PX / 2,
           y * TILE_PX + TILE_PX / 2,
-          tile.kind,
+          tile,
         );
       }
     }
@@ -427,10 +429,11 @@ export class RoomScene extends Phaser.Scene {
     this.tileLayer.fillRect(px, py, TILE_PX - 1, TILE_PX - 1);
     this.tileLayer.lineStyle(1, 0x223035, visible ? 0.6 : 0.25);
     this.tileLayer.strokeRect(px, py, TILE_PX - 1, TILE_PX - 1);
-    if (visible) this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile.kind);
+    if (visible) this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile);
   }
 
-  private drawGlyph(cx: number, cy: number, kind: TileKind): void {
+  private drawGlyph(cx: number, cy: number, tile: Tile): void {
+    const kind = tile.kind;
     const g = this.glyphLayer;
     g.lineStyle(2, 0xe6f0f2, 0.85);
     if (kind === "TERMINAL") {
@@ -447,8 +450,21 @@ export class RoomScene extends Phaser.Scene {
       g.lineStyle(2, 0x6ad0a4, 1);
       g.strokeTriangle(cx, cy - 5, cx - 5, cy + 4, cx + 5, cy + 4);
     } else if (kind === "LIGHT_SOURCE") {
-      g.fillStyle(0xfff0a8, 0.9);
-      g.fillCircle(cx, cy, 4);
+      // Bright filled circle when on; dim outline only when off.
+      const on = tile.lightOn !== false;
+      if (on) {
+        g.fillStyle(0xfff0a8, 0.9);
+        g.fillCircle(cx, cy, 4);
+      } else {
+        g.lineStyle(1, 0xfff0a8, 0.35);
+        g.strokeCircle(cx, cy, 4);
+      }
+    } else if (kind === "LIGHT_SWITCH") {
+      // Wall plate: narrow vertical rectangle with a small toggle dot.
+      g.lineStyle(1, 0x9bb1b6, 0.85);
+      g.strokeRect(cx - 4, cy - 8, 8, 16);
+      g.fillStyle(0xebd14a, 0.85);
+      g.fillCircle(cx, cy, 1.6);
     } else if (kind === "DOOR_CLOSED") {
       g.fillStyle(0x9b7a4f, 1);
       g.fillRect(cx - 5, cy - 9, 10, 18);

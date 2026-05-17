@@ -2,13 +2,15 @@
 // the EventBus. One function per verb. Sound emission is centralised here so
 // AlertFSM consumers see a consistent picture of "what the player did".
 
-import type { Facing, ItemInstance, Tile, Vec2, WorldState } from "../types/world.types";
+import type { Facing, ItemInstance, Room, Tile, Vec2, WorldState } from "../types/world.types";
 import { facingFromDelta, roomTileKey } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import { roomGraph } from "./RoomGraph";
 import { soundField } from "./SoundField";
 import { alignmentSession } from "./AlignmentSession";
+import { alertFSM } from "./AlertFSM";
 import { documentArchive } from "./DocumentArchive";
+import { lightField } from "./LightField";
 
 const MOVE_AP_COST = 1;
 const SNEAK_AP_COST = 1;
@@ -40,6 +42,81 @@ function entityAt(state: WorldState, roomId: string, p: Vec2) {
     if (entity.pos.x === p.x && entity.pos.y === p.y) return entity;
   }
   return undefined;
+}
+
+/** Flip the on/off state of a set of LIGHT_SOURCE tiles. Coupled toggle: if
+ *  any is on, all go off; if all are off, all go on. Emits LIGHT_TOGGLED,
+ *  invalidates the room's lit cache, propagates an intensity-2 click via
+ *  SoundField, and — when darkening — immediately CAUTIONs guards in the
+ *  affected room (synthetic AlertFSM sound input so they don't wait for the
+ *  per-turn tick to react). Returns the new on/off state, or null if no
+ *  valid targets. */
+function applyLightToggle(
+  state: WorldState,
+  room: Room,
+  targets: Vec2[],
+  originPos: Vec2,
+): boolean | null {
+  if (targets.length === 0) return null;
+  const valid = targets.filter((p) => {
+    const t = room.tiles[p.y * room.width + p.x];
+    return t && t.kind === "LIGHT_SOURCE";
+  });
+  if (valid.length === 0) return null;
+  const anyOn = valid.some((p) => {
+    const t = room.tiles[p.y * room.width + p.x];
+    return t.lightOn !== false;
+  });
+  const next = !anyOn;
+  for (const p of valid) {
+    const t = room.tiles[p.y * room.width + p.x];
+    t.lightOn = next;
+  }
+  lightField.invalidate(room);
+  eventBus.emit("LIGHT_TOGGLED", {
+    roomId: room.id,
+    switchPos: originPos,
+    lightPositions: valid,
+    on: next,
+  });
+  soundField.emit({
+    roomId: room.id,
+    pos: originPos,
+    intensity: 2,
+    reason: "light_toggle",
+  });
+  // Immediate-CAUTION for guards in the darkening room — they perceive the
+  // lights dropping right away, not at end-of-turn. Re-lighting is silent
+  // toward guards (asymmetric by design — turning lights back on shouldn't
+  // un-CAUTION an already-suspicious guard).
+  if (!next) {
+    for (const entity of state.entities.values()) {
+      if (entity.kind !== "GUARD" || entity.status !== "ACTIVE") continue;
+      if (entity.roomId !== room.id) continue;
+      alertFSM.step(state, entity, {
+        seesPlayer: false,
+        heardIntensity: 2,
+        heardSrc: { roomId: room.id, pos: originPos },
+        playerPos: undefined,
+        playerRoomId: state.player.roomId,
+      });
+    }
+  }
+  return next;
+}
+
+/** Resolve the LIGHT_SOURCE positions a switch controls — explicit
+ *  `controls` if set, otherwise every LIGHT_SOURCE in the room. */
+function resolveSwitchTargets(room: Room, controls: Vec2[]): Vec2[] {
+  if (controls.length > 0) return controls;
+  const out: Vec2[] = [];
+  for (let y = 0; y < room.height; y++) {
+    for (let x = 0; x < room.width; x++) {
+      const t = room.tiles[y * room.width + x];
+      if (t.kind === "LIGHT_SOURCE") out.push({ x, y });
+    }
+  }
+  return out;
 }
 
 function findCubeAt(state: WorldState, roomId: string, p: Vec2): ItemInstance | undefined {
@@ -287,6 +364,35 @@ export const actions = {
       return true;
     }
 
+    // Light switch — adjacent LIGHT_SWITCH tile. Flips the wired LIGHT_SOURCE
+    // set in the current room; emits an intensity-2 click; CAUTIONs guards in
+    // the room when darkening. Costs 1 AP like other interacts.
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const p: Vec2 = { x: state.player.pos.x + dx, y: state.player.pos.y + dy };
+      const t = tileAt(state, state.player.roomId, p);
+      if (!t || t.kind !== "LIGHT_SWITCH") continue;
+      const room = state.rooms.get(state.player.roomId);
+      if (!room) return false;
+      const sw = room.lightSwitches?.find(
+        (s) => s.pos.x === p.x && s.pos.y === p.y,
+      );
+      // If a switch tile exists but no wiring is declared, default to "all
+      // lights in this room" so era authors can drop a switch tile without
+      // bookkeeping every light.
+      const targets = resolveSwitchTargets(room, sw?.controls ?? []);
+      const result = applyLightToggle(state, room, targets, p);
+      if (result === null) return false;
+      const facing = facingFromDelta(dx, dy);
+      if (facing && facing !== state.player.facing) {
+        state.player.facing = facing;
+        eventBus.emit("PLAYER_FACING_CHANGED", { facing });
+      }
+      const previousAp = state.player.ap;
+      state.player.ap -= INTERACT_AP_COST;
+      eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
+      return true;
+    }
+
     // Terminal use — adjacent TERMINAL tile. Files a doc into the archive
     // and optionally unlocks a paired doorway. Silent.
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
@@ -341,6 +447,12 @@ export const actions = {
             pos: payload.unlocks.pos,
             open: true,
           });
+        }
+      }
+      if (payload.lightToggle && payload.lightToggle.length > 0) {
+        const lightRoom = state.rooms.get(state.player.roomId);
+        if (lightRoom) {
+          applyLightToggle(state, lightRoom, payload.lightToggle, p);
         }
       }
       const previousAp = state.player.ap;

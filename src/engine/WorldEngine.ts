@@ -17,8 +17,10 @@ import type {
 import { eventBus } from "./EventBus";
 import {
   computeCone,
+  FLASHLIGHT_BONUS,
   getEffectivePlayerRadius,
 } from "./VisionCone";
+import { lightField } from "./LightField";
 import { SEED_VERSIONS, seedFromEra } from "./WorldEngineState";
 import { actions } from "./WorldEngineActions";
 import { documentArchive } from "./DocumentArchive";
@@ -365,7 +367,7 @@ class WorldEngine {
       });
       return;
     }
-    const visible = computeCone({
+    const cone = computeCone({
       tiles: room.tiles,
       width: room.width,
       height: room.height,
@@ -373,7 +375,23 @@ class WorldEngine {
       oy: s.player.pos.y,
       radius,
     });
-    for (const k of visible) s.visibleTiles.add(k);
+    const lit = lightField.getOrCompute(room);
+    const px = s.player.pos.x;
+    const py = s.player.pos.y;
+    const flashlightR = s.player.flashlightOn ? FLASHLIGHT_BONUS : 0;
+    for (const k of cone) {
+      if (lit.has(k)) { s.visibleTiles.add(k); continue; }
+      const [xs, ys] = k.split(",");
+      const tx = Number(xs);
+      const ty = Number(ys);
+      const md = Math.abs(tx - px) + Math.abs(ty - py);
+      // Flashlight bypass: tiles within bonus radius are lit by the
+      // carried lamp even when room emissions don't cover them.
+      if (flashlightR > 0 && md <= flashlightR) { s.visibleTiles.add(k); continue; }
+      // Own-tile + cardinal-neighbor fallback so the player isn't blind in
+      // pitch black on the tile they're standing on.
+      if (md <= 1) { s.visibleTiles.add(k); continue; }
+    }
     if (s.player.peeking) {
       const peekVisible = computeCone({
         tiles: room.tiles,
@@ -385,7 +403,15 @@ class WorldEngine {
         facing: s.player.peeking,
         halfAngle: Math.PI / 3,
       });
-      for (const k of peekVisible) s.visibleTiles.add(k);
+      for (const k of peekVisible) {
+        if (lit.has(k)) { s.visibleTiles.add(k); continue; }
+        const [xs, ys] = k.split(",");
+        const tx = Number(xs);
+        const ty = Number(ys);
+        const md = Math.abs(tx - px) + Math.abs(ty - py);
+        if (flashlightR > 0 && md <= flashlightR) { s.visibleTiles.add(k); continue; }
+        if (md <= 1) { s.visibleTiles.add(k); continue; }
+      }
     }
     eventBus.emit("FOV_UPDATED", {
       roomId: room.id,

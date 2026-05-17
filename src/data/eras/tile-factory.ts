@@ -9,7 +9,11 @@ export interface MkTileOpts {
    *  tile (`stairs_z<from>_z<to>` Ed convention). */
   elevationTo?: number;
   direction?: Side;
+  /** LIGHT_SOURCE only — emission radius in tiles. Default 4. */
+  emissionRadius?: number;
 }
+
+const DEFAULT_LIGHT_RADIUS = 4;
 
 export function mkTile(kind: TileKind, opts: MkTileOpts = {}): Tile {
   const elevation = opts.elevation ?? 0;
@@ -23,9 +27,20 @@ export function mkTile(kind: TileKind, opts: MkTileOpts = {}): Tile {
     case "WALL":
     case "DOOR_CLOSED":
     case "LOCKER":
+    case "LIGHT_SWITCH":
       return { kind, solid: true, opaque: true, elevation, ...extras };
     case "CHASM":
       return { kind, solid: true, opaque: false, elevation, ...extras };
+    case "LIGHT_SOURCE":
+      return {
+        kind,
+        solid: false,
+        opaque: false,
+        elevation,
+        emissionRadius: opts.emissionRadius ?? DEFAULT_LIGHT_RADIUS,
+        lightOn: true,
+        ...extras,
+      };
     default:
       return { kind, solid: false, opaque: false, elevation, ...extras };
   }

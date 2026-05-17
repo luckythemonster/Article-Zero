@@ -203,6 +203,8 @@ const TILE_KIND_PRECEDENCE: Record<TileKind, number> = {
   LOCKER: 2,
   DOOR_OPEN: 3,
   DOOR_CLOSED: 3,
+  // Switches read as wall-mounted fixtures; rank with walls.
+  LIGHT_SWITCH: 4,
   WALL: 4,
   // Ladders are painted on a wall face by convention — they MUST beat
   // walls so the climb cell isn't blocked by surrounding wall paint.
