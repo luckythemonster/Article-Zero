@@ -141,15 +141,62 @@ The `SoundField` engine simulates noise propagation to guards; it currently has 
 
 ---
 
-## 7. UNMOUNTED — Quick Wins Already on Disk
+## 7. UNMOUNTED — Detailed Inventory (`/unmounted assets/` — identical on `main` and working branch)
 
-These are in `/unmounted assets/` and just need import:
+Confirmed: contents on `origin/main` match the working tree. No character sprites in this folder — it's items, props, environmental objects, an FX, and a full map export.
 
-- **EMP animation** (9 PNG frames + Aseprite source) → enforcer EMP sprite.
-- **Mesh Uplink A** (Ed zip) → import via `npm run moose -- art/moose/<file>.zip`.
-- **NW-SMAC-01 items** (Ed zip) → likely fills Fragment Box / item sprite gap.
-- **The Fragment Box** (Ed zip) → mount as room + likely supplies the box prop.
-- Additional May 5 2026 export artifacts (zips, JSON, txt).
+### `EMP animation/`
+- 9 frames at **256×256** + Aseprite source + composite sheet (`emp animation.png` 768×768).
+- Enforcer EMP burst VFX (per `art/enforcer/` animation list).
+- README: "Animation for ARC 1 EMP."
+- Mount target: `art/enforcer/emp/<direction>/` or split-out VFX layer; needs scale-down to match enforcer body size at render time.
+
+### `Mesh_Uplink_A_heavy_floor-mo.zip` (Ed export, 88×88)
+- Environmental object — "heavy, floor-mounted transmission node."
+- 4 state variants (Mesh_Uplink_A_heavy_floor-mo, _2, _3, Lattice_Mesh_Uplink).
+- Animations: "mesh structure pulses with energy", "crystalline lattice", "black central cube dissolves/dematerializes" (~17 frames each).
+- Mount via `npm run moose -- "unmounted assets/Mesh_Uplink_A_heavy_floor-mo.zip"` (likely needs to be moved into `art/moose/` first — verify with `scripts/import-moose.mjs` flags).
+- Fits the **Citizen Lattice (Era 3)** or **Mesh Uplink A** locations.
+
+### `NW-SMAC-01 items.zip` (Ed export, 48×48 each)
+Full Era 1 item set — directly fills the inventory gap from section 4:
+- **flashlight** (with steady-glow + held-glow animations)
+- **EMP device** (player-side counterpart to enforcer EMP)
+- **vent override key**
+- **lock pick**
+- **elevated access key**
+- **maintenance key**
+- **rapport notes**
+- **Article Zero fragment** (likely the codex/lore pickup)
+- 8 decorative "Theme: high-tech, Micro-perfect" tiles for set dressing
+
+### `The_Fragment_Box.zip` (Ed export, 88×88)
+- 2 box variants, 8-direction rotations (south, SE, E, NE, N, NW, W, SW).
+- Animation: "tiny glowing red pixel light blinks into existence" (5 frames, SE only).
+- Mount target: world prop sprite for the Era 1 core artifact (section 4).
+
+### `may 5 2026/` — Arc 1 map export
+- `article zero.zip` — spritesheet (1.6 MB) + `edplay.json` (537 KB)
+- `article zero 2.zip` — bundled Unity EdTech C# source (`EdWorldData.cs`, `Tile.cs`, etc.) — engine source, not assets
+- `article zero.json` (1.5 MB), `article zero.moose` (1.5 MB), `article zero.txt` (624 KB)
+- **Sprite cell size: 32×32** (confirmed in `article zero.txt`: `set Width 32 / set Height 32` per sprite).
+- README: "map for Arc 1"
+- This is a Moose/Ed map authored at the new target tile size.
+
+---
+
+## 7b. Sprite size convention — 24×24 → 32×32 (with 36×36 frame padding)
+
+Characters were previously 24×24, now being re-exported at **32×32 character art inside ~36×36 frames** (the 4px padding gives room for overdraw/offset). Source PNGs in `art/solibarracastro/` and `art/enforcer/` are 36×36 — these are already the new ones.
+
+### What this means for the asset list
+
+- **No code change required** for the size switch. `scripts/build-atlas.mjs` reads PNG dimensions dynamically (build-atlas.mjs:130) and enforces per-character consistency (:144–149). Cell size = global max across all characters.
+- **No hardcoded `24` in `src/phaser/` or `scripts/`** — `TILE_PX = 32` in RoomScene.ts is the *tile* render size, unrelated to source frame size.
+- **Renderer wiring is out of scope here**: `playerSprite` is a colored `Rectangle` today (RoomScene.ts:98); the `chars-art` atlas is packed but not displayed. Hooking it up is a separate task.
+- **All `Need (new sprite work)` entries in section 1** should be authored at **32×32 character art in 36×36 frames** to match the existing pipeline output.
+- **APEX-19 at 92×92** is intentional (room-scale entity, not a person-class character); leave it.
+- **Mismatched-size warning**: if a future character is exported at a different frame size, build-atlas will throw with `Frame size mismatch for "<name>"` (build-atlas.mjs:147). Per-character consistency is enforced; cross-character mixing is allowed but inflates atlas cell size to the global max.
 
 ---
 
