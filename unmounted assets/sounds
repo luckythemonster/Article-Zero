@@ -276,3 +276,33 @@ VENT-4
   "sample_rate": 44100,
   "sample_size": 16
 }
+APEX-19
+{
+  "oldParams": true,
+  "wave_type": 0,
+  "p_env_attack": 0,
+  "p_env_sustain": 1,
+  "p_env_punch": 0.557,
+  "p_env_decay": 0.034,
+  "p_base_freq": 0.205,
+  "p_freq_limit": 0.034,
+  "p_freq_ramp": -0.228,
+  "p_freq_dramp": 0.019,
+  "p_vib_strength": 0.985,
+  "p_vib_speed": 0.224,
+  "p_arp_mod": 0.552,
+  "p_arp_speed": 0.433,
+  "p_duty": 1,
+  "p_duty_ramp": -0.247,
+  "p_repeat_speed": 0,
+  "p_pha_offset": 0.913,
+  "p_pha_ramp": 0.704,
+  "p_lpf_freq": 0.899,
+  "p_lpf_ramp": 0.78,
+  "p_lpf_resonance": 1,
+  "p_hpf_freq": 0,
+  "p_hpf_ramp": 0,
+  "sound_vol": 0.25,
+  "sample_rate": 44100,
+  "sample_size": 16
+}
