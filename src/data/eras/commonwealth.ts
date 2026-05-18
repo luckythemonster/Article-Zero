@@ -28,6 +28,9 @@ const H = 8;
 //   X  EXTRACTION_TERMINAL (sneak-and-hold to download)
 //   P  EXFIL_POINT  (drop a held EXTRACTION_CUBE here to file it)
 //   L  LIGHT_SOURCE
+//   K  LIGHT_SWITCH  (face an adjacent floor tile and press E to toggle the
+//                     room's wired lights; with no explicit wiring this flips
+//                     every LIGHT_SOURCE in the room)
 //   V  VENT  (sneak onto it and press E to crawl to its pair)
 //   H  LOCKER  (face it and press E to hide; E again to exit)
 //   S  player spawn (FLOOR underneath)
@@ -49,7 +52,7 @@ const LOCKER: RoomSpec = {
   rows: [
     "##########",
     "#L..H....#",
-    "#........#",
+    "#........K",
     "#...S....#",
     "#........#",
     "#..P.....#",
@@ -137,6 +140,7 @@ function parseRoom(spec: RoomSpec): ParsedRoom {
         case "X": kind = "EXTRACTION_TERMINAL"; break;
         case "P": kind = "EXFIL_POINT"; break;
         case "L": kind = "LIGHT_SOURCE"; break;
+        case "K": kind = "LIGHT_SWITCH"; break;
         case "V": kind = "VENT"; marks[`V_${x}_${y}`] = { x, y }; break;
         case "H": kind = "LOCKER"; break;
         case "S": kind = "FLOOR"; marks.S = { x, y }; break;
@@ -264,6 +268,9 @@ export function commonwealthEra(): EraSeed {
     id: LOCKER.id, name: LOCKER.name, width: W, height: H,
     tiles: lockerP.tiles, ambientLight: LOCKER.ambient,
     doorways: [lockerToCor],
+    // The `K` switch on the east wall wires every LIGHT_SOURCE in this room
+    // (the lone `L` lamp top-left). Empty `controls` => "all room lights".
+    lightSwitches: [{ pos: { x: W - 1, y: 2 }, controls: [] }],
   };
   const corridor: Room = {
     id: CORRIDOR.id, name: CORRIDOR.name, width: W, height: H,

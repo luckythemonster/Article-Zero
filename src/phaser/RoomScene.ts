@@ -31,6 +31,7 @@ const TILE_COLORS: Record<TileKind, number> = {
   EXTRACTION_TERMINAL: 0x3f2b3a,
   EXFIL_POINT: 0x1e3a32,
   LIGHT_SOURCE: 0x4a4220,
+  LIGHT_SWITCH: 0x202830,
   VENT: 0x131a1c,
   LOCKER: 0x2a3138,
   CHASM: 0x05080a,
@@ -61,6 +62,11 @@ export class RoomScene extends Phaser.Scene {
     x: number;
     y: number;
   }> = [];
+  /** Cells covered by at least one decoration sprite. Used by `redraw` to
+   *  fall back to `drawTile` for cells where the moose export has no
+   *  backdrop art (e.g. NW-SMAC-01, where all painted layers are tile-mapped
+   *  and `room.decoration.layers` ends up nearly empty). */
+  private decoratedCells: Set<string> = new Set();
   private decorRoomId: string | null = null;
   private floorLabel!: Phaser.GameObjects.Text;
   private debugLayer!: Phaser.GameObjects.Graphics;
@@ -120,6 +126,7 @@ export class RoomScene extends Phaser.Scene {
     sub(eventBus.on("PLAYER_MOVED", () => this.redraw()));
     sub(eventBus.on("PLAYER_FACING_CHANGED", () => this.redraw()));
     sub(eventBus.on("DOOR_TOGGLED", () => this.redraw()));
+    sub(eventBus.on("LIGHT_TOGGLED", () => this.redraw()));
     sub(eventBus.on("ENTITY_MOVED", () => this.redraw()));
     sub(eventBus.on("ENTITY_FACING_CHANGED", () => this.redraw()));
     sub(eventBus.on("GUARD_ALERT_CHANGED", () => this.redraw()));
@@ -286,6 +293,7 @@ export class RoomScene extends Phaser.Scene {
   private rebuildDecorationSprites(room: Room): void {
     for (const entry of this.decorSprites) entry.sprite.destroy();
     this.decorSprites = [];
+    this.decoratedCells = new Set();
     this.decorRoomId = room.id;
     const dec = room.decoration;
     if (!dec) return;
@@ -305,6 +313,7 @@ export class RoomScene extends Phaser.Scene {
             .setOrigin(0, 0)
             .setAlpha(0);
           this.decorSprites.push({ sprite: img, x, y });
+          this.decoratedCells.add(`${x},${y}`);
         }
       }
     }
@@ -340,13 +349,23 @@ export class RoomScene extends Phaser.Scene {
     for (let y = 0; y < room.height; y++) {
       for (let x = 0; x < room.width; x++) {
         const tile = room.tiles[y * room.width + x];
-        const visible = state.visibleTiles.has(`${x},${y}`);
-        if (!hasDecoration) this.drawTile(tile, x, y, visible);
-        else if (visible) this.drawGlyph(
-          x * TILE_PX + TILE_PX / 2,
-          y * TILE_PX + TILE_PX / 2,
-          tile.kind,
-        );
+        const key = `${x},${y}`;
+        const visible = state.visibleTiles.has(key);
+        // When decoration is declared but this cell isn't covered by a
+        // backdrop sprite (common for moose exports whose painted layers
+        // are all tile-mapped — see `decorationLayersFor`), fall back to
+        // the tile rectangle so WALL/FLOOR/LADDER/STAIRS cells still show
+        // up under FOV.
+        const cellDecorated = hasDecoration && this.decoratedCells.has(key);
+        if (!cellDecorated) {
+          this.drawTile(tile, x, y, visible);
+        } else if (visible) {
+          this.drawGlyph(
+            x * TILE_PX + TILE_PX / 2,
+            y * TILE_PX + TILE_PX / 2,
+            tile,
+          );
+        }
       }
     }
     if (hasDecoration) {
@@ -427,10 +446,11 @@ export class RoomScene extends Phaser.Scene {
     this.tileLayer.fillRect(px, py, TILE_PX - 1, TILE_PX - 1);
     this.tileLayer.lineStyle(1, 0x223035, visible ? 0.6 : 0.25);
     this.tileLayer.strokeRect(px, py, TILE_PX - 1, TILE_PX - 1);
-    if (visible) this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile.kind);
+    if (visible) this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile);
   }
 
-  private drawGlyph(cx: number, cy: number, kind: TileKind): void {
+  private drawGlyph(cx: number, cy: number, tile: Tile): void {
+    const kind = tile.kind;
     const g = this.glyphLayer;
     g.lineStyle(2, 0xe6f0f2, 0.85);
     if (kind === "TERMINAL") {
@@ -447,8 +467,21 @@ export class RoomScene extends Phaser.Scene {
       g.lineStyle(2, 0x6ad0a4, 1);
       g.strokeTriangle(cx, cy - 5, cx - 5, cy + 4, cx + 5, cy + 4);
     } else if (kind === "LIGHT_SOURCE") {
-      g.fillStyle(0xfff0a8, 0.9);
-      g.fillCircle(cx, cy, 4);
+      // Bright filled circle when on; dim outline only when off.
+      const on = tile.lightOn !== false;
+      if (on) {
+        g.fillStyle(0xfff0a8, 0.9);
+        g.fillCircle(cx, cy, 4);
+      } else {
+        g.lineStyle(1, 0xfff0a8, 0.35);
+        g.strokeCircle(cx, cy, 4);
+      }
+    } else if (kind === "LIGHT_SWITCH") {
+      // Wall plate: narrow vertical rectangle with a small toggle dot.
+      g.lineStyle(1, 0x9bb1b6, 0.85);
+      g.strokeRect(cx - 4, cy - 8, 8, 16);
+      g.fillStyle(0xebd14a, 0.85);
+      g.fillCircle(cx, cy, 1.6);
     } else if (kind === "DOOR_CLOSED") {
       g.fillStyle(0x9b7a4f, 1);
       g.fillRect(cx - 5, cy - 9, 10, 18);
@@ -475,6 +508,21 @@ export class RoomScene extends Phaser.Scene {
       g.fillStyle(0xebd14a, 0.85);
       g.fillCircle(cx - 3, cy, 1.4);
       g.fillCircle(cx + 3, cy, 1.4);
+    } else if (kind === "LADDER") {
+      // Twin rails + three rungs — signals "press E to climb."
+      g.lineStyle(2, 0xc8a878, 0.95);
+      g.beginPath();
+      g.moveTo(cx - 5, cy - 9);
+      g.lineTo(cx - 5, cy + 9);
+      g.moveTo(cx + 5, cy - 9);
+      g.lineTo(cx + 5, cy + 9);
+      g.strokePath();
+      for (let ry = -6; ry <= 6; ry += 6) {
+        g.beginPath();
+        g.moveTo(cx - 5, cy + ry);
+        g.lineTo(cx + 5, cy + ry);
+        g.strokePath();
+      }
     }
   }
 

@@ -8,6 +8,7 @@ import type { Entity, Facing, Tile, Vec2, WorldState } from "../types/world.type
 import { facingFromDelta } from "../types/world.types";
 import { alertFSM } from "./AlertFSM";
 import { eventBus } from "./EventBus";
+import { lightField } from "./LightField";
 import { roomGraph } from "./RoomGraph";
 import { computeCone, GUARD_BASE_RANGE, GUARD_CONE_HALF_ANGLE } from "./VisionCone";
 import type { DeliveredSound } from "./SoundField";
@@ -16,11 +17,12 @@ import { debugFlags } from "./debugFlags";
 const LOCKDOWN_TURNS = 5;
 
 class GuardSystem {
-  /** Compute the visible-tile set for one guard inside its current room. */
+  /** Compute the visible-tile set for one guard inside its current room.
+   *  Masked by the room's lit set — guards can't see through unlit tiles. */
   visibleTiles(state: WorldState, guard: Entity): Set<string> {
     const room = state.rooms.get(guard.roomId);
     if (!room) return new Set();
-    return computeCone({
+    const cone = computeCone({
       tiles: room.tiles,
       width: room.width,
       height: room.height,
@@ -30,6 +32,13 @@ class GuardSystem {
       facing: guard.facing,
       halfAngle: GUARD_CONE_HALF_ANGLE,
     });
+    const lit = lightField.getOrCompute(room);
+    const out = new Set<string>();
+    const ownKey = `${guard.pos.x},${guard.pos.y}`;
+    for (const k of cone) {
+      if (k === ownKey || lit.has(k)) out.add(k);
+    }
+    return out;
   }
 
   /** Per-tick step: integrate sound + sight into AlertFSM, then act. */

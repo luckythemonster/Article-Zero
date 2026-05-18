@@ -17,8 +17,10 @@ import type {
 import { eventBus } from "./EventBus";
 import {
   computeCone,
+  FLASHLIGHT_BONUS,
   getEffectivePlayerRadius,
 } from "./VisionCone";
+import { lightField } from "./LightField";
 import { SEED_VERSIONS, seedFromEra } from "./WorldEngineState";
 import { actions } from "./WorldEngineActions";
 import { documentArchive } from "./DocumentArchive";
@@ -40,6 +42,7 @@ class WorldEngine {
     this.state = seedFromEra(era);
     this.resetSubsystems();
     extractionTerminal.reset(this.state);
+    this.applyCrossRoomLightBleed();
     this.recomputeFOV();
     complianceSystem.recompute(this.state);
     useSimStore.getState().setActiveModule(era);
@@ -109,6 +112,13 @@ class WorldEngine {
   interact = () => {
     const ok = actions.interact(this.getState());
     if (ok) {
+      // A successful interact may have flipped a light switch (or a terminal
+      // with a `lightToggle` payload). The toggle path inside actions.interact
+      // invalidates the source room's lit cache directly, but it can't
+      // recompute cross-room bleed because that pulls in every vent doorway
+      // in the world. Re-run the bleed pass here; it's a no-op for interacts
+      // that didn't touch lights.
+      this.applyCrossRoomLightBleed();
       this.recomputeFOV();
       complianceSystem.recompute(this.getState());
       this.syncStore();
@@ -250,6 +260,7 @@ class WorldEngine {
 
     this.resetSubsystems();
     extractionTerminal.reset(this.state);
+    this.applyCrossRoomLightBleed();
     this.recomputeFOV();
     complianceSystem.recompute(this.state);
     this.syncStore();
@@ -345,6 +356,51 @@ class WorldEngine {
     this.syncStore();
   }
 
+  /** Recompute the `bleedLights` array on every room based on the current
+   *  light state of any room with `kind: "vent"` doorways into it. Lights
+   *  above a vent let a small pool of light spill into the destination
+   *  crawlspace cell; flipping the source lights off extinguishes the pool.
+   *
+   *  Called from `initWorld`, `loadSnapshot`, and after every `applyLightToggle`
+   *  via `interact`. Invalidates the lit-tile cache of every destination room
+   *  whose bleed changed so the next `LightField.getOrCompute` rebuilds it. */
+  applyCrossRoomLightBleed(): void {
+    const s = this.getState();
+    const BLEED_RADIUS = 3;
+    // Snapshot prior bleed-light ownership so we can invalidate caches for any
+    // room whose bleed set changes (gained or lost emissions).
+    const hadBleed = new Set<RoomId>();
+    for (const room of s.rooms.values()) {
+      if (room.bleedLights && room.bleedLights.length > 0) hadBleed.add(room.id);
+      room.bleedLights = undefined;
+    }
+    // Force compute source-room lit sets so the doorway lookup below is
+    // deterministic. Cached after first call; cheap on subsequent passes.
+    for (const room of s.rooms.values()) {
+      lightField.getOrCompute(room);
+    }
+    for (const fromRoom of s.rooms.values()) {
+      for (const door of fromRoom.doorways) {
+        if (door.kind !== "vent") continue;
+        const toRoom = s.rooms.get(door.to);
+        if (!toRoom) continue;
+        // Only bleed DOWNWARD — into crawlspaces, never back up into a
+        // regular room. Vent doorways are mirrored on both rooms, but only
+        // the floor-side → crawlspace direction makes narrative sense.
+        if (!toRoom.crawlspace) continue;
+        const sourceKey = `${door.localPos.x},${door.localPos.y}`;
+        if (!fromRoom.litTiles?.has(sourceKey)) continue;
+        if (!toRoom.bleedLights) toRoom.bleedLights = [];
+        toRoom.bleedLights.push({ pos: door.landingPos, radius: BLEED_RADIUS });
+      }
+    }
+    // Invalidate the lit cache for every room whose bleed changed shape.
+    for (const room of s.rooms.values()) {
+      const hasBleed = !!(room.bleedLights && room.bleedLights.length > 0);
+      if (hasBleed || hadBleed.has(room.id)) lightField.invalidate(room);
+    }
+  }
+
   recomputeFOV(): void {
     const s = this.getState();
     const room = s.rooms.get(s.player.roomId);
@@ -365,7 +421,7 @@ class WorldEngine {
       });
       return;
     }
-    const visible = computeCone({
+    const cone = computeCone({
       tiles: room.tiles,
       width: room.width,
       height: room.height,
@@ -373,7 +429,23 @@ class WorldEngine {
       oy: s.player.pos.y,
       radius,
     });
-    for (const k of visible) s.visibleTiles.add(k);
+    const lit = lightField.getOrCompute(room);
+    const px = s.player.pos.x;
+    const py = s.player.pos.y;
+    const flashlightR = s.player.flashlightOn ? FLASHLIGHT_BONUS : 0;
+    for (const k of cone) {
+      if (lit.has(k)) { s.visibleTiles.add(k); continue; }
+      const [xs, ys] = k.split(",");
+      const tx = Number(xs);
+      const ty = Number(ys);
+      const md = Math.abs(tx - px) + Math.abs(ty - py);
+      // Flashlight bypass: tiles within bonus radius are lit by the
+      // carried lamp even when room emissions don't cover them.
+      if (flashlightR > 0 && md <= flashlightR) { s.visibleTiles.add(k); continue; }
+      // Own-tile + cardinal-neighbor fallback so the player isn't blind in
+      // pitch black on the tile they're standing on.
+      if (md <= 1) { s.visibleTiles.add(k); continue; }
+    }
     if (s.player.peeking) {
       const peekVisible = computeCone({
         tiles: room.tiles,
@@ -385,7 +457,15 @@ class WorldEngine {
         facing: s.player.peeking,
         halfAngle: Math.PI / 3,
       });
-      for (const k of peekVisible) s.visibleTiles.add(k);
+      for (const k of peekVisible) {
+        if (lit.has(k)) { s.visibleTiles.add(k); continue; }
+        const [xs, ys] = k.split(",");
+        const tx = Number(xs);
+        const ty = Number(ys);
+        const md = Math.abs(tx - px) + Math.abs(ty - py);
+        if (flashlightR > 0 && md <= flashlightR) { s.visibleTiles.add(k); continue; }
+        if (md <= 1) { s.visibleTiles.add(k); continue; }
+      }
     }
     eventBus.emit("FOV_UPDATED", {
       roomId: room.id,

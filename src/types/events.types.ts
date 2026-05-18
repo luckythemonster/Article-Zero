@@ -38,6 +38,12 @@ export interface EventMap {
   FOV_UPDATED: { roomId: RoomId; visibleTiles: string[] };
   AMBIENT_LIGHT_CHANGED: { roomId: RoomId; level: AmbientLightLevel; effectiveRadius: number };
   FLASHLIGHT_TOGGLED: { on: boolean; battery: number };
+  LIGHT_TOGGLED: {
+    roomId: RoomId;
+    switchPos: Vec2;
+    lightPositions: Vec2[];
+    on: boolean;
+  };
 
   // Entities
   ENTITY_MOVED: { entityId: EntityId; roomId: RoomId; from: Vec2; to: Vec2 };

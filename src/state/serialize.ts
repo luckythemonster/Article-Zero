@@ -1,5 +1,6 @@
 // Map/Set ↔ JSON-safe round-trip for sim snapshots.
 
+import type { Room } from "../types/world.types";
 import type {
   PhysicalState,
   SerializedPhysical,
@@ -8,10 +9,17 @@ import type {
 } from "./sim.types";
 
 export function serializePhysical(p: PhysicalState): SerializedPhysical {
+  // The `litTiles` cache is a transient Set computed lazily by LightField; it
+  // doesn't JSON-stringify and would corrupt the cache on rehydrate. Strip
+  // it. `bleedLights` is also runtime-derived (recomputed by WorldEngine
+  // after every toggle and at load time), so strip that too.
+  const sanitisedRooms: [string, Room][] = Array.from(p.rooms.entries()).map(
+    ([id, r]) => [id, { ...r, litTiles: undefined, bleedLights: undefined }],
+  );
   return {
     era: p.era,
     turn: p.turn,
-    rooms: Array.from(p.rooms.entries()),
+    rooms: sanitisedRooms,
     ventLinks: Array.from(p.ventLinks.entries()),
     terminalPayloads: Array.from(p.terminalPayloads.entries()),
     playerRoomId: p.playerRoomId,

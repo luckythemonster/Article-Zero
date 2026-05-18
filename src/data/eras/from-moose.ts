@@ -26,6 +26,7 @@ import type {
   Facing,
   FloorDecoration,
   FloorDecorationLayer,
+  LightSwitch,
   PatrolNode,
   PlayerState,
   Room,
@@ -65,6 +66,10 @@ export interface MoosePlayerMeta {
   apMax?: number;
   flashlightBattery?: number;
   facing?: Facing;
+  /** Optional spawn override. When set, this position is used as the player's
+   *  start in the start room and the `spawn` marker layer is not required.
+   *  Useful for eras whose Ed export hasn't been painted with a spawn yet. */
+  startPos?: Vec2;
 }
 
 export interface MooseDoorwayMeta {
@@ -138,6 +143,8 @@ const TILE_KIND_LAYERS: Record<string, TileKind> = {
   exfil: "EXFIL_POINT",
   light_sources: "LIGHT_SOURCE",
   light_source: "LIGHT_SOURCE",
+  light_switch: "LIGHT_SWITCH",
+  light_switches: "LIGHT_SWITCH",
   vent: "VENT",
   vents: "VENT",
   vent_control: "VENT",
@@ -203,6 +210,8 @@ const TILE_KIND_PRECEDENCE: Record<TileKind, number> = {
   LOCKER: 2,
   DOOR_OPEN: 3,
   DOOR_CLOSED: 3,
+  // Switches read as wall-mounted fixtures; rank with walls.
+  LIGHT_SWITCH: 4,
   WALL: 4,
   // Ladders are painted on a wall face by convention — they MUST beat
   // walls so the climb cell isn't blocked by surrounding wall paint.
@@ -479,11 +488,18 @@ function emitDoorways(
     a.doorways.push(forward);
     b.doorways.push(mirror);
 
-    if (d.kind === "vent" || d.kind === "ladder") {
+    if (d.kind === "ladder") {
+      // Ladder: stamp LADDER on both sides so the renderer's drawGlyph
+      // shows the rung graphic at each end (Ed authors commonly paint
+      // only one side). Players need the visual cue to know they can
+      // press E to climb; without this, the destination cell often shows
+      // as bare FLOOR and the climb-back-up appears impossible.
+      paintDoor(a, forward.localPos, "LADDER");
+      paintDoor(b, mirror.localPos, "LADDER");
+    } else if (d.kind === "vent") {
       // Vent: the non-crawlspace side's localPos is a painted VENT tile;
       // preserve it. The crawlspace side just gets the entry cell painted
-      // by the meta-author. Ladder: both sides keep their painted LADDER
-      // tiles (the doorway is the climb, not a door swap).
+      // by the meta-author.
     } else if (d.closed) {
       paintDoor(a, forward.localPos, "DOOR_CLOSED");
       paintDoor(b, mirror.localPos, "DOOR_CLOSED");
@@ -555,6 +571,18 @@ export function mooseToEraSeed(levels: MooseLevel[], meta: MooseEraMeta): EraSee
     const level = levelForRoom(sourceLevel, rm, ownOthers);
     const tiles = buildTiles(level);
     const decoration = buildDecoration(level, meta);
+    // Auto-wire any painted LIGHT_SWITCH tiles into the room's lightSwitches
+    // list with default (empty) `controls` — which `resolveSwitchTargets`
+    // expands to "every LIGHT_SOURCE in this room." Era authors who need
+    // per-switch granularity can override `room.lightSwitches` after the seed.
+    const switches: LightSwitch[] = [];
+    for (let y = 0; y < level.height; y++) {
+      for (let x = 0; x < level.width; x++) {
+        if (tiles[y * level.width + x].kind === "LIGHT_SWITCH") {
+          switches.push({ pos: { x, y }, controls: [] });
+        }
+      }
+    }
     const room: Room = {
       id: rm.id,
       name: rm.displayName,
@@ -565,6 +593,7 @@ export function mooseToEraSeed(levels: MooseLevel[], meta: MooseEraMeta): EraSee
       doorways: [],
       ...(decoration ? { decoration } : {}),
       ...(rm.crawlspace ? { crawlspace: true } : {}),
+      ...(switches.length > 0 ? { lightSwitches: switches } : {}),
     };
     roomsById.set(rm.id, room);
     markersById.set(rm.id, collectMarkers(level));
@@ -617,15 +646,19 @@ export function mooseToEraSeed(levels: MooseLevel[], meta: MooseEraMeta): EraSee
     entities.push(ent);
   }
 
-  // Player spawn from the start room.
+  // Player spawn from the start room. Either the meta-side `startPos`
+  // override or a painted `spawn` marker layer must supply the position.
   const startMarkers = markersById.get(meta.startRoomId);
   if (!startMarkers) throw new Error(`from-moose: startRoomId "${meta.startRoomId}" not found in rooms`);
-  if (!startMarkers.spawn) {
-    throw new Error(`from-moose: start room "${meta.startRoomId}" has no "spawn" marker layer`);
+  const spawnPos = meta.player.startPos ?? startMarkers.spawn;
+  if (!spawnPos) {
+    throw new Error(
+      `from-moose: start room "${meta.startRoomId}" has no "spawn" marker layer and meta.player.startPos is unset`,
+    );
   }
   const player: PlayerState = {
     roomId: meta.startRoomId,
-    pos: startMarkers.spawn,
+    pos: spawnPos,
     z: 0,
     facing: meta.player.facing ?? "south",
     ap: meta.player.apMax ?? 4,

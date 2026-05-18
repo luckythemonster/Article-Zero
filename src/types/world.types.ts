@@ -29,6 +29,7 @@ export type TileKind =
   | "EXTRACTION_TERMINAL"
   | "EXFIL_POINT"
   | "LIGHT_SOURCE"
+  | "LIGHT_SWITCH"
   | "VENT"
   | "LOCKER"
   | "CHASM"
@@ -82,6 +83,29 @@ export interface Tile {
   direction?: Side;
   /** Optional in-world label. */
   label?: string;
+  /** LIGHT_SOURCE only. Manhattan-tile radius of emitted light. Default 4 if
+   *  unspecified. Used by LightField to compute the per-room lit-tile set. */
+  emissionRadius?: number;
+  /** LIGHT_SOURCE only. Mutable runtime on/off state. Default true at seed
+   *  time. Switches and terminal payloads flip this; recomputeFOV reads it. */
+  lightOn?: boolean;
+}
+
+/** Wiring between a LIGHT_SWITCH tile and the LIGHT_SOURCE tiles it controls.
+ *  Stored on Room. Empty `controls` means "all LIGHT_SOURCE tiles in this
+ *  room" (the default for single-switch rooms). */
+export interface LightSwitch {
+  pos: Vec2;
+  controls: Vec2[];
+}
+
+/** A virtual cross-room light emission — e.g. a floor vent letting light from
+ *  the room above bleed into a crawlspace below. Computed by WorldEngine
+ *  after every light toggle, never authored by hand or persisted in saves.
+ *  Treated by LightField identically to a LIGHT_SOURCE tile at `pos`. */
+export interface BleedLight {
+  pos: Vec2;
+  radius: number;
 }
 
 export interface FloorDecorationLayer {
@@ -135,6 +159,18 @@ export interface Room {
    *  doorways. Treated as ordinary Rooms by the renderer/FOV; flagged here so
    *  systems can opt into crawl-specific behaviour (e.g. crawl animations). */
   crawlspace?: boolean;
+  /** LIGHT_SWITCH wiring. Each entry maps one switch tile to the set of
+   *  LIGHT_SOURCE tiles it controls (empty `controls` = all lights in this
+   *  room). Omitted means no switches; LIGHT_SOURCE tiles are permanently on. */
+  lightSwitches?: LightSwitch[];
+  /** Cross-room virtual emissions (e.g. floor vents leaking light into a
+   *  crawlspace below). Computed by WorldEngine.applyCrossRoomLightBleed,
+   *  NOT by the era seed. LightField unions these with LIGHT_SOURCE tiles.
+   *  Recomputed after every light toggle; never persisted in saves. */
+  bleedLights?: BleedLight[];
+  /** Cached lit-tile set (keys "x,y"). Invalidated by setting to undefined on
+   *  any light toggle; LightField.getOrCompute lazily fills it. Never persist. */
+  litTiles?: Set<string>;
 }
 
 // Entities ---------------------------------------------------------------
@@ -255,6 +291,9 @@ export interface TerminalPayload {
   /** If set, using this terminal toggles the doorway whose FROM tile is at
    *  (unlocks.roomId, unlocks.pos). Mirrors `roomGraph.toggleDoorway`. */
   unlocks?: { roomId: RoomId; pos: Vec2 };
+  /** If set, using this terminal flips the LIGHT_SOURCE tiles at these
+   *  positions in `roomId`. Coupled toggle: any-on → all-off, all-off → all-on. */
+  lightToggle?: Vec2[];
 }
 
 // World ------------------------------------------------------------------
