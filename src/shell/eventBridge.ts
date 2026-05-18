@@ -40,6 +40,11 @@ export function installEventBridge(): () => void {
     ),
   );
   unsubs.push(
+    eventBus.on("SOUND_EMITTED", (p) =>
+      push("INFO", `sound: ${p.reason} i=${p.intensity} @ ${p.roomId}:${p.pos.x},${p.pos.y}`),
+    ),
+  );
+  unsubs.push(
     eventBus.on("DOOR_TOGGLED", (p) =>
       push("INFO", `door ${p.open ? "opened" : "closed"} @ ${p.roomId}:${p.pos.x},${p.pos.y}`),
     ),

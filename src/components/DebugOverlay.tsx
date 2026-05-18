@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebugStore, type DebugEvent } from "../state/useDebugStore";
 import { footsteps } from "../audio/Footsteps";
 import { getSharedContext, isAudioUnlocked } from "../audio/audio-context";
+import { getBridgeStats } from "../audio/footstep-bridge";
 
 const LEVEL_COLOR: Record<DebugEvent["level"], string> = {
   INFO: "#9bb1b6",
@@ -45,8 +46,14 @@ function AudioDebugPanel(): React.ReactElement {
   }, []);
   const ctx = getSharedContext();
   const stats = footsteps.getStats();
+  const bridge = getBridgeStats();
   const ctxState = ctx ? ctx.state : "uncreated";
   const unlocked = isAudioUnlocked();
+  const reasonsLine = Object.entries(bridge.player.byReason)
+    .map(([r, n]) => `${r} ${n}`)
+    .join(" · ");
+  const playerLast = bridge.player.last;
+  const guardLast = bridge.guard.last;
 
   return (
     <div
@@ -73,7 +80,35 @@ function AudioDebugPanel(): React.ReactElement {
           err: {stats.lastError}
         </div>
       )}
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+
+      <div style={{ color: "#6ad0a4", letterSpacing: 1.2, marginTop: 4 }}>BRIDGE</div>
+      <div>
+        recv {bridge.player.received} · played {bridge.player.played} · bail
+        prof {bridge.player.bailNoProfile} · tile {bridge.player.bailNoTile} ·
+        surf {bridge.player.bailNoSurface}
+      </div>
+      <div>reasons: {reasonsLine || "—"}</div>
+      <div>
+        last:{" "}
+        {playerLast
+          ? `${playerLast.reason} @ ${playerLast.roomId} ${playerLast.pos.x},${playerLast.pos.y} → ${playerLast.surface ?? "—"}`
+          : "—"}
+      </div>
+
+      <div style={{ color: "#6ad0a4", letterSpacing: 1.2, marginTop: 4 }}>GUARDS</div>
+      <div>
+        recv {bridge.guard.received} · played {bridge.guard.played} · room{" "}
+        {bridge.guard.bailRoom} · tile {bridge.guard.bailNoTile} · surf{" "}
+        {bridge.guard.bailNoSurface} · vol {bridge.guard.bailZeroVolume}
+      </div>
+      <div>
+        last:{" "}
+        {guardLast
+          ? `${guardLast.roomId} ${guardLast.pos.x},${guardLast.pos.y} d=${guardLast.dist} v=${guardLast.volume.toFixed(2)}`
+          : "—"}
+      </div>
+
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
         <button type="button" onClick={() => footsteps.testTone()} style={btnStyle}>
           [test tone]
         </button>
