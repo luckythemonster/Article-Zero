@@ -11,6 +11,7 @@ import { RoomScene } from "../phaser/RoomScene";
 import { useSimStore } from "../state/useSimStore";
 import { useInput } from "../hooks/useInput";
 import { installDebugEventTap } from "../engine/DebugEventTap";
+import { installFootstepBridge } from "../audio/footstep-bridge";
 import TouchControls from "../components/TouchControls";
 import type { Module } from "../types/world.types";
 
@@ -41,10 +42,14 @@ export function PhaserCanvas({ moduleId, children }: Props) {
     gameRef.current = game;
 
     // Install debug tap AFTER eventBus.clear so its handlers survive the
-    // canvas lifecycle. Detach on unmount before the next clear.
+    // canvas lifecycle. Detach on unmount before the next clear. The footstep
+    // audio bridge rides alongside for the same reason — TerminalShell-level
+    // subscription would be wiped by the clear on every PhaserCanvas mount.
     const offTap = installDebugEventTap();
+    const offFootsteps = installFootstepBridge();
 
     return () => {
+      offFootsteps();
       offTap();
       gameRef.current?.destroy(true);
       gameRef.current = null;

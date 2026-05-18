@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useTerminalStore } from "../state/useTerminalStore";
 import { applySettings, loadSettings } from "./settings";
 import { installEventBridge } from "./eventBridge";
-import { installFootstepBridge } from "../audio/footstep-bridge";
 import StatusBar from "./StatusBar";
 import AuditLog from "./AuditLog";
 import CommandLine from "./CommandLine";
@@ -37,12 +36,7 @@ export default function TerminalShell() {
       term.setActiveModule(null);
       term.setPhase("FRAME");
     }
-    const offEvents = installEventBridge();
-    const offFootsteps = installFootstepBridge();
-    return () => {
-      offEvents();
-      offFootsteps();
-    };
+    return installEventBridge();
   }, []);
 
   useEffect(() => {
