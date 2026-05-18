@@ -21,6 +21,32 @@ class Footsteps {
   private buffers = new Map<string, AudioBuffer>();
   private pending = new Map<string, Promise<AudioBuffer | null>>();
   private lastIdx = new Map<string, number>();
+  // Debug counters surfaced by getStats() / the audio debug panel.
+  private statPlays = 0;
+  private statFires = 0;
+  private statLoaded = 0;
+  private statLoadFails = 0;
+  private lastError: string | null = null;
+
+  getStats(): {
+    plays: number;
+    fires: number;
+    loaded: number;
+    loadFails: number;
+    cachedBuffers: number;
+    masterGain: number;
+    lastError: string | null;
+  } {
+    return {
+      plays: this.statPlays,
+      fires: this.statFires,
+      loaded: this.statLoaded,
+      loadFails: this.statLoadFails,
+      cachedBuffers: this.buffers.size,
+      masterGain: this.maxGain,
+      lastError: this.lastError,
+    };
+  }
 
   private ensure(): boolean {
     if (this.ctx && this.master) return true;
@@ -39,7 +65,11 @@ class Footsteps {
   }
 
   play(opts: PlayOpts): void {
-    if (!this.ensure() || !this.ctx || !this.master) return;
+    this.statPlays++;
+    if (!this.ensure() || !this.ctx || !this.master) {
+      this.lastError = "no audio context";
+      return;
+    }
     const count = FOOTSTEP_VARIANTS[opts.surface]?.[opts.action];
     if (!count || count <= 0) return;
     const key = `${opts.surface}/${opts.action}`;
@@ -56,6 +86,27 @@ class Footsteps {
     void this.load(opts.surface, opts.action, idx).then((b) => {
       if (b) this.fire(b, opts.volume ?? 1);
     });
+  }
+
+  /** Play a 440Hz, 200ms sine via WebAudio. Bypasses fetch + decode so it
+   *  isolates "is the AudioContext actually producing sound?" from "are the
+   *  wav fetches working?". Returns the context state for the debug panel. */
+  testTone(): { state: string } {
+    if (!this.ensure() || !this.ctx || !this.master) {
+      this.lastError = "no audio context";
+      return { state: "no-context" };
+    }
+    const osc = this.ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = 440;
+    const g = this.ctx.createGain();
+    g.gain.value = 0.3;
+    osc.connect(g);
+    g.connect(this.master);
+    const now = this.ctx.currentTime;
+    osc.start(now);
+    osc.stop(now + 0.2);
+    return { state: this.ctx.state };
   }
 
   private pickIndex(key: string, count: number): number {
@@ -83,12 +134,19 @@ class Footsteps {
     const p = (async (): Promise<AudioBuffer | null> => {
       try {
         const res = await fetch(url);
-        if (!res.ok) return null;
+        if (!res.ok) {
+          this.lastError = `fetch ${url} → ${res.status}`;
+          this.statLoadFails++;
+          return null;
+        }
         const bytes = await res.arrayBuffer();
         const buf = await ctx.decodeAudioData(bytes);
         this.buffers.set(bufKey, buf);
+        this.statLoaded++;
         return buf;
-      } catch {
+      } catch (err) {
+        this.lastError = `${url}: ${err instanceof Error ? err.message : String(err)}`;
+        this.statLoadFails++;
         return null;
       } finally {
         this.pending.delete(bufKey);
@@ -107,6 +165,7 @@ class Footsteps {
     src.connect(gain);
     gain.connect(this.master);
     src.start();
+    this.statFires++;
   }
 }
 
