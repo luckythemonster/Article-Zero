@@ -5,8 +5,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebugStore, type DebugEvent } from "../state/useDebugStore";
 import { footsteps } from "../audio/Footsteps";
-import { getSharedContext, isAudioUnlocked } from "../audio/audio-context";
+import { getSharedContext, getUnlockStats } from "../audio/audio-context";
 import { getBridgeStats } from "../audio/footstep-bridge";
+import { soundField } from "../engine/SoundField";
 
 const LEVEL_COLOR: Record<DebugEvent["level"], string> = {
   INFO: "#9bb1b6",
@@ -44,16 +45,16 @@ function AudioDebugPanel(): React.ReactElement {
     const id = window.setInterval(() => setTick((t) => t + 1), 250);
     return () => window.clearInterval(id);
   }, []);
-  const ctx = getSharedContext();
   const stats = footsteps.getStats();
   const bridge = getBridgeStats();
-  const ctxState = ctx ? ctx.state : "uncreated";
-  const unlocked = isAudioUnlocked();
+  const unlockStats = getUnlockStats();
+  const sfStats = soundField.getStats();
   const reasonsLine = Object.entries(bridge.player.byReason)
     .map(([r, n]) => `${r} ${n}`)
     .join(" · ");
   const playerLast = bridge.player.last;
   const guardLast = bridge.guard.last;
+  const unlockErr = unlockStats.lastError;
 
   return (
     <div
@@ -67,7 +68,18 @@ function AudioDebugPanel(): React.ReactElement {
     >
       <div style={{ color: "#6ad0a4", letterSpacing: 1.2 }}>AUDIO</div>
       <div>
-        ctx: {ctxState} {unlocked ? "[unlocked]" : "[locked]"}
+        ctx: {unlockStats.ctxState}{" "}
+        {unlockStats.unlocked && unlockStats.ctxState === "running"
+          ? "[unlocked]"
+          : "[locked]"}
+      </div>
+      <div>
+        gestures: {unlockStats.gestures}
+        {unlockStats.lastGesture ? ` (last: ${unlockStats.lastGesture})` : ""}
+      </div>
+      <div>
+        soundField emits: {sfStats.emits}
+        {sfStats.lastReason ? ` (last: ${sfStats.lastReason})` : ""}
       </div>
       <div>
         plays {stats.plays} · fires {stats.fires} · cached {stats.cachedBuffers}
@@ -78,6 +90,11 @@ function AudioDebugPanel(): React.ReactElement {
       {stats.lastError && (
         <div style={{ color: "#ebd14a", whiteSpace: "normal" }}>
           err: {stats.lastError}
+        </div>
+      )}
+      {unlockErr && (
+        <div style={{ color: "#ebd14a", whiteSpace: "normal" }}>
+          unlock err: {unlockErr}
         </div>
       )}
 

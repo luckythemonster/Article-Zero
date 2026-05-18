@@ -28,12 +28,23 @@ export interface DeliveredSound {
 
 class SoundField {
   private queue: SoundEmission[] = [];
+  // Debug counters surfaced by `getStats()` / the audio panel. Incremented
+  // before the eventBus dispatch so the counter trips even if listeners are
+  // mis-wired downstream.
+  private statEmits = 0;
+  private statLastReason = "";
+
+  getStats(): { emits: number; lastReason: string } {
+    return { emits: this.statEmits, lastReason: this.statLastReason };
+  }
 
   reset(): void {
     this.queue = [];
   }
 
   emit(e: SoundEmission): void {
+    this.statEmits++;
+    this.statLastReason = e.reason;
     this.queue.push(e);
     eventBus.emit("SOUND_EMITTED", {
       roomId: e.roomId,
