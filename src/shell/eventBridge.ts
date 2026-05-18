@@ -35,6 +35,11 @@ export function installEventBridge(): () => void {
     ),
   );
   unsubs.push(
+    eventBus.on("PLAYER_STANCE_CHANGED", (p) =>
+      push("INFO", `stance: ${p.stance.toLowerCase()}`),
+    ),
+  );
+  unsubs.push(
     eventBus.on("DOOR_TOGGLED", (p) =>
       push("INFO", `door ${p.open ? "opened" : "closed"} @ ${p.roomId}:${p.pos.x},${p.pos.y}`),
     ),

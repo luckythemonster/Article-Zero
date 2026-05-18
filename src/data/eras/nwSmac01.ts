@@ -95,6 +95,12 @@ export function nwSmac01Era(): EraSeed {
   };
   const seed = mooseToEraSeed(NW_SMAC_01_LEVELS, meta);
 
+  // Footstep surfaces: the Ducts crawlspace floor is sheet-metal duct lining,
+  // not the dirty concrete of the Main Floor. Main Floor inherits the default
+  // "dirtyground" pool.
+  const ducts = seed.rooms.find((r) => r.id === "ducts");
+  if (ducts) ducts.floorSurface = "metalv2";
+
   // TODO(moose-export): placeholder lights + switch on the Main Floor until
   // the painted Ed layers ship. Lets us verify the vent bleed-through to the
   // Ducts crawlspace before the re-export lands. Delete this whole block

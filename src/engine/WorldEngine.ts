@@ -297,6 +297,7 @@ class WorldEngine {
   private useStanceMove(dx: number, dy: number): boolean {
     const s = this.getState();
     if (s.player.stance === "SNEAK") return actions.sneak(s, dx, dy);
+    if (s.player.stance === "RUN") return actions.run(s, dx, dy);
     return actions.move(s, dx, dy);
   }
 

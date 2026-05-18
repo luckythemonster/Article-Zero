@@ -235,6 +235,9 @@ class GuardSystem {
     guard.pos = next;
     guard.lastMoveTurn = state.turn;
     eventBus.emit("ENTITY_MOVED", { entityId: guard.id, roomId: guard.roomId, from, to: next });
+    // Audio-only signal — does NOT route through SoundField (would let the
+    // player exploit guard noise as a sonar ping into the alert FSM).
+    eventBus.emit("GUARD_FOOTSTEP", { guardId: guard.id, roomId: guard.roomId, pos: next });
   }
 
   private canEnter(tiles: Tile[], w: number, h: number, p: Vec2): boolean {

@@ -14,6 +14,18 @@ export type Side = "N" | "S" | "E" | "W";
 
 export type AmbientLightLevel = "LIT" | "DIM" | "DARK";
 
+/** Footstep surface families. Drives sample selection for footstep SFX.
+ *  Resolved from a tile via `tileSurface()`; FLOOR may be overridden per Room
+ *  via `Room.floorSurface`. */
+export type SurfaceType =
+  | "dirtyground"
+  | "gravel"
+  | "metalv1"
+  | "metalv2"
+  | "rock"
+  | "tile"
+  | "wood";
+
 export interface Vec2 {
   x: number;
   y: number;
@@ -171,6 +183,10 @@ export interface Room {
   /** Cached lit-tile set (keys "x,y"). Invalidated by setting to undefined on
    *  any light toggle; LightField.getOrCompute lazily fills it. Never persist. */
   litTiles?: Set<string>;
+  /** Override for the footstep surface played on FLOOR tiles inside this room.
+   *  Other tile kinds (VENT, STAIRS, LADDER, …) are resolved statically by
+   *  `tileSurface()` and ignore this field. Default is "dirtyground". */
+  floorSurface?: SurfaceType;
 }
 
 // Entities ---------------------------------------------------------------
@@ -229,7 +245,7 @@ export interface Entity {
 
 // Player -----------------------------------------------------------------
 
-export type Stance = "WALK" | "SNEAK";
+export type Stance = "WALK" | "SNEAK" | "RUN";
 
 export interface PlayerState {
   /** Which room the player is currently inside. */

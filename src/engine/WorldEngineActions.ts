@@ -14,6 +14,7 @@ import { lightField } from "./LightField";
 
 const MOVE_AP_COST = 1;
 const SNEAK_AP_COST = 1;
+const RUN_AP_COST = 1;
 const KNOCK_AP_COST = 1;
 const INTERACT_AP_COST = 1;
 const VENT_AP_COST = 2;
@@ -24,6 +25,10 @@ export const ALIGN_AP_COST = 3;
 
 const WALK_INTENSITY = 1;
 const SNEAK_INTENSITY = 0;
+// Sits between WALK (1, CAUTION threshold) and KNOCK (4, ALERT threshold) so a
+// run pulls patrols to CAUTION on the first heard step but doesn't immediately
+// scream "intruder". See AlertFSM thresholds.
+const RUN_INTENSITY = 2;
 const KNOCK_INTENSITY = 4;
 const DOOR_INTENSITY = 2;
 const LOCKER_INTENSITY = 2;
@@ -230,6 +235,9 @@ export const actions = {
   sneak(state: WorldState, dx: number, dy: number): boolean {
     return moveCommon(state, dx, dy, SNEAK_AP_COST, SNEAK_INTENSITY, "sneak");
   },
+  run(state: WorldState, dx: number, dy: number): boolean {
+    return moveCommon(state, dx, dy, RUN_AP_COST, RUN_INTENSITY, "run");
+  },
 
   /** Rap on the wall the player is facing. Loud noise, lures guards. */
   knock(state: WorldState): boolean {
@@ -257,7 +265,12 @@ export const actions = {
 
   toggleStance(state: WorldState): void {
     if (state.player.hidingTileKey) return;
-    state.player.stance = state.player.stance === "WALK" ? "SNEAK" : "WALK";
+    state.player.stance =
+      state.player.stance === "WALK"
+        ? "SNEAK"
+        : state.player.stance === "SNEAK"
+          ? "RUN"
+          : "WALK";
     eventBus.emit("PLAYER_STANCE_CHANGED", { stance: state.player.stance });
   },
 
