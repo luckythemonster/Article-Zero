@@ -488,11 +488,18 @@ function emitDoorways(
     a.doorways.push(forward);
     b.doorways.push(mirror);
 
-    if (d.kind === "vent" || d.kind === "ladder") {
+    if (d.kind === "ladder") {
+      // Ladder: stamp LADDER on both sides so the renderer's drawGlyph
+      // shows the rung graphic at each end (Ed authors commonly paint
+      // only one side). Players need the visual cue to know they can
+      // press E to climb; without this, the destination cell often shows
+      // as bare FLOOR and the climb-back-up appears impossible.
+      paintDoor(a, forward.localPos, "LADDER");
+      paintDoor(b, mirror.localPos, "LADDER");
+    } else if (d.kind === "vent") {
       // Vent: the non-crawlspace side's localPos is a painted VENT tile;
       // preserve it. The crawlspace side just gets the entry cell painted
-      // by the meta-author. Ladder: both sides keep their painted LADDER
-      // tiles (the doorway is the climb, not a door swap).
+      // by the meta-author.
     } else if (d.closed) {
       paintDoor(a, forward.localPos, "DOOR_CLOSED");
       paintDoor(b, mirror.localPos, "DOOR_CLOSED");

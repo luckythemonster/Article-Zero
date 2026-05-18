@@ -508,6 +508,21 @@ export class RoomScene extends Phaser.Scene {
       g.fillStyle(0xebd14a, 0.85);
       g.fillCircle(cx - 3, cy, 1.4);
       g.fillCircle(cx + 3, cy, 1.4);
+    } else if (kind === "LADDER") {
+      // Twin rails + three rungs — signals "press E to climb."
+      g.lineStyle(2, 0xc8a878, 0.95);
+      g.beginPath();
+      g.moveTo(cx - 5, cy - 9);
+      g.lineTo(cx - 5, cy + 9);
+      g.moveTo(cx + 5, cy - 9);
+      g.lineTo(cx + 5, cy + 9);
+      g.strokePath();
+      for (let ry = -6; ry <= 6; ry += 6) {
+        g.beginPath();
+        g.moveTo(cx - 5, cy + ry);
+        g.lineTo(cx + 5, cy + ry);
+        g.strokePath();
+      }
     }
   }
 

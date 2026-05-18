@@ -17,6 +17,7 @@ const SNEAK_AP_COST = 1;
 const KNOCK_AP_COST = 1;
 const INTERACT_AP_COST = 1;
 const VENT_AP_COST = 2;
+const LADDER_AP_COST = 1;
 const KILL_SCREEN_AP_COST = 1;
 const PRY_LOCKDOWN_AP_COST = 2;
 export const ALIGN_AP_COST = 3;
@@ -26,6 +27,7 @@ const SNEAK_INTENSITY = 0;
 const KNOCK_INTENSITY = 4;
 const DOOR_INTENSITY = 2;
 const LOCKER_INTENSITY = 2;
+const LADDER_INTENSITY = 1;
 const PRY_LOCKDOWN_INTENSITY = 6;
 
 function tileAt(state: WorldState, roomId: string, p: Vec2): Tile | undefined {
@@ -152,9 +154,13 @@ function moveCommon(
   const fromRoomId = state.player.roomId;
   const fromPos = state.player.pos;
 
-  // Try a doorway crossing first.
+  // Try a doorway crossing first. Ladder doorways are excluded — stepping
+  // onto a ladder cell should NOT teleport the player; the climb requires a
+  // deliberate E-press handled in actions.interact below. The LADDER tile is
+  // non-solid (tile-factory default), so this fall-through walks the player
+  // onto the ladder via the standard in-room step path.
   const crossing = roomGraph.attemptCrossing(state, fromRoomId, fromPos, dx, dy);
-  if (crossing) {
+  if (crossing && crossing.doorway.kind !== "ladder") {
     // Vent-flavoured doorway: must be in SNEAK stance, pays VENT_AP_COST,
     // and crosses silently. The destination room is the crawlspace (or, for
     // the second hop, the floor on the other side). Standard ROOM_ENTER
@@ -362,6 +368,45 @@ export const actions = {
         to: { roomId: state.player.roomId, pos: state.player.pos },
       });
       return true;
+    }
+
+    // Ladder climb — standing on a LADDER tile that's wired as a ladder
+    // doorway. No stance requirement; costs LADDER_AP_COST and emits a
+    // walk-intensity sound. Mirrors the VENT handler structure but without
+    // SNEAK gating. The `door.kind === "ladder"` check keeps LADDER tiles
+    // sitting under non-ladder doorways (e.g. NW-SMAC-01 ducts, where the
+    // landing is a LADDER tile under a "vent" doorway) on their existing
+    // crossing path.
+    if (standingTile?.kind === "LADDER") {
+      if (state.player.ap < LADDER_AP_COST) return false;
+      const door = roomGraph.doorwayAt(
+        state, state.player.roomId, state.player.pos.x, state.player.pos.y,
+      );
+      if (door && door.kind === "ladder" && !door.closed) {
+        const fromRoomId = state.player.roomId;
+        const fromPos = state.player.pos;
+        const crossingRooms = fromRoomId !== door.to;
+        if (crossingRooms) eventBus.emit("ROOM_EXITED", { roomId: fromRoomId });
+        state.player.roomId = door.to;
+        state.player.pos = { ...door.landingPos };
+        const previousAp = state.player.ap;
+        state.player.ap -= LADDER_AP_COST;
+        state.player.lastMoveTurn = state.turn;
+        eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
+        eventBus.emit("PLAYER_MOVED", {
+          from: fromPos,
+          to: state.player.pos,
+          roomId: state.player.roomId,
+        });
+        if (crossingRooms) eventBus.emit("ROOM_ENTERED", { roomId: state.player.roomId, from: fromRoomId });
+        soundField.emit({
+          roomId: state.player.roomId,
+          pos: state.player.pos,
+          intensity: LADDER_INTENSITY,
+          reason: "ladder",
+        });
+        return true;
+      }
     }
 
     // Light switch — adjacent LIGHT_SWITCH tile. Flips the wired LIGHT_SOURCE
