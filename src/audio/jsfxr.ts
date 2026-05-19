@@ -275,7 +275,7 @@ export function parseJsfxrDump(text: string): Record<string, JsfxrParams> {
     while (i < lines.length) {
       const t = (lines[i] ?? "").trim();
       if (t === "{") break;
-      if (t && t !== "FORMAT:" && t !== "}" && !t.startsWith("[")) {
+      if (t && !/^format:$/i.test(t) && t !== "}" && !t.startsWith("[")) {
         candidate = t;
       }
       i++;

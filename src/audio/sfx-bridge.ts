@@ -19,7 +19,7 @@ import { sfx } from "./Sfx";
 const SOUND_REASON_TO_SFX: Record<string, { name: string; volume?: number }> = {
   door:           { name: "knock",        volume: 0.55 },
   locker:         { name: "knock",        volume: 0.35 },
-  light_toggle:   { name: "Light Switch", volume: 0.7  },
+  light_toggle:   { name: "light switch", volume: 0.7  },
   knock:          { name: "knock",        volume: 0.85 },
   "pry-lockdown": { name: "EMP",          volume: 0.6  },
 };
