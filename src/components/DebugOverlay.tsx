@@ -179,6 +179,7 @@ function DebugOverlayBody(): React.ReactElement {
   const events = useDebugStore((s) => s.events);
   const setFlag = useDebugStore((s) => s.setFlag);
   const clearEvents = useDebugStore((s) => s.clearEvents);
+  const toggleVisible = useDebugStore((s) => s.toggleVisible);
   const [filter, setFilter] = useState("");
 
   const filtered = useMemo(() => {
@@ -196,20 +197,13 @@ function DebugOverlayBody(): React.ReactElement {
 
   return (
     <div
+      className="debug-overlay"
       style={{
-        position: "fixed",
-        top: 12,
-        right: 12,
-        width: 380,
-        maxHeight: "70vh",
         background: "rgba(5,8,9,0.92)",
         border: "1px solid #1d2a30",
         color: "#9bb1b6",
         fontFamily: '"Berkeley Mono", "Courier New", monospace',
         fontSize: 11,
-        zIndex: 9999,
-        display: "flex",
-        flexDirection: "column",
         boxShadow: "0 0 24px rgba(0,0,0,0.6)",
       }}
     >
@@ -219,9 +213,20 @@ function DebugOverlayBody(): React.ReactElement {
           borderBottom: "1px solid #1d2a30",
           color: "#6ad0a4",
           letterSpacing: 1.2,
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
         }}
       >
-        ARCHIVIST DEBUG // ~ TO CLOSE
+        <span style={{ flex: 1 }}>ARCHIVIST DEBUG // ~ OR [X] TO CLOSE</span>
+        <button
+          type="button"
+          onClick={toggleVisible}
+          aria-label="Close debug overlay"
+          className="debug-overlay__close"
+        >
+          [X]
+        </button>
       </header>
 
       <div style={{ padding: "8px 10px", display: "flex", flexDirection: "column", gap: 4 }}>
