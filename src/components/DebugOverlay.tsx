@@ -8,6 +8,8 @@ import { footsteps } from "../audio/Footsteps";
 import { getSharedContext, getUnlockStats } from "../audio/audio-context";
 import { getBridgeStats } from "../audio/footstep-bridge";
 import { forcePlay, forceStop, getMusicStats } from "../audio/MusicBridge";
+import { sfx } from "../audio/Sfx";
+import { getSfxBridgeStats } from "../audio/sfx-bridge";
 import { soundField } from "../engine/SoundField";
 
 const LEVEL_COLOR: Record<DebugEvent["level"], string> = {
@@ -170,7 +172,67 @@ function AudioDebugPanel(): React.ReactElement {
           [stop]
         </button>
       </div>
+
+      <SfxDebugSection />
     </div>
+  );
+}
+
+function SfxDebugSection(): React.ReactElement {
+  const sfxStats = sfx.getStats();
+  const bridge = getSfxBridgeStats();
+  const byName = Object.entries(sfxStats.byName);
+  const byReason = Object.entries(bridge.byReason);
+
+  return (
+    <>
+      <div style={{ color: "#6ad0a4", letterSpacing: 1.2, marginTop: 4 }}>SFX</div>
+      <div>
+        loaded {String(sfxStats.loaded)} · defs {sfxStats.cachedBuffers} ·
+        plays {sfxStats.plays} · fires {sfxStats.fires}
+      </div>
+      <div>
+        bridge recv {bridge.received} · played {bridge.played}
+        {bridge.lastSfx ? ` · last: ${bridge.lastSfx}` : ""}
+      </div>
+      {sfxStats.loadError && (
+        <div style={{ color: "#ebd14a", whiteSpace: "normal" }}>
+          err: {sfxStats.loadError}
+        </div>
+      )}
+      {byReason.length > 0 && (
+        <div style={{ whiteSpace: "normal" }}>
+          events: {byReason.map(([k, n]) => `${k} ${n}`).join(" · ")}
+        </div>
+      )}
+      {byName.length > 0 && (
+        <div style={{ whiteSpace: "normal" }}>
+          counts: {byName.map(([k, n]) => `${k} ${n}`).join(" · ")}
+        </div>
+      )}
+      {sfxStats.names.length > 0 && (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
+          {sfxStats.names.map((name) => (
+            <button
+              key={name}
+              type="button"
+              onClick={() => sfx.play(name)}
+              style={btnStyle}
+              title={`Play ${name}`}
+            >
+              [{name}]
+            </button>
+          ))}
+        </div>
+      )}
+      {!sfxStats.loaded && (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
+          <button type="button" onClick={() => sfx.preload()} style={btnStyle}>
+            [preload defs]
+          </button>
+        </div>
+      )}
+    </>
   );
 }
 

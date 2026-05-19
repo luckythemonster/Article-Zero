@@ -13,6 +13,7 @@ import { useInput } from "../hooks/useInput";
 import { installDebugEventTap } from "../engine/DebugEventTap";
 import { installFootstepBridge } from "../audio/footstep-bridge";
 import { installMusicBridge } from "../audio/MusicBridge";
+import { installSfxBridge } from "../audio/sfx-bridge";
 import TouchControls from "../components/TouchControls";
 import type { Module } from "../types/world.types";
 
@@ -49,8 +50,10 @@ export function PhaserCanvas({ moduleId, children }: Props) {
     const offTap = installDebugEventTap();
     const offFootsteps = installFootstepBridge();
     const offMusic = installMusicBridge();
+    const offSfx = installSfxBridge();
 
     return () => {
+      offSfx();
       offMusic();
       offFootsteps();
       offTap();
