@@ -13,7 +13,8 @@
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint . --ext .ts,.tsx",
-    "art": "node scripts/build-atlas.mjs",
+    "art": "node scripts/build-atlas.mjs && node scripts/build-unmounted-manifest.mjs",
+    "unmounted": "node scripts/build-unmounted-manifest.mjs",
     "moose": "node scripts/import-moose.mjs"
   },
   "dependencies": {

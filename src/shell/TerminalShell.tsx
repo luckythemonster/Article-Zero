@@ -15,6 +15,7 @@ import ClimaxOverlay from "../components/ClimaxOverlay";
 import AuditLockdown from "../components/AuditLockdown";
 import ArchiveEpilogue from "../components/ArchiveEpilogue";
 import DebugOverlay from "../components/DebugOverlay";
+import SpriteGallery from "../components/SpriteGallery";
 
 export default function TerminalShell() {
   const activeModule = useTerminalStore((s) => s.activeModuleId);
@@ -74,6 +75,7 @@ export default function TerminalShell() {
         <CommandLine />
       </footer>
       <DebugOverlay />
+      <SpriteGallery />
     </div>
   );
 }

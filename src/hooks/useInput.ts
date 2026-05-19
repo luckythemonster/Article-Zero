@@ -28,6 +28,15 @@ export function useInput({ enabled }: Options): void {
       // Don't steal keys while the user is typing in an input/textarea.
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
+
+      // Sprite gallery toggle (G). Works regardless of phase so the gallery
+      // can be opened from FRAME / EPILOGUE too.
+      if (e.code === "KeyG") {
+        useDebugStore.getState().toggleGallery();
+        e.preventDefault();
+        return;
+      }
+
       if (!worldEngine.hasState()) return;
       // Only let keyboard verbs through during FLOOR and CLIMAX. Modal-only
       // phases (ALIGNMENT, FORGERY) would otherwise let WASD move Rowan
