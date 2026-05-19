@@ -7,6 +7,7 @@ import { useDebugStore, type DebugEvent } from "../state/useDebugStore";
 import { footsteps } from "../audio/Footsteps";
 import { getSharedContext, getUnlockStats } from "../audio/audio-context";
 import { getBridgeStats } from "../audio/footstep-bridge";
+import { forcePlay, forceStop, getMusicStats } from "../audio/MusicBridge";
 import { soundField } from "../engine/SoundField";
 
 const LEVEL_COLOR: Record<DebugEvent["level"], string> = {
@@ -49,6 +50,7 @@ function AudioDebugPanel(): React.ReactElement {
   const bridge = getBridgeStats();
   const unlockStats = getUnlockStats();
   const sfStats = soundField.getStats();
+  const musicStats = getMusicStats();
   const reasonsLine = Object.entries(bridge.player.byReason)
     .map(([r, n]) => `${r} ${n}`)
     .join(" · ");
@@ -147,6 +149,25 @@ function AudioDebugPanel(): React.ReactElement {
           style={btnStyle}
         >
           [force resume]
+        </button>
+      </div>
+
+      <div style={{ color: "#6ad0a4", letterSpacing: 1.2, marginTop: 4 }}>MUSIC</div>
+      <div>
+        loaded {String(musicStats.loaded)} · playing {String(musicStats.playing)} ·
+        state {musicStats.lastState} · hot {musicStats.hotGuards}
+      </div>
+      {musicStats.lastError && (
+        <div style={{ color: "#ebd14a", whiteSpace: "normal" }}>
+          err: {musicStats.lastError}
+        </div>
+      )}
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
+        <button type="button" onClick={() => void forcePlay()} style={btnStyle}>
+          [play chase]
+        </button>
+        <button type="button" onClick={() => forceStop()} style={btnStyle}>
+          [stop]
         </button>
       </div>
     </div>

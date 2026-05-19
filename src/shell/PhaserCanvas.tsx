@@ -12,6 +12,7 @@ import { useSimStore } from "../state/useSimStore";
 import { useInput } from "../hooks/useInput";
 import { installDebugEventTap } from "../engine/DebugEventTap";
 import { installFootstepBridge } from "../audio/footstep-bridge";
+import { installMusicBridge } from "../audio/MusicBridge";
 import TouchControls from "../components/TouchControls";
 import type { Module } from "../types/world.types";
 
@@ -47,8 +48,10 @@ export function PhaserCanvas({ moduleId, children }: Props) {
     // subscription would be wiped by the clear on every PhaserCanvas mount.
     const offTap = installDebugEventTap();
     const offFootsteps = installFootstepBridge();
+    const offMusic = installMusicBridge();
 
     return () => {
+      offMusic();
       offFootsteps();
       offTap();
       gameRef.current?.destroy(true);

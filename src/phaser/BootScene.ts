@@ -34,6 +34,12 @@ export class BootScene extends Phaser.Scene {
         spacing: t.spacing,
       });
     }
+    // Held-item: bypass_drive 4-cardinal rotations (32x32 each).
+    for (const dir of ["north", "east", "south", "west"] as const) {
+      const key = `bypass_drive_${dir}`;
+      if (this.textures.exists(key)) continue;
+      this.load.image(key, `/assets/items/bypass_drive/${dir}.png`);
+    }
   }
 
   create(): void {

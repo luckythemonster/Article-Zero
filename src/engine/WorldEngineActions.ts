@@ -11,6 +11,7 @@ import { alignmentSession } from "./AlignmentSession";
 import { alertFSM } from "./AlertFSM";
 import { documentArchive } from "./DocumentArchive";
 import { lightField } from "./LightField";
+import { useTerminalStore } from "../state/useTerminalStore";
 
 const MOVE_AP_COST = 1;
 const SNEAK_AP_COST = 1;
@@ -460,6 +461,13 @@ export const actions = {
       const payload = state.terminalPayloads.get(roomTileKey(state.player.roomId, p));
       if (!payload) return false;
       if (state.terminalsRead.has(payload.terminalId)) return false;
+      let consumedIdx = -1;
+      if (payload.requiresItem) {
+        consumedIdx = state.player.inventory.findIndex(
+          (i) => i.itemType === payload.requiresItem,
+        );
+        if (consumedIdx < 0) return false;
+      }
       const facing = facingFromDelta(dx, dy);
       if (facing && facing !== state.player.facing) {
         state.player.facing = facing;
@@ -470,6 +478,16 @@ export const actions = {
         body: payload.body,
       });
       state.terminalsRead.add(payload.terminalId);
+      if (consumedIdx >= 0) {
+        const consumed = state.player.inventory.splice(consumedIdx, 1)[0];
+        eventBus.emit("ITEM_FILED", {
+          itemId: consumed.id,
+          caseId,
+        });
+      }
+      if (payload.setsRunFlag) {
+        useTerminalStore.getState().setRunFlag(payload.setsRunFlag, true);
+      }
       if (payload.unlocks) {
         const door = roomGraph.doorwayAt(
           state,

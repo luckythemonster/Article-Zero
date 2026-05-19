@@ -48,6 +48,9 @@ export interface RunFlags {
   forgeryCaseId: string | null;
   /** True once the player has survived the climax escape. */
   escaped: boolean;
+  /** True once the player has used the bypass_drive at the NW-SMAC-01
+   *  bypass terminal. Consumes the drive; read by future audit content. */
+  bypassed: boolean;
 }
 
 const DEFAULT_RUN_FLAGS: RunFlags = {
@@ -57,6 +60,7 @@ const DEFAULT_RUN_FLAGS: RunFlags = {
   alignmentSuccess: false,
   forgeryCaseId: null,
   escaped: false,
+  bypassed: false,
 };
 
 interface TerminalStore {

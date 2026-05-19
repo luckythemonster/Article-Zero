@@ -50,7 +50,7 @@ export type TileKind =
 
 // Items ------------------------------------------------------------------
 
-export type ItemType = "EXTRACTION_CUBE";
+export type ItemType = "EXTRACTION_CUBE" | "BYPASS_DRIVE";
 
 export interface CubePayload {
   title: string;
@@ -310,6 +310,12 @@ export interface TerminalPayload {
   /** If set, using this terminal flips the LIGHT_SOURCE tiles at these
    *  positions in `roomId`. Coupled toggle: any-on → all-off, all-off → all-on. */
   lightToggle?: Vec2[];
+  /** If set, "Use Terminal" refuses unless an ItemInstance of this type is
+   *  in player.inventory; on success the matching instance is consumed. */
+  requiresItem?: ItemType;
+  /** If set, after a successful use the named boolean RunFlag is flipped
+   *  true. Mirrors the existing vent4Choice / cipherValid story flags. */
+  setsRunFlag?: "bypassed";
 }
 
 // World ------------------------------------------------------------------

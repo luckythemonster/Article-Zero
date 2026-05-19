@@ -54,6 +54,7 @@ export class RoomScene extends Phaser.Scene {
   private overlayLayer!: Phaser.GameObjects.Graphics;
   private playerSprite!: Phaser.GameObjects.Rectangle;
   private playerFacingMark!: Phaser.GameObjects.Triangle;
+  private heldItemSprite!: Phaser.GameObjects.Image;
   private entityRects = new Map<string, Phaser.GameObjects.Rectangle>();
   private entityFacingMarks = new Map<string, Phaser.GameObjects.Triangle>();
   private exclamationMarks = new Map<string, Phaser.GameObjects.Text>();
@@ -104,6 +105,11 @@ export class RoomScene extends Phaser.Scene {
     }
     this.playerFacingMark = this.add.triangle(0, 0, 0, 0, -6, 8, 6, 8, 0xe6f0f2);
     this.playerFacingMark.setDepth(6);
+    // Held-item overlay. Texture is swapped in redraw() per facing; hidden
+    // when inventory is empty of renderable items.
+    this.heldItemSprite = this.add.image(0, 0, "__DEFAULT");
+    this.heldItemSprite.setDepth(7);
+    this.heldItemSprite.setVisible(false);
     this.debugLayer = this.add.graphics();
     this.debugLayer.setDepth(25);
 
@@ -414,6 +420,24 @@ export class RoomScene extends Phaser.Scene {
       state.player.facing,
     );
     this.playerFacingMark.setVisible(!state.player.hidingTileKey);
+
+    // Held-item: bypass_drive renders above the player when in inventory.
+    const holdsBypass = state.player.inventory.some(
+      (i) => i.itemType === "BYPASS_DRIVE",
+    );
+    if (holdsBypass && !state.player.hidingTileKey) {
+      const texKey = `bypass_drive_${state.player.facing}`;
+      if (this.textures.exists(texKey)) {
+        this.heldItemSprite.setTexture(texKey);
+        this.heldItemSprite.setPosition(playerCx, playerCy - 10);
+        this.heldItemSprite.setScale(0.5);
+        this.heldItemSprite.setVisible(true);
+      } else {
+        this.heldItemSprite.setVisible(false);
+      }
+    } else {
+      this.heldItemSprite.setVisible(false);
+    }
     // Peek indicator: tint the facing mark gold and pulse it.
     if (state.player.peeking) {
       this.playerFacingMark.setFillStyle(0xebd14a);
