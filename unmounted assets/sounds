@@ -306,3 +306,33 @@ APEX-19
   "sample_rate": 44100,
   "sample_size": 16
 }
+Distant Siren
+{
+  "oldParams": true,
+  "wave_type": 2,
+  "p_env_attack": 0.975,
+  "p_env_sustain": 1,
+  "p_env_punch": 0.148,
+  "p_env_decay": 0.937,
+  "p_base_freq": -0.44789552288550294,
+  "p_freq_limit": 0,
+  "p_freq_ramp": 0.06717869191147462,
+  "p_freq_dramp": 0.05365909755173259,
+  "p_vib_strength": 0.319,
+  "p_vib_speed": 0.129,
+  "p_arp_mod": 0.1289463135572284,
+  "p_arp_speed": -0.7384125211062769,
+  "p_duty": -0.8654746872474537,
+  "p_duty_ramp": 0.18679104232417557,
+  "p_repeat_speed": 0.2582958174756944,
+  "p_pha_offset": 0.556908585590198,
+  "p_pha_ramp": -0.2356119572978826,
+  "p_lpf_freq": 0.7159439419358056,
+  "p_lpf_ramp": 0.019,
+  "p_lpf_resonance": 0.7815329946318097,
+  "p_hpf_freq": 0.937,
+  "p_hpf_ramp": 0.475,
+  "sound_vol": 1,
+  "sample_rate": 44100,
+  "sample_size": 16
+}
