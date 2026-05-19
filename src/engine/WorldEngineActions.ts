@@ -356,12 +356,21 @@ export const actions = {
     // ActionLock so the crawl can't be input-canceled mid-traversal.
     const standingTile = tileAt(state, state.player.roomId, state.player.pos);
     if (standingTile?.kind === "VENT") {
-      if (state.player.stance !== "SNEAK") return false;
-      if (state.player.ap < VENT_AP_COST) return false;
+      if (state.player.stance !== "SNEAK") {
+        eventBus.emit("INTERACT_REJECTED", { action: "vent", reason: "needs_sneak" });
+        return false;
+      }
+      if (state.player.ap < VENT_AP_COST) {
+        eventBus.emit("INTERACT_REJECTED", { action: "vent", reason: "needs_ap" });
+        return false;
+      }
       const dest = state.ventLinks.get(
         roomTileKey(state.player.roomId, state.player.pos),
       );
-      if (!dest) return false;
+      if (!dest) {
+        eventBus.emit("INTERACT_REJECTED", { action: "vent", reason: "no_link" });
+        return false;
+      }
       const fromRoomId = state.player.roomId;
       const fromPos = state.player.pos;
       const crossing = fromRoomId !== dest.roomId;
