@@ -13,6 +13,10 @@ export type AlertLevel = AlertState["level"];
 
 export const CAUTION_DECAY = 4;
 export const EVASION_TIMEOUT = 6;
+/** Turns since the last confirmed sighting before an ALERT guard demotes
+ *  to EVASION. Loose enough that the spotter keeps pursuing through one
+ *  or two rooms before giving up. */
+export const ALERT_LOSE_SIGHT_TURNS = 4;
 /** Sound intensity that pulls a NORMAL guard into CAUTION. */
 export const CAUTION_SOUND_THRESHOLD = 1;
 /** Sound intensity that escalates a CAUTION guard to ALERT (very loud — knock,
@@ -52,6 +56,7 @@ class AlertFSM {
       // Confirmed sighting against an exposed player — full ALERT.
       alert.lastStimulus = input.playerPos;
       alert.lastStimulusRoom = input.playerRoomId;
+      alert.lastSeenTurn = state.turn;
       if (alert.level !== "ALERT") {
         alert.level = "ALERT";
         alert.enteredTurn = state.turn;
@@ -96,8 +101,17 @@ class AlertFSM {
     } else {
       // No stimulus this tick — let timers decay the state.
       const sinceEntry = state.turn - alert.enteredTurn;
-      if (alert.level === "ALERT" && sinceEntry >= 1) {
-        // Lost the player — drop to EVASION.
+      const sinceSeen = state.turn - (alert.lastSeenTurn ?? alert.enteredTurn);
+      // While in active pursuit, keep the player's position fresh so the
+      // chase routes to the right room across multi-room escapes. The
+      // lose-of-sight timer below still caps how long pursuit lasts.
+      if (alert.level === "ALERT" && input.playerRoomId) {
+        alert.lastStimulusRoom = input.playerRoomId;
+        if (input.playerPos) alert.lastStimulus = input.playerPos;
+      }
+      if (alert.level === "ALERT" && sinceSeen >= ALERT_LOSE_SIGHT_TURNS) {
+        // Lost the player long enough — drop to EVASION and let the
+        // pursuing guard scan, then return to patrol.
         alert.level = "EVASION";
         alert.enteredTurn = state.turn;
       } else if (alert.level === "EVASION" && sinceEntry >= EVASION_TIMEOUT) {

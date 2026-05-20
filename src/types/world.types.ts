@@ -211,6 +211,9 @@ export interface AlertState {
   lastStimulus?: Vec2;
   /** Room the stimulus came from (may be a neighbor for sound). */
   lastStimulusRoom?: RoomId;
+  /** Most recent turn a confirmed (RED-tier) sighting was registered. Drives
+   *  the ALERT → EVASION lose-of-sight timer in AlertFSM. */
+  lastSeenTurn?: number;
 }
 
 export interface Entity {
@@ -219,6 +222,9 @@ export interface Entity {
   name: string;
   /** Which room this entity lives in. */
   roomId: RoomId;
+  /** GUARD only — the room this guard belongs to, used to walk back to its
+   *  patrol after EVASION decays. Stamped at world-seed time from `roomId`. */
+  homeRoomId?: RoomId;
   /** Position within the room. */
   pos: Vec2;
   /** Z-elevation slice the entity currently occupies. Entity-vs-entity

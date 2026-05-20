@@ -22,6 +22,7 @@ export function worldStateToSlices(ws: WorldState): {
   for (const [id, e] of ws.entities) {
     entityPositions.set(id, {
       roomId: e.roomId,
+      homeRoomId: e.homeRoomId,
       pos: e.pos,
       z: e.z,
       facing: e.facing,
@@ -94,6 +95,7 @@ export function slicesToWorldState(
       kind: kind?.kind ?? "GUARD",
       name: kind?.name ?? id,
       roomId: phys.roomId,
+      homeRoomId: phys.homeRoomId ?? phys.roomId,
       pos: phys.pos,
       z: phys.z ?? 0,
       facing: phys.facing,
