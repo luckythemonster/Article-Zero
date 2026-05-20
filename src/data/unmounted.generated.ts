@@ -21,6 +21,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "zip"
   },
   {
+    "path": "added by Lucky/Commonwealth UI",
+    "sizeBytes": 13270,
+    "ext": ""
+  },
+  {
     "path": "added by Lucky/EIRA-7 new.zip",
     "sizeBytes": 200273,
     "ext": "zip"
@@ -46,13 +51,23 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": ""
   },
   {
+    "path": "added by Lucky/Rowan_Ibarra.zip",
+    "sizeBytes": 1476533,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/sound 3",
+    "sizeBytes": 595,
+    "ext": ""
+  },
+  {
     "path": "added by Lucky/sounds",
-    "sizeBytes": 7152,
+    "sizeBytes": 7129,
     "ext": ""
   },
   {
     "path": "added by Lucky/sounds 2",
-    "sizeBytes": 624,
+    "sizeBytes": 620,
     "ext": ""
   },
   {

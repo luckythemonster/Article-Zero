@@ -30,7 +30,7 @@ EIRA-7 failure
   "p_lpf_resonance": 0.985,
   "p_hpf_freq": 0.253,
   "p_hpf_ramp": -0.647,
-  "sound_vol": 0.25,
+  "sound_vol": 1,
   "sample_rate": 44100,
   "sample_size": 16
 }
@@ -60,7 +60,7 @@ Alarm
   "p_lpf_resonance": 1,
   "p_hpf_freq": 0.376,
   "p_hpf_ramp": 0.285,
-  "sound_vol": 0.25,
+  "sound_vol": 1,
   "sample_rate": 44100,
   "sample_size": 16,
   "p_vib_delay": null
@@ -91,7 +91,7 @@ Scan
   "p_lpf_resonance": 1,
   "p_hpf_freq": 0.557,
   "p_hpf_ramp": -0.171,
-  "sound_vol": 0.406,
+  "sound_vol": 1,
   "sample_rate": 44100,
   "sample_size": 16
 }
@@ -151,7 +151,7 @@ Vehicle
   "p_lpf_resonance": 0.281,
   "p_hpf_freq": 0.462,
   "p_hpf_ramp": 0,
-  "sound_vol": 0.25,
+  "sound_vol": 1,
   "sample_rate": 44100,
   "sample_size": 8
 }
@@ -181,7 +181,7 @@ Light Switch
   "p_lpf_resonance": 0.633,
   "p_hpf_freq": 1,
   "p_hpf_ramp": 0,
-  "sound_vol": 0.303,
+  "sound_vol": 1,
   "sample_rate": 44100,
   "sample_size": 16
 }
@@ -242,7 +242,7 @@ EMP
   "p_lpf_resonance": 0.291,
   "p_hpf_freq": 0.025,
   "p_hpf_ramp": -1,
-  "sound_vol": 0.25,
+  "sound_vol": 1,
   "sample_rate": 44100,
   "sample_size": 8
 }
@@ -302,7 +302,7 @@ APEX-19
   "p_lpf_resonance": 1,
   "p_hpf_freq": 0,
   "p_hpf_ramp": 0,
-  "sound_vol": 0.25,
+  "sound_vol": 1,
   "sample_rate": 44100,
   "sample_size": 16
 }
@@ -369,7 +369,7 @@ light switch
   "p_lpf_resonance": 0,
   "p_hpf_freq": 0.985,
   "p_hpf_ramp": 0,
-  "sound_vol": 0.151,
+  "sound_vol": 1,
   "sample_rate": 44100,
   "sample_size": 8
 }
