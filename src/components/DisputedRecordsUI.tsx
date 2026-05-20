@@ -161,7 +161,7 @@ export default function DisputedRecordsUI() {
   if (!caseId) {
     return (
       <div className="overlay-root">
-        <div className="overlay-panel">
+        <div className="overlay-panel overlay-panel--records">
           <div className="overlay-panel__title">DISPUTED RECORDS</div>
           <div className="records__hint">No case in queue. Restart the alignment.</div>
         </div>
@@ -171,7 +171,7 @@ export default function DisputedRecordsUI() {
 
   return (
     <div className="overlay-root">
-      <div className="overlay-panel">
+      <div className="overlay-panel overlay-panel--records">
         <div className="overlay-panel__title">
           DISPUTED RECORDS // CASE {caseId}
           <span className="records__countdown" style={{ marginLeft: "1rem" }}>
