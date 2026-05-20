@@ -182,6 +182,7 @@ function SfxDebugSection(): React.ReactElement {
   const sfxStats = sfx.getStats();
   const bridge = getSfxBridgeStats();
   const byName = Object.entries(sfxStats.byName);
+  const wavByName = Object.entries(sfxStats.wavByName);
   const byReason = Object.entries(bridge.byReason);
 
   return (
@@ -192,12 +193,31 @@ function SfxDebugSection(): React.ReactElement {
         plays {sfxStats.plays} · fires {sfxStats.fires}
       </div>
       <div>
-        bridge recv {bridge.received} · played {bridge.played}
+        wav index {String(sfxStats.wavIndexLoaded)} · cached {sfxStats.wavCached} ·
+        pending {sfxStats.wavPending} · loops {sfxStats.activeLoops}
+      </div>
+      <div>
+        bridge recv {bridge.received} · played {bridge.played} · active {bridge.activeLoops}
         {bridge.lastSfx ? ` · last: ${bridge.lastSfx}` : ""}
       </div>
       {sfxStats.loadError && (
         <div style={{ color: "#ebd14a", whiteSpace: "normal" }}>
           err: {sfxStats.loadError}
+        </div>
+      )}
+      {sfxStats.wavIndexError && (
+        <div style={{ color: "#ebd14a", whiteSpace: "normal" }}>
+          wav index err: {sfxStats.wavIndexError}
+        </div>
+      )}
+      {sfxStats.wavLastError && (
+        <div style={{ color: "#ebd14a", whiteSpace: "normal" }}>
+          wav err: {sfxStats.wavLastError}
+        </div>
+      )}
+      {wavByName.length > 0 && (
+        <div style={{ whiteSpace: "normal" }}>
+          wav counts: {wavByName.map(([k, n]) => `${k} ${n}`).join(" · ")}
         </div>
       )}
       {byReason.length > 0 && (

@@ -15,7 +15,8 @@
     "lint": "eslint . --ext .ts,.tsx",
     "art": "node scripts/build-atlas.mjs && node scripts/build-unmounted-manifest.mjs",
     "unmounted": "node scripts/build-unmounted-manifest.mjs",
-    "moose": "node scripts/import-moose.mjs"
+    "moose": "node scripts/import-moose.mjs",
+    "mount:glitch": "bash scripts/mount-glitch-sfx.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",
