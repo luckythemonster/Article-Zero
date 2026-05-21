@@ -4,6 +4,7 @@
 import type {
   Entity,
   Era,
+  ItemInstance,
   PlayerState,
   Room,
   RoomId,
@@ -39,6 +40,8 @@ export interface EraSeed {
   ventLinks?: VentLink[];
   /** Optional payload table for TERMINAL tiles. */
   terminals?: TerminalPayload[];
+  /** Optional floor-item instances placed in rooms at seed time. */
+  items?: ItemInstance[];
 }
 
 export function emptyState(era: Era): WorldState {
@@ -70,6 +73,7 @@ export function emptyState(era: Era): WorldState {
     ventLinks: new Map(),
     terminalPayloads: new Map(),
     terminalsRead: new Set(),
+    activeEmitters: [],
   };
 }
 
@@ -91,6 +95,9 @@ export function seedToWorldState(seed: EraSeed): WorldState {
   }
   for (const t of seed.terminals ?? []) {
     state.terminalPayloads.set(roomTileKey(t.roomId, t.pos), t);
+  }
+  for (const item of seed.items ?? []) {
+    state.items.set(item.id, item);
   }
   return state;
 }

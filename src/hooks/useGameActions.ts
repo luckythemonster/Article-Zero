@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { worldEngine } from "../engine/WorldEngine";
-import type { Facing } from "../types/world.types";
+import type { Facing, ItemType } from "../types/world.types";
 
 export interface GameActions {
   move: (dx: number, dy: number) => void;
@@ -15,6 +15,7 @@ export interface GameActions {
   spendAlignmentAdvance: () => boolean;
   killScreen: () => boolean;
   wakeScreen: () => boolean;
+  useItem: (itemType: ItemType) => boolean;
 }
 
 export function useGameActions(): GameActions {
@@ -54,6 +55,9 @@ export function useGameActions(): GameActions {
     }, []),
     wakeScreen: useCallback(() => {
       return worldEngine.wakeScreen();
+    }, []),
+    useItem: useCallback((itemType: ItemType) => {
+      return worldEngine.useItem(itemType);
     }, []),
   };
 }

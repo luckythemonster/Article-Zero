@@ -3,6 +3,7 @@
 // Together they reconstruct a full WorldState.
 
 import type {
+  ActiveEmitter,
   AlertState,
   ComplianceTier,
   EntityId,
@@ -82,6 +83,8 @@ export interface SubjectiveState {
   name: string;
   peeking?: Facing;
   hidingTileKey?: string;
+  spoofTurnsRemaining?: number;
+  baffleTurnsRemaining?: number;
   lastMoveTurn?: number;
   entityMinds: Map<EntityId, EntityMind>;
   visibleTiles: Set<string>;
@@ -91,6 +94,7 @@ export interface SubjectiveState {
   terminalsRead: Set<string>;
   worldItems: Map<string, ItemInstance>;
   documentCases: Map<string, DocumentCase>;
+  activeEmitters: ActiveEmitter[];
 }
 
 // ── Serialised forms (JSON-safe: Map → array-of-pairs, Set → array) ───────────
@@ -121,6 +125,8 @@ export interface SerializedSubjective {
   name: string;
   peeking?: Facing;
   hidingTileKey?: string;
+  spoofTurnsRemaining?: number;
+  baffleTurnsRemaining?: number;
   lastMoveTurn?: number;
   entityMinds: [EntityId, EntityMind][];
   visibleTiles: string[];
@@ -130,6 +136,7 @@ export interface SerializedSubjective {
   terminalsRead: string[];
   worldItems: [string, ItemInstance][];
   documentCases: [string, DocumentCase][];
+  activeEmitters?: ActiveEmitter[];
 }
 
 export interface SimSnapshot {

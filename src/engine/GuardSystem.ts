@@ -63,6 +63,13 @@ class GuardSystem {
   }
 
   private tickOne(state: WorldState, guard: Entity, heard?: DeliveredSound): void {
+    // Subjective Dump Fragment stun — guard's local subjectivity-prevention
+    // buffer overflowed; skip the entire tick (no vision, no FSM step, no
+    // movement). Decrements once per turn until cleared.
+    if (guard.alert && (guard.alert.stunTurnsRemaining ?? 0) > 0) {
+      guard.alert.stunTurnsRemaining = (guard.alert.stunTurnsRemaining ?? 0) - 1;
+      return;
+    }
     const sees = this.guardSeesPlayer(state, guard);
     if (sees && !state.lockdown) {
       this.triggerLockdown(state);

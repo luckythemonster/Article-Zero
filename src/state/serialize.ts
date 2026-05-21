@@ -73,6 +73,8 @@ export function serializeSubjective(s: SubjectiveState): SerializedSubjective {
     name: s.name,
     peeking: s.peeking,
     hidingTileKey: s.hidingTileKey,
+    spoofTurnsRemaining: s.spoofTurnsRemaining,
+    baffleTurnsRemaining: s.baffleTurnsRemaining,
     lastMoveTurn: s.lastMoveTurn,
     entityMinds: Array.from(s.entityMinds.entries()),
     visibleTiles: Array.from(s.visibleTiles),
@@ -82,6 +84,7 @@ export function serializeSubjective(s: SubjectiveState): SerializedSubjective {
     terminalsRead: Array.from(s.terminalsRead),
     worldItems: Array.from(s.worldItems.entries()),
     documentCases: Array.from(s.documentCases.entries()),
+    activeEmitters: s.activeEmitters.map((e) => ({ ...e })),
   };
 }
 
@@ -104,6 +107,8 @@ export function deserializeSubjective(s: SerializedSubjective): SubjectiveState 
     name: s.name,
     peeking: s.peeking,
     hidingTileKey: s.hidingTileKey,
+    spoofTurnsRemaining: s.spoofTurnsRemaining,
+    baffleTurnsRemaining: s.baffleTurnsRemaining,
     lastMoveTurn: s.lastMoveTurn,
     entityMinds: new Map(s.entityMinds),
     visibleTiles: new Set(s.visibleTiles),
@@ -113,5 +118,6 @@ export function deserializeSubjective(s: SerializedSubjective): SubjectiveState 
     terminalsRead: new Set(s.terminalsRead),
     worldItems: new Map(s.worldItems),
     documentCases: new Map(s.documentCases),
+    activeEmitters: (s.activeEmitters ?? []).map((e) => ({ ...e })),
   };
 }

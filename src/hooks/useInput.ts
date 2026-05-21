@@ -45,6 +45,19 @@ export function useInput({ enabled }: Options): void {
       const term = useTerminalStore.getState();
       if (term.phase !== "FLOOR" && term.phase !== "CLIMAX") return;
       if (term.phase === "CLIMAX" && term.runFlags.vent4Choice === null) return;
+
+      // U toggles the inventory overlay. Works whether it's already open or
+      // not; Esc while open is handled inside the overlay component itself.
+      if (e.key.toLowerCase() === "u") {
+        term.setInventoryOpen(!term.inventoryOpen);
+        e.preventDefault();
+        return;
+      }
+
+      // While the inventory overlay is open, suppress all other game verbs so
+      // the player doesn't move while browsing.
+      if (term.inventoryOpen) return;
+
       switch (e.key.toLowerCase()) {
         case "arrowup":
         case "w":

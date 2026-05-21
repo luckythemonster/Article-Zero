@@ -25,6 +25,13 @@ export interface ComplianceResult {
 class ComplianceSystem {
   /** Compute the current tier without mutating state. */
   derive(state: WorldState): ComplianceResult {
+    // Q0 Spoof Badge — overrides every other input. The badge fakes a
+    // doctrinally-clean shift even while carrying a cube, mid-extraction, or
+    // visibly subjective. Guards still see; their AlertFSM just reads GREEN.
+    if ((state.player.spoofTurnsRemaining ?? 0) > 0) {
+      return { tier: "GREEN", reasons: ["Q0 spoof active"] };
+    }
+
     const reasons: string[] = [];
     let red = false;
     let yellow = false;

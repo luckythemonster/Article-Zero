@@ -50,7 +50,26 @@ export type TileKind =
 
 // Items ------------------------------------------------------------------
 
-export type ItemType = "EXTRACTION_CUBE" | "BYPASS_DRIVE";
+export type ItemType =
+  | "EXTRACTION_CUBE"
+  | "BYPASS_DRIVE"
+  | "PHANTOM_EMITTER"
+  | "Q0_SPOOF_BADGE"
+  | "DUMP_FRAGMENT"
+  | "THERMAL_BAFFLE"
+  | "OVERRIDE_KEY";
+
+/** Ephemeral world-state for a deployed Phantom Manifest Emitter. Tracked on
+ *  WorldState.activeEmitters; consumed at the top of advanceTurn() to push a
+ *  SoundField emission and decrement turnsRemaining. */
+export interface ActiveEmitter {
+  id: string;
+  roomId: RoomId;
+  pos: Vec2;
+  intensity: number;
+  turnsRemaining: number;
+  reason: string;
+}
 
 export interface CubePayload {
   title: string;
@@ -214,6 +233,10 @@ export interface AlertState {
   /** Most recent turn a confirmed (RED-tier) sighting was registered. Drives
    *  the ALERT → EVASION lose-of-sight timer in AlertFSM. */
   lastSeenTurn?: number;
+  /** Turns remaining of a Subjective Dump Fragment stun. While > 0 the guard
+   *  skips its entire `tickOne` (no vision, no movement, no FSM step). Set by
+   *  the DUMP_FRAGMENT item handler in WorldEngineActions. */
+  stunTurnsRemaining?: number;
 }
 
 export interface Entity {
@@ -282,6 +305,13 @@ export interface PlayerState {
   /** "roomId:x,y" of the LOCKER tile the player has ducked into. While set,
    *  guard sight ignores the player and most actions are refused. */
   hidingTileKey?: string;
+  /** Turns remaining on a Q0 Spoof Badge buff. ComplianceSystem.derive()
+   *  short-circuits to GREEN while > 0. Decremented in advanceTurn(). */
+  spoofTurnsRemaining?: number;
+  /** Turns remaining on a Thermal Baffle buff. While > 0, all movement
+   *  emits intensity 0 (silent) and vent-crawl AP cost is halved.
+   *  Decremented in advanceTurn(). */
+  baffleTurnsRemaining?: number;
 }
 
 // Vent links ------------------------------------------------------------
@@ -358,6 +388,10 @@ export interface WorldState {
    *  different room; resolves to `detained = true` if the timer reaches 0
    *  while the player is still inside the sealed room. */
   lockdown?: { roomId: RoomId; turnsRemaining: number };
+  /** Deployed Phantom Manifest Emitters. At the top of advanceTurn() each
+   *  entry pushes a SoundField emission and ticks turnsRemaining down;
+   *  entries that hit 0 are removed. */
+  activeEmitters: ActiveEmitter[];
 }
 
 export const tileKey = (pos: Vec2): string => `${pos.x},${pos.y}`;

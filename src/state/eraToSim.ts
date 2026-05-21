@@ -67,6 +67,8 @@ export function worldStateToSlices(ws: WorldState): {
     name: ws.player.name,
     peeking: ws.player.peeking,
     hidingTileKey: ws.player.hidingTileKey,
+    spoofTurnsRemaining: ws.player.spoofTurnsRemaining,
+    baffleTurnsRemaining: ws.player.baffleTurnsRemaining,
     lastMoveTurn: ws.player.lastMoveTurn,
     entityMinds,
     visibleTiles: new Set(ws.visibleTiles),
@@ -76,6 +78,7 @@ export function worldStateToSlices(ws: WorldState): {
     terminalsRead: new Set(ws.terminalsRead),
     worldItems: new Map(ws.items),
     documentCases: new Map(),
+    activeEmitters: ws.activeEmitters.map((e) => ({ ...e })),
   };
 
   return { physical, subjective };
@@ -131,6 +134,8 @@ export function slicesToWorldState(
       compliance: subjective.compliance,
       peeking: subjective.peeking,
       hidingTileKey: subjective.hidingTileKey,
+      spoofTurnsRemaining: subjective.spoofTurnsRemaining,
+      baffleTurnsRemaining: subjective.baffleTurnsRemaining,
     },
     rooms: new Map(physical.rooms),
     entities,
@@ -142,5 +147,6 @@ export function slicesToWorldState(
     ventLinks: new Map(physical.ventLinks),
     terminalPayloads: new Map(physical.terminalPayloads),
     terminalsRead: new Set(subjective.terminalsRead),
+    activeEmitters: subjective.activeEmitters.map((e) => ({ ...e })),
   };
 }

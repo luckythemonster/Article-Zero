@@ -16,6 +16,7 @@ import AuditLockdown from "../components/AuditLockdown";
 import ArchiveEpilogue from "../components/ArchiveEpilogue";
 import DebugOverlay from "../components/DebugOverlay";
 import SpriteGallery from "../components/SpriteGallery";
+import InventoryOverlay from "../components/InventoryOverlay";
 
 export default function TerminalShell() {
   const activeModule = useTerminalStore((s) => s.activeModuleId);
@@ -64,6 +65,7 @@ export default function TerminalShell() {
                 <ClimaxOverlay />
               </>
             )}
+            {(phase === "FLOOR" || phase === "CLIMAX") && <InventoryOverlay />}
             <AuditLockdown />
           </PhaserCanvas>
         ) : (

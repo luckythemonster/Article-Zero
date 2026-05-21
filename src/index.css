@@ -747,3 +747,95 @@ body.theme-lattice {
 .phaser-host {
   position: relative;
 }
+
+/* ── Inventory overlay ────────────────────────────────────────────────────── */
+
+.overlay-panel--inventory {
+  width: min(540px, 92%);
+  max-height: 80vh;
+}
+
+.inventory__section-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: var(--dim);
+  text-transform: uppercase;
+  margin-top: 0.25rem;
+}
+
+.inventory__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inventory__item {
+  border: 1px solid var(--border);
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.inventory__item.is-empty {
+  opacity: 0.35;
+}
+
+.inventory__item.is-passive {
+  border-color: color-mix(in srgb, var(--border) 60%, transparent);
+}
+
+.inventory__item-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.inventory__item-name {
+  font-weight: 600;
+  color: var(--cyan);
+  font-size: 0.8rem;
+}
+
+.inventory__item-tag {
+  font-size: 0.65rem;
+  color: var(--dim);
+  letter-spacing: 0.08em;
+}
+
+.inventory__item-blurb {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--dim);
+  line-height: 1.5;
+}
+
+.inventory__use-btn {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.7rem;
+  font-family: inherit;
+  letter-spacing: 0.1em;
+  background: transparent;
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  cursor: pointer;
+}
+
+.inventory__use-btn:hover {
+  background: var(--cyan);
+  color: var(--bg);
+}
+
+.inventory__feedback {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--warn, #c89a2a);
+  color: var(--warn, #c89a2a);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}

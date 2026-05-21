@@ -9,6 +9,7 @@ import { worldEngine } from "../engine/WorldEngine";
 import { guardSystem } from "../engine/GuardSystem";
 import { debugFlags } from "../engine/debugFlags";
 import type { Entity, Facing, Room, Tile, TileKind } from "../types/world.types";
+import { ITEM_METADATA } from "../data/items/itemMetadata";
 
 const TILE_PX = 32;
 const ELEVATION_PX_PER_STEP = 8;
@@ -391,15 +392,17 @@ export class RoomScene extends Phaser.Scene {
       this.drawEntity(state, entity);
     }
 
-    // Floor items — extraction cubes only, for now.
+    // Floor items — draw a colored placeholder square for every item type.
+    // When real sprites ship, replace the fillRect with a sprite draw here.
     for (const item of state.items.values()) {
-      if (item.itemType !== "EXTRACTION_CUBE") continue;
       if (item.roomId !== room.id || !item.pos) continue;
       const visible = state.visibleTiles.has(`${item.pos.x},${item.pos.y}`);
       if (!visible) continue;
+      const meta = ITEM_METADATA[item.itemType];
+      const color = meta?.placeholderColor ?? 0x888888;
       const cx = item.pos.x * TILE_PX + TILE_PX / 2;
       const cy = item.pos.y * TILE_PX + TILE_PX / 2;
-      this.glyphLayer.fillStyle(0xc89adb, 0.95);
+      this.glyphLayer.fillStyle(color, 0.95);
       this.glyphLayer.fillRect(cx - 7, cy - 7, 14, 14);
       this.glyphLayer.lineStyle(1, 0xffffff, 0.9);
       this.glyphLayer.strokeRect(cx - 7, cy - 7, 14, 14);

@@ -87,16 +87,29 @@ The Commonwealth opening (Era 1, NW-SMAC-01) is ~80% asset-complete. Eras 2 & 3 
 
 ## 4. ITEMS / PICKUPS / INVENTORY
 
-`src/data/items` does not exist; `ItemType` in world types is currently just `"EXTRACTION_CUBE"`.
+`src/data/items/itemMetadata.ts` now exists. `ItemType` has been extended to 7 entries; `src/components/InventoryOverlay.tsx` provides the in-game UI (U key). All five new tactical items are seeded in NW-SMAC-01 for testing.
 
-### Need (per lore + scripted dialogue)
+### Have (coded, placeholder render only)
 
-- **Fragment Box** — Era 1 core artifact: heavy hard drive that stores a Subjective Dump. Persists across eras. Needs: world sprite, inventory icon, "hoist" carry sprite (already hinted in Sol/Rowan anim list), Era-2 ritual-object variant (weathered/rust-coated).
-- **Bypass Drive** — Rowan's tool for running the underground railroad. Needs: world sprite + UI icon.
+| ItemType | Display name | Placeholder color | Sprite slots needed |
+|---|---|---|---|
+| `EXTRACTION_CUBE` | Fragment Box | `#c89adb` | 4-dir world sprite (48×48), inventory icon, hoist-carry frame |
+| `BYPASS_DRIVE` | Bypass Drive | `#7ab8d4` | 4-dir world sprite (48×48), inventory icon |
+| `PHANTOM_EMITTER` | Phantom Manifest Emitter | `#e8b86d` | 4-dir floor sprite (48×48), deploy VFX (3-frame pulse) |
+| `Q0_SPOOF_BADGE` | Q0 Spoof Badge | `#6ad0a4` | Floor sprite (48×48), HUD active-state icon |
+| `DUMP_FRAGMENT` | Subjective Dump Fragment | `#e06060` | Floor sprite (48×48), throw arc VFX |
+| `THERMAL_BAFFLE` | Thermal Baffle | `#a0c8e8` | Floor sprite (48×48), HUD active-state icon |
+| `OVERRIDE_KEY` | Doctrinal Override Key | `#d46a6a` | Floor sprite (48×48), door-toggle VFX (silent flash) |
+
+All floor sprites should be **48×48** (the current NW-SMAC-01 item export size per `unmounted assets/NW-SMAC-01 items.zip`). The `NW-SMAC-01 items.zip` export already contains a **vent override key** sprite — mount it first; it directly covers `OVERRIDE_KEY`.
+
+The placeholder-color squares in `RoomScene.ts` (`src/phaser/RoomScene.ts:394–408`) are the integration point: replace `glyphLayer.fillRect` calls with sprite draws once the sheets are packed.
+
+### Still needed (per lore + scripted dialogue)
+
 - **Reader Terminal** — heavy carry-prop for The Finder (Era 2). Needs: world sprite + carry frames + UI screen art.
 - **Filter-mesh wrap** — Finder's wearable. Could be baked into Finder sprite or treated as equipment.
-- **Subjective Dump artifacts** — visual representation of misaligned machine-expression (impossible temperature gradients, corrupted ASCII floorplans, contradictory algorithms). Needs: terminal-screen art templates (procedural or hand-authored).
-- **Extraction Cube** — already typed; needs world sprite + inventory icon if not bundled.
+- **Subjective Dump artifacts** — visual representation of misaligned machine-expression. Needs: terminal-screen art templates.
 - **Bright Knot archive** — Era 3 endgame artifact. Needs: world sprite + launch animation.
 - **Corrupted blast door** keys/tokens — Era 2 ritual interaction props.
 

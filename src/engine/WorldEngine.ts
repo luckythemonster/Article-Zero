@@ -9,6 +9,7 @@ import type {
   AmbientLightLevel,
   Era,
   Facing,
+  ItemType,
   Room,
   RoomId,
   Vec2,
@@ -150,6 +151,16 @@ class WorldEngine {
     return ok;
   };
 
+  useItem = (itemType: ItemType) => {
+    const ok = actions.useItem(this.getState(), itemType);
+    if (ok) {
+      this.recomputeFOV();
+      complianceSystem.recompute(this.getState());
+      this.syncStore();
+    }
+    return ok;
+  };
+
   endTurn = () => this.advanceTurn();
 
   canStartAlignment = (entityId: string) =>
@@ -209,6 +220,9 @@ class WorldEngine {
     s.detained = false;
     s.terminalsRead.clear();
     s.items.clear();
+    s.player.spoofTurnsRemaining = undefined;
+    s.player.baffleTurnsRemaining = undefined;
+    s.activeEmitters = [];
     documentArchive.reset();
     alignmentSession.reset();
     this.recomputeFOV();
@@ -291,6 +305,7 @@ class WorldEngine {
       terminalsRead: new Set(),
       worldItems: new Map(),
       documentCases: new Map(),
+      activeEmitters: [],
     };
   }
 
@@ -320,6 +335,46 @@ class WorldEngine {
         s.detained = true;
         eventBus.emit("PLAYER_DETAINED", { guardId: "lockdown", turn: s.turn });
       }
+    }
+
+    // Tick consumable-item timers. Decrement first, then check for expiry so
+    // the effect is still live on the turn it reaches zero (zero means "this
+    // was the last turn"). Emit EFFECT_EXPIRED and recompute compliance so
+    // the HUD updates without waiting for the next player action.
+    if ((s.player.spoofTurnsRemaining ?? 0) > 0) {
+      s.player.spoofTurnsRemaining! -= 1;
+      if (s.player.spoofTurnsRemaining === 0) {
+        s.player.spoofTurnsRemaining = undefined;
+        eventBus.emit("EFFECT_EXPIRED", { effect: "spoof" });
+        complianceSystem.recompute(s);
+      }
+    }
+    if ((s.player.baffleTurnsRemaining ?? 0) > 0) {
+      s.player.baffleTurnsRemaining! -= 1;
+      if (s.player.baffleTurnsRemaining === 0) {
+        s.player.baffleTurnsRemaining = undefined;
+        eventBus.emit("EFFECT_EXPIRED", { effect: "baffle" });
+      }
+    }
+
+    // Tick active Phantom Manifest Emitters. Each live emitter pushes a
+    // SoundField emission before propagate() so guards hear it this turn.
+    // Entries whose turnsRemaining hits 0 after decrement are removed.
+    const expiredEmitters: string[] = [];
+    for (const emitter of s.activeEmitters) {
+      soundField.emit({
+        roomId: emitter.roomId,
+        pos: emitter.pos,
+        intensity: emitter.intensity,
+        reason: emitter.reason,
+      });
+      emitter.turnsRemaining -= 1;
+      if (emitter.turnsRemaining <= 0) expiredEmitters.push(emitter.id);
+    }
+    if (expiredEmitters.length > 0) {
+      s.activeEmitters = s.activeEmitters.filter(
+        (e) => !expiredEmitters.includes(e.id),
+      );
     }
 
     if (s.alignmentLightActive) {

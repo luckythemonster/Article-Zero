@@ -121,6 +121,32 @@ export function nwSmac01Era(): EraSeed {
   };
   seed.player.inventory.push(bypassDrive);
 
+  // Seed one of each tactical item into starting inventory so the player
+  // can immediately verify the overlay and each item's mechanics in NW-SMAC-01.
+  seed.player.inventory.push({ id: "phantom-emitter-1", itemType: "PHANTOM_EMITTER" });
+  seed.player.inventory.push({ id: "spoof-badge-1",      itemType: "Q0_SPOOF_BADGE" });
+  seed.player.inventory.push({ id: "dump-fragment-1",   itemType: "DUMP_FRAGMENT" });
+  seed.player.inventory.push({ id: "thermal-baffle-1",  itemType: "THERMAL_BAFFLE" });
+  seed.player.inventory.push({ id: "override-key-1",    itemType: "OVERRIDE_KEY" });
+
+  // Floor pickups — one of each scattered across the main floor. All
+  // positions sit on the y=4 or y=13 corridor axes (known-floor rows from
+  // the vent and light-source positions). Players walking the east-west
+  // corridor will encounter each pickup naturally.
+  const floorPickups: ItemInstance[] = [
+    // Phantom Emitter — mid north corridor, near terminal
+    { id: "phantom-emitter-floor-1", itemType: "PHANTOM_EMITTER", roomId: "main", pos: { x: 10, y: 4 } },
+    // Q0 Spoof Badge — east side of north corridor
+    { id: "spoof-badge-floor-1",      itemType: "Q0_SPOOF_BADGE",  roomId: "main", pos: { x: 22, y: 4 } },
+    // Dump Fragment — south corridor, central
+    { id: "dump-fragment-floor-1",   itemType: "DUMP_FRAGMENT",   roomId: "main", pos: { x: 15, y: 13 } },
+    // Thermal Baffle — ducts crawlspace (rewards exploring the vent network)
+    { id: "thermal-baffle-floor-1",  itemType: "THERMAL_BAFFLE",  roomId: "ducts", pos: { x: 15, y: 13 } },
+    // Override Key — east end of south corridor, near a blast-door candidate
+    { id: "override-key-floor-1",    itemType: "OVERRIDE_KEY",    roomId: "main", pos: { x: 30, y: 13 } },
+  ];
+  seed.items = [...(seed.items ?? []), ...floorPickups];
+
   // Footstep surfaces: the Ducts crawlspace floor is sheet-metal duct lining,
   // not the dirty concrete of the Main Floor. Main Floor inherits the default
   // "dirtyground" pool.
