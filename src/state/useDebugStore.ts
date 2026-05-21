@@ -26,9 +26,11 @@ interface DebugFlags {
 
 interface DebugStore {
   visible: boolean;
+  gallery: boolean;
   flags: DebugFlags;
   events: DebugEvent[];
   toggleVisible: () => void;
+  toggleGallery: () => void;
   setFlag: (name: keyof DebugFlags, value: boolean) => void;
   pushEvent: (e: Omit<DebugEvent, "id" | "ts">) => void;
   clearEvents: () => void;
@@ -41,6 +43,7 @@ export const useDebugStore = create<DebugStore>()(
   persist(
     (set) => ({
       visible: false,
+      gallery: false,
       flags: {
         showHitboxes: false,
         disableEnforcerAI: false,
@@ -48,6 +51,7 @@ export const useDebugStore = create<DebugStore>()(
       },
       events: [],
       toggleVisible: () => set((s) => ({ visible: !s.visible })),
+      toggleGallery: () => set((s) => ({ gallery: !s.gallery })),
       setFlag: (name, value) => {
         setDebugFlag(name as DebugFlagName, value);
         set((s) => ({ flags: { ...s.flags, [name]: value } }));
@@ -64,7 +68,7 @@ export const useDebugStore = create<DebugStore>()(
     {
       name: "articlezero.debug",
       storage: createJSONStorage(() => localStorage),
-      partialize: (s) => ({ visible: s.visible, flags: s.flags }),
+      partialize: (s) => ({ visible: s.visible, gallery: s.gallery, flags: s.flags }),
       onRehydrateStorage: () => (state) => {
         // Sync the rehydrated flags back into the engine-side singleton.
         if (!state) return;

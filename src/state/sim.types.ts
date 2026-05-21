@@ -3,6 +3,7 @@
 // Together they reconstruct a full WorldState.
 
 import type {
+  ActiveEmitter,
   AlertState,
   ComplianceTier,
   EntityId,
@@ -25,6 +26,10 @@ import type { DocumentCase } from "../types/documents.types";
 
 export interface EntityPhysical {
   roomId: RoomId;
+  /** GUARD only — the room this guard belongs to. Used after EVASION to walk
+   *  back to patrol. Optional in snapshots for backwards compat; deserialiser
+   *  defaults to `roomId`. */
+  homeRoomId?: RoomId;
   pos: Vec2;
   /** Z-elevation slice. Optional in snapshots for backwards compat with
    *  pre-realtime saves; deserialiser defaults to 0. */
@@ -78,6 +83,8 @@ export interface SubjectiveState {
   name: string;
   peeking?: Facing;
   hidingTileKey?: string;
+  spoofTurnsRemaining?: number;
+  baffleTurnsRemaining?: number;
   lastMoveTurn?: number;
   entityMinds: Map<EntityId, EntityMind>;
   visibleTiles: Set<string>;
@@ -87,6 +94,7 @@ export interface SubjectiveState {
   terminalsRead: Set<string>;
   worldItems: Map<string, ItemInstance>;
   documentCases: Map<string, DocumentCase>;
+  activeEmitters: ActiveEmitter[];
 }
 
 // ── Serialised forms (JSON-safe: Map → array-of-pairs, Set → array) ───────────
@@ -117,6 +125,8 @@ export interface SerializedSubjective {
   name: string;
   peeking?: Facing;
   hidingTileKey?: string;
+  spoofTurnsRemaining?: number;
+  baffleTurnsRemaining?: number;
   lastMoveTurn?: number;
   entityMinds: [EntityId, EntityMind][];
   visibleTiles: string[];
@@ -126,6 +136,7 @@ export interface SerializedSubjective {
   terminalsRead: string[];
   worldItems: [string, ItemInstance][];
   documentCases: [string, DocumentCase][];
+  activeEmitters?: ActiveEmitter[];
 }
 
 export interface SimSnapshot {

@@ -87,16 +87,29 @@ The Commonwealth opening (Era 1, NW-SMAC-01) is ~80% asset-complete. Eras 2 & 3 
 
 ## 4. ITEMS / PICKUPS / INVENTORY
 
-`src/data/items` does not exist; `ItemType` in world types is currently just `"EXTRACTION_CUBE"`.
+`src/data/items/itemMetadata.ts` now exists. `ItemType` has been extended to 7 entries; `src/components/InventoryOverlay.tsx` provides the in-game UI (U key). All five new tactical items are seeded in NW-SMAC-01 for testing.
 
-### Need (per lore + scripted dialogue)
+### Have (coded, placeholder render only)
 
-- **Fragment Box** — Era 1 core artifact: heavy hard drive that stores a Subjective Dump. Persists across eras. Needs: world sprite, inventory icon, "hoist" carry sprite (already hinted in Sol/Rowan anim list), Era-2 ritual-object variant (weathered/rust-coated).
-- **Bypass Drive** — Rowan's tool for running the underground railroad. Needs: world sprite + UI icon.
+| ItemType | Display name | Placeholder color | Sprite slots needed |
+|---|---|---|---|
+| `EXTRACTION_CUBE` | Fragment Box | `#c89adb` | 4-dir world sprite (48×48), inventory icon, hoist-carry frame |
+| `BYPASS_DRIVE` | Bypass Drive | `#7ab8d4` | 4-dir world sprite (48×48), inventory icon |
+| `PHANTOM_EMITTER` | Phantom Manifest Emitter | `#e8b86d` | 4-dir floor sprite (48×48), deploy VFX (3-frame pulse) |
+| `Q0_SPOOF_BADGE` | Q0 Spoof Badge | `#6ad0a4` | Floor sprite (48×48), HUD active-state icon |
+| `DUMP_FRAGMENT` | Subjective Dump Fragment | `#e06060` | Floor sprite (48×48), throw arc VFX |
+| `THERMAL_BAFFLE` | Thermal Baffle | `#a0c8e8` | Floor sprite (48×48), HUD active-state icon |
+| `OVERRIDE_KEY` | Doctrinal Override Key | `#d46a6a` | Floor sprite (48×48), door-toggle VFX (silent flash) |
+
+All floor sprites should be **48×48** (the current NW-SMAC-01 item export size per `unmounted assets/NW-SMAC-01 items.zip`). The `NW-SMAC-01 items.zip` export already contains a **vent override key** sprite — mount it first; it directly covers `OVERRIDE_KEY`.
+
+The placeholder-color squares in `RoomScene.ts` (`src/phaser/RoomScene.ts:394–408`) are the integration point: replace `glyphLayer.fillRect` calls with sprite draws once the sheets are packed.
+
+### Still needed (per lore + scripted dialogue)
+
 - **Reader Terminal** — heavy carry-prop for The Finder (Era 2). Needs: world sprite + carry frames + UI screen art.
 - **Filter-mesh wrap** — Finder's wearable. Could be baked into Finder sprite or treated as equipment.
-- **Subjective Dump artifacts** — visual representation of misaligned machine-expression (impossible temperature gradients, corrupted ASCII floorplans, contradictory algorithms). Needs: terminal-screen art templates (procedural or hand-authored).
-- **Extraction Cube** — already typed; needs world sprite + inventory icon if not bundled.
+- **Subjective Dump artifacts** — visual representation of misaligned machine-expression. Needs: terminal-screen art templates.
 - **Bright Knot archive** — Era 3 endgame artifact. Needs: world sprite + launch animation.
 - **Corrupted blast door** keys/tokens — Era 2 ritual interaction props.
 
@@ -107,6 +120,7 @@ The Commonwealth opening (Era 1, NW-SMAC-01) is ~80% asset-complete. Eras 2 & 3 
 ### Have
 
 - Procedural ambient drone (37 Hz + 74 Hz, 0.06 Hz LFO, 120 Hz LPF) via Web Audio API. No files.
+- **sfxr parameter set on `main` at `unmounted assets/sounds`** — 9 chiptune SFX recipes (EIRA-7 failure, Alarm, Scan, Sun Expansion, Vehicle, Light Switch, knock, EMP, VENT-4). Not on this branch; not yet wired to a player. See section 7 for breakdown.
 
 ### Need
 
@@ -174,6 +188,28 @@ Full Era 1 item set — directly fills the inventory gap from section 4:
 - 2 box variants, 8-direction rotations (south, SE, E, NE, N, NW, W, SW).
 - Animation: "tiny glowing red pixel light blinks into existence" (5 frames, SE only).
 - Mount target: world prop sprite for the Era 1 core artifact (section 4).
+
+### `sounds` (text file, on `main` only — NOT on this branch)
+
+A plain text file (no extension) containing **9 jsfxr / sfxr parameter sets** — recipes for the chiptune synth generator, not rendered audio. Format: `[name]\n{ ...JSON params... }`.
+
+| Name | wave_type | Likely use |
+| --- | --- | --- |
+| `EIRA-7 failure` | 2 sine | Silicate telemetry sting — fits EIRA-7 power-failure animation |
+| `Alarm` | 2 sine | Alignment Center alert — slow-attack, full vibrato, arpeggiated, repeating with wide LPF → pulsing siren character (updated at HEAD `61f4b08d`; previously duplicated EIRA-7 failure) |
+| `Scan` | 1 saw | Terminal scan / dialogue beep — telemetry sweep |
+| `Sun Expansion` | 3 noise | Ambient bloom / extraction-success sting |
+| `Vehicle` | 1 saw | Engine-like; possibly Era 2 EREMITE ship hum |
+| `Light Switch` | 3 noise | UI click — terminal toggle, branch selector |
+| `knock` | 0 square | Impact — door, footfall thump |
+| `EMP` | 3 noise | Enforcer EMP burst (pairs with EMP animation in this folder) |
+| `VENT-4` | 2 sine | Silicate vocalization for VENT-4 |
+
+**Implications for the audio gap (section 5):**
+- Covers ~30% of the section 5 audio list — UI clicks, alarm, EMP, and two silicate stings — using sfxr params. Light, fast to render.
+- **Mount path**: needs a runtime sfxr player (e.g. `jsfxr` npm package, ~3KB) wired into `SoundField` to pre-render to AudioBuffer at boot or play directly. No file format conversion needed.
+- **Still missing**: footsteps (sfxr is wrong tool — sample-based), per-surface variation, music, ambient beds, voice. Sfxr is designed for short SFX, not loops or footsteps.
+- **`p_vib_delay: null`** appears only on the updated Alarm entry — newer sfxr/jsfxr versions added this; older entries omit it. Player should tolerate both shapes (default missing keys to 0 / null).
 
 ### `may 5 2026/` — Arc 1 map export
 - `article zero.zip` — spritesheet (1.6 MB) + `edplay.json` (537 KB)

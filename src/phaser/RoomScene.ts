@@ -9,6 +9,7 @@ import { worldEngine } from "../engine/WorldEngine";
 import { guardSystem } from "../engine/GuardSystem";
 import { debugFlags } from "../engine/debugFlags";
 import type { Entity, Facing, Room, Tile, TileKind } from "../types/world.types";
+import { ITEM_METADATA } from "../data/items/itemMetadata";
 
 const TILE_PX = 32;
 const ELEVATION_PX_PER_STEP = 8;
@@ -54,6 +55,7 @@ export class RoomScene extends Phaser.Scene {
   private overlayLayer!: Phaser.GameObjects.Graphics;
   private playerSprite!: Phaser.GameObjects.Rectangle;
   private playerFacingMark!: Phaser.GameObjects.Triangle;
+  private heldItemSprite!: Phaser.GameObjects.Image;
   private entityRects = new Map<string, Phaser.GameObjects.Rectangle>();
   private entityFacingMarks = new Map<string, Phaser.GameObjects.Triangle>();
   private exclamationMarks = new Map<string, Phaser.GameObjects.Text>();
@@ -104,6 +106,11 @@ export class RoomScene extends Phaser.Scene {
     }
     this.playerFacingMark = this.add.triangle(0, 0, 0, 0, -6, 8, 6, 8, 0xe6f0f2);
     this.playerFacingMark.setDepth(6);
+    // Held-item overlay. Texture is swapped in redraw() per facing; hidden
+    // when inventory is empty of renderable items.
+    this.heldItemSprite = this.add.image(0, 0, "__DEFAULT");
+    this.heldItemSprite.setDepth(7);
+    this.heldItemSprite.setVisible(false);
     this.debugLayer = this.add.graphics();
     this.debugLayer.setDepth(25);
 
@@ -385,15 +392,17 @@ export class RoomScene extends Phaser.Scene {
       this.drawEntity(state, entity);
     }
 
-    // Floor items — extraction cubes only, for now.
+    // Floor items — draw a colored placeholder square for every item type.
+    // When real sprites ship, replace the fillRect with a sprite draw here.
     for (const item of state.items.values()) {
-      if (item.itemType !== "EXTRACTION_CUBE") continue;
       if (item.roomId !== room.id || !item.pos) continue;
       const visible = state.visibleTiles.has(`${item.pos.x},${item.pos.y}`);
       if (!visible) continue;
+      const meta = ITEM_METADATA[item.itemType];
+      const color = meta?.placeholderColor ?? 0x888888;
       const cx = item.pos.x * TILE_PX + TILE_PX / 2;
       const cy = item.pos.y * TILE_PX + TILE_PX / 2;
-      this.glyphLayer.fillStyle(0xc89adb, 0.95);
+      this.glyphLayer.fillStyle(color, 0.95);
       this.glyphLayer.fillRect(cx - 7, cy - 7, 14, 14);
       this.glyphLayer.lineStyle(1, 0xffffff, 0.9);
       this.glyphLayer.strokeRect(cx - 7, cy - 7, 14, 14);
@@ -414,6 +423,24 @@ export class RoomScene extends Phaser.Scene {
       state.player.facing,
     );
     this.playerFacingMark.setVisible(!state.player.hidingTileKey);
+
+    // Held-item: bypass_drive renders above the player when in inventory.
+    const holdsBypass = state.player.inventory.some(
+      (i) => i.itemType === "BYPASS_DRIVE",
+    );
+    if (holdsBypass && !state.player.hidingTileKey) {
+      const texKey = `bypass_drive_${state.player.facing}`;
+      if (this.textures.exists(texKey)) {
+        this.heldItemSprite.setTexture(texKey);
+        this.heldItemSprite.setPosition(playerCx, playerCy - 10);
+        this.heldItemSprite.setScale(0.5);
+        this.heldItemSprite.setVisible(true);
+      } else {
+        this.heldItemSprite.setVisible(false);
+      }
+    } else {
+      this.heldItemSprite.setVisible(false);
+    }
     // Peek indicator: tint the facing mark gold and pulse it.
     if (state.player.peeking) {
       this.playerFacingMark.setFillStyle(0xebd14a);

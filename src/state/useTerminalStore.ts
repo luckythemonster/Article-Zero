@@ -48,6 +48,9 @@ export interface RunFlags {
   forgeryCaseId: string | null;
   /** True once the player has survived the climax escape. */
   escaped: boolean;
+  /** True once the player has used the bypass_drive at the NW-SMAC-01
+   *  bypass terminal. Consumes the drive; read by future audit content. */
+  bypassed: boolean;
 }
 
 const DEFAULT_RUN_FLAGS: RunFlags = {
@@ -57,6 +60,7 @@ const DEFAULT_RUN_FLAGS: RunFlags = {
   alignmentSuccess: false,
   forgeryCaseId: null,
   escaped: false,
+  bypassed: false,
 };
 
 interface TerminalStore {
@@ -70,6 +74,8 @@ interface TerminalStore {
   phase: NarrativePhase;
   runFlags: RunFlags;
 
+  inventoryOpen: boolean;
+
   log: (entry: Omit<AuditEntry, "id">) => void;
   pushCommand: (cmd: string) => void;
   decryptModule: (id: Module) => void;
@@ -79,6 +85,7 @@ interface TerminalStore {
   setPhase: (phase: NarrativePhase) => void;
   setRunFlag: <K extends keyof RunFlags>(key: K, value: RunFlags[K]) => void;
   resetRun: () => void;
+  setInventoryOpen: (v: boolean) => void;
 }
 
 export const useTerminalStore = create<TerminalStore>()(
@@ -106,6 +113,7 @@ export const useTerminalStore = create<TerminalStore>()(
       subjectiveDesync: false,
       phase: "FRAME",
       runFlags: { ...DEFAULT_RUN_FLAGS },
+      inventoryOpen: false,
 
       log: (entry) =>
         set((s) => ({
@@ -146,6 +154,7 @@ export const useTerminalStore = create<TerminalStore>()(
         set((s) => ({ runFlags: { ...s.runFlags, [key]: value } })),
 
       resetRun: () => set({ runFlags: { ...DEFAULT_RUN_FLAGS } }),
+      setInventoryOpen: (v) => set({ inventoryOpen: v }),
     }),
     {
       name: "article-zero:terminal",

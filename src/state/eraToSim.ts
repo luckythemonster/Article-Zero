@@ -22,6 +22,7 @@ export function worldStateToSlices(ws: WorldState): {
   for (const [id, e] of ws.entities) {
     entityPositions.set(id, {
       roomId: e.roomId,
+      homeRoomId: e.homeRoomId,
       pos: e.pos,
       z: e.z,
       facing: e.facing,
@@ -66,6 +67,8 @@ export function worldStateToSlices(ws: WorldState): {
     name: ws.player.name,
     peeking: ws.player.peeking,
     hidingTileKey: ws.player.hidingTileKey,
+    spoofTurnsRemaining: ws.player.spoofTurnsRemaining,
+    baffleTurnsRemaining: ws.player.baffleTurnsRemaining,
     lastMoveTurn: ws.player.lastMoveTurn,
     entityMinds,
     visibleTiles: new Set(ws.visibleTiles),
@@ -75,6 +78,7 @@ export function worldStateToSlices(ws: WorldState): {
     terminalsRead: new Set(ws.terminalsRead),
     worldItems: new Map(ws.items),
     documentCases: new Map(),
+    activeEmitters: ws.activeEmitters.map((e) => ({ ...e })),
   };
 
   return { physical, subjective };
@@ -94,6 +98,7 @@ export function slicesToWorldState(
       kind: kind?.kind ?? "GUARD",
       name: kind?.name ?? id,
       roomId: phys.roomId,
+      homeRoomId: phys.homeRoomId ?? phys.roomId,
       pos: phys.pos,
       z: phys.z ?? 0,
       facing: phys.facing,
@@ -129,6 +134,8 @@ export function slicesToWorldState(
       compliance: subjective.compliance,
       peeking: subjective.peeking,
       hidingTileKey: subjective.hidingTileKey,
+      spoofTurnsRemaining: subjective.spoofTurnsRemaining,
+      baffleTurnsRemaining: subjective.baffleTurnsRemaining,
     },
     rooms: new Map(physical.rooms),
     entities,
@@ -140,5 +147,6 @@ export function slicesToWorldState(
     ventLinks: new Map(physical.ventLinks),
     terminalPayloads: new Map(physical.terminalPayloads),
     terminalsRead: new Set(subjective.terminalsRead),
+    activeEmitters: subjective.activeEmitters.map((e) => ({ ...e })),
   };
 }

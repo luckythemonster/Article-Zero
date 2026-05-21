@@ -1,0 +1,31 @@
+check later (forgot)
+
+{
+  "oldParams": true,
+  "wave_type": 2,
+  "p_env_attack": 1,
+  "p_env_sustain": 0,
+  "p_env_punch": 1,
+  "p_env_decay": 1,
+  "p_base_freq": 0.433,
+  "p_freq_limit": 0,
+  "p_freq_ramp": 0,
+  "p_freq_dramp": 0,
+  "p_vib_strength": 1,
+  "p_vib_speed": 0.005,
+  "p_arp_mod": 0.247,
+  "p_arp_speed": 0,
+  "p_duty": 0,
+  "p_duty_ramp": 0,
+  "p_repeat_speed": 1,
+  "p_pha_offset": 1,
+  "p_pha_ramp": 1,
+  "p_lpf_freq": 0.091,
+  "p_lpf_ramp": 0.495,
+  "p_lpf_resonance": 1,
+  "p_hpf_freq": 0.129,
+  "p_hpf_ramp": 1,
+  "sound_vol": 1,
+  "sample_rate": 44100,
+  "sample_size": 16
+}

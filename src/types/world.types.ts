@@ -14,6 +14,18 @@ export type Side = "N" | "S" | "E" | "W";
 
 export type AmbientLightLevel = "LIT" | "DIM" | "DARK";
 
+/** Footstep surface families. Drives sample selection for footstep SFX.
+ *  Resolved from a tile via `tileSurface()`; FLOOR may be overridden per Room
+ *  via `Room.floorSurface`. */
+export type SurfaceType =
+  | "dirtyground"
+  | "gravel"
+  | "metalv1"
+  | "metalv2"
+  | "rock"
+  | "tile"
+  | "wood";
+
 export interface Vec2 {
   x: number;
   y: number;
@@ -38,7 +50,26 @@ export type TileKind =
 
 // Items ------------------------------------------------------------------
 
-export type ItemType = "EXTRACTION_CUBE";
+export type ItemType =
+  | "EXTRACTION_CUBE"
+  | "BYPASS_DRIVE"
+  | "PHANTOM_EMITTER"
+  | "Q0_SPOOF_BADGE"
+  | "DUMP_FRAGMENT"
+  | "THERMAL_BAFFLE"
+  | "OVERRIDE_KEY";
+
+/** Ephemeral world-state for a deployed Phantom Manifest Emitter. Tracked on
+ *  WorldState.activeEmitters; consumed at the top of advanceTurn() to push a
+ *  SoundField emission and decrement turnsRemaining. */
+export interface ActiveEmitter {
+  id: string;
+  roomId: RoomId;
+  pos: Vec2;
+  intensity: number;
+  turnsRemaining: number;
+  reason: string;
+}
 
 export interface CubePayload {
   title: string;
@@ -171,6 +202,10 @@ export interface Room {
   /** Cached lit-tile set (keys "x,y"). Invalidated by setting to undefined on
    *  any light toggle; LightField.getOrCompute lazily fills it. Never persist. */
   litTiles?: Set<string>;
+  /** Override for the footstep surface played on FLOOR tiles inside this room.
+   *  Other tile kinds (VENT, STAIRS, LADDER, …) are resolved statically by
+   *  `tileSurface()` and ignore this field. Default is "dirtyground". */
+  floorSurface?: SurfaceType;
 }
 
 // Entities ---------------------------------------------------------------
@@ -195,6 +230,13 @@ export interface AlertState {
   lastStimulus?: Vec2;
   /** Room the stimulus came from (may be a neighbor for sound). */
   lastStimulusRoom?: RoomId;
+  /** Most recent turn a confirmed (RED-tier) sighting was registered. Drives
+   *  the ALERT → EVASION lose-of-sight timer in AlertFSM. */
+  lastSeenTurn?: number;
+  /** Turns remaining of a Subjective Dump Fragment stun. While > 0 the guard
+   *  skips its entire `tickOne` (no vision, no movement, no FSM step). Set by
+   *  the DUMP_FRAGMENT item handler in WorldEngineActions. */
+  stunTurnsRemaining?: number;
 }
 
 export interface Entity {
@@ -203,6 +245,9 @@ export interface Entity {
   name: string;
   /** Which room this entity lives in. */
   roomId: RoomId;
+  /** GUARD only — the room this guard belongs to, used to walk back to its
+   *  patrol after EVASION decays. Stamped at world-seed time from `roomId`. */
+  homeRoomId?: RoomId;
   /** Position within the room. */
   pos: Vec2;
   /** Z-elevation slice the entity currently occupies. Entity-vs-entity
@@ -229,7 +274,7 @@ export interface Entity {
 
 // Player -----------------------------------------------------------------
 
-export type Stance = "WALK" | "SNEAK";
+export type Stance = "WALK" | "SNEAK" | "RUN";
 
 export interface PlayerState {
   /** Which room the player is currently inside. */
@@ -260,6 +305,13 @@ export interface PlayerState {
   /** "roomId:x,y" of the LOCKER tile the player has ducked into. While set,
    *  guard sight ignores the player and most actions are refused. */
   hidingTileKey?: string;
+  /** Turns remaining on a Q0 Spoof Badge buff. ComplianceSystem.derive()
+   *  short-circuits to GREEN while > 0. Decremented in advanceTurn(). */
+  spoofTurnsRemaining?: number;
+  /** Turns remaining on a Thermal Baffle buff. While > 0, all movement
+   *  emits intensity 0 (silent) and vent-crawl AP cost is halved.
+   *  Decremented in advanceTurn(). */
+  baffleTurnsRemaining?: number;
 }
 
 // Vent links ------------------------------------------------------------
@@ -294,6 +346,12 @@ export interface TerminalPayload {
   /** If set, using this terminal flips the LIGHT_SOURCE tiles at these
    *  positions in `roomId`. Coupled toggle: any-on → all-off, all-off → all-on. */
   lightToggle?: Vec2[];
+  /** If set, "Use Terminal" refuses unless an ItemInstance of this type is
+   *  in player.inventory; on success the matching instance is consumed. */
+  requiresItem?: ItemType;
+  /** If set, after a successful use the named boolean RunFlag is flipped
+   *  true. Mirrors the existing vent4Choice / cipherValid story flags. */
+  setsRunFlag?: "bypassed";
 }
 
 // World ------------------------------------------------------------------
@@ -330,6 +388,10 @@ export interface WorldState {
    *  different room; resolves to `detained = true` if the timer reaches 0
    *  while the player is still inside the sealed room. */
   lockdown?: { roomId: RoomId; turnsRemaining: number };
+  /** Deployed Phantom Manifest Emitters. At the top of advanceTurn() each
+   *  entry pushes a SoundField emission and ticks turnsRemaining down;
+   *  entries that hit 0 are removed. */
+  activeEmitters: ActiveEmitter[];
 }
 
 export const tileKey = (pos: Vec2): string => `${pos.x},${pos.y}`;

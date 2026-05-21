@@ -322,43 +322,6 @@ export const MOOSE_TILESETS: MooseTilesetEntry[] = [
     ]
   },
   {
-    "key": "maintenance_stairwell",
-    "label": "maintenance stairwell",
-    "path": "/assets/tilesets/maintenance_stairwell/sheet.png",
-    "frameWidth": 32,
-    "frameHeight": 64,
-    "spacing": 1,
-    "tileAnims": [
-      {
-        "handle": 3697363465,
-        "label": "Door South ",
-        "baseFrame": 45,
-        "settleFrame": 42,
-        "frames": [
-          45,
-          49,
-          48,
-          37,
-          41,
-          38,
-          39,
-          47,
-          36,
-          33,
-          32,
-          40,
-          43,
-          35,
-          46,
-          34,
-          42,
-          42
-        ],
-        "frameRate": 8
-      }
-    ]
-  },
-  {
     "key": "nw_smac_01",
     "label": "nw-smac-01",
     "path": "/assets/tilesets/nw_smac_01/sheet.png",
@@ -385,13 +348,5 @@ export const MOOSE_TILESETS: MooseTilesetEntry[] = [
         "frameRate": 8
       }
     ]
-  },
-  {
-    "key": "stairs",
-    "label": "stairs",
-    "path": "/assets/tilesets/stairs/sheet.png",
-    "frameWidth": 32,
-    "frameHeight": 32,
-    "spacing": 1
   }
 ];

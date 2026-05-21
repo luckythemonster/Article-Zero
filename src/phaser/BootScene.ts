@@ -17,11 +17,6 @@ export class BootScene extends Phaser.Scene {
   preload(): void {
     this.load.image("tileset", "/assets/tileset.png");
     this.load.atlas(
-      "chars",
-      "/assets/sprite_pack/EIRA-7,_Enforcer,_Sol.png",
-      "/assets/sprite_pack/EIRA-7,_Enforcer,_Sol.json",
-    );
-    this.load.atlas(
       "chars-art",
       "/assets/sprite_pack/chars-art.png",
       "/assets/sprite_pack/chars-art.json",
@@ -34,24 +29,29 @@ export class BootScene extends Phaser.Scene {
         spacing: t.spacing,
       });
     }
+    // Held-item: bypass_drive 4-cardinal rotations (32x32 each).
+    for (const dir of ["north", "east", "south", "west"] as const) {
+      const key = `bypass_drive_${dir}`;
+      if (this.textures.exists(key)) continue;
+      this.load.image(key, `/assets/items/bypass_drive/${dir}.png`);
+    }
   }
 
   create(): void {
-    // Defensive: ignore any animations targeting atlases that failed to load.
+    // Defensive: skip animations if the chars-art atlas failed to load.
     const haveCharsArt = this.textures.exists("chars-art");
-    const haveChars = this.textures.exists("chars");
-    for (const a of CHAR_ANIMS) {
-      if (this.anims.exists(a.key)) continue;
-      const texture = a.texture ?? "chars";
-      if (texture === "chars-art" && !haveCharsArt) continue;
-      if (texture === "chars" && !haveChars) continue;
-      const frames = a.frames.map((f) => ({ key: texture, frame: f }));
-      this.anims.create({
-        key: a.key,
-        frames,
-        frameRate: a.frameRate,
-        repeat: a.repeat,
-      });
+    if (haveCharsArt) {
+      for (const a of CHAR_ANIMS) {
+        if (this.anims.exists(a.key)) continue;
+        const texture = a.texture ?? "chars-art";
+        const frames = a.frames.map((f) => ({ key: texture, frame: f }));
+        this.anims.create({
+          key: a.key,
+          frames,
+          frameRate: a.frameRate,
+          repeat: a.repeat,
+        });
+      }
     }
 
     for (const t of MOOSE_TILESETS) {

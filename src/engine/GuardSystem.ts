@@ -1,10 +1,21 @@
 // GuardSystem — per-tick guard behavior.
 //
 // Reads the `AlertFSM` level for each guard, picks a behavior, and steps.
-// Guards do NOT pursue between rooms in the rebuild; if the player crosses
-// a doorway during ALERT, the guard drops to EVASION on this side.
+//
+// Cross-room pursuit: a guard in ALERT will follow the player through OPEN
+// doorways, BFS-pathfinding the room graph toward `alert.lastStimulusRoom`.
+// Sight triggers the lockdown trap as before, which slams every doorway in
+// the player's room shut — so the spotter is trapped in the sealed room with
+// the player until the player pries a door open and crosses out (clearing
+// the lockdown). Once a door is open, the spotter pursues through it. After
+// `ALERT_LOSE_SIGHT_TURNS` ticks without re-sighting, the guard drops to
+// EVASION; once EVASION decays, `stepPatrol` walks it back to `homeRoomId`
+// and resumes the authored patrol route mid-cycle.
+//
+// Only the spotter pursues. Other guards continue to escalate to CAUTION via
+// SoundField and orient toward doorways (`stepInvestigate`) without crossing.
 
-import type { Entity, Facing, Tile, Vec2, WorldState } from "../types/world.types";
+import type { Entity, Facing, RoomId, Tile, Vec2, WorldState } from "../types/world.types";
 import { facingFromDelta } from "../types/world.types";
 import { alertFSM } from "./AlertFSM";
 import { eventBus } from "./EventBus";
@@ -52,6 +63,13 @@ class GuardSystem {
   }
 
   private tickOne(state: WorldState, guard: Entity, heard?: DeliveredSound): void {
+    // Subjective Dump Fragment stun — guard's local subjectivity-prevention
+    // buffer overflowed; skip the entire tick (no vision, no FSM step, no
+    // movement). Decrements once per turn until cleared.
+    if (guard.alert && (guard.alert.stunTurnsRemaining ?? 0) > 0) {
+      guard.alert.stunTurnsRemaining = (guard.alert.stunTurnsRemaining ?? 0) - 1;
+      return;
+    }
     const sees = this.guardSeesPlayer(state, guard);
     if (sees && !state.lockdown) {
       this.triggerLockdown(state);
@@ -60,7 +78,10 @@ class GuardSystem {
       seesPlayer: sees,
       heardIntensity: heard?.intensity ?? 0,
       heardSrc: heard?.src,
-      playerPos: state.player.roomId === guard.roomId ? state.player.pos : undefined,
+      // Always pass the player's true position so the FSM can refresh pursuit
+      // tracking while ALERT. Sight gates (`seesAsAlert`/`seesAsYellow`) still
+      // require same-room visibility, so this doesn't grant CAUTION omniscience.
+      playerPos: state.player.pos,
       playerRoomId: state.player.roomId,
     });
 
@@ -148,6 +169,13 @@ class GuardSystem {
   }
 
   private stepPatrol(state: WorldState, guard: Entity): void {
+    // If a chase displaced this guard out of its home room, walk back before
+    // resuming patrol. patrolIndex is preserved so the route resumes mid-cycle
+    // rather than restarting at node 0.
+    if (guard.homeRoomId && guard.roomId !== guard.homeRoomId) {
+      this.pursueViaPath(state, guard, guard.homeRoomId);
+      return;
+    }
     const route = guard.patrol;
     if (!route || route.length === 0) return;
     const idx = guard.patrolIndex ?? 0;
@@ -162,6 +190,30 @@ class GuardSystem {
       return;
     }
     this.advanceToward(state, guard, wp);
+  }
+
+  /** Step toward (or cross) the first-hop doorway leading to `targetRoomId`.
+   *  No-ops if all doorways in the current room are closed (lockdown case)
+   *  or if the target is unreachable through the open room graph. */
+  private pursueViaPath(state: WorldState, guard: Entity, targetRoomId: RoomId): void {
+    const path = roomGraph.bfsPath(state, guard.roomId, targetRoomId);
+    const hop = path?.[0];
+    if (!hop) return;
+    if (guard.pos.x === hop.localPos.x && guard.pos.y === hop.localPos.y) {
+      const from = guard.pos;
+      const fromRoomId = guard.roomId;
+      guard.roomId = hop.to;
+      guard.pos = { ...hop.landingPos };
+      guard.lastMoveTurn = state.turn;
+      eventBus.emit("ENTITY_MOVED", {
+        entityId: guard.id,
+        roomId: fromRoomId,
+        from,
+        to: guard.pos,
+      });
+      return;
+    }
+    this.advanceToward(state, guard, hop.localPos);
   }
 
   private stepInvestigate(state: WorldState, guard: Entity): void {
@@ -182,19 +234,24 @@ class GuardSystem {
   }
 
   private stepChase(state: WorldState, guard: Entity): void {
-    if (state.player.roomId !== guard.roomId) {
-      // Player crossed into another room — drop to EVASION.
-      if (guard.alert) {
-        const prev = guard.alert.level;
-        guard.alert.level = "EVASION";
-        guard.alert.enteredTurn = state.turn;
-        if (prev !== "EVASION") {
-          eventBus.emit("GUARD_ALERT_CHANGED", { guardId: guard.id, from: prev, to: "EVASION" });
-        }
-      }
+    const targetRoomId = guard.alert?.lastStimulusRoom ?? state.player.roomId;
+
+    if (guard.roomId !== targetRoomId) {
+      // Different room from the last sighting — pursue through open doorways.
+      // The lose-of-sight timer in AlertFSM decides when to give up.
+      this.pursueViaPath(state, guard, targetRoomId);
       return;
     }
-    this.advanceToward(state, guard, state.player.pos);
+
+    // Same room as the last sighting. If the player is here, chase them
+    // directly; otherwise chase the stale lastStimulus tile until the FSM
+    // gives up.
+    const dest = state.player.roomId === guard.roomId
+      ? state.player.pos
+      : (guard.alert?.lastStimulus ?? state.player.pos);
+    this.advanceToward(state, guard, dest);
+
+    if (state.player.roomId !== guard.roomId) return;
     if (guard.pos.x === state.player.pos.x && guard.pos.y === state.player.pos.y) {
       state.detained = true;
       eventBus.emit("PLAYER_DETAINED", { guardId: guard.id, turn: state.turn });
@@ -235,6 +292,9 @@ class GuardSystem {
     guard.pos = next;
     guard.lastMoveTurn = state.turn;
     eventBus.emit("ENTITY_MOVED", { entityId: guard.id, roomId: guard.roomId, from, to: next });
+    // Audio-only signal — does NOT route through SoundField (would let the
+    // player exploit guard noise as a sonar ping into the alert FSM).
+    eventBus.emit("GUARD_FOOTSTEP", { guardId: guard.id, roomId: guard.roomId, pos: next });
   }
 
   private canEnter(tiles: Tile[], w: number, h: number, p: Vec2): boolean {

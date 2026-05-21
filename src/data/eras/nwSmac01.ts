@@ -17,6 +17,7 @@
 import { mooseToEraSeed } from "./from-moose";
 import type { MooseEraMeta } from "./from-moose";
 import { mkTile } from "./tile-factory";
+import type { ItemInstance } from "../../types/world.types";
 import {
   NW_SMAC_01_FRAME_HEIGHT,
   NW_SMAC_01_FRAME_WIDTH,
@@ -92,8 +93,65 @@ export function nwSmac01Era(): EraSeed {
       },
     ],
     entities: [],
+    terminals: [
+      // TODO(lucky-coords): placeholder bypass terminal. Retarget the room +
+      // (x, y) once Lucky confirms a board position. Paired with the
+      // matching TERMINAL stamp below.
+      {
+        roomId: "main",
+        pos: { x: 15, y: 8 },
+        terminalId: "bypass-system",
+        title: "SYSTEM CHECK // BYPASS_DRIVE ATTACHED",
+        body:
+          "Heavy-gauge patch cable seated. Bypass drive accepts the system " +
+          "check and returns a valid auth string the facility never asked " +
+          "for. The drive's toggle switches are noticeably warm.",
+        requiresItem: "BYPASS_DRIVE",
+        setsRunFlag: "bypassed",
+      },
+    ],
   };
   const seed = mooseToEraSeed(NW_SMAC_01_LEVELS, meta);
+
+  // TECH-2 ROWAN-IBARRA starts NW-SMAC-01 with the bypass drive in hand.
+  // No payload — the bypass-system terminal carries the audit text instead.
+  const bypassDrive: ItemInstance = {
+    id: "bypass_drive_initial",
+    itemType: "BYPASS_DRIVE",
+  };
+  seed.player.inventory.push(bypassDrive);
+
+  // Seed one of each tactical item into starting inventory so the player
+  // can immediately verify the overlay and each item's mechanics in NW-SMAC-01.
+  seed.player.inventory.push({ id: "phantom-emitter-1", itemType: "PHANTOM_EMITTER" });
+  seed.player.inventory.push({ id: "spoof-badge-1",      itemType: "Q0_SPOOF_BADGE" });
+  seed.player.inventory.push({ id: "dump-fragment-1",   itemType: "DUMP_FRAGMENT" });
+  seed.player.inventory.push({ id: "thermal-baffle-1",  itemType: "THERMAL_BAFFLE" });
+  seed.player.inventory.push({ id: "override-key-1",    itemType: "OVERRIDE_KEY" });
+
+  // Floor pickups — one of each scattered across the main floor. All
+  // positions sit on the y=4 or y=13 corridor axes (known-floor rows from
+  // the vent and light-source positions). Players walking the east-west
+  // corridor will encounter each pickup naturally.
+  const floorPickups: ItemInstance[] = [
+    // Phantom Emitter — mid north corridor, near terminal
+    { id: "phantom-emitter-floor-1", itemType: "PHANTOM_EMITTER", roomId: "main", pos: { x: 10, y: 4 } },
+    // Q0 Spoof Badge — east side of north corridor
+    { id: "spoof-badge-floor-1",      itemType: "Q0_SPOOF_BADGE",  roomId: "main", pos: { x: 22, y: 4 } },
+    // Dump Fragment — south corridor, central
+    { id: "dump-fragment-floor-1",   itemType: "DUMP_FRAGMENT",   roomId: "main", pos: { x: 15, y: 13 } },
+    // Thermal Baffle — ducts crawlspace (rewards exploring the vent network)
+    { id: "thermal-baffle-floor-1",  itemType: "THERMAL_BAFFLE",  roomId: "ducts", pos: { x: 15, y: 13 } },
+    // Override Key — east end of south corridor, near a blast-door candidate
+    { id: "override-key-floor-1",    itemType: "OVERRIDE_KEY",    roomId: "main", pos: { x: 30, y: 13 } },
+  ];
+  seed.items = [...(seed.items ?? []), ...floorPickups];
+
+  // Footstep surfaces: the Ducts crawlspace floor is sheet-metal duct lining,
+  // not the dirty concrete of the Main Floor. Main Floor inherits the default
+  // "dirtyground" pool.
+  const ducts = seed.rooms.find((r) => r.id === "ducts");
+  if (ducts) ducts.floorSurface = "metalv2";
 
   // TODO(moose-export): placeholder lights + switch on the Main Floor until
   // the painted Ed layers ship. Lets us verify the vent bleed-through to the
@@ -102,19 +160,26 @@ export function nwSmac01Era(): EraSeed {
   // layers are painted in Ed.
   const main = seed.rooms.find((r) => r.id === "main");
   if (main) {
-    const stamp = (x: number, y: number, kind: "LIGHT_SOURCE" | "LIGHT_SWITCH") => {
+    const stamp = (
+      x: number,
+      y: number,
+      kind: "LIGHT_SOURCE" | "LIGHT_SWITCH" | "TERMINAL",
+    ) => {
       const idx = y * main.width + x;
       if (idx < 0 || idx >= main.tiles.length) return;
       main.tiles[idx] =
         kind === "LIGHT_SOURCE"
           ? mkTile("LIGHT_SOURCE", { emissionRadius: 5 })
-          : mkTile("LIGHT_SWITCH");
+          : mkTile(kind);
     };
     stamp(5, 4, "LIGHT_SOURCE");  // near vent (4, 3) — proves bleed into Ducts (4, 3)
     stamp(5, 13, "LIGHT_SOURCE"); // near vent (4, 13) — proves bleed into Ducts (4, 13)
     // (29, 5) is already a LIGHT_SOURCE from the moose paint (existing 1546
     // stamp). Together with the two above we get three sparse lights.
     stamp(1, 4, "LIGHT_SWITCH");  // W cell adjacent to spawn — toggles all 3
+    // TODO(lucky-coords): placeholder bypass terminal stamp. Paired with the
+    // terminals: [...] payload above. Lucky picks the final cell.
+    stamp(15, 8, "TERMINAL");
     main.lightSwitches = [{ pos: { x: 1, y: 4 }, controls: [] }];
   }
   return seed;

@@ -79,6 +79,41 @@ class RoomGraph {
       .map((d) => ({ roomId: d.to, doorway: d }));
   }
 
+  /** BFS the room graph through OPEN doorways only, returning the doorway
+   *  chain from `fromRoomId` to `toRoomId`. First hop is `result[0]`.
+   *  Returns undefined if `toRoomId` is unreachable (or equals `fromRoomId`).
+   *  Closed doors are skipped — they block guard pursuit, which is what
+   *  keeps a spotter trapped inside the lockdown room until the player pries. */
+  bfsPath(state: WorldState, fromRoomId: RoomId, toRoomId: RoomId): Doorway[] | undefined {
+    if (fromRoomId === toRoomId) return undefined;
+    const parent = new Map<RoomId, { prev: RoomId; via: Doorway }>();
+    const seen = new Set<RoomId>([fromRoomId]);
+    const queue: RoomId[] = [fromRoomId];
+    while (queue.length) {
+      const cur = queue.shift()!;
+      if (cur === toRoomId) break;
+      for (const { roomId: next, doorway } of this.openNeighbors(state, cur)) {
+        if (seen.has(next)) continue;
+        seen.add(next);
+        parent.set(next, { prev: cur, via: doorway });
+        if (next === toRoomId) {
+          queue.length = 0;
+          break;
+        }
+        queue.push(next);
+      }
+    }
+    if (!parent.has(toRoomId)) return undefined;
+    const chain: Doorway[] = [];
+    let node: RoomId = toRoomId;
+    while (node !== fromRoomId) {
+      const step = parent.get(node)!;
+      chain.unshift(step.via);
+      node = step.prev;
+    }
+    return chain;
+  }
+
   /** Toggle the closed state of a doorway by its FROM-side tile. Mirrors the
    *  closure to the matching doorway in the destination room so both sides
    *  agree on the door's state. */

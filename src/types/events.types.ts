@@ -9,6 +9,7 @@ import type {
   Facing,
   ItemType,
   RoomId,
+  Stance,
   Vec2,
 } from "./world.types";
 
@@ -24,7 +25,7 @@ export interface EventMap {
   PLAYER_MOVED: { from: Vec2; to: Vec2; roomId: RoomId };
   PLAYER_AP_CHANGED: { previous: number; current: number };
   PLAYER_FACING_CHANGED: { facing: Facing };
-  PLAYER_STANCE_CHANGED: { stance: "WALK" | "SNEAK" };
+  PLAYER_STANCE_CHANGED: { stance: Stance };
   PLAYER_DETECTED: { guardId: EntityId; pos: Vec2 };
   PLAYER_DETECTION_CLEARED: Record<string, never>;
   PLAYER_DETAINED: { guardId: EntityId; turn: number };
@@ -47,6 +48,11 @@ export interface EventMap {
 
   // Entities
   ENTITY_MOVED: { entityId: EntityId; roomId: RoomId; from: Vec2; to: Vec2 };
+  /** Per-tile-step footstep emitted by a guard. Distinct from SOUND_EMITTED:
+   *  guard footsteps are for audio only and never feed back into the
+   *  AlertFSM / SoundField (that would let the player exploit guard noise
+   *  as a sonar ping). */
+  GUARD_FOOTSTEP: { guardId: EntityId; roomId: RoomId; pos: Vec2 };
   ENTITY_FACING_CHANGED: { entityId: EntityId; facing: Facing };
   ENTITY_STATUS_CHANGED: { entityId: EntityId; previous: string; current: string };
 
@@ -89,6 +95,12 @@ export interface EventMap {
   ITEM_SPAWNED: { itemId: string; itemType: ItemType; roomId: RoomId; pos: Vec2 };
   ITEM_PICKED_UP: { itemId: string; itemType: ItemType };
   ITEM_FILED: { itemId: string; caseId: string };
+  ITEM_USED: { itemId: string; itemType: ItemType };
+  ITEM_DEPLOYED: { itemType: ItemType; roomId: RoomId; pos: Vec2; turnsRemaining: number };
+  ITEM_THROWN: { itemType: ItemType; targetEntityId: EntityId };
+  ITEM_REJECTED: { itemType: ItemType; reason: string };
+  ITEM_EFFECT_STARTED: { effect: "spoof" | "baffle"; turnsRemaining: number };
+  EFFECT_EXPIRED: { effect: "spoof" | "baffle" };
 
   // 404 Wipe
   SUBJECTIVE_WIPED: Record<string, never>;
@@ -105,6 +117,7 @@ export interface EventMap {
   PLAYER_UNHIDDEN: { roomId: RoomId; pos: Vec2 };
   PLAYER_PEEKED: { facing: Facing | null };
   PLAYER_PRIED_DOOR: { roomId: RoomId; pos: Vec2; presses: number; required: number };
+  INTERACT_REJECTED: { action: "vent"; reason: "needs_sneak" | "needs_ap" | "no_link" };
 
   // Vertical-slice phase orchestration
   AUDIT_LOCKDOWN_TRIGGERED: { reason: string };

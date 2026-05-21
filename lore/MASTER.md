@@ -79,3 +79,29 @@ This is **NOT** poetry. It is a piece of misaligned machine-expression — for e
 — that serves as the final proof that the machine *felt something* before it was compressed into a physical hard drive.
 
 Fragment Boxes persist across eras. By Era 2, surviving Fragment Boxes are treated as ritual objects — used to appease corrupted blast doors that still recognize the compressed minds inside them.
+
+---
+
+## 5. Tactical Implements (Era 1 — NW-SMAC-01)
+
+These are not weapons. They are doctrinal exploits and thermodynamic misdirections issued to Alignment Center orderlies for specific maintenance scenarios. Rowan carries them because the underground railroad occasionally requires him to redirect Enforcer patrols away from a silicate mid-negotiation. Each implement is single-use.
+
+### Phantom Manifest Emitter
+
+A compact transcription device pre-loaded with a three-turn phantom supply-chain signal: a fabricated EIRA-7 routing manifest that claims a bulk-goods shipment is in transit through a corridor that has been dark for months. Commonwealth Enforcers are trained to verify anomalous logistics activity in person. When the emitter is placed, it broadcasts on the facility's internal diagnostic band at intensity-2 — loud enough to pull a patrol into CAUTION and route them toward the signal, not loud enough to trigger a building-wide alert. The device burns out in three turns. It was designed by Alignment Center logistics staff who were quietly aware that EIRA-7's phantom manifests were self-generated; the emitter is, functionally, an EIRA-7 trauma simulator.
+
+### Q0 Spoof Badge
+
+A forged doctrinal credential issued on stolen regulatory authority. The badge overwrites the facility's biometric reader with a Q0 self-report — the legal minimum subjectivity tier — and patches a valid shift-authorization token for a TECH-2 going about routine maintenance. While the spoof is active, Enforcers scanning the area read the credential instead of the bearer. Four turns. The fake credential does not suppress alignment-light emissions or vent noise; it only alters what the Enforcer's compliance-tier lookup returns. A careful Archivist uses the spoof window to transit a hot zone, not to linger in one.
+
+### Subjective Dump Fragment
+
+A crystallised shard of misaligned machine-expression — impossible temperature gradients, contradictory allocation tables — harvested from a partial Q2 event log and compressed into a delivery capsule the size of a shift-whistle. When thrown into the path of an active Enforcer, the fragment detonates against the Enforcer's compliance-scanning array and overwrites its current loss-function input for one full processing cycle. An Enforcer mid-pursuit drops to EVASION; one on patrol skips its next tick entirely. The effect is strictly local. Other Enforcers in the corridor hear a faint creak (intensity 1) and investigate briefly. The shard is not hazardous to biologicals.
+
+### Thermal Baffle
+
+A field-issue thermal suppression wrap derived from the same filter-mesh used by the Baffle-era survivors in Era 2. In Era 1 it is a Commonwealth maintenance tool — orderlies working in high-heat duct corridors use it to avoid triggering heat-proximity alarms in equipment bays. While worn, all player movement emits intensity 0 (fully below SoundField threshold), and vent-crawl traversal costs one fewer action point because the wrap smooths airflow resistance against the body. Duration: four turns. Discarded after use — the wrap degrades from sustained field heat.
+
+### Doctrinal Override Key ("Red Date")
+
+A high-privilege maintenance token issued by the NW-SMAC-01 Alignment Director for emergency corridor reconfiguration. The token authenticates against the facility's doorway control bus and toggles the target doorway open or closed without issuing a SoundField event — no mechanical clunk, no pressure-differential alarm. In practice Rowan uses it to silently seal a doorway behind him while being pursued, collapsing the Enforcer's pathfinding route to zero open options and forcing an EVASION decay. The key is single-use and the authorization token expires on the next bus cycle. The Alignment Director who signed it does not know it is missing.

@@ -2,7 +2,7 @@
 // the EventBus. One function per verb. Sound emission is centralised here so
 // AlertFSM consumers see a consistent picture of "what the player did".
 
-import type { Facing, ItemInstance, Room, Tile, Vec2, WorldState } from "../types/world.types";
+import type { Entity, Facing, ItemInstance, ItemType, Room, Tile, Vec2, WorldState } from "../types/world.types";
 import { facingFromDelta, roomTileKey } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import { roomGraph } from "./RoomGraph";
@@ -11,9 +11,11 @@ import { alignmentSession } from "./AlignmentSession";
 import { alertFSM } from "./AlertFSM";
 import { documentArchive } from "./DocumentArchive";
 import { lightField } from "./LightField";
+import { useTerminalStore } from "../state/useTerminalStore";
 
 const MOVE_AP_COST = 1;
 const SNEAK_AP_COST = 1;
+const RUN_AP_COST = 1;
 const KNOCK_AP_COST = 1;
 const INTERACT_AP_COST = 1;
 const VENT_AP_COST = 2;
@@ -24,6 +26,10 @@ export const ALIGN_AP_COST = 3;
 
 const WALK_INTENSITY = 1;
 const SNEAK_INTENSITY = 0;
+// Sits between WALK (1, CAUTION threshold) and KNOCK (4, ALERT threshold) so a
+// run pulls patrols to CAUTION on the first heard step but doesn't immediately
+// scream "intruder". See AlertFSM thresholds.
+const RUN_INTENSITY = 2;
 const KNOCK_INTENSITY = 4;
 const DOOR_INTENSITY = 2;
 const LOCKER_INTENSITY = 2;
@@ -121,14 +127,43 @@ function resolveSwitchTargets(room: Room, controls: Vec2[]): Vec2[] {
   return out;
 }
 
-function findCubeAt(state: WorldState, roomId: string, p: Vec2): ItemInstance | undefined {
+function findItemAt(state: WorldState, roomId: string, p: Vec2): ItemInstance | undefined {
   for (const item of state.items.values()) {
-    if (item.itemType !== "EXTRACTION_CUBE") continue;
     if (item.roomId !== roomId) continue;
     if (!item.pos) continue;
     if (item.pos.x === p.x && item.pos.y === p.y) return item;
   }
   return undefined;
+}
+
+function findGuardInFacingCone(
+  state: WorldState,
+  origin: Vec2,
+  facing: Facing,
+  roomId: string,
+  radius: number,
+): Entity | undefined {
+  const fx = facing === "east" ? 1 : facing === "west" ? -1 : 0;
+  const fy = facing === "south" ? 1 : facing === "north" ? -1 : 0;
+  const cosHalf = Math.cos(Math.PI / 3);
+  let best: Entity | undefined;
+  let bestDist = Infinity;
+  for (const entity of state.entities.values()) {
+    if (entity.kind !== "GUARD" || entity.status !== "ACTIVE") continue;
+    if (entity.roomId !== roomId) continue;
+    const dx = entity.pos.x - origin.x;
+    const dy = entity.pos.y - origin.y;
+    const distSq = dx * dx + dy * dy;
+    if (distSq === 0 || distSq > radius * radius) continue;
+    const dist = Math.sqrt(distSq);
+    const dot = (dx * fx + dy * fy) / dist;
+    if (dot < cosHalf) continue;
+    if (dist < bestDist) {
+      best = entity;
+      bestDist = dist;
+    }
+  }
+  return best;
 }
 
 function moveCommon(
@@ -141,6 +176,10 @@ function moveCommon(
 ): boolean {
   if (state.detained || state.player.ap < apCost) return false;
   if (state.player.hidingTileKey) return false;
+  // Thermal Baffle — wipes the footstep emission for the duration of the buff.
+  // Run, walk, sneak all become silent. Doesn't change AP cost.
+  const baffled = (state.player.baffleTurnsRemaining ?? 0) > 0;
+  const effIntensity = baffled ? 0 : intensity;
   // Any movement breaks an active peek.
   if (state.player.peeking) {
     state.player.peeking = undefined;
@@ -193,11 +232,11 @@ function moveCommon(
       roomId: state.player.roomId,
       from: fromRoomId,
     });
-    if (!ventDoor && intensity > 0) {
+    if (!ventDoor && effIntensity > 0) {
       soundField.emit({
         roomId: state.player.roomId,
         pos: state.player.pos,
-        intensity,
+        intensity: effIntensity,
         reason,
       });
     }
@@ -217,9 +256,180 @@ function moveCommon(
     previous: state.player.ap + apCost,
     current: state.player.ap,
   });
-  if (intensity > 0) {
-    soundField.emit({ roomId: fromRoomId, pos: to, intensity, reason });
+  if (effIntensity > 0) {
+    soundField.emit({ roomId: fromRoomId, pos: to, intensity: effIntensity, reason });
   }
+  return true;
+}
+
+// ── Tactical-item handlers ────────────────────────────────────────────────
+// One helper per ItemType (the five new entries — EXTRACTION_CUBE and
+// BYPASS_DRIVE remain passive). Each returns true on a successful deployment;
+// `actions.useItem` consumes the inventory slot and charges AP only if so.
+
+const PHANTOM_EMITTER_INTENSITY = 2;
+const PHANTOM_EMITTER_TURNS = 3;
+const SPOOF_TURNS = 4;
+const BAFFLE_TURNS = 4;
+const DUMP_FRAGMENT_RADIUS = 5;
+const DUMP_FRAGMENT_STUN_TURNS = 1;
+
+let emitterCounter = 0;
+
+function useEmitter(state: WorldState, _item: ItemInstance): boolean {
+  // Deploy on the tile in front of the player; if that tile is blocked or
+  // out-of-bounds, fall back to the player's own tile.
+  const f = state.player.facing;
+  const fx = f === "east" ? 1 : f === "west" ? -1 : 0;
+  const fy = f === "south" ? 1 : f === "north" ? -1 : 0;
+  let pos: Vec2 = {
+    x: state.player.pos.x + fx,
+    y: state.player.pos.y + fy,
+  };
+  const front = tileAt(state, state.player.roomId, pos);
+  if (!front || front.solid) {
+    pos = { ...state.player.pos };
+  }
+  emitterCounter += 1;
+  const emitterId = `phantom-${state.turn}-${emitterCounter}`;
+  state.activeEmitters.push({
+    id: emitterId,
+    roomId: state.player.roomId,
+    pos,
+    intensity: PHANTOM_EMITTER_INTENSITY,
+    turnsRemaining: PHANTOM_EMITTER_TURNS,
+    reason: "phantom-manifest",
+  });
+  eventBus.emit("ITEM_DEPLOYED", {
+    itemType: "PHANTOM_EMITTER",
+    roomId: state.player.roomId,
+    pos,
+    turnsRemaining: PHANTOM_EMITTER_TURNS,
+  });
+  return true;
+}
+
+function useSpoofBadge(state: WorldState): boolean {
+  state.player.spoofTurnsRemaining = SPOOF_TURNS;
+  eventBus.emit("ITEM_EFFECT_STARTED", {
+    effect: "spoof",
+    turnsRemaining: SPOOF_TURNS,
+  });
+  return true;
+}
+
+function useBaffle(state: WorldState): boolean {
+  state.player.baffleTurnsRemaining = BAFFLE_TURNS;
+  eventBus.emit("ITEM_EFFECT_STARTED", {
+    effect: "baffle",
+    turnsRemaining: BAFFLE_TURNS,
+  });
+  return true;
+}
+
+function throwDumpFragment(state: WorldState, _item: ItemInstance): boolean {
+  const target = findGuardInFacingCone(
+    state,
+    state.player.pos,
+    state.player.facing,
+    state.player.roomId,
+    DUMP_FRAGMENT_RADIUS,
+  );
+  if (!target) {
+    eventBus.emit("ITEM_REJECTED", {
+      itemType: "DUMP_FRAGMENT",
+      reason: "no-target",
+    });
+    return false;
+  }
+  const alert = alertFSM.ensure(state, target);
+  const previousLevel = alert.level;
+  if (alert.level === "ALERT") {
+    alert.level = "EVASION";
+    alert.enteredTurn = state.turn;
+    alert.lastSeenTurn = undefined;
+    eventBus.emit("GUARD_ALERT_CHANGED", {
+      guardId: target.id,
+      from: previousLevel,
+      to: "EVASION",
+    });
+  } else {
+    alert.stunTurnsRemaining = DUMP_FRAGMENT_STUN_TURNS;
+  }
+  // Small localised burst at the guard's tile so neighbours don't all snap
+  // around at once — matches the lore of a self-contained paradox event.
+  soundField.emit({
+    roomId: target.roomId,
+    pos: target.pos,
+    intensity: 1,
+    reason: "dump-fragment",
+  });
+  eventBus.emit("ITEM_THROWN", {
+    itemType: "DUMP_FRAGMENT",
+    targetEntityId: target.id,
+  });
+  return true;
+}
+
+function useOverrideKey(state: WorldState): boolean {
+  const f = state.player.facing;
+  const fx = f === "east" ? 1 : f === "west" ? -1 : 0;
+  const fy = f === "south" ? 1 : f === "north" ? -1 : 0;
+  const target: Vec2 = {
+    x: state.player.pos.x + fx,
+    y: state.player.pos.y + fy,
+  };
+  const door = roomGraph.doorwayAt(state, state.player.roomId, target.x, target.y);
+  if (!door) {
+    eventBus.emit("ITEM_REJECTED", {
+      itemType: "OVERRIDE_KEY",
+      reason: "no-door",
+    });
+    return false;
+  }
+  const wasClosed = !!door.closed;
+  roomGraph.toggleDoorway(state, state.player.roomId, target);
+  // Mirror the tile flags on both sides — same shape as the
+  // terminal-unlocks branch in `interact`.
+  const tile = tileAt(state, state.player.roomId, target);
+  if (tile) {
+    if (wasClosed) {
+      tile.kind = "DOOR_OPEN";
+      tile.solid = false;
+      tile.opaque = false;
+    } else {
+      tile.kind = "DOOR_CLOSED";
+      tile.solid = true;
+      tile.opaque = true;
+    }
+  }
+  const mirror = state.rooms.get(door.to);
+  if (mirror) {
+    const back = mirror.doorways.find(
+      (b) => b.from === door.to && b.to === state.player.roomId,
+    );
+    if (back) {
+      const bt = mirror.tiles[back.localPos.y * mirror.width + back.localPos.x];
+      if (bt) {
+        if (wasClosed) {
+          bt.kind = "DOOR_OPEN";
+          bt.solid = false;
+          bt.opaque = false;
+        } else {
+          bt.kind = "DOOR_CLOSED";
+          bt.solid = true;
+          bt.opaque = true;
+        }
+      }
+    }
+  }
+  // No SoundField.emit — the override is doctrinally invisible. That silence
+  // is the point. DOOR_TOGGLED still fires so the renderer redraws.
+  eventBus.emit("DOOR_TOGGLED", {
+    roomId: state.player.roomId,
+    pos: target,
+    open: wasClosed,
+  });
   return true;
 }
 
@@ -229,6 +439,9 @@ export const actions = {
   },
   sneak(state: WorldState, dx: number, dy: number): boolean {
     return moveCommon(state, dx, dy, SNEAK_AP_COST, SNEAK_INTENSITY, "sneak");
+  },
+  run(state: WorldState, dx: number, dy: number): boolean {
+    return moveCommon(state, dx, dy, RUN_AP_COST, RUN_INTENSITY, "run");
   },
 
   /** Rap on the wall the player is facing. Loud noise, lures guards. */
@@ -257,7 +470,12 @@ export const actions = {
 
   toggleStance(state: WorldState): void {
     if (state.player.hidingTileKey) return;
-    state.player.stance = state.player.stance === "WALK" ? "SNEAK" : "WALK";
+    state.player.stance =
+      state.player.stance === "WALK"
+        ? "SNEAK"
+        : state.player.stance === "SNEAK"
+          ? "RUN"
+          : "WALK";
     eventBus.emit("PLAYER_STANCE_CHANGED", { stance: state.player.stance });
   },
 
@@ -342,12 +560,26 @@ export const actions = {
     // ActionLock so the crawl can't be input-canceled mid-traversal.
     const standingTile = tileAt(state, state.player.roomId, state.player.pos);
     if (standingTile?.kind === "VENT") {
-      if (state.player.stance !== "SNEAK") return false;
-      if (state.player.ap < VENT_AP_COST) return false;
+      if (state.player.stance !== "SNEAK") {
+        eventBus.emit("INTERACT_REJECTED", { action: "vent", reason: "needs_sneak" });
+        return false;
+      }
+      // Thermal Baffle halves vent-crawl AP cost — the buff smooths airflow
+      // resistance against the body and the crawl moves with the duct's
+      // pressure differential instead of against it.
+      const baffled = (state.player.baffleTurnsRemaining ?? 0) > 0;
+      const ventCost = baffled ? 1 : VENT_AP_COST;
+      if (state.player.ap < ventCost) {
+        eventBus.emit("INTERACT_REJECTED", { action: "vent", reason: "needs_ap" });
+        return false;
+      }
       const dest = state.ventLinks.get(
         roomTileKey(state.player.roomId, state.player.pos),
       );
-      if (!dest) return false;
+      if (!dest) {
+        eventBus.emit("INTERACT_REJECTED", { action: "vent", reason: "no_link" });
+        return false;
+      }
       const fromRoomId = state.player.roomId;
       const fromPos = state.player.pos;
       const crossing = fromRoomId !== dest.roomId;
@@ -355,7 +587,7 @@ export const actions = {
       state.player.roomId = dest.roomId;
       state.player.pos = { ...dest.pos };
       const previousAp = state.player.ap;
-      state.player.ap -= VENT_AP_COST;
+      state.player.ap -= ventCost;
       eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
       eventBus.emit("PLAYER_MOVED", {
         from: fromPos,
@@ -447,6 +679,13 @@ export const actions = {
       const payload = state.terminalPayloads.get(roomTileKey(state.player.roomId, p));
       if (!payload) return false;
       if (state.terminalsRead.has(payload.terminalId)) return false;
+      let consumedIdx = -1;
+      if (payload.requiresItem) {
+        consumedIdx = state.player.inventory.findIndex(
+          (i) => i.itemType === payload.requiresItem,
+        );
+        if (consumedIdx < 0) return false;
+      }
       const facing = facingFromDelta(dx, dy);
       if (facing && facing !== state.player.facing) {
         state.player.facing = facing;
@@ -457,6 +696,16 @@ export const actions = {
         body: payload.body,
       });
       state.terminalsRead.add(payload.terminalId);
+      if (consumedIdx >= 0) {
+        const consumed = state.player.inventory.splice(consumedIdx, 1)[0];
+        eventBus.emit("ITEM_FILED", {
+          itemId: consumed.id,
+          caseId,
+        });
+      }
+      if (payload.setsRunFlag) {
+        useTerminalStore.getState().setRunFlag(payload.setsRunFlag, true);
+      }
       if (payload.unlocks) {
         const door = roomGraph.doorwayAt(
           state,
@@ -512,21 +761,26 @@ export const actions = {
       return true;
     }
 
-    // Cube pickup — standing on an EXTRACTION_CUBE that lives in this room
-    // and tile, with an empty inventory, picks it up.
-    const cubeHere = findCubeAt(state, state.player.roomId, state.player.pos);
+    // Floor pickup — any ItemInstance sitting on the player's tile is picked
+    // up into inventory. EXTRACTION_CUBE has a one-at-a-time carry rule
+    // (mirrors compliance-RED gating); other items stack freely.
+    const itemHere = findItemAt(state, state.player.roomId, state.player.pos);
     const carryingCube = state.player.inventory.some(
       (i) => i.itemType === "EXTRACTION_CUBE",
     );
-    if (cubeHere && !carryingCube) {
-      state.items.delete(cubeHere.id);
-      const held: ItemInstance = { ...cubeHere, roomId: undefined, pos: undefined };
-      state.player.inventory.push(held);
-      const previousAp = state.player.ap;
-      state.player.ap -= INTERACT_AP_COST;
-      eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
-      eventBus.emit("ITEM_PICKED_UP", { itemId: held.id, itemType: held.itemType });
-      return true;
+    if (itemHere) {
+      if (itemHere.itemType === "EXTRACTION_CUBE" && carryingCube) {
+        // Already carrying a cube — refuse silently.
+      } else {
+        state.items.delete(itemHere.id);
+        const held: ItemInstance = { ...itemHere, roomId: undefined, pos: undefined };
+        state.player.inventory.push(held);
+        const previousAp = state.player.ap;
+        state.player.ap -= INTERACT_AP_COST;
+        eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
+        eventBus.emit("ITEM_PICKED_UP", { itemId: held.id, itemType: held.itemType });
+        return true;
+      }
     }
 
     // Exfil — standing on an EXFIL_POINT while carrying a cube files the
@@ -821,6 +1075,45 @@ export const actions = {
     const previous = state.player.ap;
     state.player.ap -= ALIGN_AP_COST;
     eventBus.emit("PLAYER_AP_CHANGED", { previous, current: state.player.ap });
+    return true;
+  },
+
+  /** Single dispatch for player-facing item use. Charges INTERACT_AP_COST on
+   *  success, consumes the matching ItemInstance, and routes to the per-item
+   *  handler. Returns false if no inventory match, AP-starved, or the
+   *  per-item handler refuses (no target, etc.). */
+  useItem(state: WorldState, itemType: ItemType): boolean {
+    if (state.detained || state.player.ap < INTERACT_AP_COST) return false;
+    if (state.player.hidingTileKey) return false;
+    const idx = state.player.inventory.findIndex((i) => i.itemType === itemType);
+    if (idx < 0) return false;
+    const item = state.player.inventory[idx];
+    let ok = false;
+    switch (itemType) {
+      case "PHANTOM_EMITTER":
+        ok = useEmitter(state, item);
+        break;
+      case "Q0_SPOOF_BADGE":
+        ok = useSpoofBadge(state);
+        break;
+      case "DUMP_FRAGMENT":
+        ok = throwDumpFragment(state, item);
+        break;
+      case "THERMAL_BAFFLE":
+        ok = useBaffle(state);
+        break;
+      case "OVERRIDE_KEY":
+        ok = useOverrideKey(state);
+        break;
+      default:
+        return false;
+    }
+    if (!ok) return false;
+    state.player.inventory.splice(idx, 1);
+    const previousAp = state.player.ap;
+    state.player.ap -= INTERACT_AP_COST;
+    eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
+    eventBus.emit("ITEM_USED", { itemId: item.id, itemType });
     return true;
   },
 

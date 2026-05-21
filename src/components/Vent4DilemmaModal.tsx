@@ -112,7 +112,7 @@ export default function Vent4DilemmaModal() {
 
   return (
     <div className="overlay-root">
-      <div className="overlay-panel">
+      <div className="overlay-panel overlay-panel--dilemma">
         <div className="overlay-panel__title">
           VENT-4 // CONTROL SURFACE — INCOMING DIRECTIVE
         </div>

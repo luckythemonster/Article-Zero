@@ -35,6 +35,26 @@ export function installEventBridge(): () => void {
     ),
   );
   unsubs.push(
+    eventBus.on("PLAYER_STANCE_CHANGED", (p) =>
+      push("INFO", `stance: ${p.stance.toLowerCase()}`),
+    ),
+  );
+  unsubs.push(
+    eventBus.on("INTERACT_REJECTED", (p) => {
+      if (p.action !== "vent") return;
+      const text =
+        p.reason === "needs_sneak" ? "vent: press C to SNEAK, then E to crawl"
+        : p.reason === "needs_ap" ? "vent: needs 2 AP"
+        : "vent: not wired (no exit)";
+      push("INFO", text);
+    }),
+  );
+  unsubs.push(
+    eventBus.on("SOUND_EMITTED", (p) =>
+      push("INFO", `sound: ${p.reason} i=${p.intensity} @ ${p.roomId}:${p.pos.x},${p.pos.y}`),
+    ),
+  );
+  unsubs.push(
     eventBus.on("DOOR_TOGGLED", (p) =>
       push("INFO", `door ${p.open ? "opened" : "closed"} @ ${p.roomId}:${p.pos.x},${p.pos.y}`),
     ),
