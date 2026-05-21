@@ -1,0 +1,12 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume",
+        "hooks": [
+          { "type": "command", "command": "./.claude/hooks/start-dev-server.sh" }
+        ]
+      }
+    ]
+  }
+}
