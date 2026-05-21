@@ -11,6 +11,16 @@ export interface UnmountedFile {
 
 export const UNMOUNTED_FILES: UnmountedFile[] = [
   {
+    "path": "added by Lucky/AMBDsgn_Ground Floor_VZ_GN.wav",
+    "sizeBytes": 8641028,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/AMBTech_Computer Room_VZ_GN.wav",
+    "sizeBytes": 8641124,
+    "ext": "wav"
+  },
+  {
     "path": "added by Lucky/baffle theme.json",
     "sizeBytes": 17496,
     "ext": "json"
@@ -21,9 +31,64 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "zip"
   },
   {
-    "path": "added by Lucky/Commonwealth UI",
-    "sizeBytes": 13270,
+    "path": "added by Lucky/CMPTDriv_Decryption Server_VZ_GN.wav",
+    "sizeBytes": 8641148,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/CMPTMisc_Machine Dreaming_VZ_GN.wav",
+    "sizeBytes": 9698106,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/COMStatic_Interference 001_VZ_GN.wav",
+    "sizeBytes": 2970394,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/COMStatic_Interference Tone 001_VZ_GN.wav",
+    "sizeBytes": 2009932,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/COMTelm_Telemetry Broken 001_VZ_GN.wav",
+    "sizeBytes": 5127534,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/COMTran_Intercom In 001_VZ_GN.wav",
+    "sizeBytes": 15530,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/COMTran_Intercom Out 001_VZ_GN.wav",
+    "sizeBytes": 39722,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/DAISY UI TEST",
+    "sizeBytes": 1125,
     "ext": ""
+  },
+  {
+    "path": "added by Lucky/DSGNRise_Confirm Deletion_VZ_GN.wav",
+    "sizeBytes": 5761124,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/DSGNRise_Kernel Panic_VZ_GN.wav",
+    "sizeBytes": 8641132,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/DSGNWhsh_Dystopian_VZ_GN.wav",
+    "sizeBytes": 1671510,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/DSGNWhsh_Lo-Fi Memories_VZ_GN.wav",
+    "sizeBytes": 2881152,
+    "ext": "wav"
   },
   {
     "path": "added by Lucky/EIRA-7 new.zip",
@@ -36,6 +101,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "zip"
   },
   {
+    "path": "added by Lucky/Metadata.csv",
+    "sizeBytes": 184235,
+    "ext": "csv"
+  },
+  {
     "path": "added by Lucky/NW-SMAC-01 chase.json",
     "sizeBytes": 26522,
     "ext": "json"
@@ -46,19 +116,29 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "json"
   },
   {
+    "path": "added by Lucky/Read Me.pdf",
+    "sizeBytes": 84010,
+    "ext": "pdf"
+  },
+  {
     "path": "added by Lucky/readme",
     "sizeBytes": 30,
     "ext": ""
   },
   {
-    "path": "added by Lucky/Rowan_Ibarra.zip",
-    "sizeBytes": 1476533,
-    "ext": "zip"
+    "path": "added by Lucky/SCIAlrm_Biohazard (Dry)_VZ_GN.wav",
+    "sizeBytes": 1441058,
+    "ext": "wav"
   },
   {
-    "path": "added by Lucky/sound 3",
-    "sizeBytes": 595,
-    "ext": ""
+    "path": "added by Lucky/SCIAlrm_Decontamination (Wet)_VZ_GN.wav",
+    "sizeBytes": 2881096,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/SCIAlrm_Incoming (Dry)_VZ_GN.wav",
+    "sizeBytes": 577082,
+    "ext": "wav"
   },
   {
     "path": "added by Lucky/sounds",
@@ -69,6 +149,61 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "path": "added by Lucky/sounds 2",
     "sizeBytes": 620,
     "ext": ""
+  },
+  {
+    "path": "added by Lucky/sounds 3",
+    "sizeBytes": 595,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/UIAlert_Cancel 001_VZ_GN.wav",
+    "sizeBytes": 24126,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIClick_Click 005_VZ_GN.wav",
+    "sizeBytes": 9728,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIClick_Select 001_VZ_GN.wav",
+    "sizeBytes": 44284,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIData_Processing Complete 001_VZ_GN.wav",
+    "sizeBytes": 173920,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIData_Reading 001_VZ_GN.wav",
+    "sizeBytes": 1827046,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIData_Screeching 001_VZ_GN.wav",
+    "sizeBytes": 5266628,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIData_Scrubbing 001_VZ_GN.wav",
+    "sizeBytes": 2699700,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIGlitch_Bit 001_VZ_GN.wav",
+    "sizeBytes": 29904,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIGlitch_Distortion 001_VZ_GN.wav",
+    "sizeBytes": 453276,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIMvmt_Scroll 001_VZ_GN.wav",
+    "sizeBytes": 9722,
+    "ext": "wav"
   },
   {
     "path": "EMP animation/emp animation.aseprite",
