@@ -23,7 +23,11 @@ const ATLAS_PNG = path.join(ROOT, "public/assets/sprite_pack/chars-art.png");
 const ATLAS_JSON = path.join(ROOT, "public/assets/sprite_pack/chars-art.json");
 const REGISTRY_TS = path.join(ROOT, "src/data/char-anims.generated.ts");
 
-const ATLAS_COLUMNS = 8;
+// Hard cap per atlas side. WebGL's gl.MAX_TEXTURE_SIZE is commonly 8192 on
+// iPad/iPhone (older models) and 16384 on Pro/desktop. Staying at/under 8192
+// keeps the atlas usable everywhere we ship; oversize textures get rejected or
+// silently clamped to 1×1 black, which manifests as invisible sprites.
+const MAX_ATLAS_DIM = 8192;
 const TEXTURE_KEY = "chars-art";
 
 const DEFAULT_FRAME_RATES = {
@@ -192,10 +196,25 @@ async function buildAtlas(frames) {
     if (f.height > cellH) cellH = f.height;
   }
 
-  const cols = Math.min(ATLAS_COLUMNS, frames.length);
+  // Choose column count so the resulting atlas is roughly square AND both
+  // dimensions stay ≤ MAX_ATLAS_DIM. Roughly-square packing is also kinder to
+  // GPU texture caches than tall-and-skinny.
+  const minColsForHeight = Math.ceil((frames.length * cellH) / MAX_ATLAS_DIM);
+  const squareCols = Math.max(
+    1,
+    Math.ceil(Math.sqrt((frames.length * cellH) / cellW)),
+  );
+  const cols = Math.max(minColsForHeight, squareCols);
   const rows = Math.ceil(frames.length / cols);
   const atlasW = cols * cellW;
   const atlasH = rows * cellH;
+  if (atlasW > MAX_ATLAS_DIM || atlasH > MAX_ATLAS_DIM) {
+    throw new Error(
+      `Atlas ${atlasW}×${atlasH} exceeds MAX_ATLAS_DIM=${MAX_ATLAS_DIM}. ` +
+        `Frame count=${frames.length}, cell=${cellW}×${cellH}. ` +
+        "Reduce per-character frame size or split into multiple atlases.",
+    );
+  }
 
   const atlas = new Jimp({ width: atlasW, height: atlasH, color: 0x00000000 });
   const frameMap = {};
