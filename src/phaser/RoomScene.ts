@@ -53,8 +53,7 @@ export class RoomScene extends Phaser.Scene {
   private coneLayer!: Phaser.GameObjects.Graphics;
   private telegraphLayer!: Phaser.GameObjects.Graphics;
   private overlayLayer!: Phaser.GameObjects.Graphics;
-  private playerSprite!: Phaser.GameObjects.Rectangle;
-  private playerFacingMark!: Phaser.GameObjects.Triangle;
+  private playerSprite!: Phaser.GameObjects.Sprite;
   private heldItemSprite!: Phaser.GameObjects.Image;
   private entityRects = new Map<string, Phaser.GameObjects.Rectangle>();
   private entityFacingMarks = new Map<string, Phaser.GameObjects.Triangle>();
@@ -97,15 +96,15 @@ export class RoomScene extends Phaser.Scene {
     // glued to the camera.
     this.overlayLayer.setScrollFactor(0);
 
-    this.playerSprite = this.add.rectangle(0, 0, TILE_PX - 12, TILE_PX - 12, 0x6ad0a4);
-    this.playerSprite.setStrokeStyle(2, 0xe6f0f2);
+    this.playerSprite = this.add.sprite(0, 0, "chars-art", "rowanibarra/stand/south/01");
+    this.playerSprite.setOrigin(0.5);
+    // Atlas frames are 64×64; halve them to a 32×32 footprint matching TILE_PX.
+    this.playerSprite.setScale(0.5);
     this.playerSprite.setDepth(5);
     if (worldEngine.hasState()) {
       const pos = worldEngine.getState().player.pos;
       this.playerSprite.setPosition(pos.x * TILE_PX + TILE_PX / 2, pos.y * TILE_PX + TILE_PX / 2);
     }
-    this.playerFacingMark = this.add.triangle(0, 0, 0, 0, -6, 8, 6, 8, 0xe6f0f2);
-    this.playerFacingMark.setDepth(6);
     // Held-item overlay. Texture is swapped in redraw() per facing; hidden
     // when inventory is empty of renderable items.
     this.heldItemSprite = this.add.image(0, 0, "__DEFAULT");
@@ -237,11 +236,13 @@ export class RoomScene extends Phaser.Scene {
       }
       // Player sprite rect.
       this.debugLayer.lineStyle(1, 0x6ad0a4, 0.9);
+      const pw = this.playerSprite.displayWidth;
+      const ph = this.playerSprite.displayHeight;
       this.debugLayer.strokeRect(
-        this.playerSprite.x - (TILE_PX - 12) / 2,
-        this.playerSprite.y - (TILE_PX - 12) / 2,
-        TILE_PX - 12,
-        TILE_PX - 12,
+        this.playerSprite.x - pw / 2,
+        this.playerSprite.y - ph / 2,
+        pw,
+        ph,
       );
     }
 
@@ -415,14 +416,36 @@ export class RoomScene extends Phaser.Scene {
     const playerCx = state.player.pos.x * TILE_PX + TILE_PX / 2;
     const playerCy = state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP;
     this.playerSprite.setPosition(playerCx, playerCy);
-    this.playerSprite.setFillStyle(state.player.hidingTileKey ? 0x4a5a52 : 0x6ad0a4);
-    this.placeFacingMark(
-      this.playerFacingMark,
-      playerCx,
-      playerCy,
-      state.player.facing,
-    );
-    this.playerFacingMark.setVisible(!state.player.hidingTileKey);
+    this.playerSprite.setVisible(!state.player.hidingTileKey);
+    if (state.player.hidingTileKey) {
+      this.playerSprite.setTint(0x6a6a6a);
+    } else if (state.player.peeking) {
+      // Peek indicator: gold tint, same channel previously driven by the
+      // discarded facing triangle.
+      this.playerSprite.setTint(0xebd14a);
+    } else {
+      this.playerSprite.clearTint();
+    }
+
+    // Pick the right anim from facing + stance + flashlight + whether the
+    // player moved this turn. Flashlight wins over crouched (no
+    // flashlight_crouched_* art exists); RUN only has a base-state runcycle.
+    const moving = state.player.lastMoveTurn === state.turn;
+    const dir = state.player.facing;
+    const prefix =
+      state.player.flashlightOn ? "flashlight_" :
+        state.player.stance === "SNEAK" ? "crouched_" :
+          "";
+    const motion = moving
+      ? (state.player.stance === "RUN" && !state.player.flashlightOn ? "runcycle" : "walkcycle")
+      : "stand";
+    const animKey = `rowanibarra_${prefix}${motion}_${dir}`;
+    if (
+      this.anims.exists(animKey) &&
+      this.playerSprite.anims.currentAnim?.key !== animKey
+    ) {
+      this.playerSprite.play(animKey);
+    }
 
     // Held-item: bypass_drive renders above the player when in inventory.
     const holdsBypass = state.player.inventory.some(
@@ -432,7 +455,9 @@ export class RoomScene extends Phaser.Scene {
       const texKey = `bypass_drive_${state.player.facing}`;
       if (this.textures.exists(texKey)) {
         this.heldItemSprite.setTexture(texKey);
-        this.heldItemSprite.setPosition(playerCx, playerCy - 10);
+        // Sprite is 32 px tall on-screen (origin centred); sit just above
+        // its head.
+        this.heldItemSprite.setPosition(playerCx, playerCy - 18);
         this.heldItemSprite.setScale(0.5);
         this.heldItemSprite.setVisible(true);
       } else {
@@ -440,12 +465,6 @@ export class RoomScene extends Phaser.Scene {
       }
     } else {
       this.heldItemSprite.setVisible(false);
-    }
-    // Peek indicator: tint the facing mark gold and pulse it.
-    if (state.player.peeking) {
-      this.playerFacingMark.setFillStyle(0xebd14a);
-    } else {
-      this.playerFacingMark.setFillStyle(0xe6f0f2);
     }
 
     // Audit lockdown failure visual — keep a faint red wash so the player
