@@ -1,4 +1,4 @@
-check later (forgot)
+sad silicate
 
 {
   "oldParams": true,
@@ -28,4 +28,36 @@ check later (forgot)
   "sound_vol": 1,
   "sample_rate": 44100,
   "sample_size": 16
+}
+
+Jammed door
+{
+  "oldParams": true,
+  "wave_type": 0,
+  "p_env_attack": -0.0916752175376071,
+  "p_env_sustain": 0.07421707018457174,
+  "p_env_punch": -0.057077557533229246,
+  "p_env_decay": 0.14405324519286422,
+  "p_base_freq": 0.25984613002207985,
+  "p_freq_limit": 0,
+  "p_freq_ramp": -0.5078740003947442,
+  "p_freq_dramp": -0.06753206973702772,
+  "p_vib_strength": 0,
+  "p_vib_speed": 0,
+  "p_arp_mod": -0.11832717706369641,
+  "p_arp_speed": -0.025378873090229903,
+  "p_duty": 0.367,
+  "p_duty_ramp": -1,
+  "p_repeat_speed": 0.215,
+  "p_pha_offset": 0.361,
+  "p_pha_ramp": 0.495,
+  "p_lpf_freq": 0.357,
+  "p_lpf_ramp": -0.11339484611927408,
+  "p_lpf_resonance": 0.05183229972065745,
+  "p_hpf_freq": 0.234,
+  "p_hpf_ramp": 0.704,
+  "sound_vol": 1,
+  "sample_rate": 44100,
+  "sample_size": 16,
+  "p_vib_delay": null
 }
