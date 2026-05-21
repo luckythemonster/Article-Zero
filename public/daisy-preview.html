@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en" data-theme="Article Zero">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Article Zero — daisyUI theme preview</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+      @plugin "daisyui";
+
+      @plugin "daisyui/theme" {
+        name: "Article Zero";
+        default: true;
+        prefersdark: true;
+        color-scheme: "dark";
+        --color-base-100: oklch(27% 0.006 286.033);
+        --color-base-200: oklch(27% 0.006 286.033);
+        --color-base-300: oklch(27% 0.006 286.033);
+        --color-base-content: oklch(96% 0.001 286.375);
+        --color-primary: oklch(27% 0.006 286.033);
+        --color-primary-content: oklch(96% 0.001 286.375);
+        --color-secondary: oklch(27% 0.006 286.033);
+        --color-secondary-content: oklch(75% 0.183 55.934);
+        --color-accent: oklch(27% 0.006 286.033);
+        --color-accent-content: rgb(0 255 0);
+        --color-neutral: oklch(0% 0 0);
+        --color-neutral-content: oklch(70% 0.015 286.067);
+        --color-info: oklch(37% 0.146 265.522);
+        --color-info-content: oklch(87% 0.006 286.286);
+        --color-success: rgb(0 255 0);
+        --color-success-content: oklch(44% 0.017 285.786);
+        --color-warning: oklch(100% 0.370 110.353);
+        --color-warning-content: oklch(55% 0.016 285.938);
+        --color-error: oklch(57% 0.245 27.325);
+        --color-error-content: oklch(96% 0.001 286.375);
+        --radius-selector: 0rem;
+        --radius-field: 0rem;
+        --radius-box: 0rem;
+        --size-selector: 0.1875rem;
+        --size-field: 0.1875rem;
+        --border: 0.5px;
+        --depth: 0;
+        --noise: 0;
+      }
+    </style>
+  </head>
+  <body class="bg-base-100 text-base-content min-h-screen p-8">
+    <div class="max-w-5xl mx-auto space-y-10">
+      <header class="space-y-1">
+        <h1 class="text-2xl font-bold">Article Zero — daisyUI theme preview</h1>
+        <p class="text-sm opacity-70">
+          Source: <code>unmounted assets/added by Lucky/GUI</code> · disposable page, delete <code>public/daisy-preview.html</code> when done.
+        </p>
+      </header>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold border-b border-base-content/20 pb-1">Color tokens</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+          <div class="bg-base-100 text-base-content p-4 border border-base-content/20">base-100 / base-content</div>
+          <div class="bg-base-200 text-base-content p-4 border border-base-content/20">base-200 / base-content</div>
+          <div class="bg-base-300 text-base-content p-4 border border-base-content/20">base-300 / base-content</div>
+          <div class="bg-neutral text-neutral-content p-4">neutral / neutral-content</div>
+          <div class="bg-primary text-primary-content p-4 border border-base-content/20">primary / primary-content</div>
+          <div class="bg-secondary text-secondary-content p-4 border border-base-content/20">secondary / secondary-content</div>
+          <div class="bg-accent text-accent-content p-4 border border-base-content/20">accent / accent-content</div>
+          <div class="bg-info text-info-content p-4">info / info-content</div>
+          <div class="bg-success text-success-content p-4">success / success-content</div>
+          <div class="bg-warning text-warning-content p-4">warning / warning-content</div>
+          <div class="bg-error text-error-content p-4">error / error-content</div>
+        </div>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold border-b border-base-content/20 pb-1">Buttons</h2>
+        <div class="flex flex-wrap gap-2">
+          <button class="btn">Default</button>
+          <button class="btn btn-primary">Primary</button>
+          <button class="btn btn-secondary">Secondary</button>
+          <button class="btn btn-accent">Accent</button>
+          <button class="btn btn-neutral">Neutral</button>
+          <button class="btn btn-info">Info</button>
+          <button class="btn btn-success">Success</button>
+          <button class="btn btn-warning">Warning</button>
+          <button class="btn btn-error">Error</button>
+          <button class="btn btn-outline btn-primary">Outline primary</button>
+          <button class="btn btn-ghost">Ghost</button>
+        </div>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold border-b border-base-content/20 pb-1">Card · input · alert</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="card bg-base-200 border border-base-content/20">
+            <div class="card-body">
+              <h3 class="card-title">Signal acquired</h3>
+              <p class="text-sm opacity-80">
+                Incoming transmission decoded. Confidence 0.74. Source unknown.
+              </p>
+              <div class="card-actions justify-end">
+                <button class="btn btn-primary btn-sm">Acknowledge</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <input type="text" placeholder="Enter callsign…" class="input input-bordered w-full" />
+            <div class="alert alert-warning">
+              <span>Warning: kernel panic imminent.</span>
+            </div>
+            <div class="alert alert-error">
+              <span>Error: connection severed at hop 4.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="space-y-3">
+        <h2 class="text-lg font-semibold border-b border-base-content/20 pb-1">Modal</h2>
+        <button class="btn btn-primary" onclick="document.getElementById('preview_modal').showModal()">
+          Open modal
+        </button>
+        <dialog id="preview_modal" class="modal">
+          <div class="modal-box border border-base-content/20">
+            <h3 class="text-lg font-bold">Confirm deletion</h3>
+            <p class="py-4 text-sm opacity-80">
+              This action cannot be undone. The fragment will be lost.
+            </p>
+            <div class="modal-action">
+              <form method="dialog" class="flex gap-2">
+                <button class="btn">Cancel</button>
+                <button class="btn btn-error">Delete</button>
+              </form>
+            </div>
+          </div>
+          <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+          </form>
+        </dialog>
+      </section>
+    </div>
+  </body>
+</html>
