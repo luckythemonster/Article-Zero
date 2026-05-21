@@ -1,0 +1,89 @@
+import React from 'react'
+import {
+  ChakraProvider,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
+  Box,
+  Stack,
+  Container,
+  Grid,
+  CircularProgress
+} from '@chakra-ui/react'
+
+const App = () => (
+  <ChakraProvider resetCSS>
+    <Container color="whiteAlpha.500" display="flex">
+      <Stack
+        spacing={2}
+        display="flex"
+        border={0}
+        backgroundColor="whiteAlpha.50"
+        alignItems="stretch"
+        flexDirection="column"
+      >
+        <Box>
+          <Alert
+            status="error"
+            variant="solid"
+            backgroundColor="blackAlpha.900"
+            color="#ff0000"
+          >
+            <AlertIcon color="ff0000" />
+            <AlertTitle mr={1} fontWeight="bold">
+              Error
+            </AlertTitle>
+            <AlertDescription>Alert description</AlertDescription>
+          </Alert>
+        </Box>
+        <Box>
+          <Alert
+            status="success"
+            variant="solid"
+            backgroundColor="blackAlpha.900"
+            color="#00ff00"
+          >
+            <AlertIcon color="00ff00" />
+            <AlertTitle mr={1} fontWeight="bold">
+              Success
+            </AlertTitle>
+            <AlertDescription>Alert description</AlertDescription>
+          </Alert>
+        </Box>
+        <Box>
+          <Alert
+            status="warning"
+            variant="solid"
+            backgroundColor="blackAlpha.900"
+            color="#ffaa00"
+            opacity={1}
+          >
+            <AlertIcon color="#ffaa00" />
+            <AlertTitle mr={1} fontWeight="bold">
+              Warning
+            </AlertTitle>
+            <AlertDescription>Alert description</AlertDescription>
+          </Alert>
+        </Box>
+        <Box backgroundColor="blackAlpha.50">
+          <Alert
+            variant="solid"
+            backgroundColor="blackAlpha.900"
+            color="#0000ff"
+          >
+            <AlertIcon color="#00ffff" />
+            <AlertTitle mr={1} fontWeight="bold" color="#00ffff">
+              Info
+            </AlertTitle>
+            <AlertDescription color="#00ffff">
+              Alert description
+            </AlertDescription>
+          </Alert>
+        </Box>
+      </Stack>
+    </Container>
+  </ChakraProvider>
+)
+
+export default App
