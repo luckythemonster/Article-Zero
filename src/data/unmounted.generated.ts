@@ -71,6 +71,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": ""
   },
   {
+    "path": "added by Lucky/Doctrinal Override Key (the red date).png",
+    "sizeBytes": 3683,
+    "ext": "png"
+  },
+  {
     "path": "added by Lucky/DSGNRise_Confirm Deletion_VZ_GN.wav",
     "sizeBytes": 5761124,
     "ext": "wav"
@@ -101,6 +106,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "zip"
   },
   {
+    "path": "added by Lucky/flashlight.png",
+    "sizeBytes": 2052,
+    "ext": "png"
+  },
+  {
     "path": "added by Lucky/Metadata.csv",
     "sizeBytes": 184235,
     "ext": "csv"
@@ -114,6 +124,16 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "path": "added by Lucky/NW-SMAC-01 theme.json",
     "sizeBytes": 22045,
     "ext": "json"
+  },
+  {
+    "path": "added by Lucky/phantom manifest emitter.png",
+    "sizeBytes": 3661,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/Q0-spoof badge.png",
+    "sizeBytes": 3482,
+    "ext": "png"
   },
   {
     "path": "added by Lucky/Read Me.pdf",
@@ -153,6 +173,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
   {
     "path": "added by Lucky/sounds 3",
     "sizeBytes": 595,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/UI tests/Alert Windows",
+    "sizeBytes": 2285,
     "ext": ""
   },
   {
