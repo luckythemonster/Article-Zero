@@ -13,6 +13,13 @@ import { ITEM_METADATA } from "../data/items/itemMetadata";
 
 const TILE_PX = 32;
 const ELEVATION_PX_PER_STEP = 8;
+// Player frames in the chars-art atlas are 64×64 source px (the body
+// occupies the middle ~32 px of that frame, the rest is transparent
+// padding). Rendering at 1.0 gives a 64-px world footprint = 2 tiles wide,
+// with the visible body roughly 1 tile tall, sitting on the tile centre.
+const CHAR_SPRITE_SCALE = 1.0;
+// Pull the camera in so the world fills more of the 960×640 viewport.
+const CAMERA_ZOOM = 1.5;
 
 // Layers in a moose-imported FloorDecoration that mark entity positions or
 // spawn points rather than visible terrain. We skip them when drawing
@@ -84,6 +91,7 @@ export class RoomScene extends Phaser.Scene {
   create(): void {
     this.cameras.main.setBackgroundColor("#050809");
     this.cameras.main.setRoundPixels(true);
+    this.cameras.main.setZoom(CAMERA_ZOOM);
     this.tileLayer = this.add.graphics();
     this.glyphLayer = this.add.graphics();
     this.coneLayer = this.add.graphics();
@@ -98,8 +106,7 @@ export class RoomScene extends Phaser.Scene {
 
     this.playerSprite = this.add.sprite(0, 0, "chars-art", "rowanibarra/stand/south/01");
     this.playerSprite.setOrigin(0.5);
-    // Atlas frames are 64×64; halve them to a 32×32 footprint matching TILE_PX.
-    this.playerSprite.setScale(0.5);
+    this.playerSprite.setScale(CHAR_SPRITE_SCALE);
     this.playerSprite.setDepth(5);
     if (worldEngine.hasState()) {
       const pos = worldEngine.getState().player.pos;
@@ -455,10 +462,11 @@ export class RoomScene extends Phaser.Scene {
       const texKey = `bypass_drive_${state.player.facing}`;
       if (this.textures.exists(texKey)) {
         this.heldItemSprite.setTexture(texKey);
-        // Sprite is 32 px tall on-screen (origin centred); sit just above
-        // its head.
-        this.heldItemSprite.setPosition(playerCx, playerCy - 18);
-        this.heldItemSprite.setScale(0.5);
+        // Item PNGs are native 32×32; render at full size so the held item
+        // reads at ≈half the player's new ~64-px height. Offset above the
+        // player's head matches the taller character footprint.
+        this.heldItemSprite.setPosition(playerCx, playerCy - 32);
+        this.heldItemSprite.setScale(1.0);
         this.heldItemSprite.setVisible(true);
       } else {
         this.heldItemSprite.setVisible(false);
@@ -470,14 +478,19 @@ export class RoomScene extends Phaser.Scene {
     // Audit lockdown failure visual — keep a faint red wash so the player
     // can see the world dim under the React `<AuditLockdown/>` overlay that
     // narrates the actual "AUDIT FLAG RAISED / O2 PURGING" text.
+    // overlayLayer has scrollFactor 0 but its fillRect is still in world
+    // units — divide by camera zoom so the wash covers exactly the viewport.
+    const zoom = this.cameras.main.zoom;
+    const vw = this.scale.width / zoom;
+    const vh = this.scale.height / zoom;
     if (state.detained) {
       this.overlayLayer.fillStyle(0x1a0404, 0.55);
-      this.overlayLayer.fillRect(0, 0, this.scale.width, this.scale.height);
+      this.overlayLayer.fillRect(0, 0, vw, vh);
     }
     // Climax oxygen darken — independent of detention.
     if (this.oxygenDarken > 0) {
       this.overlayLayer.fillStyle(0x000000, this.oxygenDarken);
-      this.overlayLayer.fillRect(0, 0, this.scale.width, this.scale.height);
+      this.overlayLayer.fillRect(0, 0, vw, vh);
     }
 
     this.drawGuardTelegraphs();
