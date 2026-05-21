@@ -1,5 +1,4 @@
 sad silicate
-
 {
   "oldParams": true,
   "wave_type": 2,
@@ -92,3 +91,35 @@ MITE-3 swarm
   "sample_rate": 44100,
   "sample_size": 16
 }
+
+Phantom manifest emitter
+{
+  "oldParams": true,
+  "wave_type": 0,
+  "p_env_attack": 1,
+  "p_env_sustain": 1,
+  "p_env_punch": 0,
+  "p_env_decay": 1,
+  "p_base_freq": 0.082,
+  "p_freq_limit": 0,
+  "p_freq_ramp": -1,
+  "p_freq_dramp": -0.456,
+  "p_vib_strength": 1,
+  "p_vib_speed": 1,
+  "p_arp_mod": -0.495,
+  "p_arp_speed": 0.338,
+  "p_duty": 0.243,
+  "p_duty_ramp": -1,
+  "p_repeat_speed": 1,
+  "p_pha_offset": 0,
+  "p_pha_ramp": 0.152,
+  "p_lpf_freq": 0.471,
+  "p_lpf_ramp": 1,
+  "p_lpf_resonance": 0.12,
+  "p_hpf_freq": 0,
+  "p_hpf_ramp": -1,
+  "sound_vol": 1,
+  "sample_rate": 11025,
+  "sample_size": 16
+}
+
