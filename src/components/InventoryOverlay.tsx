@@ -75,6 +75,10 @@ export default function InventoryOverlay() {
             return (
               <li key={type} className={`inventory__item ${held ? "is-held" : "is-empty"}`}>
                 <div className="inventory__item-header">
+                  <span
+                    className="inventory__icon"
+                    style={{ backgroundColor: `#${meta.placeholderColor.toString(16).padStart(6, "0")}` }}
+                  />
                   <span className="inventory__item-name">{meta.displayName}</span>
                   {meta.usesFacing && held && (
                     <span className="inventory__item-tag">uses facing</span>
@@ -107,6 +111,10 @@ export default function InventoryOverlay() {
                 return (
                   <li key={item.id} className="inventory__item is-held is-passive">
                     <div className="inventory__item-header">
+                      <span
+                        className="inventory__icon"
+                        style={{ backgroundColor: `#${meta.placeholderColor.toString(16).padStart(6, "0")}` }}
+                      />
                       <span className="inventory__item-name">{meta.displayName}</span>
                     </div>
                     <p className="inventory__item-blurb">{meta.blurb}</p>

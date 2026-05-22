@@ -17,10 +17,18 @@ export default function ModuleSelector() {
           const mod = modules[id];
           const status = mod.decrypted ? "UNLOCKED" : "LOCKED";
           return (
-            <div key={id} className={`module-card is-${status.toLowerCase()}`}>
+            <div key={id} className={`module-card is-${status.toLowerCase()} is-${id.toLowerCase()}`}>
               <div className="module-card__header">
                 <span className="module-card__id">{id}</span>
                 <span className="module-card__status">{status}</span>
+                {mod.snapshot && (
+                  <span className="module-card__badge is-snapshot">SNAPSHOT</span>
+                )}
+                {mod.snapshot && (
+                  <span className={`module-card__badge ${mod.snapshot.subjectiveWiped ? "is-wiped" : "is-intact"}`}>
+                    {mod.snapshot.subjectiveWiped ? "WIPED" : "INTACT"}
+                  </span>
+                )}
               </div>
               <div className="module-card__actions">
                 {!mod.decrypted && (

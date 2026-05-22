@@ -17,6 +17,8 @@ import ArchiveEpilogue from "../components/ArchiveEpilogue";
 import DebugOverlay from "../components/DebugOverlay";
 import SpriteGallery from "../components/SpriteGallery";
 import InventoryOverlay from "../components/InventoryOverlay";
+import ExecuteResetModal from "../components/ExecuteResetModal";
+import FullscreenFlash from "./FullscreenFlash";
 
 export default function TerminalShell() {
   const activeModule = useTerminalStore((s) => s.activeModuleId);
@@ -66,6 +68,7 @@ export default function TerminalShell() {
               </>
             )}
             {(phase === "FLOOR" || phase === "CLIMAX") && <InventoryOverlay />}
+            <ExecuteResetModal />
             <AuditLockdown />
           </PhaserCanvas>
         ) : (
@@ -78,6 +81,7 @@ export default function TerminalShell() {
       </footer>
       <DebugOverlay />
       <SpriteGallery />
+      <FullscreenFlash />
     </div>
   );
 }

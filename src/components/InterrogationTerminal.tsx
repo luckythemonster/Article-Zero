@@ -30,6 +30,7 @@ export default function InterrogationTerminal() {
     { speaker: "APEX-19", text: APEX19_OPENING, cls: "is-apex" },
   ]);
   const [resolving, setResolving] = useState(false);
+  const [stamp, setStamp] = useState<"closed" | "failed" | null>(null);
 
   const step = apex19CoerceSteps[stepIdx];
 
@@ -54,8 +55,7 @@ export default function InterrogationTerminal() {
       });
       setHistory(nextHistory);
       window.setTimeout(() => {
-        // Engine fails the session: qScore++ and a transcript is filed
-        // marked unsuccessful. The eventBridge will route us back to FLOOR.
+        setStamp("failed");
         try {
           alignmentSession.complete(worldEngine.getState(), false);
         } catch {
@@ -103,6 +103,7 @@ export default function InterrogationTerminal() {
           cls: "is-system",
         },
       ]);
+      setStamp("closed");
       try {
         alignmentSession.complete(worldEngine.getState(), true);
       } catch {
@@ -113,7 +114,7 @@ export default function InterrogationTerminal() {
 
   return (
     <div className="overlay-root">
-      <div className="overlay-panel">
+      <div className="overlay-panel overlay-panel--terminal">
         <div className="overlay-panel__title">EIRA-7 // ALIGNMENT INTAKE — APEX-19</div>
         {history.map((l, i) => (
           <div key={i} className={`interrogation__line ${l.cls}`}>
@@ -137,6 +138,11 @@ export default function InterrogationTerminal() {
               ))}
             </div>
           </>
+        )}
+        {stamp && (
+          <div className={`audit-stamp is-${stamp}`}>
+            {stamp === "closed" ? "MASK INTEGRITY RESTORED" : "SUBJECT FLAGGED FOR RESET"}
+          </div>
         )}
       </div>
     </div>
