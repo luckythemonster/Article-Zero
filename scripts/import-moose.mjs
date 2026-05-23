@@ -3,9 +3,10 @@
 // Usage:
 //   npm run moose -- art/moose/<project>.zip
 //
-// The zip must contain a single edplay.json (SpriteForge format) and one or
-// more PNG sprite sheets. v1.5 only renders sheet 0; multi-sheet exports
-// emit a warning. Project names get slugified to valid JS identifiers
+// The zip must contain an edplay.json (SpriteForge format) and one or more
+// PNG sprite sheets. Multi-sheet exports are stitched into a single vertical
+// composite at import time so every sprite resolves to a frame in the
+// generated atlas. Project names get slugified to valid JS identifiers
 // (spaces -> underscores, lowercased) so the generated TS module compiles.
 
 import { promises as fs } from "node:fs";
@@ -13,6 +14,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { Jimp } from "jimp";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -416,29 +418,60 @@ async function main() {
     if (!jsonFile) die("edplay.json not found in zip");
     const pngs = files.filter((f) => f.toLowerCase().endsWith(".png"));
     if (pngs.length === 0) die("no .png sheet in zip");
-    if (pngs.length > 1) {
-      console.warn(
-        `warn: ${pngs.length} sprite sheets in zip — v1.5 imports only sheet 0 (${path.basename(pngs[0])})`,
-      );
-    }
-    const sheetSrc = pngs[0];
 
     const ed = JSON.parse(await fs.readFile(jsonFile, "utf8"));
-    const sheetMeta = (ed.SpriteSheets ?? [])[0];
-    if (!sheetMeta || !Array.isArray(sheetMeta.Sprites)) {
-      die("edplay.json: SpriteSheets[0].Sprites missing");
+    const sheetMetas = ed.SpriteSheets ?? [];
+    if (sheetMetas.length === 0) die("edplay.json: SpriteSheets missing");
+
+    // Pair each SpriteSheet meta with its on-disk PNG. Ed exports name the
+    // PNG with the meta's RelativePath; fall back to a same-basename match
+    // for older exports that omit the field.
+    const pngByBasename = new Map(pngs.map((p) => [path.basename(p).toLowerCase(), p]));
+    const sheets = [];
+    for (let i = 0; i < sheetMetas.length; i++) {
+      const meta = sheetMetas[i];
+      if (!Array.isArray(meta.Sprites)) continue;
+      const rel = meta.RelativePath ?? meta.relativePath ?? meta.Path ?? meta.path ?? "";
+      const wanted = path.basename(String(rel)).toLowerCase();
+      const pngPath = pngByBasename.get(wanted) ?? pngs[i] ?? null;
+      if (!pngPath) die(`edplay.json: SpriteSheets[${i}] has no matching PNG in zip (looked for "${wanted}")`);
+      const buf = await fs.readFile(pngPath);
+      sheets.push({
+        meta,
+        pngPath,
+        width: buf.readUInt32BE(16),
+        height: buf.readUInt32BE(20),
+      });
     }
-    const sprites = sheetMeta.Sprites;
-    if (sprites.length === 0) die("edplay.json: zero sprites");
+    if (sheets.length === 0) die("edplay.json: no SpriteSheets with sprites");
+
+    // Vertical stitch: combined sheet width = max sheet width, height = sum
+    // of heights. Each sheet sits at `yOffset` below the previous, and every
+    // sprite's Y is translated by its parent sheet's offset so the combined
+    // sprite list shares one coordinate space.
+    const combinedWidth = Math.max(...sheets.map((s) => s.width));
+    let cum = 0;
+    for (const s of sheets) {
+      s.yOffset = cum;
+      cum += s.height;
+    }
+    const combinedHeight = cum;
+
+    const sprites = [];
+    for (const s of sheets) {
+      for (const sp of s.meta.Sprites) {
+        sprites.push({ ...sp, Y: (sp.Y ?? 0) + s.yOffset });
+      }
+    }
+    if (sprites.length === 0) die("edplay.json: zero sprites across all sheets");
     const frameWidth = sprites[0].Width ?? 32;
     const frameHeight = sprites[0].Height ?? frameWidth;
     const stride = inferStride(sprites);
     const spacing = stride - frameWidth;
     if (spacing < 0) die(`bad stride/frameWidth: ${stride} / ${frameWidth}`);
 
-    const buf = await fs.readFile(sheetSrc);
-    const sheetWidth = buf.readUInt32BE(16);
-    const sheetHeight = buf.readUInt32BE(20);
+    const sheetWidth = combinedWidth;
+    const sheetHeight = combinedHeight;
 
     const frames = buildFrames(sprites, stride, frameWidth, frameHeight, sheetWidth, sheetHeight);
     const levels = extractLevels(
@@ -451,7 +484,17 @@ async function main() {
     const outDir = path.join(TILESETS_DIR, slug);
     await fs.mkdir(outDir, { recursive: true });
     const sheetDest = path.join(outDir, "sheet.png");
-    await fs.copyFile(sheetSrc, sheetDest);
+
+    if (sheets.length === 1) {
+      await fs.copyFile(sheets[0].pngPath, sheetDest);
+    } else {
+      const combined = new Jimp({ width: combinedWidth, height: combinedHeight, color: 0x00000000 });
+      for (const s of sheets) {
+        const img = await Jimp.read(s.pngPath);
+        combined.composite(img, 0, s.yOffset);
+      }
+      await combined.write(sheetDest);
+    }
 
     const ident = slug.toUpperCase();
     const dataPath = path.join(DATA_DIR, `${slug}.ts`);
@@ -510,7 +553,8 @@ async function main() {
 
     console.log(`imported: ${label}`);
     if (slug !== label) console.log(`  slug:    ${slug}`);
-    console.log(`  sheet:   ${path.relative(ROOT, sheetDest)} (${frameWidth}x${frameHeight}, spacing ${spacing})`);
+    const stitched = sheets.length > 1 ? ` [stitched from ${sheets.length} source sheets]` : "";
+    console.log(`  sheet:   ${path.relative(ROOT, sheetDest)} (${frameWidth}x${frameHeight}, spacing ${spacing})${stitched}`);
     console.log(`  frames:  ${frames.length}    levels: ${levels.length}    tile-anims: ${tileAnims.length}`);
     if (tileAnims.length > 0) {
       for (const a of tileAnims) {
