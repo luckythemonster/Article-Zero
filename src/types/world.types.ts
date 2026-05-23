@@ -46,7 +46,8 @@ export type TileKind =
   | "LOCKER"
   | "CHASM"
   | "LADDER"
-  | "STAIRS";
+  | "STAIRS"
+  | "CHAIN_LINK_FENCE";
 
 // Items ------------------------------------------------------------------
 

@@ -256,6 +256,7 @@ function extractLevels(ed, sprites, frames, stride, frameWidth, frameHeight, she
     let painted = 0;
     boards.forEach((b, boardIdx) => {
       const bName = b.Name ?? b.name ?? `board ${boardIdx + 1}`;
+      const isMarkerLayer = MARKER_LAYERS.has(normLayerName(bName));
       const opacity = b.Opacity ?? b.opacity ?? 1;
       const tiles = b.Tiles ?? b.tiles ?? [];
       const grid = Array.from({ length: height }, () =>
@@ -270,11 +271,13 @@ function extractLevels(ed, sprites, frames, stride, frameWidth, frameHeight, she
         if (idx != null) {
           // Tiled / Ed convention: 0 = empty; non-zero = 1-based frame index.
           grid[y][x] = idx + 1;
-        } else if (markerHandles.has(t.Handle)) {
-          // Marker tile (no sprite). Record presence with sentinel 1 so
-          // semantic-layer logic (especially `spawn`) can locate the cell.
-          // The decoration renderer never sees `spawn`, and out-of-range
-          // frame indices on other marker-named layers degrade harmlessly.
+        } else if (markerHandles.has(t.Handle) || isMarkerLayer) {
+          // Marker tile: either a no-sprite TileDef, or any cell on a
+          // position-only MARKER layer whose sprite didn't resolve. Record
+          // presence with sentinel 1 so semantic-layer logic (`spawn`,
+          // `paintedCells(...,"enforcers")`, …) can locate the cell. The
+          // from-moose decoration step skips these layer names, so the
+          // sentinel never paints frame junk.
           grid[y][x] = 1;
         } else {
           unresolved += 1;
@@ -369,6 +372,31 @@ function extractLevels(ed, sprites, frames, stride, frameWidth, frameHeight, she
     }
   }
   return out;
+}
+
+// Position-only "marker" layers: cells carry a gameplay position, not art
+// (player spawn, enemy/camera/drone placements, item/chest spots). Their Ed
+// sprites are often hand-cropped composites that don't resolve to a slice
+// frame; without this, those painted cells would be dropped as "unresolved"
+// and the position would be lost. We record presence (sentinel 1) so the
+// era loader's marker/`paintedCells` logic can find them. The from-moose
+// decoration step skips these names so the sentinel never paints frame junk.
+const MARKER_LAYERS = new Set([
+  "spawn",
+  "enforcers",
+  "cameras",
+  "surveillance_drones",
+  "surveillace_drones",
+  "items",
+  "item_chests",
+]);
+
+function normLayerName(name) {
+  return String(name)
+    .trim()
+    .toLowerCase()
+    .replace(/\s+\d+$/, "")
+    .replace(/[\s-]+/g, "_");
 }
 
 function tsLiteral(value) {

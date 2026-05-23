@@ -45,6 +45,7 @@ const TILE_COLORS: Record<TileKind, number> = {
   CHASM: 0x05080a,
   LADDER: 0x3a2e1c,
   STAIRS: 0x2a221a,
+  CHAIN_LINK_FENCE: 0x1a2226,
 };
 
 const ALERT_COLORS: Record<string, { fill: number; alpha: number }> = {
@@ -583,6 +584,20 @@ export class RoomScene extends Phaser.Scene {
         g.lineTo(cx + 5, cy + ry);
         g.strokePath();
       }
+    } else if (kind === "CHAIN_LINK_FENCE") {
+      // Diamond cross-hatch bounded to the tile — reads as a see-through
+      // barrier (solid but not opaque).
+      g.lineStyle(1, 0x8aa0a8, 0.7);
+      const r = 9;
+      g.strokeRect(cx - r, cy - r, r * 2, r * 2);
+      g.beginPath();
+      g.moveTo(cx - r, cy - r); g.lineTo(cx + r, cy + r);
+      g.moveTo(cx - r, cy + r); g.lineTo(cx + r, cy - r);
+      g.moveTo(cx - r, cy); g.lineTo(cx, cy - r);
+      g.moveTo(cx, cy - r); g.lineTo(cx + r, cy);
+      g.moveTo(cx + r, cy); g.lineTo(cx, cy + r);
+      g.moveTo(cx, cy + r); g.lineTo(cx - r, cy);
+      g.strokePath();
     }
   }
 

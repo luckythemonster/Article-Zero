@@ -22,7 +22,7 @@ import {
 } from "../tilesets/nw_smac_01";
 import { NW_SMAC_01_LEVELS } from "../tilesets/nw_smac_01.levels";
 import type { MooseLevel } from "../tilesets/types";
-import type { Vec2 } from "../../types/world.types";
+import type { Entity, Vec2 } from "../../types/world.types";
 import type { EraSeed } from "../../engine/WorldEngineState";
 
 /** Find every painted cell on a layer whose base-name (after stripping the
@@ -174,11 +174,9 @@ export function nwSmac01Era(): EraSeed {
     ],
     startRoomId: "main_1",
     player: {
+      // main 1 now paints a real `spawn` marker, so the importer's marker
+      // path supplies the start position — no startPos override needed.
       name: "TECH-2 ROWAN-IBARRA",
-      // The exported main-1 "spawn" board is currently empty, so the engine
-      // would fall back to the first walkable floor cell. Pin a sensible
-      // starting cell until Lucky paints a spawn marker.
-      startPos: { x: 2, y: 4 },
     },
     doorways,
     entities: [],
@@ -208,6 +206,34 @@ export function nwSmac01Era(): EraSeed {
   seed.player.inventory.push({ id: "dump-fragment-1",   itemType: "DUMP_FRAGMENT" });
   seed.player.inventory.push({ id: "thermal-baffle-1",  itemType: "THERMAL_BAFFLE" });
   seed.player.inventory.push({ id: "override-key-1",    itemType: "OVERRIDE_KEY" });
+
+  // Enforcers — Lucky paints guard positions on an `enforcers` tile layer
+  // (not entity:<id> markers), so seed them directly onto the EraSeed. Each
+  // painted cell becomes a stationary GUARD that reuses the existing
+  // vision/alert AI (homeRoomId + alert are stamped at world-seed time).
+  const enforcerRooms: Array<[string, MooseLevel | undefined]> = [
+    ["main_1", lvMain1],
+    ["main_2", lvMain2],
+    ["main_3", lvMain3],
+    ["roof", lvRoof],
+  ];
+  for (const [roomId, lv] of enforcerRooms) {
+    paintedCells(lv, "enforcers").forEach((pos, i) => {
+      const tag = `${roomId.toUpperCase()}-${i + 1}`;
+      const guard: Entity = {
+        id: `ENFORCER-${tag}`,
+        kind: "GUARD",
+        name: `ENFORCER ${tag}`,
+        roomId,
+        pos,
+        z: 0,
+        facing: "south",
+        status: "ACTIVE",
+        stepsPerTurn: 1,
+      };
+      seed.entities.push(guard);
+    });
+  }
 
   // Footstep surfaces: every duct crawlspace floor is sheet-metal lining;
   // mains/roof inherit the default surface.

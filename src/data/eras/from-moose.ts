@@ -141,6 +141,7 @@ const TILE_KIND_LAYERS: Record<string, TileKind> = {
   extraction_terminal: "EXTRACTION_TERMINAL",
   exfil_point: "EXFIL_POINT",
   exfil: "EXFIL_POINT",
+  extraction_point: "EXFIL_POINT",
   light_sources: "LIGHT_SOURCE",
   light_source: "LIGHT_SOURCE",
   light_switch: "LIGHT_SWITCH",
@@ -150,6 +151,14 @@ const TILE_KIND_LAYERS: Record<string, TileKind> = {
   vent_control: "VENT",
   locker: "LOCKER",
   lockers: "LOCKER",
+  // Shipping containers read as solid cover (also a hide spot, like a locker).
+  container: "LOCKER",
+  containers: "LOCKER",
+  // Chain-link fencing: blocks movement, see-through (not opaque).
+  fence: "CHAIN_LINK_FENCE",
+  fences: "CHAIN_LINK_FENCE",
+  fence_posts: "CHAIN_LINK_FENCE",
+  chain_link_fence: "CHAIN_LINK_FENCE",
   chasm: "CHASM",
   ladder: "LADDER",
   ladders: "LADDER",
@@ -184,12 +193,29 @@ const DECORATION_SKIP_LAYERS: Set<string> = new Set([
   "station_hull",
   "asteroid",
   "star_bg",
+  // Position-only marker layers (see import-moose MARKER_LAYERS). Their cells
+  // carry a gameplay position, not art — `spawn` is handled separately, the
+  // rest are consumed by era seeds (e.g. `paintedCells(lv,"enforcers")`).
+  // Skipped here so their sentinel-1 cells don't render as frame-0 junk.
+  "enforcers",
+  "cameras",
+  "surveillance_drones",
+  "surveillace_drones",
+  "items",
+  "item_chests",
 ]);
 
 // Per-layer precedence override. Lets a specific layer outrank its tile
 // kind's nominal score. Reserved for cases where authoring convention
 // disagrees with the kind's default rank.
-const LAYER_PRECEDENCE_OVERRIDE: Record<string, number> = {};
+const LAYER_PRECEDENCE_OVERRIDE: Record<string, number> = {
+  // The exfil objective must win its cell and stay walkable even when painted
+  // on a wall/building-face edge (Lucky sets the uplink dish against the roof
+  // wall). EXFIL is a stand-on-and-interact tile, so it can't be a WALL.
+  extraction_point: 6,
+  exfil_point: 6,
+  exfil: 6,
+};
 
 // Higher number wins when two layers paint the same cell. Tuned so that
 // walls always defeat floor underneath, doors defeat walls, lockers defeat
@@ -213,6 +239,8 @@ const TILE_KIND_PRECEDENCE: Record<TileKind, number> = {
   // Switches read as wall-mounted fixtures; rank with walls.
   LIGHT_SWITCH: 4,
   WALL: 4,
+  // Fences are solid barriers painted over floor; must beat floor underneath.
+  CHAIN_LINK_FENCE: 4,
   // Ladders are painted on a wall face by convention — they MUST beat
   // walls so the climb cell isn't blocked by surrounding wall paint.
   LADDER: 5,
