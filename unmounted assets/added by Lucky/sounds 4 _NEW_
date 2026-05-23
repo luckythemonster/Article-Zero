@@ -184,3 +184,34 @@ Flashlight off
   "sample_rate": 8000,
   "sample_size": 8
 }
+
+heavy machinery
+{
+  "oldParams": true,
+  "wave_type": 1,
+  "p_env_attack": 0,
+  "p_env_sustain": 1,
+  "p_env_punch": 0.00024016783592449432,
+  "p_env_decay": 0.7684253224688757,
+  "p_base_freq": 0.7094564105629682,
+  "p_freq_limit": 0,
+  "p_freq_ramp": -0.010905727332896813,
+  "p_freq_dramp": -0.008145938598515444,
+  "p_vib_strength": -0.006759421466549773,
+  "p_vib_speed": -0.44104444117510866,
+  "p_arp_mod": -0.7878490319219402,
+  "p_arp_speed": 0.005648473604001003,
+  "p_duty": -0.8858684157809196,
+  "p_duty_ramp": 0.023029632627669182,
+  "p_repeat_speed": -0.2793533750566317,
+  "p_pha_offset": 0.8321738336846531,
+  "p_pha_ramp": -0.9727173456855782,
+  "p_lpf_freq": 0.9888351287323202,
+  "p_lpf_ramp": 0.49997972576039046,
+  "p_lpf_resonance": 0.45528820029990813,
+  "p_hpf_freq": 0.4409358201822968,
+  "p_hpf_ramp": -0.1657262603131055,
+  "sound_vol": 0.25,
+  "sample_rate": 8000,
+  "sample_size": 8
+}
