@@ -117,11 +117,13 @@ export interface EventMap {
   PLAYER_UNHIDDEN: { roomId: RoomId; pos: Vec2 };
   PLAYER_PEEKED: { facing: Facing | null };
   PLAYER_PRIED_DOOR: { roomId: RoomId; pos: Vec2; presses: number; required: number };
-  INTERACT_REJECTED: { action: "vent"; reason: "needs_sneak" | "needs_ap" | "no_link" };
+  INTERACT_REJECTED: { action: "vent"; reason: "needs_sneak" | "needs_ap" | "no_link" | "sealed" };
 
   // Vertical-slice phase orchestration
   AUDIT_LOCKDOWN_TRIGGERED: { reason: string };
   LOCKDOWN_TRIGGERED: { roomId: RoomId; turnsRemaining: number };
+  LOCKDOWN_CLEARED: { roomId: RoomId; reason: "crossed" | "ventControl" };
+  VENT_CONTROL_ACTIVATED: { terminalId: string; roomId: RoomId };
   PHASE_RESTART_REQUESTED: { reason: string };
   OXYGEN_TICK: { remainingSeconds: number; totalSeconds: number };
   CLIMAX_ESCAPED: Record<string, never>;

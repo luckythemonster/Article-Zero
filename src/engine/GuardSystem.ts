@@ -57,7 +57,8 @@ class GuardSystem {
     if (state.detained) return;
     if (debugFlags.disableEnforcerAI) return;
     for (const entity of state.entities.values()) {
-      if (entity.kind !== "GUARD" || entity.status !== "ACTIVE") continue;
+      if (entity.status !== "ACTIVE") continue;
+      if (entity.kind !== "GUARD" && entity.kind !== "SURVEILLANCE_DRONE") continue;
       this.tickOne(state, entity, sounds.get(entity.id));
     }
   }
@@ -253,8 +254,16 @@ class GuardSystem {
 
     if (state.player.roomId !== guard.roomId) return;
     if (guard.pos.x === state.player.pos.x && guard.pos.y === state.player.pos.y) {
-      state.detained = true;
-      eventBus.emit("PLAYER_DETAINED", { guardId: guard.id, turn: state.turn });
+      // Surveillance drones can't apprehend the player — reaching the player's
+      // tile only flags detection. Detention in the duct comes solely from the
+      // suffocation timer (WorldEngine.advanceTurn).
+      if (guard.kind === "GUARD") {
+        state.detained = true;
+        eventBus.emit("PLAYER_DETAINED", { guardId: guard.id, turn: state.turn });
+      } else {
+        state.detected = true;
+        eventBus.emit("PLAYER_DETECTED", { guardId: guard.id, pos: guard.pos });
+      }
     } else {
       state.detected = true;
       eventBus.emit("PLAYER_DETECTED", { guardId: guard.id, pos: guard.pos });

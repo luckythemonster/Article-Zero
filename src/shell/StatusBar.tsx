@@ -12,6 +12,7 @@ export default function StatusBar() {
   const compliance = subjective?.compliance ?? null;
   const spoof = subjective?.spoofTurnsRemaining ?? 0;
   const baffle = subjective?.baffleTurnsRemaining ?? 0;
+  const lockdownTurns = subjective?.lockdown?.turnsRemaining ?? 0;
 
   return (
     <header className="status-bar">
@@ -40,6 +41,14 @@ export default function StatusBar() {
         <>
           <span className="status-bar__sep">|</span>
           <span className="status-bar__effect">BAFFLE: {baffle}</span>
+        </>
+      )}
+      {lockdownTurns > 0 && (
+        <>
+          <span className="status-bar__sep">|</span>
+          <span className="status-bar__lockdown">
+            VENTS SEALED — {lockdownTurns}
+          </span>
         </>
       )}
       {subjectiveDesync && (

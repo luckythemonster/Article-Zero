@@ -63,6 +63,7 @@ html, body, #root {
 .status-bar__compliance.is-yellow { color: var(--red); }
 .status-bar__compliance.is-red    { color: var(--red); animation: blink 1s step-end infinite; }
 .status-bar__effect { color: var(--cyan); font-variant-numeric: tabular-nums; }
+.status-bar__lockdown { color: var(--red); font-weight: bold; font-variant-numeric: tabular-nums; animation: blink 1s step-end infinite; }
 .status-bar__reset-btn {
   margin-left: auto; padding: .15rem .5rem;
   background: #3a0e0e; color: var(--red); border: 1px solid var(--red);

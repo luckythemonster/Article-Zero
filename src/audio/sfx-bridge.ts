@@ -26,6 +26,7 @@ const SOUND_REASON_TO_SFX: Record<string, { name: string; volume?: number }> = {
   light_toggle:   { name: "light switch", volume: 0.7  },
   knock:          { name: "knock",        volume: 0.85 },
   "pry-lockdown": { name: "EMP",          volume: 0.6  },
+  emp:            { name: "EMP",          volume: 0.7  },
 };
 
 interface BridgeStats {

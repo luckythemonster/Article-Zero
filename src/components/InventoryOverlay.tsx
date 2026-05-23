@@ -11,7 +11,7 @@ import { useGameActions } from "../hooks/useGameActions";
 import { ITEM_METADATA } from "../data/items/itemMetadata";
 import type { ItemType } from "../types/world.types";
 
-// Only these five types are directly activatable from the overlay.
+// Only these types are directly activatable from the overlay.
 // EXTRACTION_CUBE and BYPASS_DRIVE remain passive (auto-resolved at tiles).
 const USABLE: ItemType[] = [
   "PHANTOM_EMITTER",
@@ -19,6 +19,7 @@ const USABLE: ItemType[] = [
   "DUMP_FRAGMENT",
   "THERMAL_BAFFLE",
   "OVERRIDE_KEY",
+  "EMP",
 ];
 
 export default function InventoryOverlay() {

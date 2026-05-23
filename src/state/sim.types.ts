@@ -91,6 +91,9 @@ export interface SubjectiveState {
   alignmentLightActive: boolean;
   detected: boolean;
   detained: boolean;
+  /** Active vacuum-lockdown countdown, surfaced so the HUD can show the
+   *  "VENTS SEALED — N" warning. Undefined when no lockdown is active. */
+  lockdown?: { roomId: RoomId; turnsRemaining: number };
   terminalsRead: Set<string>;
   worldItems: Map<string, ItemInstance>;
   documentCases: Map<string, DocumentCase>;
