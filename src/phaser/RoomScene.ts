@@ -615,9 +615,10 @@ export class RoomScene extends Phaser.Scene {
     const colour =
       entity.kind === "GUARD" ? 0xff7a6a :
         entity.kind === "SURVEILLANCE_DRONE" ? 0xb070ff :
-          entity.kind === "SILICATE"
-            ? entity.id === "VENT-4" ? 0x9b2c2c : 0x9adbe6
-            : 0xc8dbe6;
+          entity.kind === "SECURITY_CAMERA" ? 0xffcc44 :
+            entity.kind === "SILICATE"
+              ? entity.id === "VENT-4" ? 0x9b2c2c : 0x9adbe6
+              : 0xc8dbe6;
     if (!rect) {
       rect = this.add.rectangle(px, py, TILE_PX - 14, TILE_PX - 14, colour);
       rect.setStrokeStyle(2, 0xe6f0f2);
@@ -638,7 +639,11 @@ export class RoomScene extends Phaser.Scene {
     this.placeFacingMark(mark, px, py, entity.facing);
     mark.setVisible(visible);
 
-    if (entity.kind === "GUARD" || entity.kind === "SURVEILLANCE_DRONE") {
+    if (
+      entity.kind === "GUARD" ||
+      entity.kind === "SURVEILLANCE_DRONE" ||
+      entity.kind === "SECURITY_CAMERA"
+    ) {
       this.drawGuardCone(entity);
     }
   }

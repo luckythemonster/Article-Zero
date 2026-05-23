@@ -376,36 +376,45 @@ function throwDumpFragment(state: WorldState, _item: ItemInstance): boolean {
   return true;
 }
 
-/** Fire an EMP at a surveillance drone in the facing cone, permanently
- *  disabling it (status → DORMANT, so GuardSystem stops ticking it). The EMP
- *  only stops the drone's pursuit — it does NOT clear an active lockdown. */
+/** Detonate an EMP burst centered on the player, permanently disabling every
+ *  surveillance drone and security camera within EMP_RADIUS in the player's
+ *  room (status → DORMANT, so GuardSystem stops ticking them). Omnidirectional
+ *  — facing doesn't matter. The EMP only stops pursuit/watch; it does NOT clear
+ *  an active lockdown. */
 function useEmp(state: WorldState, _item: ItemInstance): boolean {
-  const target = findEntityInFacingCone(
-    state,
-    state.player.pos,
-    state.player.facing,
-    state.player.roomId,
-    EMP_RADIUS,
-    "SURVEILLANCE_DRONE",
-  );
-  if (!target) {
+  const r2 = EMP_RADIUS * EMP_RADIUS;
+  const targets: Entity[] = [];
+  for (const entity of state.entities.values()) {
+    if (entity.status !== "ACTIVE") continue;
+    if (entity.kind !== "SURVEILLANCE_DRONE" && entity.kind !== "SECURITY_CAMERA") continue;
+    if (entity.roomId !== state.player.roomId) continue;
+    const dx = entity.pos.x - state.player.pos.x;
+    const dy = entity.pos.y - state.player.pos.y;
+    if (dx * dx + dy * dy > r2) continue;
+    targets.push(entity);
+  }
+  if (targets.length === 0) {
     eventBus.emit("ITEM_REJECTED", { itemType: "EMP", reason: "no-target" });
     return false;
   }
-  const previous = target.status;
-  target.status = "DORMANT";
+  // Single burst at the player's tile — neighbours hear one pulse, not one per
+  // disabled unit.
   soundField.emit({
-    roomId: target.roomId,
-    pos: target.pos,
+    roomId: state.player.roomId,
+    pos: state.player.pos,
     intensity: 1,
     reason: "emp",
   });
-  eventBus.emit("ENTITY_STATUS_CHANGED", {
-    entityId: target.id,
-    previous,
-    current: target.status,
-  });
-  eventBus.emit("ITEM_THROWN", { itemType: "EMP", targetEntityId: target.id });
+  for (const target of targets) {
+    const previous = target.status;
+    target.status = "DORMANT";
+    eventBus.emit("ENTITY_STATUS_CHANGED", {
+      entityId: target.id,
+      previous,
+      current: target.status,
+    });
+    eventBus.emit("ITEM_THROWN", { itemType: "EMP", targetEntityId: target.id });
+  }
   return true;
 }
 

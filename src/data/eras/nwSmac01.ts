@@ -235,6 +235,35 @@ export function nwSmac01Era(): EraSeed {
     });
   }
 
+  // Security cameras — painted on a `cameras` tile layer, same marker pattern
+  // as enforcers. Each cell becomes a fixed SECURITY_CAMERA: it shares the
+  // drone's detect/lockdown AI but never moves — it only sweeps its FOV. Only
+  // the roof carries painted cells today; iterating every room future-proofs
+  // new paint on other levels.
+  const cameraRooms: Array<[string, MooseLevel | undefined]> = [
+    ["main_1", lvMain1],
+    ["main_2", lvMain2],
+    ["main_3", lvMain3],
+    ["roof", lvRoof],
+  ];
+  for (const [roomId, lv] of cameraRooms) {
+    paintedCells(lv, "cameras").forEach((pos, i) => {
+      const tag = `${roomId.toUpperCase()}-${i + 1}`;
+      const camera: Entity = {
+        id: `CAMERA-${tag}`,
+        kind: "SECURITY_CAMERA",
+        name: `SECURITY CAMERA ${tag}`,
+        roomId,
+        pos,
+        z: 0,
+        facing: "south",
+        status: "ACTIVE",
+        // No stepsPerTurn — cameras never move; they only turn their FOV.
+      };
+      seed.entities.push(camera);
+    });
+  }
+
   // Footstep surfaces: every duct crawlspace floor is sheet-metal lining;
   // mains/roof inherit the default surface.
   for (const id of ["duct_1", "duct_2", "duct_3"]) {

@@ -210,7 +210,8 @@ function seedDuctHazard(seed: EraSeed): void {
     z: 0,
     facing,
     status: "ACTIVE",
-    stepsPerTurn: 1,
+    // Drones outpace enforcers (1) but stay slower than a sprinting player (≤4).
+    stepsPerTurn: 2,
   });
 
   // Repaint the terminal cell to TERMINAL but keep it non-solid so a 1-wide

@@ -212,7 +212,7 @@ export interface Room {
 
 // Entities ---------------------------------------------------------------
 
-export type EntityKind = "SILICATE" | "GUARD" | "TERMINAL_NPC" | "SURVEILLANCE_DRONE";
+export type EntityKind = "SILICATE" | "GUARD" | "TERMINAL_NPC" | "SURVEILLANCE_DRONE" | "SECURITY_CAMERA";
 
 export type EntityStatus = "ACTIVE" | "DORMANT" | "EXTRACTED";
 

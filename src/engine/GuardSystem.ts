@@ -58,7 +58,13 @@ class GuardSystem {
     if (debugFlags.disableEnforcerAI) return;
     for (const entity of state.entities.values()) {
       if (entity.status !== "ACTIVE") continue;
-      if (entity.kind !== "GUARD" && entity.kind !== "SURVEILLANCE_DRONE") continue;
+      if (
+        entity.kind !== "GUARD" &&
+        entity.kind !== "SURVEILLANCE_DRONE" &&
+        entity.kind !== "SECURITY_CAMERA"
+      ) {
+        continue;
+      }
       this.tickOne(state, entity, sounds.get(entity.id));
     }
   }
@@ -94,6 +100,15 @@ class GuardSystem {
     });
 
     const level = guard.alert?.level ?? "NORMAL";
+
+    // Security cameras share the detect/lockdown path above but never move —
+    // they only turn their FOV. Hand off to the camera-only behavior and skip
+    // the movement loop entirely.
+    if (guard.kind === "SECURITY_CAMERA") {
+      this.tickCamera(state, guard, level);
+      return;
+    }
+
     const steps = Math.max(1, guard.stepsPerTurn ?? 1);
     for (let i = 0; i < steps; i++) {
       if (state.detained) return;
@@ -272,12 +287,55 @@ class GuardSystem {
 
   private stepCooldown(_state: WorldState, guard: Entity): void {
     // Rotate to scan: cycle through cardinal facings.
+    this.rotateScan(guard);
+  }
+
+  /** Advance an entity one cardinal step clockwise (N→E→S→W→N), emitting a
+   *  facing change. Shared by EVASION cooldown scanning and the camera's
+   *  idle FOV sweep. */
+  private rotateScan(entity: Entity): void {
     const cycle: Facing[] = ["north", "east", "south", "west"];
-    const idx = cycle.indexOf(guard.facing);
+    const idx = cycle.indexOf(entity.facing);
     const next = cycle[(idx + 1) % cycle.length];
-    if (next !== guard.facing) {
-      guard.facing = next;
-      eventBus.emit("ENTITY_FACING_CHANGED", { entityId: guard.id, facing: guard.facing });
+    if (next !== entity.facing) {
+      entity.facing = next;
+      eventBus.emit("ENTITY_FACING_CHANGED", { entityId: entity.id, facing: entity.facing });
+    }
+  }
+
+  /** Per-tick behavior for a fixed SECURITY_CAMERA. It never moves: it sweeps
+   *  its FOV while idle, and turns to face the threat once it has one. Sight
+   *  already triggered lockdown in `tickOne`; here we only flag detection when
+   *  actively tracking the player in the camera's own room. */
+  private tickCamera(state: WorldState, cam: Entity, level: string): void {
+    switch (level) {
+      case "CAUTION":
+        this.faceToward(cam, cam.alert?.lastStimulus);
+        break;
+      case "ALERT":
+        this.faceToward(cam, state.player.pos);
+        if (cam.roomId === state.player.roomId) {
+          state.detected = true;
+          eventBus.emit("PLAYER_DETECTED", { guardId: cam.id, pos: cam.pos });
+        }
+        break;
+      // NORMAL and EVASION both keep the camera scanning its arc.
+      default:
+        this.rotateScan(cam);
+        break;
+    }
+  }
+
+  /** Turn an entity to face `target` without moving. No-ops if the target is
+   *  missing or on the entity's own tile. */
+  private faceToward(entity: Entity, target: Vec2 | undefined): void {
+    if (!target) return;
+    const dx = Math.sign(target.x - entity.pos.x);
+    const dy = Math.sign(target.y - entity.pos.y);
+    const facing = facingFromDelta(dx, dy);
+    if (facing && facing !== entity.facing) {
+      entity.facing = facing;
+      eventBus.emit("ENTITY_FACING_CHANGED", { entityId: entity.id, facing });
     }
   }
 
