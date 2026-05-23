@@ -1,5 +1,6 @@
 /* Article Zero — Archivist Terminal shell
-   Palette: #050809 bg | #e6f0f2 fg | #2ec8d4 cyan | #ff5050 red | #ebd14a amber
+   Palette: #050809 bg | #e6f0f2 fg | #ebd14a amber (primary) | #ff5050 red
+   The --cyan CSS var name is preserved for low-churn but now resolves to amber.
    Typeface: Courier New, monospace throughout.
    Layout: CSS Grid, hard 1px borders, no border-radius. */
 
@@ -13,7 +14,7 @@
   --bg: #050809;
   --fg: #e6f0f2;
   --dim: #9bb1b6;
-  --cyan: #2ec8d4;
+  --cyan: #ebd14a;
   --red: #ff5050;
   --amber: #ebd14a;
   --border: #1f3138;
@@ -59,7 +60,7 @@ html, body, #root {
 .status-bar__desync { color: var(--red); animation: blink 1s step-end infinite; }
 .status-bar__compliance { font-weight: bold; padding: 0 .35rem; border: 1px solid currentColor; }
 .status-bar__compliance.is-green  { color: var(--cyan); }
-.status-bar__compliance.is-yellow { color: var(--amber); }
+.status-bar__compliance.is-yellow { color: var(--red); }
 .status-bar__compliance.is-red    { color: var(--red); animation: blink 1s step-end infinite; }
 .status-bar__effect { color: var(--cyan); font-variant-numeric: tabular-nums; }
 .status-bar__reset-btn {
@@ -276,7 +277,7 @@ html, body, #root {
 .module-card.is-unlocked .module-card__status { color: var(--cyan); }
 
 .module-card.is-eremite    { border-left: 3px solid #c89adb; }
-.module-card.is-mirador    { border-left: 3px solid var(--amber); }
+.module-card.is-mirador    { border-left: 3px solid var(--red); }
 .module-card.is-nw_smac_01 { border-left: 3px solid var(--cyan); }
 .module-card__badge { font-size: .7rem; padding: 0 .3rem; margin-left: .4rem; border: 1px solid currentColor; }
 .module-card__badge.is-wiped    { color: var(--red); }
@@ -347,7 +348,7 @@ html, body, #root {
 .audit-log__module { color: var(--dim); flex-shrink: 0; }
 .audit-log__text   { color: var(--dim); word-break: break-word; }
 
-.audit-log__entry.is-warn  .audit-log__text { color: var(--amber); }
+.audit-log__entry.is-warn  .audit-log__text { color: var(--red); }
 .audit-log__entry.is-fatal .audit-log__text { color: var(--red); }
 .audit-log__entry.is-info  .audit-log__text { color: var(--dim); }
 
@@ -398,7 +399,7 @@ body.theme-lattice {
   --bg: #060c10;
   --fg: #d6e3eb;
   --dim: #6c8b96;
-  --cyan: #5dd4e6;
+  --cyan: #f5e090;
   --border: #1c333d;
   --surface: #08151c;
 }
@@ -478,9 +479,9 @@ body.theme-lattice {
 .overlay-panel--terminal {
   position: relative;
   border: 2px solid var(--cyan);
-  box-shadow: 0 0 0 6px rgba(46, 200, 212, .08) inset;
+  box-shadow: 0 0 0 6px rgba(235, 209, 74, .08) inset;
   background-image: repeating-linear-gradient(
-    to bottom, transparent 0 2px, rgba(46, 200, 212, .06) 2px 3px
+    to bottom, transparent 0 2px, rgba(235, 209, 74, .06) 2px 3px
   );
 }
 
@@ -524,7 +525,7 @@ body.theme-lattice {
 
 .interrogation__line.is-apex { border-left-color: #9adbe6; color: var(--fg); }
 .interrogation__line.is-rowan { border-left-color: var(--cyan); color: var(--fg); }
-.interrogation__line.is-system { border-left-color: var(--amber); color: var(--amber); font-size: 0.75rem; }
+.interrogation__line.is-system { border-left-color: var(--red); color: var(--red); font-size: 0.75rem; }
 
 .interrogation__plea {
   font-style: italic;
@@ -587,9 +588,9 @@ body.theme-lattice {
   border-radius: 0;
 }
 
-.records__token:hover { background: rgba(46, 200, 212, 0.18); }
+.records__token:hover { background: rgba(235, 209, 74, 0.18); }
 .records__token.is-struck { color: var(--red); text-decoration: line-through; }
-.records__token.is-cipher { background: rgba(235, 209, 74, 0.22); color: var(--amber); }
+.records__token.is-cipher { background: rgba(255, 80, 80, 0.22); color: var(--red); }
 .records__token.is-replaced { color: var(--cyan); }
 
 .records__sidebar {
@@ -615,7 +616,7 @@ body.theme-lattice {
 }
 
 .records__chip:active { cursor: grabbing; }
-.records__chip.is-armed { border-color: var(--cyan); background: rgba(46, 200, 212, 0.1); }
+.records__chip.is-armed { border-color: var(--cyan); background: rgba(235, 209, 74, 0.1); }
 
 .records__hint {
   font-size: 0.7rem;
@@ -630,11 +631,11 @@ body.theme-lattice {
   color: var(--dim);
 }
 
-.records__cipher-bar.is-armed { border-color: var(--amber); color: var(--amber); }
+.records__cipher-bar.is-armed { border-color: var(--red); color: var(--red); }
 
 .records__countdown {
   font-size: 0.85rem;
-  color: var(--amber);
+  color: var(--red);
   font-weight: bold;
 }
 
@@ -687,7 +688,7 @@ body.theme-lattice {
 
 .climax-hud__sub {
   font-size: 0.7rem;
-  color: var(--amber);
+  color: var(--red);
   margin-top: 0.2rem;
 }
 
@@ -719,7 +720,7 @@ body.theme-lattice {
 }
 
 .audit-lockdown__sub {
-  color: var(--amber);
+  color: var(--red);
   font-size: 0.75rem;
   letter-spacing: 0.1em;
   max-width: 480px;
@@ -761,8 +762,8 @@ body.theme-lattice {
 }
 
 .epilogue__case mark {
-  background: rgba(235, 209, 74, 0.22);
-  color: var(--amber);
+  background: rgba(255, 80, 80, 0.22);
+  color: var(--red);
 }
 
 .epilogue__draft {
@@ -950,7 +951,7 @@ body.theme-lattice {
 }
 
 .fullscreen-flash.is-reset      { background: rgba(255, 80, 80, .55); }
-.fullscreen-flash.is-extraction { background: rgba(46, 200, 212, .55); }
+.fullscreen-flash.is-extraction { background: rgba(235, 209, 74, .55); }
 
 @keyframes flash-fade {
   from { opacity: 1; }

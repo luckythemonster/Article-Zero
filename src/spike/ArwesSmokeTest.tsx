@@ -26,14 +26,18 @@ function SmokeBody() {
   return (
     <Animator active={active} duration={{ enter: 0.6, exit: 0.4 }}>
       <div
-        style={{
-          position: "relative",
-          width: 520,
-          height: 240,
-          padding: 24,
-          color: "#2ec8d4",
-          fontFamily: '"Courier New", monospace',
-        }}
+        style={
+          {
+            position: "relative",
+            width: 520,
+            height: 240,
+            padding: 24,
+            color: "#ebd14a",
+            fontFamily: '"Courier New", monospace',
+            "--arwes-frames-bg-color": "rgba(235, 209, 74, 0.05)",
+            "--arwes-frames-deco-color": "#ebd14a",
+          } as React.CSSProperties
+        }
       >
         <FrameNero />
         <div style={{ position: "relative", zIndex: 1 }}>
@@ -43,7 +47,7 @@ function SmokeBody() {
           <div style={{ marginBottom: 16, lineHeight: 1.5 }}>
             <Text>
               If you can read this with a typewriter entrance and see the
-              cyan frame around it, arwes is rendering on React 19.
+              amber frame around it, arwes is rendering on React 19.
             </Text>
           </div>
           <button
@@ -55,8 +59,8 @@ function SmokeBody() {
             style={{
               padding: "8px 16px",
               background: "transparent",
-              color: "#2ec8d4",
-              border: "1px solid #2ec8d4",
+              color: "#ebd14a",
+              border: "1px solid #ebd14a",
               fontFamily: "inherit",
               cursor: "pointer",
             }}
