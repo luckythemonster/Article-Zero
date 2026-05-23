@@ -120,7 +120,9 @@ export function installSfxBridge(): () => void {
       // Replace jsfxr Alarm with the Glitch biohazard loop, fired as a
       // one-shot (clip plays through ~5s and stops). No LOCKDOWN_ENDED
       // event exists yet, so we can't tie a true loop to its lifetime.
+      // Layer the doom siren jsfxr on top for an extra alarm bite.
       fireOneShot("alarm.biohazard", 0.55, "LOCKDOWN_TRIGGERED");
+      fire("doom siren", 0.5, "LOCKDOWN_TRIGGERED");
     }),
   );
 
@@ -210,7 +212,9 @@ export function installSfxBridge(): () => void {
 
   offs.push(
     eventBus.on("FLASHLIGHT_TOGGLED", (p) => {
-      if (p.on) fire("ui.click", 0.5, "FLASHLIGHT_TOGGLED:on");
+      if (p.on) fire("flashlight on", 0.5, "FLASHLIGHT_TOGGLED:on");
+      else if (p.battery === 0)
+        fire("flashlight batteries dead", 0.6, "FLASHLIGHT_TOGGLED:dead");
       else fire("glitch.bit", 0.5, "FLASHLIGHT_TOGGLED:off");
     }),
   );

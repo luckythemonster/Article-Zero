@@ -101,19 +101,39 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "zip"
   },
   {
-    "path": "added by Lucky/flashlight .zip",
-    "sizeBytes": 92432,
-    "ext": "zip"
-  },
-  {
     "path": "added by Lucky/flashlight.png",
     "sizeBytes": 2052,
     "ext": "png"
   },
   {
+    "path": "added by Lucky/John Sponky.json",
+    "sizeBytes": 49391,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/levels/NW-SMAC-01 alpha.zip",
+    "sizeBytes": 1674881,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/levels/readme",
+    "sizeBytes": 29,
+    "ext": ""
+  },
+  {
     "path": "added by Lucky/Metadata.csv",
     "sizeBytes": 184235,
     "ext": "csv"
+  },
+  {
+    "path": "added by Lucky/mite-3.zip",
+    "sizeBytes": 651564,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/mnt:med.zip",
+    "sizeBytes": 143169,
+    "ext": "zip"
   },
   {
     "path": "added by Lucky/NW-SMAC-01 chase.json",
@@ -172,13 +192,43 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
   },
   {
     "path": "added by Lucky/sounds 3",
-    "sizeBytes": 595,
+    "sizeBytes": 3226,
     "ext": ""
+  },
+  {
+    "path": "added by Lucky/sounds 4 _NEW_",
+    "sizeBytes": 3567,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/UI tests/64x64 grid tile.png",
+    "sizeBytes": 386,
+    "ext": "png"
   },
   {
     "path": "added by Lucky/UI tests/Alert Windows",
     "sizeBytes": 2285,
     "ext": ""
+  },
+  {
+    "path": "added by Lucky/UI tests/animated glitch tile.gif",
+    "sizeBytes": 53867,
+    "ext": "gif"
+  },
+  {
+    "path": "added by Lucky/UI tests/compliance pips.png",
+    "sizeBytes": 650,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/glitch grid tile spritesheet.png",
+    "sizeBytes": 20055,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/ui (404, Title, etc).json",
+    "sizeBytes": 12058,
+    "ext": "json"
   },
   {
     "path": "added by Lucky/UIAlert_Cancel 001_VZ_GN.wav",
