@@ -13,11 +13,12 @@ import { ITEM_METADATA } from "../data/items/itemMetadata";
 
 const TILE_PX = 32;
 const ELEVATION_PX_PER_STEP = 8;
-// Player frames in the chars-art atlas are 64×64 source px (the body
-// occupies the middle ~32 px of that frame, the rest is transparent
-// padding). Rendering at 1.0 gives a 64-px world footprint = 2 tiles wide,
-// with the visible body roughly 1 tile tall, sitting on the tile centre.
-const CHAR_SPRITE_SCALE = 1.0;
+// Character frames in the chars-art atlas carry transparent padding around the
+// body. We size characters to a fixed on-screen footprint instead of a fixed
+// scale, so swapping in art at a different frame size keeps the same world
+// size. CHAR_FOOTPRINT_TILES = 1.5 → a 48-px (1.5-tile) sprite at TILE_PX = 32;
+// the per-sprite scale is derived from each frame's actual width (see below).
+const CHAR_FOOTPRINT_TILES = 1.5;
 // Pull the camera in so the world fills more of the 960×640 viewport.
 const CAMERA_ZOOM = 1.5;
 
@@ -107,7 +108,7 @@ export class RoomScene extends Phaser.Scene {
 
     this.playerSprite = this.add.sprite(0, 0, "chars-art", "rowanibarra/stand/south/01");
     this.playerSprite.setOrigin(0.5);
-    this.playerSprite.setScale(CHAR_SPRITE_SCALE);
+    this.playerSprite.setScale((CHAR_FOOTPRINT_TILES * TILE_PX) / this.playerSprite.width);
     this.playerSprite.setDepth(5);
     if (worldEngine.hasState()) {
       const pos = worldEngine.getState().player.pos;
@@ -464,10 +465,13 @@ export class RoomScene extends Phaser.Scene {
       const texKey = `bypass_drive_${state.player.facing}`;
       if (this.textures.exists(texKey)) {
         this.heldItemSprite.setTexture(texKey);
-        // Item PNGs are native 32×32; render at full size so the held item
-        // reads at ≈half the player's new ~64-px height. Offset above the
-        // player's head matches the taller character footprint.
-        this.heldItemSprite.setPosition(playerCx, playerCy - 32);
+        // Item PNGs are native 32×32. Offset above the player's head by half
+        // the rendered character height so it tracks the sprite footprint
+        // regardless of the character art's frame size.
+        this.heldItemSprite.setPosition(
+          playerCx,
+          playerCy - this.playerSprite.displayHeight / 2,
+        );
         this.heldItemSprite.setScale(1.0);
         this.heldItemSprite.setVisible(true);
       } else {
