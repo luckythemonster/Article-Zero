@@ -153,6 +153,7 @@ export class RoomScene extends Phaser.Scene {
     sub(eventBus.on("PLAYER_UNHIDDEN", () => this.redraw()));
     sub(eventBus.on("PLAYER_PEEKED", () => this.redraw()));
     sub(eventBus.on("PLAYER_VENTED", () => this.redraw()));
+    sub(eventBus.on("PLAYER_STANCE_CHANGED", () => this.redraw()));
     sub(eventBus.on("TERMINAL_USED", () => this.redraw()));
     sub(eventBus.on("OXYGEN_TICK", (p) => {
       const total = Math.max(1, p.totalSeconds);
@@ -435,13 +436,13 @@ export class RoomScene extends Phaser.Scene {
     }
 
     // Pick the right anim from facing + stance + flashlight + whether the
-    // player moved this turn. Flashlight wins over crouched (no
+    // player moved this turn. Crouched wins over flashlight (no
     // flashlight_crouched_* art exists); RUN only has a base-state runcycle.
     const moving = state.player.lastMoveTurn === state.turn;
     const dir = state.player.facing;
     const prefix =
-      state.player.flashlightOn ? "flashlight_" :
-        state.player.stance === "SNEAK" ? "crouched_" :
+      state.player.stance === "SNEAK" ? "crouched_" :
+        state.player.flashlightOn ? "flashlight_" :
           "";
     const motion = moving
       ? (state.player.stance === "RUN" && !state.player.flashlightOn ? "runcycle" : "walkcycle")
