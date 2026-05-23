@@ -210,8 +210,8 @@ Assets that already exist on disk but aren't wired in. Each is an actionable tas
 - [ ] **Mesh Uplink A → Era 3 env object.** Import via `npm run moose` (verify `scripts/import-moose.mjs` flags / staging path).
 - [ ] **`mite-3.zip` → swarm asset.** **Verify** whether it's a new variant or an update to existing `art/mite3swarm/` before mounting.
 - [ ] **`EIRA-7 new.zip` → EIRA-7 update.** **Verify** whether it's already reflected in the packed `eira7` frames.
-- [ ] **`mnt:med.zip` → ?** **Verify** contents ("mounted media" / tileset?) before deciding a target.
-- [ ] **`John Sponky.json` → ?** **Verify** which character/NPC this configures.
+- [ ] **`mnt:med.zip` → background NPC sprites.** Maintenance/medic robots seen in the environment. No placement plan yet — hold until a level calls for them.
+- [ ] **`John Sponky.json` → music candidate.** A music track (BeepBox format) being evaluated for use in-game. When ready, move to `public/audio/music/` alongside `theme.json`/`chase.json` and wire via `BeepBox.ts`.
 - [ ] **`baffle theme.json` → Era 2 theme data.** Use when authoring the Baffle tileset/level (§2/§3).
 - [ ] **sfxr param files (`sounds`, `sounds 2/3/4 _NEW_`)** → reconcile against `public/audio/sfx/defs.txt`; fold in any recipes not already present.
 - [ ] **UI test assets** (`UI tests/`) → compile glitch tiles / compliance pips / alert windows into game UI (§6).
