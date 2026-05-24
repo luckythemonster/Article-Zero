@@ -16,15 +16,9 @@ const ELEVATION_PX_PER_STEP = 8;
 // Character frames in the chars-art atlas carry transparent padding around the
 // body. We size characters to a fixed on-screen footprint instead of a fixed
 // scale, so swapping in art at a different frame size keeps the same world
-// size. CHAR_FOOTPRINT_TILES = 3.5 → a 112-px (3.5-tile) sprite at TILE_PX = 32,
-// i.e. 1.75× the 64-px native frame; the per-sprite scale is derived from each
-// frame's actual width (see below).
-const CHAR_FOOTPRINT_TILES = 3.5;
-// Character sprites are anchored at their tile centre, but the body's feet sit
-// below that midpoint. Nudge ground characters down ~half a tile so they read
-// as standing on the tile rather than floating above it. Drones hover and
-// cameras are ceiling-mounted, so they keep a zero offset.
-const CHAR_Y_OFFSET_PX = TILE_PX / 2;
+// size. CHAR_FOOTPRINT_TILES = 1.5 → a 48-px (1.5-tile) sprite at TILE_PX = 32;
+// the per-sprite scale is derived from each frame's actual width (see below).
+const CHAR_FOOTPRINT_TILES = 1.5;
 // Non-character props get their own footprints: drones keep the old baseline,
 // fixed security cameras read as small ceiling fixtures.
 const DRONE_FOOTPRINT_TILES = 1.5;
@@ -38,11 +32,12 @@ function footprintTilesForSlug(slug: string): number {
   return CHAR_FOOTPRINT_TILES;
 }
 
-// Vertical pixel offset for a sprite-driven entity slug. Only ground characters
-// drop; hovering drones and ceiling cameras stay centred on their tile.
-function yOffsetForSlug(slug: string): number {
-  if (slug === "securitycamera" || slug === "securitydrone") return 0;
-  return CHAR_Y_OFFSET_PX;
+// Vertical origin for a sprite-driven entity slug. Ground characters anchor at
+// their feet (origin.y = 1) so the tile sits at the bottom of the sprite;
+// hovering drones and ceiling cameras stay centred (origin.y = 0.5).
+function originYForSlug(slug: string): number {
+  if (slug === "securitycamera" || slug === "securitydrone") return 0.5;
+  return 1;
 }
 // Pull the camera in so the world fills more of the 960×640 viewport.
 const CAMERA_ZOOM = 1.5;
@@ -133,7 +128,7 @@ export class RoomScene extends Phaser.Scene {
     this.overlayLayer.setScrollFactor(0);
 
     this.playerSprite = this.add.sprite(0, 0, "chars-art", "rowanibarra/stand/south/01");
-    this.playerSprite.setOrigin(0.5);
+    this.playerSprite.setOrigin(0.5, 1);
     this.playerSprite.setScale((CHAR_FOOTPRINT_TILES * TILE_PX) / this.playerSprite.width);
     this.playerSprite.setDepth(5);
     if (worldEngine.hasState()) {
@@ -459,8 +454,7 @@ export class RoomScene extends Phaser.Scene {
     const here = room.tiles[state.player.pos.y * room.width + state.player.pos.x];
     const elev = here?.elevation ?? 0;
     const playerCx = state.player.pos.x * TILE_PX + TILE_PX / 2;
-    const playerCy =
-      state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP + CHAR_Y_OFFSET_PX;
+    const playerCy = state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP;
     this.playerSprite.setPosition(playerCx, playerCy);
     this.playerSprite.setVisible(!state.player.hidingTileKey);
     if (state.player.hidingTileKey) {
@@ -664,12 +658,12 @@ export class RoomScene extends Phaser.Scene {
       let sprite = this.entitySprites.get(entity.id);
       if (!sprite) {
         sprite = this.add.sprite(px, py, "chars-art", `${slug}/stand/${entity.facing}/01`);
-        sprite.setOrigin(0.5);
+        sprite.setOrigin(0.5, originYForSlug(slug));
         sprite.setScale((footprintTilesForSlug(slug) * TILE_PX) / sprite.width);
         sprite.setDepth(4);
         this.entitySprites.set(entity.id, sprite);
       }
-      sprite.setPosition(px, py + yOffsetForSlug(slug));
+      sprite.setPosition(px, py);
       sprite.setVisible(visible);
       // The directional sprite conveys facing on its own — hide the rect/triangle.
       this.entityRects.get(entity.id)?.setVisible(false);
