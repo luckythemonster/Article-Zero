@@ -26,6 +26,9 @@ import type { DeliveredSound } from "./SoundField";
 import { debugFlags } from "./debugFlags";
 
 const LOCKDOWN_TURNS = 5;
+/** A guard with no patrol route sweeps its FOV once every N turns rather than
+ *  spinning a quarter-turn every tick. */
+const IDLE_SCAN_PERIOD = 3;
 
 class GuardSystem {
   /** Compute the visible-tile set for one guard inside its current room.
@@ -78,7 +81,12 @@ class GuardSystem {
       return;
     }
     const sees = this.guardSeesPlayer(state, guard);
-    if (sees && !state.lockdown) {
+    // Only an exposed (RED) player springs the lockdown trap — this mirrors the
+    // AlertFSM's `seesAsAlert` gate. At GREEN the player reads as a TECH on
+    // shift and can walk past in the open; at YELLOW the guard investigates
+    // (CAUTION) but the room does not seal.
+    const seesAsAlert = sees && state.player.compliance === "RED";
+    if (seesAsAlert && !state.lockdown) {
       this.triggerLockdown(state);
     }
     alertFSM.step(state, guard, {
@@ -108,6 +116,12 @@ class GuardSystem {
       this.tickCamera(state, guard, level);
       return;
     }
+
+    // Per-turn patrol bookkeeping (pause countdown, idle scan) runs once,
+    // before the per-step movement loop, so a dwell decrements once per turn
+    // regardless of stepsPerTurn. Returns true when the turn was spent
+    // pausing/scanning in place — skip the movement loop entirely.
+    if (level === "NORMAL" && this.stepPatrolTurn(state, guard)) return;
 
     const steps = Math.max(1, guard.stepsPerTurn ?? 1);
     for (let i = 0; i < steps; i++) {
@@ -184,7 +198,45 @@ class GuardSystem {
     return GUARD_BASE_RANGE;
   }
 
+  /** Once-per-turn patrol bookkeeping. Returns true if the turn was consumed in
+   *  place (paused at a node, or idle-scanning a no-route guard), in which case
+   *  the caller skips the per-step movement loop. */
+  private stepPatrolTurn(state: WorldState, guard: Entity): boolean {
+    // Displaced by a prior chase — let the movement loop walk it home via
+    // pursueViaPath. Abandon any dwell carried over from before the chase so a
+    // stale countdown can't strand the guard (stepPatrol early-returns while
+    // paused). The route resumes from patrolIndex once it's home.
+    if (guard.homeRoomId && guard.roomId !== guard.homeRoomId) {
+      if ((guard.patrolPauseRemaining ?? 0) > 0) guard.patrolPauseRemaining = 0;
+      return false;
+    }
+
+    const route = guard.patrol;
+    if (!route || route.length === 0) {
+      this.stepIdleScan(state, guard);
+      return true;
+    }
+
+    // Dwelling at the current node: count down once per turn, sweeping the FOV
+    // so a YELLOW/RED player can wander into a fresh facing. When the dwell
+    // expires, advance to the next node so next turn the guard departs.
+    if ((guard.patrolPauseRemaining ?? 0) > 0) {
+      guard.patrolPauseRemaining = (guard.patrolPauseRemaining ?? 0) - 1;
+      this.rotateScan(guard);
+      if (guard.patrolPauseRemaining === 0) {
+        this.advancePatrolIndex(guard, route.length);
+      }
+      return true;
+    }
+
+    return false;
+  }
+
   private stepPatrol(state: WorldState, guard: Entity): void {
+    // A dwelling guard never moves — leftover step-loop iterations after an
+    // arrival are no-ops (the countdown is handled once/turn in stepPatrolTurn).
+    if ((guard.patrolPauseRemaining ?? 0) > 0) return;
+
     // If a chase displaced this guard out of its home room, walk back before
     // resuming patrol. patrolIndex is preserved so the route resumes mid-cycle
     // rather than restarting at node 0.
@@ -194,18 +246,57 @@ class GuardSystem {
     }
     const route = guard.patrol;
     if (!route || route.length === 0) return;
-    const idx = guard.patrolIndex ?? 0;
-    const node = route[idx % route.length];
+    const idx = (guard.patrolIndex ?? 0) % route.length;
+    const node = route[idx];
     const wp = node.pos;
     if (guard.pos.x === wp.x && guard.pos.y === wp.y) {
-      guard.patrolIndex = (idx + 1) % route.length;
       if (node.faceOnArrival && guard.facing !== node.faceOnArrival) {
         guard.facing = node.faceOnArrival;
         eventBus.emit("ENTITY_FACING_CHANGED", { entityId: guard.id, facing: guard.facing });
       }
+      // Authored dwell: hold here for N turns (consumed by stepPatrolTurn)
+      // before advancing. Otherwise move on immediately.
+      if ((node.pause ?? 0) > 0) {
+        guard.patrolPauseRemaining = node.pause;
+        return;
+      }
+      this.advancePatrolIndex(guard, route.length);
       return;
     }
     this.advanceToward(state, guard, wp);
+  }
+
+  /** Advance patrolIndex per the route's traversal mode. "loop" cycles
+   *  start→end→start; "pingpong" reverses at each end (tracked in patrolDir). */
+  private advancePatrolIndex(guard: Entity, len: number): void {
+    if (len <= 1) {
+      guard.patrolIndex = 0;
+      return;
+    }
+    const idx = guard.patrolIndex ?? 0;
+    if ((guard.patrolMode ?? "loop") === "pingpong") {
+      let dir = guard.patrolDir ?? 1;
+      let next = idx + dir;
+      if (next >= len) {
+        dir = -1;
+        next = len - 2;
+      } else if (next < 0) {
+        dir = 1;
+        next = 1;
+      }
+      guard.patrolDir = dir;
+      guard.patrolIndex = next;
+    } else {
+      guard.patrolIndex = (idx + 1) % len;
+    }
+  }
+
+  /** No-route guard idle behavior: a slow FOV sweep on a fixed cadence so it
+   *  scans the room without spinning a quarter-turn every tick. */
+  private stepIdleScan(state: WorldState, guard: Entity): void {
+    if (state.turn % IDLE_SCAN_PERIOD === 0) {
+      this.rotateScan(guard);
+    }
   }
 
   /** Step toward (or cross) the first-hop doorway leading to `targetRoomId`.

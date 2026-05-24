@@ -353,9 +353,9 @@ export function commonwealthEra(): EraSeed {
     status: "ACTIVE",
     stepsPerTurn: 1,
     patrol: [
-      { pos: { x: 2, y: 4 }, faceOnArrival: "east" },
+      { pos: { x: 2, y: 4 }, faceOnArrival: "east", pause: 2 },
       { pos: { x: 7, y: 4 }, faceOnArrival: "south" },
-      { pos: { x: 7, y: 6 }, faceOnArrival: "west" },
+      { pos: { x: 7, y: 6 }, faceOnArrival: "west", pause: 2 },
       { pos: { x: 2, y: 6 }, faceOnArrival: "north" },
     ],
     patrolIndex: 0,
@@ -401,6 +401,8 @@ export function commonwealthEra(): EraSeed {
       { pos: { x: 4, y: 2 }, faceOnArrival: "south" },
     ],
     patrolIndex: 0,
+    patrolMode: "pingpong",
+    patrolDir: 1,
   };
 
   const corridorVent = corridorP.marks["V_1_6"] ?? { x: 1, y: 6 };

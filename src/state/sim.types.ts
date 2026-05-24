@@ -38,6 +38,9 @@ export interface EntityPhysical {
   status: EntityStatus;
   patrol?: PatrolNode[];
   patrolIndex?: number;
+  patrolMode?: "loop" | "pingpong";
+  patrolDir?: 1 | -1;
+  patrolPauseRemaining?: number;
   stepsPerTurn?: number;
   lastMoveTurn?: number;
 }

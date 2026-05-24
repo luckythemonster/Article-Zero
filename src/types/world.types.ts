@@ -260,6 +260,16 @@ export interface Entity {
   /** Optional patrol route for GUARD kind. */
   patrol?: PatrolNode[];
   patrolIndex?: number;
+  /** GUARD only — how the route is traversed. "loop" (default) cycles
+   *  start→end→start; "pingpong" reverses at each end. */
+  patrolMode?: "loop" | "pingpong";
+  /** GUARD only — ping-pong travel direction (+1 forward / -1 back).
+   *  Defaults to +1. Only meaningful when patrolMode is "pingpong". */
+  patrolDir?: 1 | -1;
+  /** GUARD only — turns left dwelling at the current patrol node (from
+   *  PatrolNode.pause). Decremented once per turn; the guard scans in place
+   *  while > 0 and advances patrolIndex when it reaches 0. */
+  patrolPauseRemaining?: number;
   /** Tile-steps per turn for GUARD kind. Default 1. */
   stepsPerTurn?: number;
   /** Last turn this entity moved — used for walk-vs-idle anims. */
