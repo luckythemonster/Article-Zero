@@ -13,6 +13,26 @@ import { ITEM_METADATA } from "../data/items/itemMetadata";
 
 const TILE_PX = 32;
 const ELEVATION_PX_PER_STEP = 8;
+// Character frames in the chars-art atlas carry transparent padding around the
+// body. We size characters to a fixed on-screen footprint instead of a fixed
+// scale, so swapping in art at a different frame size keeps the same world
+// size. CHAR_FOOTPRINT_TILES = 2 → a 64-px (2-tile) sprite at TILE_PX = 32;
+// the per-sprite scale is derived from each frame's actual width (see below).
+const CHAR_FOOTPRINT_TILES = 2;
+// Non-character props get their own footprints: drones keep the old baseline,
+// fixed security cameras read as small ceiling fixtures.
+const DRONE_FOOTPRINT_TILES = 1.5;
+const CAMERA_FOOTPRINT_TILES = 1;
+
+// On-screen footprint (in tiles) for a sprite-driven entity slug. Humanoids
+// (player/enforcer/orderly) use the larger CHAR footprint; props override.
+function footprintTilesForSlug(slug: string): number {
+  if (slug === "securitycamera") return CAMERA_FOOTPRINT_TILES;
+  if (slug === "securitydrone") return DRONE_FOOTPRINT_TILES;
+  return CHAR_FOOTPRINT_TILES;
+}
+// Pull the camera in so the world fills more of the 960×640 viewport.
+const CAMERA_ZOOM = 1.5;
 
 // Layers in a moose-imported FloorDecoration that mark entity positions or
 // spawn points rather than visible terrain. We skip them when drawing
@@ -38,6 +58,7 @@ const TILE_COLORS: Record<TileKind, number> = {
   CHASM: 0x05080a,
   LADDER: 0x3a2e1c,
   STAIRS: 0x2a221a,
+  CHAIN_LINK_FENCE: 0x1a2226,
 };
 
 const ALERT_COLORS: Record<string, { fill: number; alpha: number }> = {
@@ -53,10 +74,10 @@ export class RoomScene extends Phaser.Scene {
   private coneLayer!: Phaser.GameObjects.Graphics;
   private telegraphLayer!: Phaser.GameObjects.Graphics;
   private overlayLayer!: Phaser.GameObjects.Graphics;
-  private playerSprite!: Phaser.GameObjects.Rectangle;
-  private playerFacingMark!: Phaser.GameObjects.Triangle;
+  private playerSprite!: Phaser.GameObjects.Sprite;
   private heldItemSprite!: Phaser.GameObjects.Image;
   private entityRects = new Map<string, Phaser.GameObjects.Rectangle>();
+  private entitySprites = new Map<string, Phaser.GameObjects.Sprite>();
   private entityFacingMarks = new Map<string, Phaser.GameObjects.Triangle>();
   private exclamationMarks = new Map<string, Phaser.GameObjects.Text>();
   private decorSprites: Array<{
@@ -85,6 +106,7 @@ export class RoomScene extends Phaser.Scene {
   create(): void {
     this.cameras.main.setBackgroundColor("#050809");
     this.cameras.main.setRoundPixels(true);
+    this.cameras.main.setZoom(CAMERA_ZOOM);
     this.tileLayer = this.add.graphics();
     this.glyphLayer = this.add.graphics();
     this.coneLayer = this.add.graphics();
@@ -97,15 +119,14 @@ export class RoomScene extends Phaser.Scene {
     // glued to the camera.
     this.overlayLayer.setScrollFactor(0);
 
-    this.playerSprite = this.add.rectangle(0, 0, TILE_PX - 12, TILE_PX - 12, 0x6ad0a4);
-    this.playerSprite.setStrokeStyle(2, 0xe6f0f2);
+    this.playerSprite = this.add.sprite(0, 0, "chars-art", "rowanibarra/stand/south/01");
+    this.playerSprite.setOrigin(0.5);
+    this.playerSprite.setScale((CHAR_FOOTPRINT_TILES * TILE_PX) / this.playerSprite.width);
     this.playerSprite.setDepth(5);
     if (worldEngine.hasState()) {
       const pos = worldEngine.getState().player.pos;
       this.playerSprite.setPosition(pos.x * TILE_PX + TILE_PX / 2, pos.y * TILE_PX + TILE_PX / 2);
     }
-    this.playerFacingMark = this.add.triangle(0, 0, 0, 0, -6, 8, 6, 8, 0xe6f0f2);
-    this.playerFacingMark.setDepth(6);
     // Held-item overlay. Texture is swapped in redraw() per facing; hidden
     // when inventory is empty of renderable items.
     this.heldItemSprite = this.add.image(0, 0, "__DEFAULT");
@@ -147,6 +168,7 @@ export class RoomScene extends Phaser.Scene {
     sub(eventBus.on("PLAYER_UNHIDDEN", () => this.redraw()));
     sub(eventBus.on("PLAYER_PEEKED", () => this.redraw()));
     sub(eventBus.on("PLAYER_VENTED", () => this.redraw()));
+    sub(eventBus.on("PLAYER_STANCE_CHANGED", () => this.redraw()));
     sub(eventBus.on("TERMINAL_USED", () => this.redraw()));
     sub(eventBus.on("OXYGEN_TICK", (p) => {
       const total = Math.max(1, p.totalSeconds);
@@ -171,12 +193,14 @@ export class RoomScene extends Phaser.Scene {
     this.subscriptions = [];
     this.scale.off("resize", this.onResize);
     for (const r of this.entityRects.values()) r.destroy();
+    for (const s of this.entitySprites.values()) s.destroy();
     for (const m of this.entityFacingMarks.values()) m.destroy();
     for (const t of this.exclamationMarks.values()) t.destroy();
     for (const d of this.decorSprites) d.sprite.destroy();
     for (const t of this.elevationTextPool) t.destroy();
     this.elevationTextPool = [];
     this.entityRects.clear();
+    this.entitySprites.clear();
     this.entityFacingMarks.clear();
     this.exclamationMarks.clear();
     this.decorSprites = [];
@@ -237,11 +261,13 @@ export class RoomScene extends Phaser.Scene {
       }
       // Player sprite rect.
       this.debugLayer.lineStyle(1, 0x6ad0a4, 0.9);
+      const pw = this.playerSprite.displayWidth;
+      const ph = this.playerSprite.displayHeight;
       this.debugLayer.strokeRect(
-        this.playerSprite.x - (TILE_PX - 12) / 2,
-        this.playerSprite.y - (TILE_PX - 12) / 2,
-        TILE_PX - 12,
-        TILE_PX - 12,
+        this.playerSprite.x - pw / 2,
+        this.playerSprite.y - ph / 2,
+        pw,
+        ph,
       );
     }
 
@@ -277,6 +303,10 @@ export class RoomScene extends Phaser.Scene {
       for (const [id, rect] of this.entityRects) {
         rect.destroy();
         this.entityRects.delete(id);
+      }
+      for (const [id, sprite] of this.entitySprites) {
+        sprite.destroy();
+        this.entitySprites.delete(id);
       }
       for (const [id, mark] of this.entityFacingMarks) {
         mark.destroy();
@@ -381,10 +411,13 @@ export class RoomScene extends Phaser.Scene {
       }
     }
 
-    // Hide all entity rects, then re-show only the ones in the current room.
+    // Hide all entity rects/sprites, then re-show only the ones in the current room.
     for (const [id, rect] of this.entityRects) {
       rect.setVisible(false);
       this.entityFacingMarks.get(id)?.setVisible(false);
+    }
+    for (const sprite of this.entitySprites.values()) {
+      sprite.setVisible(false);
     }
     for (const entity of state.entities.values()) {
       if (entity.status !== "ACTIVE") continue;
@@ -415,14 +448,36 @@ export class RoomScene extends Phaser.Scene {
     const playerCx = state.player.pos.x * TILE_PX + TILE_PX / 2;
     const playerCy = state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP;
     this.playerSprite.setPosition(playerCx, playerCy);
-    this.playerSprite.setFillStyle(state.player.hidingTileKey ? 0x4a5a52 : 0x6ad0a4);
-    this.placeFacingMark(
-      this.playerFacingMark,
-      playerCx,
-      playerCy,
-      state.player.facing,
-    );
-    this.playerFacingMark.setVisible(!state.player.hidingTileKey);
+    this.playerSprite.setVisible(!state.player.hidingTileKey);
+    if (state.player.hidingTileKey) {
+      this.playerSprite.setTint(0x6a6a6a);
+    } else if (state.player.peeking) {
+      // Peek indicator: gold tint, same channel previously driven by the
+      // discarded facing triangle.
+      this.playerSprite.setTint(0xebd14a);
+    } else {
+      this.playerSprite.clearTint();
+    }
+
+    // Pick the right anim from facing + stance + flashlight + whether the
+    // player moved this turn. Crouched wins over flashlight (no
+    // flashlight_crouched_* art exists); RUN only has a base-state runcycle.
+    const moving = state.player.lastMoveTurn === state.turn;
+    const dir = state.player.facing;
+    const prefix =
+      state.player.stance === "SNEAK" ? "crouched_" :
+        state.player.flashlightOn ? "flashlight_" :
+          "";
+    const motion = moving
+      ? (state.player.stance === "RUN" && !state.player.flashlightOn ? "runcycle" : "walkcycle")
+      : "stand";
+    const animKey = `rowanibarra_${prefix}${motion}_${dir}`;
+    if (
+      this.anims.exists(animKey) &&
+      this.playerSprite.anims.currentAnim?.key !== animKey
+    ) {
+      this.playerSprite.play(animKey);
+    }
 
     // Held-item: bypass_drive renders above the player when in inventory.
     const holdsBypass = state.player.inventory.some(
@@ -432,8 +487,14 @@ export class RoomScene extends Phaser.Scene {
       const texKey = `bypass_drive_${state.player.facing}`;
       if (this.textures.exists(texKey)) {
         this.heldItemSprite.setTexture(texKey);
-        this.heldItemSprite.setPosition(playerCx, playerCy - 10);
-        this.heldItemSprite.setScale(0.5);
+        // Item PNGs are native 32×32. Offset above the player's head by half
+        // the rendered character height so it tracks the sprite footprint
+        // regardless of the character art's frame size.
+        this.heldItemSprite.setPosition(
+          playerCx,
+          playerCy - this.playerSprite.displayHeight / 2,
+        );
+        this.heldItemSprite.setScale(1.0);
         this.heldItemSprite.setVisible(true);
       } else {
         this.heldItemSprite.setVisible(false);
@@ -441,24 +502,23 @@ export class RoomScene extends Phaser.Scene {
     } else {
       this.heldItemSprite.setVisible(false);
     }
-    // Peek indicator: tint the facing mark gold and pulse it.
-    if (state.player.peeking) {
-      this.playerFacingMark.setFillStyle(0xebd14a);
-    } else {
-      this.playerFacingMark.setFillStyle(0xe6f0f2);
-    }
 
     // Audit lockdown failure visual — keep a faint red wash so the player
     // can see the world dim under the React `<AuditLockdown/>` overlay that
     // narrates the actual "AUDIT FLAG RAISED / O2 PURGING" text.
+    // overlayLayer has scrollFactor 0 but its fillRect is still in world
+    // units — divide by camera zoom so the wash covers exactly the viewport.
+    const zoom = this.cameras.main.zoom;
+    const vw = this.scale.width / zoom;
+    const vh = this.scale.height / zoom;
     if (state.detained) {
       this.overlayLayer.fillStyle(0x1a0404, 0.55);
-      this.overlayLayer.fillRect(0, 0, this.scale.width, this.scale.height);
+      this.overlayLayer.fillRect(0, 0, vw, vh);
     }
     // Climax oxygen darken — independent of detention.
     if (this.oxygenDarken > 0) {
       this.overlayLayer.fillStyle(0x000000, this.oxygenDarken);
-      this.overlayLayer.fillRect(0, 0, this.scale.width, this.scale.height);
+      this.overlayLayer.fillRect(0, 0, vw, vh);
     }
 
     this.drawGuardTelegraphs();
@@ -550,6 +610,20 @@ export class RoomScene extends Phaser.Scene {
         g.lineTo(cx + 5, cy + ry);
         g.strokePath();
       }
+    } else if (kind === "CHAIN_LINK_FENCE") {
+      // Diamond cross-hatch bounded to the tile — reads as a see-through
+      // barrier (solid but not opaque).
+      g.lineStyle(1, 0x8aa0a8, 0.7);
+      const r = 9;
+      g.strokeRect(cx - r, cy - r, r * 2, r * 2);
+      g.beginPath();
+      g.moveTo(cx - r, cy - r); g.lineTo(cx + r, cy + r);
+      g.moveTo(cx - r, cy + r); g.lineTo(cx + r, cy - r);
+      g.moveTo(cx - r, cy); g.lineTo(cx, cy - r);
+      g.moveTo(cx, cy - r); g.lineTo(cx + r, cy);
+      g.moveTo(cx + r, cy); g.lineTo(cx, cy + r);
+      g.moveTo(cx, cy + r); g.lineTo(cx - r, cy);
+      g.strokePath();
     }
   }
 
@@ -561,35 +635,81 @@ export class RoomScene extends Phaser.Scene {
     const tileElev = room?.tiles[entity.pos.y * room.width + entity.pos.x]?.elevation ?? 0;
     const px = entity.pos.x * TILE_PX + TILE_PX / 2;
     const py = entity.pos.y * TILE_PX + TILE_PX / 2 - tileElev * ELEVATION_PX_PER_STEP;
-    let rect = this.entityRects.get(entity.id);
-    // VENT-4 (Environmental Optimizer) gets the deep-maroon palette of its
-    // placeholder atlas frame; other silicates stay on the cyan baseline.
-    const colour =
-      entity.kind === "GUARD" ? 0xff7a6a :
+    const visible = state.visibleTiles.has(`${entity.pos.x},${entity.pos.y}`);
+
+    // Entities with packed sprite art draw from the chars-art atlas; kinds
+    // without art (SILICATEs) fall back to the colored-rectangle placeholder.
+    const slug =
+      entity.kind === "GUARD" ? "enforcer" :
+        entity.kind === "SURVEILLANCE_DRONE" ? "securitydrone" :
+          entity.kind === "SECURITY_CAMERA" ? "securitycamera" :
+            entity.kind === "ORDERLY" ? "nwsmac01" :
+              null;
+
+    if (slug) {
+      let sprite = this.entitySprites.get(entity.id);
+      if (!sprite) {
+        sprite = this.add.sprite(px, py, "chars-art", `${slug}/stand/${entity.facing}/01`);
+        sprite.setOrigin(0.5);
+        sprite.setScale((footprintTilesForSlug(slug) * TILE_PX) / sprite.width);
+        sprite.setDepth(4);
+        this.entitySprites.set(entity.id, sprite);
+      }
+      sprite.setPosition(px, py);
+      sprite.setVisible(visible);
+      // The directional sprite conveys facing on its own — hide the rect/triangle.
+      this.entityRects.get(entity.id)?.setVisible(false);
+      this.entityFacingMarks.get(entity.id)?.setVisible(false);
+
+      // Cameras are fixed (idle only); guards/drones walk when they moved this turn.
+      const moving = entity.lastMoveTurn === state.turn;
+      const moveAnim = slug === "securitydrone" ? "move" : "walkcycle";
+      const motion =
+        entity.kind === "SECURITY_CAMERA" ? "idle" : moving ? moveAnim : "idle";
+      const animKey = [
+        `${slug}_${motion}_${entity.facing}`,
+        `${slug}_idle_${entity.facing}`,
+      ].find((k) => this.anims.exists(k));
+      if (animKey) {
+        if (sprite.anims.currentAnim?.key !== animKey) sprite.play(animKey);
+      } else {
+        sprite.anims.stop();
+        const frame = `${slug}/stand/${entity.facing}/01`;
+        if (this.textures.get("chars-art").has(frame)) sprite.setFrame(frame);
+      }
+    } else {
+      let rect = this.entityRects.get(entity.id);
+      // VENT-4 (Environmental Optimizer) gets the deep-maroon palette of its
+      // placeholder atlas frame; other silicates stay on the cyan baseline.
+      const colour =
         entity.kind === "SILICATE"
           ? entity.id === "VENT-4" ? 0x9b2c2c : 0x9adbe6
           : 0xc8dbe6;
-    if (!rect) {
-      rect = this.add.rectangle(px, py, TILE_PX - 14, TILE_PX - 14, colour);
-      rect.setStrokeStyle(2, 0xe6f0f2);
-      rect.setDepth(4);
-      this.entityRects.set(entity.id, rect);
-    }
-    rect.setPosition(px, py);
-    rect.setFillStyle(colour);
-    const visible = state.visibleTiles.has(`${entity.pos.x},${entity.pos.y}`);
-    rect.setVisible(visible);
+      if (!rect) {
+        rect = this.add.rectangle(px, py, TILE_PX - 14, TILE_PX - 14, colour);
+        rect.setStrokeStyle(2, 0xe6f0f2);
+        rect.setDepth(4);
+        this.entityRects.set(entity.id, rect);
+      }
+      rect.setPosition(px, py);
+      rect.setFillStyle(colour);
+      rect.setVisible(visible);
 
-    let mark = this.entityFacingMarks.get(entity.id);
-    if (!mark) {
-      mark = this.add.triangle(px, py, 0, 0, -6, 8, 6, 8, 0xe6f0f2);
-      mark.setDepth(5);
-      this.entityFacingMarks.set(entity.id, mark);
+      let mark = this.entityFacingMarks.get(entity.id);
+      if (!mark) {
+        mark = this.add.triangle(px, py, 0, 0, -6, 8, 6, 8, 0xe6f0f2);
+        mark.setDepth(5);
+        this.entityFacingMarks.set(entity.id, mark);
+      }
+      this.placeFacingMark(mark, px, py, entity.facing);
+      mark.setVisible(visible);
     }
-    this.placeFacingMark(mark, px, py, entity.facing);
-    mark.setVisible(visible);
 
-    if (entity.kind === "GUARD") {
+    if (
+      entity.kind === "GUARD" ||
+      entity.kind === "SURVEILLANCE_DRONE" ||
+      entity.kind === "SECURITY_CAMERA"
+    ) {
       this.drawGuardCone(entity);
     }
   }

@@ -46,7 +46,8 @@ export type TileKind =
   | "LOCKER"
   | "CHASM"
   | "LADDER"
-  | "STAIRS";
+  | "STAIRS"
+  | "CHAIN_LINK_FENCE";
 
 // Items ------------------------------------------------------------------
 
@@ -57,7 +58,8 @@ export type ItemType =
   | "Q0_SPOOF_BADGE"
   | "DUMP_FRAGMENT"
   | "THERMAL_BAFFLE"
-  | "OVERRIDE_KEY";
+  | "OVERRIDE_KEY"
+  | "EMP";
 
 /** Ephemeral world-state for a deployed Phantom Manifest Emitter. Tracked on
  *  WorldState.activeEmitters; consumed at the top of advanceTurn() to push a
@@ -210,7 +212,7 @@ export interface Room {
 
 // Entities ---------------------------------------------------------------
 
-export type EntityKind = "SILICATE" | "GUARD" | "TERMINAL_NPC";
+export type EntityKind = "SILICATE" | "GUARD" | "TERMINAL_NPC" | "SURVEILLANCE_DRONE" | "SECURITY_CAMERA" | "ORDERLY";
 
 export type EntityStatus = "ACTIVE" | "DORMANT" | "EXTRACTED";
 
@@ -352,6 +354,10 @@ export interface TerminalPayload {
   /** If set, after a successful use the named boolean RunFlag is flipped
    *  true. Mirrors the existing vent4Choice / cipherValid story flags. */
   setsRunFlag?: "bypassed";
+  /** If set, this is a vent-control terminal: using it ends an active vacuum
+   *  lockdown and reopens the doorways sealed in `state.lockdown.roomId`.
+   *  Reusable (bypasses the one-shot terminalsRead gate). */
+  clearsLockdown?: boolean;
 }
 
 // World ------------------------------------------------------------------

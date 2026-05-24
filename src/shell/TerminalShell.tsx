@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTerminalStore } from "../state/useTerminalStore";
 import { applySettings, loadSettings } from "./settings";
 import { installEventBridge } from "./eventBridge";
@@ -17,8 +17,12 @@ import ArchiveEpilogue from "../components/ArchiveEpilogue";
 import DebugOverlay from "../components/DebugOverlay";
 import SpriteGallery from "../components/SpriteGallery";
 import InventoryOverlay from "../components/InventoryOverlay";
+import ExecuteResetModal from "../components/ExecuteResetModal";
+import FullscreenFlash from "./FullscreenFlash";
+import TitleScreen from "./TitleScreen";
 
 export default function TerminalShell() {
+  const [started, setStarted] = useState(false);
   const activeModule = useTerminalStore((s) => s.activeModuleId);
   const phase = useTerminalStore((s) => s.phase);
 
@@ -47,6 +51,10 @@ export default function TerminalShell() {
     document.body.classList.toggle("theme-commonwealth", !lattice);
   }, [phase]);
 
+  if (!started) {
+    return <TitleScreen onStart={() => setStarted(true)} />;
+  }
+
   return (
     <div className="shell-grid">
       <StatusBar />
@@ -66,6 +74,7 @@ export default function TerminalShell() {
               </>
             )}
             {(phase === "FLOOR" || phase === "CLIMAX") && <InventoryOverlay />}
+            <ExecuteResetModal />
             <AuditLockdown />
           </PhaserCanvas>
         ) : (
@@ -78,6 +87,7 @@ export default function TerminalShell() {
       </footer>
       <DebugOverlay />
       <SpriteGallery />
+      <FullscreenFlash />
     </div>
   );
 }

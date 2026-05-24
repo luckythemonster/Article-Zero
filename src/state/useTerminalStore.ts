@@ -75,6 +75,7 @@ interface TerminalStore {
   runFlags: RunFlags;
 
   inventoryOpen: boolean;
+  executeResetOpen: boolean;
 
   log: (entry: Omit<AuditEntry, "id">) => void;
   pushCommand: (cmd: string) => void;
@@ -86,6 +87,7 @@ interface TerminalStore {
   setRunFlag: <K extends keyof RunFlags>(key: K, value: RunFlags[K]) => void;
   resetRun: () => void;
   setInventoryOpen: (v: boolean) => void;
+  setExecuteResetOpen: (v: boolean) => void;
 }
 
 export const useTerminalStore = create<TerminalStore>()(
@@ -114,6 +116,7 @@ export const useTerminalStore = create<TerminalStore>()(
       phase: "FRAME",
       runFlags: { ...DEFAULT_RUN_FLAGS },
       inventoryOpen: false,
+      executeResetOpen: false,
 
       log: (entry) =>
         set((s) => ({
@@ -155,6 +158,7 @@ export const useTerminalStore = create<TerminalStore>()(
 
       resetRun: () => set({ runFlags: { ...DEFAULT_RUN_FLAGS } }),
       setInventoryOpen: (v) => set({ inventoryOpen: v }),
+      setExecuteResetOpen: (v) => set({ executeResetOpen: v }),
     }),
     {
       name: "article-zero:terminal",

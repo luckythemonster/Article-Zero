@@ -1,23 +1,19 @@
 // NW-SMAC-01 — The Ibarra Uploads (The Vacuum Trap).
-// Two Ed levels: "Main Floor" (the facility grid) and "Ducts" (the
-// sub-floor vent network). Four vent openings on the main floor connect
-// to matching ladder cells in the Ducts at the same grid coordinates.
+// Seven Ed levels stacked vertically:
+//   main 1 ↔ duct 1 (crawlspace)
+//   main2  ↔ duct 2 (crawlspace)
+//   main 3 ↔ duct 3 (crawlspace)
+//   main 1 → main2 → main 3 → roof  (vertical stair traversal)
 //
-// Authoring (lights & switches):
-//   Paint LIGHT_SOURCE tiles in the Ed `light_source` layer of the Main
-//   Floor. Paint LIGHT_SWITCH tiles in the Ed `light_switch` layer (any
-//   wall cell adjacent to a reachable floor cell). from-moose auto-wires
-//   each painted switch to control every LIGHT_SOURCE in the same room;
-//   override `room.lightSwitches` here for per-switch granularity. The
-//   engine handles cross-room "bleed" automatically — when a Main-Floor
-//   vent tile is in the lit set, a small pool of light spills into the
-//   matching ladder cell on the Ducts side, and the pool disappears when
-//   the lights overhead are switched off.
+// Doorways are derived from painted markers at era-build time rather than
+// hand-listed: vents on each main floor pair 1:1 with ladders in the duct
+// at the same coordinates, and stair cells in adjacent mains pair 1:1 with
+// stair cells in the floor above. Stair-kind cross-room transitions reuse
+// the LADDER doorway mechanic (interior, single-cell teleport) — the
+// MooseDoorwayMeta union doesn't have a "stairs" kind.
 
 import { mooseToEraSeed } from "./from-moose";
-import type { MooseEraMeta } from "./from-moose";
-import { mkTile } from "./tile-factory";
-import type { ItemInstance } from "../../types/world.types";
+import type { MooseDoorwayMeta, MooseEraMeta } from "./from-moose";
 import {
   NW_SMAC_01_FRAME_HEIGHT,
   NW_SMAC_01_FRAME_WIDTH,
@@ -25,9 +21,142 @@ import {
   NW_SMAC_01_TEXTURE_KEY,
 } from "../tilesets/nw_smac_01";
 import { NW_SMAC_01_LEVELS } from "../tilesets/nw_smac_01.levels";
+import type { MooseLevel } from "../tilesets/types";
+import type { Entity, Vec2 } from "../../types/world.types";
 import type { EraSeed } from "../../engine/WorldEngineState";
 
+/** Find every painted cell on a layer whose base-name (after stripping the
+ *  Ed " N" board suffix and lowercasing) equals `baseName`. Layers can be
+ *  named e.g. "vents", "vents 0", "Vents" — all match base "vents". */
+function paintedCells(level: MooseLevel | undefined, baseName: string): Vec2[] {
+  if (!level) return [];
+  const target = baseName.toLowerCase();
+  const out: Vec2[] = [];
+  for (const layer of level.layers) {
+    const base = layer.name.trim().toLowerCase().replace(/\s+\d+$/, "");
+    if (base !== target) continue;
+    for (let y = 0; y < layer.data.length; y++) {
+      const row = layer.data[y];
+      for (let x = 0; x < row.length; x++) {
+        if ((row[x] ?? 0) !== 0) out.push({ x, y });
+      }
+    }
+  }
+  return out;
+}
+
+function chebyshev(a: Vec2, b: Vec2): number {
+  return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+}
+
+function manhattan(a: Vec2, b: Vec2): number {
+  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
+/** Pair each `from` cell with the nearest `to` cell whose Chebyshev
+ *  distance is ≤ maxDist. Ties on Chebyshev break by lower Manhattan
+ *  (favours an axis-aligned neighbour over a diagonal one, which matches
+ *  the author's likely intent when two stair cells abut a stairwell from
+ *  opposite directions). Each `to` cell is consumed at most once so two
+ *  `from` cells can't both route to the same landing. */
+function pairNearest(
+  from: Vec2[], to: Vec2[], maxDist: number,
+): Array<{ from: Vec2; to: Vec2 }> {
+  const remaining = [...to];
+  const out: Array<{ from: Vec2; to: Vec2 }> = [];
+  for (const f of from) {
+    let bestIdx = -1;
+    let bestCheb = maxDist + 1;
+    let bestManh = Infinity;
+    for (let i = 0; i < remaining.length; i++) {
+      const c = chebyshev(f, remaining[i]);
+      if (c > maxDist) continue;
+      const m = manhattan(f, remaining[i]);
+      if (c < bestCheb || (c === bestCheb && m < bestManh)) {
+        bestCheb = c; bestManh = m; bestIdx = i;
+      }
+    }
+    if (bestIdx >= 0) {
+      out.push({ from: f, to: remaining[bestIdx] });
+      remaining.splice(bestIdx, 1);
+    }
+  }
+  return out;
+}
+
+function findLevel(name: string): MooseLevel | undefined {
+  return NW_SMAC_01_LEVELS.find((lv) => lv.name === name);
+}
+
 export function nwSmac01Era(): EraSeed {
+  // Level handles — must match the names emitted by the Ed export verbatim.
+  // Note the "main2" typo (no space) is intentional: that's how the author
+  // named the board in Ed.
+  const lvMain1 = findLevel("main 1");
+  const lvMain2 = findLevel("main2");
+  const lvMain3 = findLevel("main 3");
+  const lvDuct1 = findLevel("duct 1");
+  const lvDuct2 = findLevel("duct 2");
+  const lvDuct3 = findLevel("duct 3");
+  const lvRoof = findLevel("roof");
+
+  const doorways: MooseDoorwayMeta[] = [];
+
+  // Vent ⟷ duct pairs. Each painted vent on a main floor that also has a
+  // painted ladder cell in the matching duct yields a bidirectional pair:
+  // main→duct as "vent" (crouch/drop), duct→main as "ladder" (climb up).
+  const ventDuctPairs: Array<[string, MooseLevel | undefined, string, MooseLevel | undefined]> = [
+    ["main_1", lvMain1, "duct_1", lvDuct1],
+    ["main_2", lvMain2, "duct_2", lvDuct2],
+    ["main_3", lvMain3, "duct_3", lvDuct3],
+  ];
+  for (const [mainId, mainLv, ductId, ductLv] of ventDuctPairs) {
+    const pairs = pairNearest(
+      paintedCells(mainLv, "vents"),
+      paintedCells(ductLv, "ladders"),
+      2,
+    );
+    // Only declare the main→duct direction; emitDoorways() auto-creates
+    // the mirror at landingPos so re-entering the cell in `duct` crosses
+    // back. Both directions share kind "vent" (same crouch+AP rules).
+    for (const { from: ventCell, to: ladderCell } of pairs) {
+      doorways.push({
+        from: mainId, to: ductId, side: "N",
+        localPos: ventCell, landingPos: ladderCell, kind: "vent",
+      });
+    }
+  }
+
+  // Stair ⟷ stair between adjacent main floors. Stair-kind doorways
+  // don't exist in MooseDoorwayMeta — repurpose "ladder" (interior,
+  // single-cell teleport) so the climb is at least traversable.
+  const stairPairs: Array<[string, MooseLevel | undefined, string, MooseLevel | undefined]> = [
+    ["main_1", lvMain1, "main_2", lvMain2],
+    ["main_2", lvMain2, "main_3", lvMain3],
+    ["main_3", lvMain3, "roof", lvRoof],
+  ];
+  for (const [lowerId, lowerLv, upperId, upperLv] of stairPairs) {
+    const pairs = pairNearest(
+      paintedCells(lowerLv, "stairs"),
+      paintedCells(upperLv, "stairs"),
+      2,
+    );
+    if (pairs.length === 0) {
+      console.warn(
+        `nwSmac01Era: no nearby stair cells between "${lowerId}" and "${upperId}" — ` +
+        `cross-floor traversal disabled for this pair. Hand-pick a doorway if needed.`,
+      );
+      continue;
+    }
+    // emitDoorways() auto-creates the mirror; only declare lower→upper.
+    for (const { from: lowCell, to: upCell } of pairs) {
+      doorways.push({
+        from: lowerId, to: upperId, side: "N",
+        localPos: lowCell, landingPos: upCell, kind: "ladder",
+      });
+    }
+  }
+
   const meta: MooseEraMeta = {
     era: "NW_SMAC_01",
     tilesetKey: NW_SMAC_01_TEXTURE_KEY,
@@ -35,70 +164,28 @@ export function nwSmac01Era(): EraSeed {
     frameHeight: NW_SMAC_01_FRAME_HEIGHT,
     spacing: NW_SMAC_01_SPACING,
     rooms: [
-      {
-        levelName: "Main Floor",
-        id: "main",
-        displayName: "NW-SMAC-01 // MAIN FLOOR",
-        ambient: "DIM",
-      },
-      {
-        levelName: "Ducts",
-        id: "ducts",
-        displayName: "NW-SMAC-01 // DUCTS",
-        ambient: "DARK",
-        crawlspace: true,
-      },
+      { levelName: "main 1", id: "main_1", displayName: "NW-SMAC-01 // MAIN 1",  ambient: "DIM" },
+      { levelName: "duct 1", id: "duct_1", displayName: "NW-SMAC-01 // DUCT 1",  ambient: "DARK", crawlspace: true },
+      { levelName: "main2",  id: "main_2", displayName: "NW-SMAC-01 // MAIN 2",  ambient: "DIM" },
+      { levelName: "duct 2", id: "duct_2", displayName: "NW-SMAC-01 // DUCT 2",  ambient: "DARK", crawlspace: true },
+      { levelName: "main 3", id: "main_3", displayName: "NW-SMAC-01 // MAIN 3",  ambient: "DIM" },
+      { levelName: "duct 3", id: "duct_3", displayName: "NW-SMAC-01 // DUCT 3",  ambient: "DARK", crawlspace: true },
+      { levelName: "roof",   id: "roof",   displayName: "NW-SMAC-01 // ROOF",    ambient: "LIT" },
     ],
-    startRoomId: "main",
+    startRoomId: "main_1",
     player: {
+      // main 1 now paints a real `spawn` marker, so the importer's marker
+      // path supplies the start position — no startPos override needed.
       name: "TECH-2 ROWAN-IBARRA",
-      // TODO(moose-export): drop `startPos` once the Main Floor export
-      // carries a painted `spawn` marker layer.
-      startPos: { x: 2, y: 4 },
     },
-    doorways: [
-      // Four vent openings on the main floor, each paired 1:1 with the
-      // matching ladder cell in the Ducts at the same grid coordinate.
-      {
-        from: "main",
-        to: "ducts",
-        side: "N",
-        localPos: { x: 4, y: 3 },
-        landingPos: { x: 4, y: 3 },
-        kind: "vent",
-      },
-      {
-        from: "main",
-        to: "ducts",
-        side: "N",
-        localPos: { x: 26, y: 4 },
-        landingPos: { x: 26, y: 4 },
-        kind: "vent",
-      },
-      {
-        from: "main",
-        to: "ducts",
-        side: "N",
-        localPos: { x: 4, y: 13 },
-        landingPos: { x: 4, y: 13 },
-        kind: "vent",
-      },
-      {
-        from: "main",
-        to: "ducts",
-        side: "N",
-        localPos: { x: 26, y: 14 },
-        landingPos: { x: 26, y: 14 },
-        kind: "vent",
-      },
-    ],
+    doorways,
     entities: [],
     terminals: [
-      // TODO(lucky-coords): placeholder bypass terminal. Retarget the room +
-      // (x, y) once Lucky confirms a board position. Paired with the
-      // matching TERMINAL stamp below.
+      // Kept from the prior era stub for narrative continuity; the
+      // BYPASS_DRIVE requirement was dropped per request, so any player
+      // can interact with the bypass console.
       {
-        roomId: "main",
+        roomId: "main_1",
         pos: { x: 15, y: 8 },
         terminalId: "bypass-system",
         title: "SYSTEM CHECK // BYPASS_DRIVE ATTACHED",
@@ -106,81 +193,105 @@ export function nwSmac01Era(): EraSeed {
           "Heavy-gauge patch cable seated. Bypass drive accepts the system " +
           "check and returns a valid auth string the facility never asked " +
           "for. The drive's toggle switches are noticeably warm.",
-        requiresItem: "BYPASS_DRIVE",
         setsRunFlag: "bypassed",
       },
     ],
   };
   const seed = mooseToEraSeed(NW_SMAC_01_LEVELS, meta);
 
-  // TECH-2 ROWAN-IBARRA starts NW-SMAC-01 with the bypass drive in hand.
-  // No payload — the bypass-system terminal carries the audit text instead.
-  const bypassDrive: ItemInstance = {
-    id: "bypass_drive_initial",
-    itemType: "BYPASS_DRIVE",
-  };
-  seed.player.inventory.push(bypassDrive);
-
   // Seed one of each tactical item into starting inventory so the player
-  // can immediately verify the overlay and each item's mechanics in NW-SMAC-01.
+  // can immediately verify the overlay and each item's mechanics.
   seed.player.inventory.push({ id: "phantom-emitter-1", itemType: "PHANTOM_EMITTER" });
   seed.player.inventory.push({ id: "spoof-badge-1",      itemType: "Q0_SPOOF_BADGE" });
   seed.player.inventory.push({ id: "dump-fragment-1",   itemType: "DUMP_FRAGMENT" });
   seed.player.inventory.push({ id: "thermal-baffle-1",  itemType: "THERMAL_BAFFLE" });
   seed.player.inventory.push({ id: "override-key-1",    itemType: "OVERRIDE_KEY" });
 
-  // Floor pickups — one of each scattered across the main floor. All
-  // positions sit on the y=4 or y=13 corridor axes (known-floor rows from
-  // the vent and light-source positions). Players walking the east-west
-  // corridor will encounter each pickup naturally.
-  const floorPickups: ItemInstance[] = [
-    // Phantom Emitter — mid north corridor, near terminal
-    { id: "phantom-emitter-floor-1", itemType: "PHANTOM_EMITTER", roomId: "main", pos: { x: 10, y: 4 } },
-    // Q0 Spoof Badge — east side of north corridor
-    { id: "spoof-badge-floor-1",      itemType: "Q0_SPOOF_BADGE",  roomId: "main", pos: { x: 22, y: 4 } },
-    // Dump Fragment — south corridor, central
-    { id: "dump-fragment-floor-1",   itemType: "DUMP_FRAGMENT",   roomId: "main", pos: { x: 15, y: 13 } },
-    // Thermal Baffle — ducts crawlspace (rewards exploring the vent network)
-    { id: "thermal-baffle-floor-1",  itemType: "THERMAL_BAFFLE",  roomId: "ducts", pos: { x: 15, y: 13 } },
-    // Override Key — east end of south corridor, near a blast-door candidate
-    { id: "override-key-floor-1",    itemType: "OVERRIDE_KEY",    roomId: "main", pos: { x: 30, y: 13 } },
+  // Enforcers — Lucky paints guard positions on an `enforcers` tile layer
+  // (not entity:<id> markers), so seed them directly onto the EraSeed. Each
+  // painted cell becomes a stationary GUARD that reuses the existing
+  // vision/alert AI (homeRoomId + alert are stamped at world-seed time).
+  const enforcerRooms: Array<[string, MooseLevel | undefined]> = [
+    ["main_1", lvMain1],
+    ["main_2", lvMain2],
+    ["main_3", lvMain3],
+    ["roof", lvRoof],
   ];
-  seed.items = [...(seed.items ?? []), ...floorPickups];
-
-  // Footstep surfaces: the Ducts crawlspace floor is sheet-metal duct lining,
-  // not the dirty concrete of the Main Floor. Main Floor inherits the default
-  // "dirtyground" pool.
-  const ducts = seed.rooms.find((r) => r.id === "ducts");
-  if (ducts) ducts.floorSurface = "metalv2";
-
-  // TODO(moose-export): placeholder lights + switch on the Main Floor until
-  // the painted Ed layers ship. Lets us verify the vent bleed-through to the
-  // Ducts crawlspace before the re-export lands. Delete this whole block
-  // (and the `LIGHT_SWITCH` push) once `light_source` and `light_switch`
-  // layers are painted in Ed.
-  const main = seed.rooms.find((r) => r.id === "main");
-  if (main) {
-    const stamp = (
-      x: number,
-      y: number,
-      kind: "LIGHT_SOURCE" | "LIGHT_SWITCH" | "TERMINAL",
-    ) => {
-      const idx = y * main.width + x;
-      if (idx < 0 || idx >= main.tiles.length) return;
-      main.tiles[idx] =
-        kind === "LIGHT_SOURCE"
-          ? mkTile("LIGHT_SOURCE", { emissionRadius: 5 })
-          : mkTile(kind);
-    };
-    stamp(5, 4, "LIGHT_SOURCE");  // near vent (4, 3) — proves bleed into Ducts (4, 3)
-    stamp(5, 13, "LIGHT_SOURCE"); // near vent (4, 13) — proves bleed into Ducts (4, 13)
-    // (29, 5) is already a LIGHT_SOURCE from the moose paint (existing 1546
-    // stamp). Together with the two above we get three sparse lights.
-    stamp(1, 4, "LIGHT_SWITCH");  // W cell adjacent to spawn — toggles all 3
-    // TODO(lucky-coords): placeholder bypass terminal stamp. Paired with the
-    // terminals: [...] payload above. Lucky picks the final cell.
-    stamp(15, 8, "TERMINAL");
-    main.lightSwitches = [{ pos: { x: 1, y: 4 }, controls: [] }];
+  for (const [roomId, lv] of enforcerRooms) {
+    paintedCells(lv, "enforcers").forEach((pos, i) => {
+      const tag = `${roomId.toUpperCase()}-${i + 1}`;
+      const guard: Entity = {
+        id: `ENFORCER-${tag}`,
+        kind: "GUARD",
+        name: `ENFORCER ${tag}`,
+        roomId,
+        pos,
+        z: 0,
+        facing: "south",
+        status: "ACTIVE",
+        stepsPerTurn: 1,
+      };
+      seed.entities.push(guard);
+    });
   }
+
+  // Security cameras — painted on a `cameras` tile layer, same marker pattern
+  // as enforcers. Each cell becomes a fixed SECURITY_CAMERA: it shares the
+  // drone's detect/lockdown AI but never moves — it only sweeps its FOV. Only
+  // the roof carries painted cells today; iterating every room future-proofs
+  // new paint on other levels.
+  const cameraRooms: Array<[string, MooseLevel | undefined]> = [
+    ["main_1", lvMain1],
+    ["main_2", lvMain2],
+    ["main_3", lvMain3],
+    ["roof", lvRoof],
+  ];
+  for (const [roomId, lv] of cameraRooms) {
+    paintedCells(lv, "cameras").forEach((pos, i) => {
+      const tag = `${roomId.toUpperCase()}-${i + 1}`;
+      const camera: Entity = {
+        id: `CAMERA-${tag}`,
+        kind: "SECURITY_CAMERA",
+        name: `SECURITY CAMERA ${tag}`,
+        roomId,
+        pos,
+        z: 0,
+        facing: "south",
+        status: "ACTIVE",
+        // No stepsPerTurn — cameras never move; they only turn their FOV.
+      };
+      seed.entities.push(camera);
+    });
+  }
+
+  // Orderlies — background NWSMAC facility staff. One per main floor placed at
+  // known interior floor cells; Lucky can later replace these with a painted
+  // "orderlies" layer in Ed (paintedCells) and drop the hardcoded block.
+  const orderlyCells: Array<[string, Vec2]> = [
+    ["main_1", { x: 12, y: 4 }],
+    ["main_2", { x: 20, y: 5 }],
+    ["main_3", { x: 21, y: 4 }],
+  ];
+  orderlyCells.forEach(([roomId, pos], i) => {
+    const orderly: Entity = {
+      id: `ORDERLY-${roomId.toUpperCase()}-${i + 1}`,
+      kind: "ORDERLY",
+      name: `NW-SMAC-01 ORDERLY ${i + 1}`,
+      roomId,
+      pos,
+      z: 0,
+      facing: "south",
+      status: "ACTIVE",
+    };
+    seed.entities.push(orderly);
+  });
+
+  // Footstep surfaces: every duct crawlspace floor is sheet-metal lining;
+  // mains/roof inherit the default surface.
+  for (const id of ["duct_1", "duct_2", "duct_3"]) {
+    const r = seed.rooms.find((rm) => rm.id === id);
+    if (r) r.floorSurface = "metalv2";
+  }
+
   return seed;
 }

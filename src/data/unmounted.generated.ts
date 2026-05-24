@@ -11,6 +11,16 @@ export interface UnmountedFile {
 
 export const UNMOUNTED_FILES: UnmountedFile[] = [
   {
+    "path": "added by Lucky/AMBDsgn_Ground Floor_VZ_GN.wav",
+    "sizeBytes": 8641028,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/AMBTech_Computer Room_VZ_GN.wav",
+    "sizeBytes": 8641124,
+    "ext": "wav"
+  },
+  {
     "path": "added by Lucky/baffle theme.json",
     "sizeBytes": 17496,
     "ext": "json"
@@ -21,9 +31,109 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "zip"
   },
   {
-    "path": "added by Lucky/Commonwealth UI",
-    "sizeBytes": 13270,
+    "path": "added by Lucky/character sprites/Commonwealth Enforcer/Commonwealth_Enforcer.zip",
+    "sizeBytes": 390544,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/character sprites/Commonwealth Enforcer/readme",
+    "sizeBytes": 17,
     "ext": ""
+  },
+  {
+    "path": "added by Lucky/character sprites/NW-SMAC-01 Orderly/NW-SMAC-01_Orderly.zip",
+    "sizeBytes": 317681,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/character sprites/NW-SMAC-01 Orderly/readme",
+    "sizeBytes": 87,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/character sprites/NW-SMAC-01 Orderly/walking south.png",
+    "sizeBytes": 19534,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/character sprites/reADME",
+    "sizeBytes": 52,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/character sprites/Rowan Ibarra/readme",
+    "sizeBytes": 18,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/character sprites/Rowan Ibarra/Rowan_Ibarra.zip",
+    "sizeBytes": 1379009,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/CMPTDriv_Decryption Server_VZ_GN.wav",
+    "sizeBytes": 8641148,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/CMPTMisc_Machine Dreaming_VZ_GN.wav",
+    "sizeBytes": 9698106,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/COMStatic_Interference 001_VZ_GN.wav",
+    "sizeBytes": 2970394,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/COMStatic_Interference Tone 001_VZ_GN.wav",
+    "sizeBytes": 2009932,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/COMTelm_Telemetry Broken 001_VZ_GN.wav",
+    "sizeBytes": 5127534,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/COMTran_Intercom In 001_VZ_GN.wav",
+    "sizeBytes": 15530,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/COMTran_Intercom Out 001_VZ_GN.wav",
+    "sizeBytes": 39722,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/DAISY UI TEST",
+    "sizeBytes": 1125,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/Doctrinal Override Key (the red date).png",
+    "sizeBytes": 3683,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/DSGNRise_Confirm Deletion_VZ_GN.wav",
+    "sizeBytes": 5761124,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/DSGNRise_Kernel Panic_VZ_GN.wav",
+    "sizeBytes": 8641132,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/DSGNWhsh_Dystopian_VZ_GN.wav",
+    "sizeBytes": 1671510,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/DSGNWhsh_Lo-Fi Memories_VZ_GN.wav",
+    "sizeBytes": 2881152,
+    "ext": "wav"
   },
   {
     "path": "added by Lucky/EIRA-7 new.zip",
@@ -31,9 +141,99 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "zip"
   },
   {
-    "path": "added by Lucky/flashlight .zip",
-    "sizeBytes": 92432,
+    "path": "added by Lucky/flashlight.png",
+    "sizeBytes": 2052,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/John Sponky.json",
+    "sizeBytes": 49391,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/levels/NW-SMAC-01 alpha.zip",
+    "sizeBytes": 1674881,
     "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/levels/readme",
+    "sizeBytes": 29,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/Metadata.csv",
+    "sizeBytes": 184235,
+    "ext": "csv"
+  },
+  {
+    "path": "added by Lucky/mite-3.zip",
+    "sizeBytes": 651564,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/mnt:med.zip",
+    "sizeBytes": 143169,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/music/ALIGNMENT.json",
+    "sizeBytes": 35394,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/bloz.json",
+    "sizeBytes": 26802,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/crazy monkeou.json",
+    "sizeBytes": 30539,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/ff7 shinra vibes.json",
+    "sizeBytes": 44629,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/here come the robots again.json",
+    "sizeBytes": 23695,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/here come the robots.json",
+    "sizeBytes": 48143,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/lattice.json",
+    "sizeBytes": 27504,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/ploporchestra.json",
+    "sizeBytes": 29008,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/readme",
+    "sizeBytes": 40,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/music/spoit.json",
+    "sizeBytes": 28218,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/sporko.json",
+    "sizeBytes": 24160,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/sweeeo.json",
+    "sizeBytes": 31664,
+    "ext": "json"
   },
   {
     "path": "added by Lucky/NW-SMAC-01 chase.json",
@@ -46,29 +246,174 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "json"
   },
   {
+    "path": "added by Lucky/phantom manifest emitter.png",
+    "sizeBytes": 3661,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/Q0-spoof badge.png",
+    "sizeBytes": 3482,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/Read Me.pdf",
+    "sizeBytes": 84010,
+    "ext": "pdf"
+  },
+  {
     "path": "added by Lucky/readme",
     "sizeBytes": 30,
     "ext": ""
   },
   {
-    "path": "added by Lucky/Rowan_Ibarra.zip",
-    "sizeBytes": 1476533,
+    "path": "added by Lucky/SCIAlrm_Biohazard (Dry)_VZ_GN.wav",
+    "sizeBytes": 1441058,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/SCIAlrm_Decontamination (Wet)_VZ_GN.wav",
+    "sizeBytes": 2881096,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/SCIAlrm_Incoming (Dry)_VZ_GN.wav",
+    "sizeBytes": 577082,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/security camera/ north security camera.aseprite",
+    "sizeBytes": 17142,
+    "ext": "aseprite"
+  },
+  {
+    "path": "added by Lucky/security camera/readme",
+    "sizeBytes": 1,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/security camera/Security_Camera.zip",
+    "sizeBytes": 231999,
     "ext": "zip"
   },
   {
-    "path": "added by Lucky/sound 3",
-    "sizeBytes": 595,
+    "path": "added by Lucky/sound metadata/Essentials_Series_README.pdf",
+    "sizeBytes": 44453,
+    "ext": "pdf"
+  },
+  {
+    "path": "added by Lucky/sound metadata/Metadata.csv",
+    "sizeBytes": 184235,
+    "ext": "csv"
+  },
+  {
+    "path": "added by Lucky/sound metadata/Read Me.pdf",
+    "sizeBytes": 84010,
+    "ext": "pdf"
+  },
+  {
+    "path": "added by Lucky/sound metadata/readme",
+    "sizeBytes": 41,
     "ext": ""
   },
   {
     "path": "added by Lucky/sounds",
-    "sizeBytes": 7129,
+    "sizeBytes": 7117,
     "ext": ""
   },
   {
     "path": "added by Lucky/sounds 2",
     "sizeBytes": 620,
     "ext": ""
+  },
+  {
+    "path": "added by Lucky/sounds 3",
+    "sizeBytes": 3226,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/sounds 4 _NEW_",
+    "sizeBytes": 5076,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/UI tests/64x64 grid tile.png",
+    "sizeBytes": 386,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/Alert Windows",
+    "sizeBytes": 2285,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/UI tests/animated glitch tile.gif",
+    "sizeBytes": 53867,
+    "ext": "gif"
+  },
+  {
+    "path": "added by Lucky/UI tests/compliance pips.png",
+    "sizeBytes": 650,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/glitch grid tile spritesheet.png",
+    "sizeBytes": 20055,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/ui (404, Title, etc).json",
+    "sizeBytes": 12058,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/UIAlert_Cancel 001_VZ_GN.wav",
+    "sizeBytes": 24126,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIClick_Click 005_VZ_GN.wav",
+    "sizeBytes": 9728,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIClick_Select 001_VZ_GN.wav",
+    "sizeBytes": 44284,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIData_Processing Complete 001_VZ_GN.wav",
+    "sizeBytes": 173920,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIData_Reading 001_VZ_GN.wav",
+    "sizeBytes": 1827046,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIData_Screeching 001_VZ_GN.wav",
+    "sizeBytes": 5266628,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIData_Scrubbing 001_VZ_GN.wav",
+    "sizeBytes": 2699700,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIGlitch_Bit 001_VZ_GN.wav",
+    "sizeBytes": 29904,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIGlitch_Distortion 001_VZ_GN.wav",
+    "sizeBytes": 453276,
+    "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/UIMvmt_Scroll 001_VZ_GN.wav",
+    "sizeBytes": 9722,
+    "ext": "wav"
   },
   {
     "path": "EMP animation/emp animation.aseprite",
@@ -176,9 +521,64 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": ""
   },
   {
+    "path": "security drone/commonwealth surveillance_drone.zip",
+    "sizeBytes": 398462,
+    "ext": "zip"
+  },
+  {
+    "path": "security drone/readme",
+    "sizeBytes": 1,
+    "ext": ""
+  },
+  {
     "path": "sounds.txt",
     "sizeBytes": 7152,
     "ext": "txt"
+  },
+  {
+    "path": "sprites/fragment box/empty/readme",
+    "sizeBytes": 6,
+    "ext": ""
+  },
+  {
+    "path": "sprites/fragment box/empty/south-east.png",
+    "sizeBytes": 2418,
+    "ext": "png"
+  },
+  {
+    "path": "sprites/fragment box/loaded/frame_000.png",
+    "sizeBytes": 2418,
+    "ext": "png"
+  },
+  {
+    "path": "sprites/fragment box/loaded/frame_001.png",
+    "sizeBytes": 1699,
+    "ext": "png"
+  },
+  {
+    "path": "sprites/fragment box/loaded/frame_002.png",
+    "sizeBytes": 1580,
+    "ext": "png"
+  },
+  {
+    "path": "sprites/fragment box/loaded/frame_003.png",
+    "sizeBytes": 2292,
+    "ext": "png"
+  },
+  {
+    "path": "sprites/fragment box/loaded/frame_004.png",
+    "sizeBytes": 1090,
+    "ext": "png"
+  },
+  {
+    "path": "sprites/fragment box/loaded/readme",
+    "sizeBytes": 7,
+    "ext": ""
+  },
+  {
+    "path": "sprites/fragment box/readme",
+    "sizeBytes": 20,
+    "ext": ""
   },
   {
     "path": "The_Fragment_Box.zip",

@@ -24,6 +24,7 @@ import {
 } from "../tilesets/eremite_map";
 import { EREMITE_MAP_LEVELS } from "../tilesets/eremite_map.levels";
 import type { EraSeed } from "../../engine/WorldEngineState";
+import type { Facing, Vec2 } from "../../types/world.types";
 
 export function eremiteEra(): EraSeed {
   const meta: MooseEraMeta = {
@@ -123,5 +124,106 @@ export function eremiteEra(): EraSeed {
       },
     ],
   };
-  return mooseToEraSeed(EREMITE_MAP_LEVELS, meta);
+  const seed = mooseToEraSeed(EREMITE_MAP_LEVELS, meta);
+  seedDuctHazard(seed);
+  return seed;
+}
+
+/** The vent landing cell the main→crawlspace doorway drops the player onto. */
+const VENT_LANDING: Vec2 = { x: 42, y: 21 };
+
+/** Augment the EREMITE crawlspace with the duct-suffocation hazard: a
+ *  surveillance drone that seals the vents on sight, a vent-control terminal
+ *  to cancel the lockdown, and an EMP in the player's kit to kill the drone.
+ *  Placement is computed from the actual shaft geometry (BFS from the vent
+ *  landing) so it stays valid if the board art is re-authored. */
+function seedDuctHazard(seed: EraSeed): void {
+  // Give the player the drone's hard counter regardless of crawlspace layout.
+  seed.player.inventory.push({ id: "emp-1", itemType: "EMP" });
+
+  const crawl = seed.rooms.find((r) => r.id === "crawlspace");
+  if (!crawl) return;
+  const W = crawl.width;
+  const at = (x: number, y: number) => crawl.tiles[y * W + x];
+  const passable = (x: number, y: number): boolean => {
+    if (x < 0 || y < 0 || x >= W || y >= crawl.height) return false;
+    const t = at(x, y);
+    return !!t && !t.solid;
+  };
+
+  // Root the BFS at the nearest passable cell to the vent landing.
+  let root: Vec2 | null = null;
+  let bestD = Infinity;
+  for (let y = 0; y < crawl.height; y++) {
+    for (let x = 0; x < W; x++) {
+      if (!passable(x, y)) continue;
+      const d = Math.abs(x - VENT_LANDING.x) + Math.abs(y - VENT_LANDING.y);
+      if (d < bestD) { bestD = d; root = { x, y }; }
+    }
+  }
+  if (!root) return;
+
+  const dist = new Map<string, number>();
+  const queue: Vec2[] = [root];
+  dist.set(`${root.x},${root.y}`, 0);
+  for (let i = 0; i < queue.length; i++) {
+    const { x, y } = queue[i];
+    const d = dist.get(`${x},${y}`)!;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx, ny = y + dy, k = `${nx},${ny}`;
+      if (passable(nx, ny) && !dist.has(k)) {
+        dist.set(k, d + 1);
+        queue.push({ x: nx, y: ny });
+      }
+    }
+  }
+
+  const reachable = [...dist.entries()]
+    .map(([k, d]) => {
+      const [x, y] = k.split(",").map(Number);
+      return { x, y, d };
+    })
+    .sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x);
+
+  // Drone sits ~2 tiles in, facing the landing so it spots the player on entry.
+  const drone = reachable.find((c) => c.d >= 2) ?? reachable[reachable.length - 1] ?? root;
+  // Terminal sits one step from the landing on a different cell, reachable
+  // even while the duct is sealed.
+  const term =
+    reachable.find((c) => c.d >= 1 && !(c.x === drone.x && c.y === drone.y)) ??
+    reachable[0] ?? root;
+
+  const dx = root.x - drone.x;
+  const dy = root.y - drone.y;
+  const facing: Facing =
+    Math.abs(dx) >= Math.abs(dy)
+      ? (dx >= 0 ? "east" : "west")
+      : (dy >= 0 ? "south" : "north");
+
+  seed.entities.push({
+    id: "DRONE-1",
+    kind: "SURVEILLANCE_DRONE",
+    name: "SURVEILLANCE DRONE",
+    roomId: "crawlspace",
+    homeRoomId: "crawlspace",
+    pos: { x: drone.x, y: drone.y },
+    z: 0,
+    facing,
+    status: "ACTIVE",
+    // Drones outpace enforcers (1) but stay slower than a sprinting player (≤4).
+    stepsPerTurn: 2,
+  });
+
+  // Repaint the terminal cell to TERMINAL but keep it non-solid so a 1-wide
+  // shaft stays passable; the player stands adjacent and faces it.
+  const tt = at(term.x, term.y);
+  if (tt) tt.kind = "TERMINAL";
+  (seed.terminals ??= []).push({
+    roomId: "crawlspace",
+    pos: { x: term.x, y: term.y },
+    terminalId: "eremite-vent-ctrl",
+    title: "VENT CONTROL",
+    body: "Atmospheric override. Re-opens the duct seals and cancels the active lockdown.",
+    clearsLockdown: true,
+  });
 }

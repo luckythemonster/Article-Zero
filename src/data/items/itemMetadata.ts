@@ -65,4 +65,12 @@ export const ITEM_METADATA: Record<ItemType, ItemMeta> = {
     placeholderColor: 0xd46a6a,
     usesFacing: true,
   },
+  EMP: {
+    displayName: "EMP Charge",
+    blurb:
+      "Fries a surveillance drone in the facing cone (radius 5), disabling it " +
+      "for good. Stops pursuit only — it won't reopen sealed vents.",
+    placeholderColor: 0xb070ff,
+    usesFacing: true,
+  },
 };

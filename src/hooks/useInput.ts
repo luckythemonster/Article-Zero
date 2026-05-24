@@ -54,9 +54,8 @@ export function useInput({ enabled }: Options): void {
         return;
       }
 
-      // While the inventory overlay is open, suppress all other game verbs so
-      // the player doesn't move while browsing.
-      if (term.inventoryOpen) return;
+      // While a blocking modal is open, suppress all game verbs.
+      if (term.inventoryOpen || term.executeResetOpen) return;
 
       switch (e.key.toLowerCase()) {
         case "arrowup":

@@ -3,8 +3,17 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+const spike =
+  typeof window !== "undefined" &&
+  new URLSearchParams(window.location.search).get("spike") === "arwes";
+
+const root = createRoot(document.getElementById("root")!);
+root.render(
+  spike ? (
     <App />
-  </StrictMode>,
+  ) : (
+    <StrictMode>
+      <App />
+    </StrictMode>
+  ),
 );

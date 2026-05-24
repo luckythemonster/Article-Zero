@@ -11,7 +11,7 @@ import { useGameActions } from "../hooks/useGameActions";
 import { ITEM_METADATA } from "../data/items/itemMetadata";
 import type { ItemType } from "../types/world.types";
 
-// Only these five types are directly activatable from the overlay.
+// Only these types are directly activatable from the overlay.
 // EXTRACTION_CUBE and BYPASS_DRIVE remain passive (auto-resolved at tiles).
 const USABLE: ItemType[] = [
   "PHANTOM_EMITTER",
@@ -19,6 +19,7 @@ const USABLE: ItemType[] = [
   "DUMP_FRAGMENT",
   "THERMAL_BAFFLE",
   "OVERRIDE_KEY",
+  "EMP",
 ];
 
 export default function InventoryOverlay() {
@@ -75,6 +76,10 @@ export default function InventoryOverlay() {
             return (
               <li key={type} className={`inventory__item ${held ? "is-held" : "is-empty"}`}>
                 <div className="inventory__item-header">
+                  <span
+                    className="inventory__icon"
+                    style={{ backgroundColor: `#${meta.placeholderColor.toString(16).padStart(6, "0")}` }}
+                  />
                   <span className="inventory__item-name">{meta.displayName}</span>
                   {meta.usesFacing && held && (
                     <span className="inventory__item-tag">uses facing</span>
@@ -107,6 +112,10 @@ export default function InventoryOverlay() {
                 return (
                   <li key={item.id} className="inventory__item is-held is-passive">
                     <div className="inventory__item-header">
+                      <span
+                        className="inventory__icon"
+                        style={{ backgroundColor: `#${meta.placeholderColor.toString(16).padStart(6, "0")}` }}
+                      />
                       <span className="inventory__item-name">{meta.displayName}</span>
                     </div>
                     <p className="inventory__item-blurb">{meta.blurb}</p>

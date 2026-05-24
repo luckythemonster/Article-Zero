@@ -330,20 +330,154 @@ export const MOOSE_TILESETS: MooseTilesetEntry[] = [
     "spacing": 1,
     "tileAnims": [
       {
-        "handle": 1129070735,
-        "label": "tdDoor_East_West1_0",
-        "baseFrame": 431,
-        "settleFrame": 427,
+        "handle": 1242155460,
+        "label": "tdQuad_Telemetry_Screens1",
+        "baseFrame": 8198,
+        "settleFrame": 8189,
         "frames": [
-          431,
-          59,
-          55,
-          425,
-          241,
-          57,
-          245,
-          53,
-          427
+          8198,
+          8193,
+          8196,
+          8191,
+          8186,
+          11714,
+          10040,
+          2352,
+          8184,
+          4026,
+          8189
+        ],
+        "frameRate": 4
+      },
+      {
+        "handle": 2741780625,
+        "label": "tdNW_SMAC_01_Single_Door_East1_0",
+        "baseFrame": 8241,
+        "settleFrame": 11786,
+        "frames": [
+          8241,
+          11784,
+          11802,
+          11825,
+          11792,
+          8230,
+          8220,
+          11804,
+          11790,
+          11812,
+          11906,
+          11808,
+          8204,
+          11788,
+          11796,
+          11786
+        ],
+        "frameRate": 8
+      },
+      {
+        "handle": 4286725045,
+        "label": "tdNW_SMAC_01_Double_Doors_South01",
+        "baseFrame": 8111,
+        "settleFrame": 8116,
+        "frames": [
+          8111,
+          8119,
+          8106,
+          3592,
+          8104,
+          8114,
+          3902,
+          8099,
+          3716,
+          8101,
+          8109,
+          8116
+        ],
+        "frameRate": 8
+      },
+      {
+        "handle": 4228887920,
+        "label": "Item Chest1",
+        "baseFrame": 7808,
+        "settleFrame": 2476,
+        "frames": [
+          7808,
+          3034,
+          2662,
+          2166,
+          3406,
+          3220,
+          11528,
+          2848,
+          9854,
+          2476
+        ],
+        "frameRate": 8
+      },
+      {
+        "handle": 3732466035,
+        "label": "tdSecurity_Camera_South1",
+        "baseFrame": 10043,
+        "settleFrame": 10043,
+        "frames": [
+          10043
+        ],
+        "frameRate": 8
+      },
+      {
+        "handle": 3663245890,
+        "label": "tdNW_SMAC_01_Double_Doors_South1",
+        "baseFrame": 8111,
+        "settleFrame": 8116,
+        "frames": [
+          8111,
+          8119,
+          8106,
+          3592,
+          8104,
+          8114,
+          3902,
+          8099,
+          3716,
+          8101,
+          8109,
+          8116
+        ],
+        "frameRate": 8
+      },
+      {
+        "handle": 231968770,
+        "label": "tdNW_SMAC_01_Single_Door_West1_0",
+        "baseFrame": 8243,
+        "settleFrame": 11829,
+        "frames": [
+          8243,
+          11819,
+          11910,
+          8240,
+          11823,
+          8200,
+          11904,
+          8202,
+          8238,
+          11813,
+          8212,
+          11912,
+          11839,
+          11806,
+          8236,
+          8214,
+          11829
+        ],
+        "frameRate": 8
+      },
+      {
+        "handle": 2639168745,
+        "label": "terminal main 2",
+        "baseFrame": 11833,
+        "settleFrame": 11833,
+        "frames": [
+          11833
         ],
         "frameRate": 8
       }

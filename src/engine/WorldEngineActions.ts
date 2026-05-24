@@ -2,7 +2,7 @@
 // the EventBus. One function per verb. Sound emission is centralised here so
 // AlertFSM consumers see a consistent picture of "what the player did".
 
-import type { Entity, Facing, ItemInstance, ItemType, Room, Tile, Vec2, WorldState } from "../types/world.types";
+import type { Entity, EntityKind, Facing, ItemInstance, ItemType, Room, Tile, Vec2, WorldState } from "../types/world.types";
 import { facingFromDelta, roomTileKey } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import { roomGraph } from "./RoomGraph";
@@ -136,12 +136,13 @@ function findItemAt(state: WorldState, roomId: string, p: Vec2): ItemInstance | 
   return undefined;
 }
 
-function findGuardInFacingCone(
+function findEntityInFacingCone(
   state: WorldState,
   origin: Vec2,
   facing: Facing,
   roomId: string,
   radius: number,
+  kind: EntityKind,
 ): Entity | undefined {
   const fx = facing === "east" ? 1 : facing === "west" ? -1 : 0;
   const fy = facing === "south" ? 1 : facing === "north" ? -1 : 0;
@@ -149,7 +150,7 @@ function findGuardInFacingCone(
   let best: Entity | undefined;
   let bestDist = Infinity;
   for (const entity of state.entities.values()) {
-    if (entity.kind !== "GUARD" || entity.status !== "ACTIVE") continue;
+    if (entity.kind !== kind || entity.status !== "ACTIVE") continue;
     if (entity.roomId !== roomId) continue;
     const dx = entity.pos.x - origin.x;
     const dy = entity.pos.y - origin.y;
@@ -213,7 +214,9 @@ function moveCommon(
     eventBus.emit("ROOM_EXITED", { roomId: fromRoomId });
     state.player.roomId = crossing.toRoom;
     if (state.lockdown && state.lockdown.roomId !== crossing.toRoom) {
+      const clearedRoom = state.lockdown.roomId;
       state.lockdown = undefined;
+      eventBus.emit("LOCKDOWN_CLEARED", { roomId: clearedRoom, reason: "crossed" });
     }
     state.player.pos = { ...crossing.landingPos };
     const previousAp = state.player.ap;
@@ -273,6 +276,7 @@ const SPOOF_TURNS = 4;
 const BAFFLE_TURNS = 4;
 const DUMP_FRAGMENT_RADIUS = 5;
 const DUMP_FRAGMENT_STUN_TURNS = 1;
+const EMP_RADIUS = 5;
 
 let emitterCounter = 0;
 
@@ -328,12 +332,13 @@ function useBaffle(state: WorldState): boolean {
 }
 
 function throwDumpFragment(state: WorldState, _item: ItemInstance): boolean {
-  const target = findGuardInFacingCone(
+  const target = findEntityInFacingCone(
     state,
     state.player.pos,
     state.player.facing,
     state.player.roomId,
     DUMP_FRAGMENT_RADIUS,
+    "GUARD",
   );
   if (!target) {
     eventBus.emit("ITEM_REJECTED", {
@@ -369,6 +374,80 @@ function throwDumpFragment(state: WorldState, _item: ItemInstance): boolean {
     targetEntityId: target.id,
   });
   return true;
+}
+
+/** Detonate an EMP burst centered on the player, permanently disabling every
+ *  surveillance drone and security camera within EMP_RADIUS in the player's
+ *  room (status → DORMANT, so GuardSystem stops ticking them). Omnidirectional
+ *  — facing doesn't matter. The EMP only stops pursuit/watch; it does NOT clear
+ *  an active lockdown. */
+function useEmp(state: WorldState, _item: ItemInstance): boolean {
+  const r2 = EMP_RADIUS * EMP_RADIUS;
+  const targets: Entity[] = [];
+  for (const entity of state.entities.values()) {
+    if (entity.status !== "ACTIVE") continue;
+    if (entity.kind !== "SURVEILLANCE_DRONE" && entity.kind !== "SECURITY_CAMERA") continue;
+    if (entity.roomId !== state.player.roomId) continue;
+    const dx = entity.pos.x - state.player.pos.x;
+    const dy = entity.pos.y - state.player.pos.y;
+    if (dx * dx + dy * dy > r2) continue;
+    targets.push(entity);
+  }
+  if (targets.length === 0) {
+    eventBus.emit("ITEM_REJECTED", { itemType: "EMP", reason: "no-target" });
+    return false;
+  }
+  // Single burst at the player's tile — neighbours hear one pulse, not one per
+  // disabled unit.
+  soundField.emit({
+    roomId: state.player.roomId,
+    pos: state.player.pos,
+    intensity: 1,
+    reason: "emp",
+  });
+  for (const target of targets) {
+    const previous = target.status;
+    target.status = "DORMANT";
+    eventBus.emit("ENTITY_STATUS_CHANGED", {
+      entityId: target.id,
+      previous,
+      current: target.status,
+    });
+    eventBus.emit("ITEM_THROWN", { itemType: "EMP", targetEntityId: target.id });
+  }
+  return true;
+}
+
+/** Inverse of GuardSystem.triggerLockdown: reopen every doorway sealed in
+ *  `roomId` (toggleDoorway flips both sides of each pair). Solid blast doors
+ *  repaint to DOOR_OPEN; VENT tiles stay VENT (only the `closed` flag clears). */
+function reopenSealedDoorways(state: WorldState, roomId: string): void {
+  const room = state.rooms.get(roomId);
+  if (!room) return;
+  for (const d of room.doorways) {
+    if (!d.closed) continue;
+    const isVent = d.kind === "vent";
+    roomGraph.toggleDoorway(state, roomId, d.localPos);
+    const tile = room.tiles[d.localPos.y * room.width + d.localPos.x];
+    if (tile && !isVent && (tile.kind === "DOOR_CLOSED" || tile.kind === "DOOR_OPEN")) {
+      tile.kind = "DOOR_OPEN";
+      tile.solid = false;
+      tile.opaque = false;
+    }
+    const dst = state.rooms.get(d.to);
+    if (dst) {
+      const back = dst.doorways.find((b) => b.from === d.to && b.to === roomId);
+      if (back) {
+        const bt = dst.tiles[back.localPos.y * dst.width + back.localPos.x];
+        if (bt && !isVent && (bt.kind === "DOOR_CLOSED" || bt.kind === "DOOR_OPEN")) {
+          bt.kind = "DOOR_OPEN";
+          bt.solid = false;
+          bt.opaque = false;
+        }
+      }
+    }
+    eventBus.emit("DOOR_TOGGLED", { roomId, pos: d.localPos, open: true });
+  }
 }
 
 function useOverrideKey(state: WorldState): boolean {
@@ -560,6 +639,13 @@ export const actions = {
     // ActionLock so the crawl can't be input-canceled mid-traversal.
     const standingTile = tileAt(state, state.player.roomId, state.player.pos);
     if (standingTile?.kind === "VENT") {
+      // Vents are sealed during a vacuum lockdown — the legacy ventLinks
+      // teleport must not offer a free escape past the sealed ducts. Pry a
+      // vent doorway open or hit the vent-control terminal instead.
+      if (state.lockdown) {
+        eventBus.emit("INTERACT_REJECTED", { action: "vent", reason: "sealed" });
+        return false;
+      }
       if (state.player.stance !== "SNEAK") {
         eventBus.emit("INTERACT_REJECTED", { action: "vent", reason: "needs_sneak" });
         return false;
@@ -678,6 +764,29 @@ export const actions = {
       if (!t || t.kind !== "TERMINAL") continue;
       const payload = state.terminalPayloads.get(roomTileKey(state.player.roomId, p));
       if (!payload) return false;
+      // Vent-control terminal: ends an active vacuum lockdown and reopens the
+      // sealed doorways. Reusable — bypasses the one-shot `terminalsRead` gate
+      // and the document-filing flow.
+      if (payload.clearsLockdown) {
+        if (!state.lockdown) return false;
+        const facing = facingFromDelta(dx, dy);
+        if (facing && facing !== state.player.facing) {
+          state.player.facing = facing;
+          eventBus.emit("PLAYER_FACING_CHANGED", { facing });
+        }
+        const lockdownRoomId = state.lockdown.roomId;
+        reopenSealedDoorways(state, lockdownRoomId);
+        state.lockdown = undefined;
+        const previousAp = state.player.ap;
+        state.player.ap -= INTERACT_AP_COST;
+        eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
+        eventBus.emit("VENT_CONTROL_ACTIVATED", {
+          terminalId: payload.terminalId,
+          roomId: state.player.roomId,
+        });
+        eventBus.emit("LOCKDOWN_CLEARED", { roomId: lockdownRoomId, reason: "ventControl" });
+        return true;
+      }
       if (state.terminalsRead.has(payload.terminalId)) return false;
       let consumedIdx = -1;
       if (payload.requiresItem) {
@@ -857,9 +966,13 @@ export const actions = {
       };
       const sealed = roomGraph.doorwayAt(state, state.player.roomId, target.x, target.y);
       if (sealed && sealed.closed) {
+        // Vent doorways keep their VENT tile (the crawl-out tile must stay a
+        // VENT, not become a door); only the `closed` flag is cleared. Solid
+        // blast doors repaint to DOOR_OPEN as before.
+        const isVent = sealed.kind === "vent";
         roomGraph.toggleDoorway(state, state.player.roomId, target);
         const tile = tileAt(state, state.player.roomId, target);
-        if (tile) {
+        if (tile && !isVent) {
           tile.kind = "DOOR_OPEN";
           tile.solid = false;
           tile.opaque = false;
@@ -871,7 +984,7 @@ export const actions = {
           );
           if (back) {
             const bt = mirror.tiles[back.localPos.y * mirror.width + back.localPos.x];
-            if (bt) {
+            if (bt && !isVent) {
               bt.kind = "DOOR_OPEN";
               bt.solid = false;
               bt.opaque = false;
@@ -1104,6 +1217,9 @@ export const actions = {
         break;
       case "OVERRIDE_KEY":
         ok = useOverrideKey(state);
+        break;
+      case "EMP":
+        ok = useEmp(state, item);
         break;
       default:
         return false;

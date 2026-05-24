@@ -31,6 +31,10 @@ export function mkTile(kind: TileKind, opts: MkTileOpts = {}): Tile {
       return { kind, solid: true, opaque: true, elevation, ...extras };
     case "CHASM":
       return { kind, solid: true, opaque: false, elevation, ...extras };
+    case "CHAIN_LINK_FENCE":
+      // Collides but you can see through it (Ed `chain link fence{collide,
+      // block_LOS}` — block_LOS is false on this map).
+      return { kind, solid: true, opaque: false, elevation, ...extras };
     case "LIGHT_SOURCE":
       return {
         kind,
