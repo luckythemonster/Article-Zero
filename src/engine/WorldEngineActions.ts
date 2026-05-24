@@ -353,6 +353,11 @@ function throwDumpFragment(state: WorldState, _item: ItemInstance): boolean {
     alert.level = "EVASION";
     alert.enteredTurn = state.turn;
     alert.lastSeenTurn = undefined;
+    // Wipe the last-known target so the now-searching enforcer doesn't beeline
+    // to the player's last spot and re-acquire — the fragment is meant to break
+    // pursuit, leaving it scanning in place.
+    alert.lastStimulus = undefined;
+    alert.lastStimulusRoom = undefined;
     eventBus.emit("ENFORCER_ALERT_CHANGED", {
       enforcerId: target.id,
       from: previousLevel,

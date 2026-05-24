@@ -4,7 +4,7 @@
 //   CAUTION  — orient + investigate. Confirmed sighting → ALERT (! marker).
 //              Decay timer → NORMAL when no input for CAUTION_DECAY ticks.
 //   ALERT    — active chase. Player out of LoS → EVASION.
-//   EVASION  — cooldown / scan. Timer → NORMAL.
+//   EVASION  — travel to the last-known spot and sweep the area. Timer → NORMAL.
 
 import type { AlertState, Entity, RoomId, Vec2, WorldState } from "../types/world.types";
 import { eventBus } from "./EventBus";
@@ -12,7 +12,9 @@ import { eventBus } from "./EventBus";
 export type AlertLevel = AlertState["level"];
 
 export const CAUTION_DECAY = 4;
-export const EVASION_TIMEOUT = 6;
+/** Turns an enforcer spends in EVASION — travelling to the last-known spot and
+ *  sweeping the area — before giving up and returning to patrol. */
+export const EVASION_TIMEOUT = 8;
 /** Turns since the last confirmed sighting before an ALERT enforcer demotes
  *  to EVASION. Loose enough that the spotter keeps pursuing through one
  *  or two rooms before giving up. */
@@ -99,19 +101,16 @@ class AlertFSM {
         alert.enteredTurn = state.turn;
       }
     } else {
-      // No stimulus this tick — let timers decay the state.
+      // No stimulus this tick — let timers decay the state. lastStimulus stays
+      // frozen at the last CONFIRMED sighting (no omniscient refresh to the
+      // player's live position), so a pursuing enforcer routes to where it last
+      // actually saw the player and searches there. A fresh sighting re-enters
+      // the `seesAsAlert` branch above and refreshes the target.
       const sinceEntry = state.turn - alert.enteredTurn;
       const sinceSeen = state.turn - (alert.lastSeenTurn ?? alert.enteredTurn);
-      // While in active pursuit, keep the player's position fresh so the
-      // chase routes to the right room across multi-room escapes. The
-      // lose-of-sight timer below still caps how long pursuit lasts.
-      if (alert.level === "ALERT" && input.playerRoomId) {
-        alert.lastStimulusRoom = input.playerRoomId;
-        if (input.playerPos) alert.lastStimulus = input.playerPos;
-      }
       if (alert.level === "ALERT" && sinceSeen >= ALERT_LOSE_SIGHT_TURNS) {
-        // Lost the player long enough — drop to EVASION and let the
-        // pursuing enforcer scan, then return to patrol.
+        // Lost the player long enough — drop to EVASION and let the enforcer
+        // travel to the last-known spot and sweep the area before patrolling.
         alert.level = "EVASION";
         alert.enteredTurn = state.turn;
       } else if (alert.level === "EVASION" && sinceEntry >= EVASION_TIMEOUT) {

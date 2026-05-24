@@ -30,6 +30,10 @@ const LOCKDOWN_TURNS = 5;
 /** A enforcer with no patrol route sweeps its FOV once every N turns rather than
  *  spinning a quarter-turn every tick. */
 const IDLE_SCAN_PERIOD = 3;
+/** Tiles a pursuing (ALERT) or searching (EVASION) enforcer covers per turn.
+ *  Patrol pace stays at the per-entity `stepsPerTurn` (default 1); only an
+ *  enforcer that's onto the player moves at this faster clip. */
+const PURSUE_STEPS_PER_TURN = 3;
 
 class EnforcerSystem {
   /** Compute the visible-tile set for one enforcer inside its current room.
@@ -136,7 +140,14 @@ class EnforcerSystem {
     // pausing/scanning in place — skip the movement loop entirely.
     if (level === "NORMAL" && this.stepPatrolTurn(state, enforcer)) return;
 
-    const steps = Math.max(1, enforcer.stepsPerTurn ?? 1);
+    // Patrol/investigate at the enforcer's own pace; pursue (ALERT) and search
+    // (EVASION) at the faster pursuit clip so a fleeing player can't simply
+    // outrun a guard that's onto them.
+    const base = Math.max(1, enforcer.stepsPerTurn ?? 1);
+    const steps = level === "ALERT" || level === "EVASION"
+      ? Math.max(base, PURSUE_STEPS_PER_TURN)
+      : base;
+    let scannedThisTurn = false;
     for (let i = 0; i < steps; i++) {
       if (state.detained) return;
       switch (level) {
@@ -150,8 +161,16 @@ class EnforcerSystem {
           this.stepChase(state, enforcer);
           break;
         case "EVASION":
-          this.stepCooldown(state, enforcer);
-          return;
+          // Walk toward the last-known spot; once there (or with no lead),
+          // sweep the area — but rotate at most once per turn so a multi-step
+          // search doesn't spin the enforcer past a quarter-turn.
+          if (!this.stepSearch(state, enforcer)) {
+            if (!scannedThisTurn) {
+              this.rotateScan(enforcer);
+              scannedThisTurn = true;
+            }
+          }
+          break;
       }
     }
   }
@@ -446,9 +465,24 @@ class EnforcerSystem {
     }
   }
 
-  private stepCooldown(_state: WorldState, enforcer: Entity): void {
-    // Rotate to scan: cycle through cardinal facings.
-    this.rotateScan(enforcer);
+  /** EVASION search step. Travels toward the last-known stimulus — crossing
+   *  rooms via the room graph — and returns true while it's still closing in.
+   *  Returns false once it has arrived (or has no lead), signalling the caller
+   *  to sweep the area instead. */
+  private stepSearch(state: WorldState, enforcer: Entity): boolean {
+    const targetRoom = enforcer.alert?.lastStimulusRoom;
+    const target = enforcer.alert?.lastStimulus;
+    const before = enforcer.pos;
+    if (targetRoom && enforcer.roomId !== targetRoom) {
+      this.pursueViaPath(state, enforcer, targetRoom);
+    } else if (target && (enforcer.pos.x !== target.x || enforcer.pos.y !== target.y)) {
+      this.advanceToward(state, enforcer, target);
+    } else {
+      return false;
+    }
+    // A real move replaces `pos` with a new object; identity inequality means
+    // we advanced. A no-op (blocked path, sealed door) falls through to a sweep.
+    return enforcer.pos !== before;
   }
 
   /** Advance an entity one cardinal step clockwise (N→E→S→W→N), emitting a
