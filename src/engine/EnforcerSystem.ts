@@ -199,6 +199,30 @@ class EnforcerSystem {
     }
   }
 
+  /** Debug: per-enforcer relation to the player — same-room, tile distance,
+   *  current cooldown, and whether this enforcer perceives the player right
+   *  now (proximity bubble or cone). Used by the `scan` console command. */
+  sightReport(state: WorldState): Array<{
+    id: string; room: string; sameRoom: boolean; dist: number; cooldown: number; sees: boolean;
+  }> {
+    const out = [];
+    for (const e of state.entities.values()) {
+      if (e.kind !== "ENFORCER") continue;
+      const sameRoom = e.roomId === state.player.roomId;
+      const dx = e.pos.x - state.player.pos.x;
+      const dy = e.pos.y - state.player.pos.y;
+      out.push({
+        id: e.id,
+        room: e.roomId,
+        sameRoom,
+        dist: sameRoom ? Math.round(Math.hypot(dx, dy) * 10) / 10 : Infinity,
+        cooldown: e.alert?.interrogateCooldown ?? 0,
+        sees: this.enforcerSeesPlayer(state, e),
+      });
+    }
+    return out.sort((a, b) => a.dist - b.dist);
+  }
+
   /** Seal every doorway in the player's current room and start the vacuum
    *  countdown. Mirrors the closure to each back-doorway so enforcers on the
    *  far side can't open them either. */
