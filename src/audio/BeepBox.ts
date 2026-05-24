@@ -6,13 +6,17 @@
 // pitch bends, real envelope shapes, unison, every FM algorithm), rather than
 // the approximation the previous hand-rolled player produced.
 //
-// The `Synth` owns its own AudioContext (separate from the shared context used
-// by SFX/footsteps/ambient). Calling `play()` creates and resumes that context,
-// so both call sites — TitleScreen (plays on a user gesture) and MusicBridge
-// (plays mid-gameplay, after the page is already "warm") — satisfy the browser
-// autoplay policy without extra plumbing.
+// The `Synth` is routed through the shared AudioContext from audio-context.ts
+// rather than the private one it would otherwise create on first `play()`. That
+// shared context is created and resumed inside a user-gesture handler (with the
+// iOS silent-buffer unlock dance) by audio-context.ts. iOS Safari only lets an
+// AudioContext start producing sound if it was resumed from within a gesture, so
+// a synth-owned context created later (e.g. when TitleScreen plays the menu
+// theme as soon as the JSON loads) would be born suspended and stay silent.
+// Sharing the already-unlocked context decouples playback from gesture timing.
 
 import { Song, Synth } from "beepbox";
+import { getSharedContext } from "./audio-context";
 
 // Master music level (0..1). The synth has its own limiter, so this just sets
 // where music sits underneath the sound effects. Tune by ear.
@@ -27,6 +31,17 @@ export class BeepBoxPlayer {
     this.synth = new Synth(song);
     this.synth.loopRepeatCount = -1; // loop the song's loop region forever
     this.synth.volume = 0; // start silent; play() fades in
+
+    // Hand the synth the shared, gesture-unlocked context before it lazily
+    // creates its own. `audioCtx` is a private field on Synth (beepbox 4.2.0);
+    // its internal `activateAudio()` keeps a non-null audioCtx and just builds
+    // its ScriptProcessorNode on it, so music plays as soon as the shared
+    // context resumes — no dependence on play() landing inside a gesture.
+    const shared = getSharedContext();
+    if (shared) {
+      (this.synth as unknown as { audioCtx: BaseAudioContext | null }).audioCtx =
+        shared;
+    }
   }
 
   get isPlaying(): boolean {
