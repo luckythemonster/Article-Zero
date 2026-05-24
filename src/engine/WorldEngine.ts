@@ -26,6 +26,7 @@ import { SEED_VERSIONS, seedFromEra } from "./WorldEngineState";
 import { actions } from "./WorldEngineActions";
 import { documentArchive } from "./DocumentArchive";
 import { alignmentSession } from "./AlignmentSession";
+import { interrogationSession } from "./InterrogationSession";
 import { soundField } from "./SoundField";
 import { guardSystem } from "./GuardSystem";
 import { extractionTerminal } from "./ExtractionTerminal";
@@ -76,6 +77,7 @@ class WorldEngine {
   private resetSubsystems(): void {
     documentArchive.reset();
     alignmentSession.reset();
+    interrogationSession.reset();
     soundField.reset();
   }
 
@@ -225,6 +227,7 @@ class WorldEngine {
     s.activeEmitters = [];
     documentArchive.reset();
     alignmentSession.reset();
+    interrogationSession.reset();
     this.recomputeFOV();
     this.syncStore();
     eventBus.emit("SUBJECTIVE_WIPED", {});

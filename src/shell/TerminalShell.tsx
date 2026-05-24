@@ -9,6 +9,7 @@ import ModuleSelector from "./ModuleSelector";
 import ArchivistIntro from "./ArchivistIntro";
 import { PhaserCanvas } from "./PhaserCanvas";
 import InterrogationTerminal from "../components/InterrogationTerminal";
+import GuardInterrogationModal from "../components/GuardInterrogationModal";
 import DisputedRecordsUI from "../components/DisputedRecordsUI";
 import Vent4DilemmaModal from "../components/Vent4DilemmaModal";
 import ClimaxOverlay from "../components/ClimaxOverlay";
@@ -66,6 +67,7 @@ export default function TerminalShell() {
         ) : activeModule ? (
           <PhaserCanvas moduleId={activeModule}>
             {phase === "ALIGNMENT" && <InterrogationTerminal />}
+            {phase === "INTERROGATION" && <GuardInterrogationModal />}
             {phase === "FORGERY" && <DisputedRecordsUI />}
             {phase === "CLIMAX" && (
               <>

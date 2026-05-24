@@ -239,6 +239,10 @@ export interface AlertState {
    *  skips its entire `tickOne` (no vision, no movement, no FSM step). Set by
    *  the DUMP_FRAGMENT item handler in WorldEngineActions. */
   stunTurnsRemaining?: number;
+  /** GUARD only — turns until this guard may interrogate a YELLOW player
+   *  again. Set when an interrogation is passed so the same guard doesn't
+   *  immediately re-trigger; decremented once per turn in GuardSystem. */
+  interrogateCooldown?: number;
 }
 
 export interface Entity {

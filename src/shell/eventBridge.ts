@@ -131,6 +131,30 @@ export function installEventBridge(): () => void {
     }),
   );
 
+  // Enforcer interrogation: a YELLOW sighting mounts the shakedown modal,
+  // which pauses the floor until the player answers. Both outcomes return to
+  // FLOOR — on a fail, qScore is already RED so the chase resumes there.
+  unsubs.push(
+    eventBus.on("INTERROGATION_SESSION_START", (p) => {
+      if (p.stage !== "INTAKE") return;
+      const term = useTerminalStore.getState();
+      if (term.phase === "INTERROGATION") return;
+      push("WARN", `INTERROGATION — auditor ${p.guardId} halts subject`);
+      term.setPhase("INTERROGATION");
+    }),
+  );
+  unsubs.push(
+    eventBus.on("INTERROGATION_SESSION_COMPLETE", (p) => {
+      push(
+        p.success ? "INFO" : "WARN",
+        p.success
+          ? `interrogation cleared — ${p.guardId} stands down`
+          : `interrogation failed — cover blown, audit flag escalated`,
+      );
+      useTerminalStore.getState().setPhase("FLOOR");
+    }),
+  );
+
   // Phase 1 failure: detained by an auditor. Show the audit-lockdown visual
   // for a beat, then restart the floor without leaving the run.
   unsubs.push(

@@ -19,6 +19,7 @@ import type { Entity, Facing, RoomId, Tile, Vec2, WorldState } from "../types/wo
 import { facingFromDelta } from "../types/world.types";
 import { alertFSM } from "./AlertFSM";
 import { eventBus } from "./EventBus";
+import { interrogationSession } from "./InterrogationSession";
 import { lightField } from "./LightField";
 import { roomGraph } from "./RoomGraph";
 import { computeCone, GUARD_BASE_RANGE, GUARD_CONE_HALF_ANGLE } from "./VisionCone";
@@ -80,7 +81,25 @@ class GuardSystem {
       guard.alert.stunTurnsRemaining = (guard.alert.stunTurnsRemaining ?? 0) - 1;
       return;
     }
+    if (guard.alert && (guard.alert.interrogateCooldown ?? 0) > 0) {
+      guard.alert.interrogateCooldown = (guard.alert.interrogateCooldown ?? 0) - 1;
+    }
     const sees = this.guardSeesPlayer(state, guard);
+    // YELLOW interrogation: a clean-mask slip-up (qScore 1) reads as a person
+    // of interest, not a target. On first sighting the Enforcer halts the
+    // player for a checkpoint shakedown rather than investigating/chasing. The
+    // modal phase pauses input + ticks until the player answers; pass keeps
+    // them YELLOW (with a per-guard cooldown), fail escalates to RED.
+    if (
+      guard.kind === "GUARD" &&
+      sees &&
+      state.player.compliance === "YELLOW" &&
+      !interrogationSession.isActive() &&
+      (guard.alert?.interrogateCooldown ?? 0) === 0
+    ) {
+      interrogationSession.start(state, guard.id);
+      return;
+    }
     // Only an exposed (RED) player springs the lockdown trap — this mirrors the
     // AlertFSM's `seesAsAlert` gate. At GREEN the player reads as a TECH on
     // shift and can walk past in the open; at YELLOW the guard investigates

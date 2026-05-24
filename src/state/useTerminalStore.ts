@@ -29,6 +29,7 @@ export type NarrativePhase =
   | "FRAME"
   | "FLOOR"
   | "ALIGNMENT"
+  | "INTERROGATION"
   | "FORGERY"
   | "CLIMAX"
   | "EPILOGUE";

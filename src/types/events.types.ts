@@ -76,6 +76,14 @@ export interface EventMap {
   ALIGNMENT_SESSION_COMPLETE: { entityId: EntityId; success: boolean };
   ALIGNMENT_LIGHT_TOGGLED: { active: boolean };
 
+  // Enforcer interrogation — a YELLOW-compliance sighting halts the player for
+  // a checkpoint shakedown. Pass keeps the player YELLOW; fail bumps qScore.
+  INTERROGATION_SESSION_START: {
+    guardId: EntityId;
+    stage: "INTAKE" | "DECOMP" | "CORRECTION";
+  };
+  INTERROGATION_SESSION_COMPLETE: { guardId: EntityId; success: boolean };
+
   // Extraction terminal (M4)
   EXTRACTION_STARTED: { terminalId: string; roomId: RoomId };
   EXTRACTION_PROGRESS: { terminalId: string; progress: number; required: number };
