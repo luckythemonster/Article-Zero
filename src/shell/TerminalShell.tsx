@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTerminalStore } from "../state/useTerminalStore";
 import { applySettings, loadSettings } from "./settings";
-import { installEventBridge } from "./eventBridge";
 import StatusBar from "./StatusBar";
 import AuditLog from "./AuditLog";
 import CommandLine from "./CommandLine";
@@ -43,7 +42,9 @@ export default function TerminalShell() {
       term.setActiveModule(null);
       term.setPhase("FRAME");
     }
-    return installEventBridge();
+    // NOTE: the eventBridge is installed inside PhaserCanvas, not here — its
+    // listeners must be registered *after* PhaserCanvas's eventBus.clear() on
+    // mount, or they get wiped the moment a module loads.
   }, []);
 
   useEffect(() => {
