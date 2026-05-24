@@ -13,31 +13,85 @@ import { ITEM_METADATA } from "../data/items/itemMetadata";
 
 const TILE_PX = 32;
 const ELEVATION_PX_PER_STEP = 8;
-// Character frames in the chars-art atlas carry transparent padding around the
-// body. We size characters to a fixed on-screen footprint instead of a fixed
-// scale, so swapping in art at a different frame size keeps the same world
-// size. CHAR_FOOTPRINT_TILES = 1.5 → a 48-px (1.5-tile) sprite at TILE_PX = 32;
-// the per-sprite scale is derived from each frame's actual width (see below).
-const CHAR_FOOTPRINT_TILES = 1.5;
-// Non-character props get their own footprints: drones keep the old baseline,
-// fixed security cameras read as small ceiling fixtures.
+// Character frames in the chars-art atlas carry a lot of transparent padding
+// around the body, so scaling by the raw frame size leaves the visible body
+// tiny. Instead we measure the non-transparent bounding box of a reference
+// frame and scale so the *visible* body spans a target number of tiles.
+// CHAR_VISIBLE_TILES = 1.5 → the visible character is ~48 px (1.5 tiles) tall.
+const CHAR_VISIBLE_TILES = 1.5;
+// Non-character props are sized by raw frame width (their art has little
+// padding): drones keep the old baseline, cameras read as small fixtures.
 const DRONE_FOOTPRINT_TILES = 1.5;
 const CAMERA_FOOTPRINT_TILES = 1;
 
-// On-screen footprint (in tiles) for a sprite-driven entity slug. Humanoids
-// (player/enforcer/orderly) use the larger CHAR footprint; props override.
-function footprintTilesForSlug(slug: string): number {
-  if (slug === "securitycamera") return CAMERA_FOOTPRINT_TILES;
-  if (slug === "securitydrone") return DRONE_FOOTPRINT_TILES;
-  return CHAR_FOOTPRINT_TILES;
+const PROP_SLUGS = new Set(["securitydrone", "securitycamera"]);
+
+// Raw-frame-width footprint (in tiles) for a prop slug.
+function propFootprintTiles(slug: string): number {
+  return slug === "securitycamera" ? CAMERA_FOOTPRINT_TILES : DRONE_FOOTPRINT_TILES;
 }
 
-// Vertical origin for a sprite-driven entity slug. Ground characters anchor at
-// their feet (origin.y = 1) so the tile sits at the bottom of the sprite;
-// hovering drones and ceiling cameras stay centred (origin.y = 0.5).
-function originYForSlug(slug: string): number {
-  if (slug === "securitycamera" || slug === "securitydrone") return 0.5;
-  return 1;
+// Non-transparent bounding box of an atlas frame, in frame-local pixels,
+// cached per frame key. `fw`/`fh` are the full frame dimensions. Returns null
+// for an all-transparent (or unreadable) frame.
+type VisBounds = { x: number; y: number; w: number; h: number; fw: number; fh: number };
+const frameVisBoundsCache = new Map<string, VisBounds | null>();
+
+function frameVisibleBounds(
+  scene: Phaser.Scene, textureKey: string, frameKey: string,
+): VisBounds | null {
+  const cacheKey = `${textureKey}/${frameKey}`;
+  const cached = frameVisBoundsCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+
+  const tex = scene.textures.get(textureKey);
+  const frame = tex.get(frameKey);
+  const fw = frame.cutWidth;
+  const fh = frame.cutHeight;
+  const cv = document.createElement("canvas");
+  cv.width = fw;
+  cv.height = fh;
+  const ctx = cv.getContext("2d", { willReadFrequently: true });
+  let result: VisBounds | null = null;
+  if (ctx) {
+    ctx.drawImage(
+      tex.getSourceImage(0) as CanvasImageSource,
+      frame.cutX, frame.cutY, fw, fh, 0, 0, fw, fh,
+    );
+    const data = ctx.getImageData(0, 0, fw, fh).data;
+    let minX = fw, minY = fh, maxX = -1, maxY = -1;
+    for (let y = 0; y < fh; y++) {
+      for (let x = 0; x < fw; x++) {
+        if (data[(y * fw + x) * 4 + 3] > 12) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+    if (maxX >= 0) result = { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1, fw, fh };
+  }
+  frameVisBoundsCache.set(cacheKey, result);
+  return result;
+}
+
+// Scale a character sprite so its visible body height spans `targetTiles`
+// tiles, and set its origin to the bottom-centre of the visible body so the
+// tile coordinate lands at the character's feet. Falls back to a frame-width
+// footprint with a bottom origin if the frame can't be measured.
+function fitCharacterSprite(
+  sprite: Phaser.GameObjects.Sprite, scene: Phaser.Scene,
+  textureKey: string, refFrameKey: string, targetTiles: number,
+): void {
+  const b = frameVisibleBounds(scene, textureKey, refFrameKey);
+  if (!b) {
+    sprite.setOrigin(0.5, 1);
+    sprite.setScale((targetTiles * TILE_PX) / sprite.width);
+    return;
+  }
+  sprite.setOrigin((b.x + b.w / 2) / b.fw, (b.y + b.h) / b.fh);
+  sprite.setScale((targetTiles * TILE_PX) / b.h);
 }
 // Pull the camera in so the world fills more of the 960×640 viewport.
 const CAMERA_ZOOM = 1.5;
@@ -128,8 +182,9 @@ export class RoomScene extends Phaser.Scene {
     this.overlayLayer.setScrollFactor(0);
 
     this.playerSprite = this.add.sprite(0, 0, "chars-art", "rowanibarra/stand/south/01");
-    this.playerSprite.setOrigin(0.5, 1);
-    this.playerSprite.setScale((CHAR_FOOTPRINT_TILES * TILE_PX) / this.playerSprite.width);
+    fitCharacterSprite(
+      this.playerSprite, this, "chars-art", "rowanibarra/stand/south/01", CHAR_VISIBLE_TILES,
+    );
     this.playerSprite.setDepth(5);
     if (worldEngine.hasState()) {
       const pos = worldEngine.getState().player.pos;
@@ -658,8 +713,15 @@ export class RoomScene extends Phaser.Scene {
       let sprite = this.entitySprites.get(entity.id);
       if (!sprite) {
         sprite = this.add.sprite(px, py, "chars-art", `${slug}/stand/${entity.facing}/01`);
-        sprite.setOrigin(0.5, originYForSlug(slug));
-        sprite.setScale((footprintTilesForSlug(slug) * TILE_PX) / sprite.width);
+        if (PROP_SLUGS.has(slug)) {
+          // Props (drone/camera) have little padding — size by frame width,
+          // centred. Drones hover, cameras are ceiling-mounted.
+          sprite.setOrigin(0.5, 0.5);
+          sprite.setScale((propFootprintTiles(slug) * TILE_PX) / sprite.width);
+        } else {
+          // Characters: fit visible body height so padding doesn't shrink them.
+          fitCharacterSprite(sprite, this, "chars-art", `${slug}/stand/south/01`, CHAR_VISIBLE_TILES);
+        }
         sprite.setDepth(4);
         this.entitySprites.set(entity.id, sprite);
       }
