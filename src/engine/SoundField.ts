@@ -3,7 +3,7 @@
 // At the start of `WorldEngine.endTurn` the per-tick queue is reset; player
 // verbs and world events `emit()` into it during the tick; after the player's
 // turn resolves we run `propagate()` to deliver `heardSound` inputs to every
-// guard. The AlertFSM consumes the loudest delivery to decide its transition.
+// enforcer. The AlertFSM consumes the loudest delivery to decide its transition.
 
 import type { Doorway, RoomId, Vec2, WorldState } from "../types/world.types";
 import { roomGraph } from "./RoomGraph";
@@ -54,7 +54,7 @@ class SoundField {
     });
   }
 
-  /** Compute every guard's loudest delivered sound this tick. Keyed by guardId. */
+  /** Compute every enforcer's loudest delivered sound this tick. Keyed by enforcerId. */
   propagate(state: WorldState): Map<string, DeliveredSound> {
     const out = new Map<string, DeliveredSound>();
     if (this.queue.length === 0) return out;
@@ -62,11 +62,11 @@ class SoundField {
     for (const emission of this.queue) {
       const reach = this.bfsReach(state, emission);
       for (const entity of state.entities.values()) {
-        if (entity.kind !== "GUARD" || entity.status !== "ACTIVE") continue;
+        if (entity.kind !== "ENFORCER" || entity.status !== "ACTIVE") continue;
         const heard = reach.get(entity.roomId);
         if (heard === undefined) continue;
         // Within-room attenuation: distance from the loudest reach into that
-        // room to the guard's position. We approximate by using the doorway
+        // room to the enforcer's position. We approximate by using the doorway
         // landing position the BFS recorded.
         const landing = reach.get(`__landing:${entity.roomId}`) as unknown as Vec2 | undefined;
         const refPos = landing ??

@@ -1,7 +1,7 @@
 // VisionCone — directional FOV.
 //
 // We re-use the 720-ray shadowcast primitive from the original fov.ts, but
-// mask each ray to a directional cone aligned with the guard's facing.
+// mask each ray to a directional cone aligned with the enforcer's facing.
 // Returns the set of "x,y" tile keys visible to the observer in their room.
 //
 // Also doubles as the player's omnidirectional FOV (halfAngle = PI) so the
@@ -85,6 +85,9 @@ export function getEffectivePlayerRadius(
   return base + (flashlightOn ? FLASHLIGHT_BONUS : 0);
 }
 
-/** Half-angle for guard cones. ~70° total cone. */
-export const GUARD_CONE_HALF_ANGLE = (70 / 2) * (Math.PI / 180);
-export const GUARD_BASE_RANGE = 6;
+/** Half-angle for enforcer cones. ~70° total cone. */
+export const ENFORCER_CONE_HALF_ANGLE = (70 / 2) * (Math.PI / 180);
+export const ENFORCER_BASE_RANGE = 6;
+/** Radius (tiles) of the omnidirectional proximity bubble. A player within
+ *  this distance is always detected regardless of cone facing or lighting. */
+export const ENFORCER_PROXIMITY_RADIUS = 2;

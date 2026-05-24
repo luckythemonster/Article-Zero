@@ -87,7 +87,7 @@ export interface MooseEntityMeta {
   kind: EntityKind;
   name: string;
   facing: Facing;
-  /** GUARD only. */
+  /** ENFORCER only. */
   patrol?: PatrolNode[];
   stepsPerTurn?: number;
   /** SILICATE only. */

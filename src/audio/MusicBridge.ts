@@ -1,9 +1,9 @@
-// MusicBridge — drives the NW-SMAC-01 chase track on/off from guard alert
+// MusicBridge — drives the NW-SMAC-01 chase track on/off from enforcer alert
 // state. Lazy-fetches `public/audio/music/chase.json`, hands it to
-// BeepBoxPlayer, and starts/stops on `GUARD_ALERT_CHANGED`:
+// BeepBoxPlayer, and starts/stops on `ENFORCER_ALERT_CHANGED`:
 //
-//   any guard reaches ALERT or EVASION  → fade in chase track
-//   every guard drops back ≤ CAUTION    → fade out
+//   any enforcer reaches ALERT or EVASION  → fade in chase track
+//   every enforcer drops back ≤ CAUTION    → fade out
 //
 // Install from inside PhaserCanvas.tsx (after eventBus.clear) so the
 // subscription survives the canvas mount cycle — same lesson as the
@@ -20,18 +20,18 @@ interface MusicStats {
   playing: boolean;
   lastState: AlertLevel | "—";
   lastError: string | null;
-  hotGuards: number;
+  hotEnforcers: number;
 }
 
 let player: BeepBoxPlayer | null = null;
 let playerPromise: Promise<BeepBoxPlayer | null> | null = null;
-const hotGuards = new Set<string>();
+const hotEnforcers = new Set<string>();
 const stats: MusicStats = {
   loaded: false,
   playing: false,
   lastState: "—",
   lastError: null,
-  hotGuards: 0,
+  hotEnforcers: 0,
 };
 
 function ensurePlayer(): Promise<BeepBoxPlayer | null> {
@@ -65,8 +65,8 @@ function isHot(level: AlertLevel): boolean {
 }
 
 function updatePlayback(): void {
-  stats.hotGuards = hotGuards.size;
-  if (hotGuards.size > 0) {
+  stats.hotEnforcers = hotEnforcers.size;
+  if (hotEnforcers.size > 0) {
     void ensurePlayer().then((p) => {
       if (!p) return;
       if (!stats.playing) {
@@ -81,18 +81,18 @@ function updatePlayback(): void {
 }
 
 export function installMusicBridge(): () => void {
-  const off = eventBus.on("GUARD_ALERT_CHANGED", (p) => {
+  const off = eventBus.on("ENFORCER_ALERT_CHANGED", (p) => {
     stats.lastState = p.to as AlertLevel;
     if (isHot(p.to as AlertLevel)) {
-      hotGuards.add(p.guardId);
+      hotEnforcers.add(p.enforcerId);
     } else {
-      hotGuards.delete(p.guardId);
+      hotEnforcers.delete(p.enforcerId);
     }
     updatePlayback();
   });
   return () => {
     off();
-    hotGuards.clear();
+    hotEnforcers.clear();
     if (player && stats.playing) {
       player.stop();
       stats.playing = false;

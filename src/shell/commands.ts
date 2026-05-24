@@ -5,6 +5,9 @@
 import { worldEngine } from "../engine/WorldEngine";
 import { useSimStore } from "../state/useSimStore";
 import { useTerminalStore } from "../state/useTerminalStore";
+import { complianceSystem } from "../engine/ComplianceSystem";
+import { enforcerSystem } from "../engine/EnforcerSystem";
+import { interrogationSession } from "../engine/InterrogationSession";
 import type { Module } from "../types/world.types";
 
 const MODULES: Module[] = ["EREMITE", "MIRADOR", "COMMONWEALTH", "NW_SMAC_01"];
@@ -103,6 +106,32 @@ export function dispatch(raw: string): void {
         auditLog: s.auditLog.filter((e) => e.id !== id),
       }));
       log("INFO", `log entry ${id} scrubbed`);
+      break;
+    }
+
+    case "setq": {
+      const n = parseInt(args[0] ?? "", 10);
+      if (isNaN(n) || n < 0) { log("WARN", "? usage: setq <n> (e.g. setq 1 → YELLOW, setq 2 → RED)"); return; }
+      if (!worldEngine.hasState()) { log("WARN", "no module loaded"); return; }
+      const s = worldEngine.getState();
+      s.player.qScore = n;
+      complianceSystem.recompute(s);
+      log("INFO", `qScore set to ${n} → compliance ${s.player.compliance}`);
+      break;
+    }
+
+    case "scan": {
+      if (!worldEngine.hasState()) { log("WARN", "no module loaded"); return; }
+      const s = worldEngine.getState();
+      log("INFO", `PLAYER room=${s.player.roomId} pos=(${s.player.pos.x},${s.player.pos.y}) compliance=${s.player.compliance} session=${interrogationSession.isActive()}`);
+      const report = enforcerSystem.sightReport(s);
+      if (report.length === 0) { log("INFO", "no enforcers in this module"); return; }
+      for (const r of report) {
+        log(
+          r.sees ? "WARN" : "INFO",
+          `${r.id} room=${r.room} ${r.sameRoom ? `dist=${r.dist}` : "OTHER-ROOM"} cooldown=${r.cooldown} sees=${r.sees}`,
+        );
+      }
       break;
     }
 

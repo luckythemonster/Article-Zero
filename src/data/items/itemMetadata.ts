@@ -30,7 +30,7 @@ export const ITEM_METADATA: Record<ItemType, ItemMeta> = {
     displayName: "Phantom Manifest Emitter",
     blurb:
       "Deploys a 3-turn phantom supply-chain signal on the facing tile. " +
-      "Guards in earshot investigate toward it.",
+      "Enforcers in earshot investigate toward it.",
     placeholderColor: 0xe8b86d,
     usesFacing: true,
   },
@@ -38,7 +38,7 @@ export const ITEM_METADATA: Record<ItemType, ItemMeta> = {
     displayName: "Q0 Spoof Badge",
     blurb:
       "Forged doctrinal credential. Forces compliance to GREEN for 4 turns — " +
-      "guards see a TECH-2 on authorized shift.",
+      "enforcers see a TECH-2 on authorized shift.",
     placeholderColor: 0x6ad0a4,
   },
   DUMP_FRAGMENT: {
@@ -61,7 +61,7 @@ export const ITEM_METADATA: Record<ItemType, ItemMeta> = {
     displayName: "Doctrinal Override Key (Red Date)",
     blurb:
       "Silently toggles the facing doorway open or closed — no SoundField " +
-      "emission. Closed doors block guard pathfinding.",
+      "emission. Closed doors block enforcer pathfinding.",
     placeholderColor: 0xd46a6a,
     usesFacing: true,
   },

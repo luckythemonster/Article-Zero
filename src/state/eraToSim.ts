@@ -29,6 +29,9 @@ export function worldStateToSlices(ws: WorldState): {
       status: e.status,
       patrol: e.patrol,
       patrolIndex: e.patrolIndex,
+      patrolMode: e.patrolMode,
+      patrolDir: e.patrolDir,
+      patrolPauseRemaining: e.patrolPauseRemaining,
       stepsPerTurn: e.stepsPerTurn,
       lastMoveTurn: e.lastMoveTurn,
     });
@@ -96,7 +99,7 @@ export function slicesToWorldState(
     const mind = subjective.entityMinds.get(id);
     entities.set(id, {
       id,
-      kind: kind?.kind ?? "GUARD",
+      kind: kind?.kind ?? "ENFORCER",
       name: kind?.name ?? id,
       roomId: phys.roomId,
       homeRoomId: phys.homeRoomId ?? phys.roomId,
@@ -106,6 +109,9 @@ export function slicesToWorldState(
       status: phys.status,
       patrol: phys.patrol,
       patrolIndex: phys.patrolIndex,
+      patrolMode: phys.patrolMode,
+      patrolDir: phys.patrolDir,
+      patrolPauseRemaining: phys.patrolPauseRemaining,
       stepsPerTurn: phys.stepsPerTurn,
       lastMoveTurn: phys.lastMoveTurn,
       alert: mind?.alert,

@@ -9,7 +9,7 @@
 // Convention: a room with NO LIGHT_SOURCE tiles is fully lit (back-compat
 // with all existing maps). A room with light tiles is dark outside the
 // emissions, regardless of room.ambientLight. ambientLight still controls
-// the player/guard cone *radius*; LightField controls which of the tiles
+// the player/enforcer cone *radius*; LightField controls which of the tiles
 // inside that radius actually register as visible.
 
 import type { Room } from "../types/world.types";

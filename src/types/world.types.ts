@@ -212,7 +212,7 @@ export interface Room {
 
 // Entities ---------------------------------------------------------------
 
-export type EntityKind = "SILICATE" | "GUARD" | "TERMINAL_NPC" | "SURVEILLANCE_DRONE" | "SECURITY_CAMERA" | "ORDERLY";
+export type EntityKind = "SILICATE" | "ENFORCER" | "TERMINAL_NPC" | "SURVEILLANCE_DRONE" | "SECURITY_CAMERA" | "ORDERLY";
 
 export type EntityStatus = "ACTIVE" | "DORMANT" | "EXTRACTED";
 
@@ -228,17 +228,21 @@ export interface AlertState {
   level: "NORMAL" | "CAUTION" | "ALERT" | "EVASION";
   /** Tick on which the current state was entered. */
   enteredTurn: number;
-  /** Last position where the guard sensed the player. */
+  /** Last position where the enforcer sensed the player. */
   lastStimulus?: Vec2;
   /** Room the stimulus came from (may be a neighbor for sound). */
   lastStimulusRoom?: RoomId;
   /** Most recent turn a confirmed (RED-tier) sighting was registered. Drives
    *  the ALERT → EVASION lose-of-sight timer in AlertFSM. */
   lastSeenTurn?: number;
-  /** Turns remaining of a Subjective Dump Fragment stun. While > 0 the guard
+  /** Turns remaining of a Subjective Dump Fragment stun. While > 0 the enforcer
    *  skips its entire `tickOne` (no vision, no movement, no FSM step). Set by
    *  the DUMP_FRAGMENT item handler in WorldEngineActions. */
   stunTurnsRemaining?: number;
+  /** ENFORCER only — turns until this enforcer may interrogate a YELLOW player
+   *  again. Set when an interrogation is passed so the same enforcer doesn't
+   *  immediately re-trigger; decremented once per turn in EnforcerSystem. */
+  interrogateCooldown?: number;
 }
 
 export interface Entity {
@@ -247,7 +251,7 @@ export interface Entity {
   name: string;
   /** Which room this entity lives in. */
   roomId: RoomId;
-  /** GUARD only — the room this guard belongs to, used to walk back to its
+  /** ENFORCER only — the room this enforcer belongs to, used to walk back to its
    *  patrol after EVASION decays. Stamped at world-seed time from `roomId`. */
   homeRoomId?: RoomId;
   /** Position within the room. */
@@ -257,14 +261,24 @@ export interface Entity {
   z: number;
   facing: Facing;
   status: EntityStatus;
-  /** Optional patrol route for GUARD kind. */
+  /** Optional patrol route for ENFORCER kind. */
   patrol?: PatrolNode[];
   patrolIndex?: number;
-  /** Tile-steps per turn for GUARD kind. Default 1. */
+  /** ENFORCER only — how the route is traversed. "loop" (default) cycles
+   *  start→end→start; "pingpong" reverses at each end. */
+  patrolMode?: "loop" | "pingpong";
+  /** ENFORCER only — ping-pong travel direction (+1 forward / -1 back).
+   *  Defaults to +1. Only meaningful when patrolMode is "pingpong". */
+  patrolDir?: 1 | -1;
+  /** ENFORCER only — turns left dwelling at the current patrol node (from
+   *  PatrolNode.pause). Decremented once per turn; the enforcer scans in place
+   *  while > 0 and advances patrolIndex when it reaches 0. */
+  patrolPauseRemaining?: number;
+  /** Tile-steps per turn for ENFORCER kind. Default 1. */
   stepsPerTurn?: number;
   /** Last turn this entity moved — used for walk-vs-idle anims. */
   lastMoveTurn?: number;
-  /** GUARD only — alert FSM state. Initialised by GuardSystem. */
+  /** ENFORCER only — alert FSM state. Initialised by EnforcerSystem. */
   alert?: AlertState;
   /** SILICATE only — mask integrity 0..10, restored by alignment. */
   maskIntegrity?: number;
@@ -305,7 +319,7 @@ export interface PlayerState {
    *  extends in this direction. */
   peeking?: Facing;
   /** "roomId:x,y" of the LOCKER tile the player has ducked into. While set,
-   *  guard sight ignores the player and most actions are refused. */
+   *  enforcer sight ignores the player and most actions are refused. */
   hidingTileKey?: string;
   /** Turns remaining on a Q0 Spoof Badge buff. ComplianceSystem.derive()
    *  short-circuits to GREEN while > 0. Decremented in advanceTurn(). */
@@ -374,9 +388,9 @@ export interface WorldState {
   visibleTiles: Set<string>;
   /** True while a silicate's interrogation light is broadcasting. */
   alignmentLightActive: boolean;
-  /** True while any guard sees the player. Cleared at end of turn. */
+  /** True while any enforcer sees the player. Cleared at end of turn. */
   detected: boolean;
-  /** True if a guard caught the player (game-over flag). */
+  /** True if a enforcer caught the player (game-over flag). */
   detained: boolean;
   /** Vent endpoint pairs keyed for fast lookup. Key is `roomId:x,y` of one
    *  end, value is the other end. Both directions are inserted. */
@@ -388,7 +402,7 @@ export interface WorldState {
   /** Number of times the player has pried at the current blast door this run.
    *  Reset to 0 on door-opens. Used by the climax escape. */
   pryProgress?: number;
-  /** Vacuum-lockdown trap: when a guard first spots the player, the current
+  /** Vacuum-lockdown trap: when a enforcer first spots the player, the current
    *  room seals and the player has `turnsRemaining` end-of-turns to pry open
    *  a doorway and cross out before suffocating. Cleared by crossing into a
    *  different room; resolves to `detained = true` if the timer reaches 0

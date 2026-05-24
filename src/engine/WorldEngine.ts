@@ -26,8 +26,9 @@ import { SEED_VERSIONS, seedFromEra } from "./WorldEngineState";
 import { actions } from "./WorldEngineActions";
 import { documentArchive } from "./DocumentArchive";
 import { alignmentSession } from "./AlignmentSession";
+import { interrogationSession } from "./InterrogationSession";
 import { soundField } from "./SoundField";
-import { guardSystem } from "./GuardSystem";
+import { enforcerSystem } from "./EnforcerSystem";
 import { extractionTerminal } from "./ExtractionTerminal";
 import { complianceSystem } from "./ComplianceSystem";
 import { useSimStore } from "../state/useSimStore";
@@ -76,6 +77,7 @@ class WorldEngine {
   private resetSubsystems(): void {
     documentArchive.reset();
     alignmentSession.reset();
+    interrogationSession.reset();
     soundField.reset();
   }
 
@@ -90,6 +92,7 @@ class WorldEngine {
     if (ok) {
       this.recomputeFOV();
       complianceSystem.recompute(this.getState());
+      enforcerSystem.maybeInterrogateOnMove(this.getState());
       this.syncStore();
     }
     return ok;
@@ -225,6 +228,7 @@ class WorldEngine {
     s.activeEmitters = [];
     documentArchive.reset();
     alignmentSession.reset();
+    interrogationSession.reset();
     this.recomputeFOV();
     this.syncStore();
     eventBus.emit("SUBJECTIVE_WIPED", {});
@@ -333,7 +337,7 @@ class WorldEngine {
         s.player.roomId === s.lockdown.roomId
       ) {
         s.detained = true;
-        eventBus.emit("PLAYER_DETAINED", { guardId: "lockdown", turn: s.turn });
+        eventBus.emit("PLAYER_DETAINED", { enforcerId: "lockdown", turn: s.turn });
       }
     }
 
@@ -358,7 +362,7 @@ class WorldEngine {
     }
 
     // Tick active Phantom Manifest Emitters. Each live emitter pushes a
-    // SoundField emission before propagate() so guards hear it this turn.
+    // SoundField emission before propagate() so enforcers hear it this turn.
     // Entries whose turnsRemaining hits 0 after decrement are removed.
     const expiredEmitters: string[] = [];
     for (const emitter of s.activeEmitters) {
@@ -391,7 +395,7 @@ class WorldEngine {
 
     const wasDetected = s.detected;
     s.detected = false;
-    guardSystem.tick(s, heard);
+    enforcerSystem.tick(s, heard);
     if (wasDetected && !s.detected) {
       eventBus.emit("PLAYER_DETECTION_CLEARED", {});
     }

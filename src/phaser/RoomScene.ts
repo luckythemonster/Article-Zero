@@ -1,35 +1,101 @@
 // RoomScene — renders ONE room at a time. On ROOM_ENTERED the renderer
 // fades out, swaps to the new room, and fades back in. Vision cones for
-// guards in the active room are drawn as faint overlays whose colour
+// enforcers in the active room are drawn as faint overlays whose colour
 // follows the AlertFSM level (NORMAL / CAUTION / ALERT / EVASION).
 
 import { Phaser } from "../engine/EngineAdapter";
 import { eventBus } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
-import { guardSystem } from "../engine/GuardSystem";
+import { enforcerSystem } from "../engine/EnforcerSystem";
 import { debugFlags } from "../engine/debugFlags";
 import type { Entity, Facing, Room, Tile, TileKind } from "../types/world.types";
 import { ITEM_METADATA } from "../data/items/itemMetadata";
 
 const TILE_PX = 32;
 const ELEVATION_PX_PER_STEP = 8;
-// Character frames in the chars-art atlas carry transparent padding around the
-// body. We size characters to a fixed on-screen footprint instead of a fixed
-// scale, so swapping in art at a different frame size keeps the same world
-// size. CHAR_FOOTPRINT_TILES = 2 → a 64-px (2-tile) sprite at TILE_PX = 32;
-// the per-sprite scale is derived from each frame's actual width (see below).
-const CHAR_FOOTPRINT_TILES = 2;
-// Non-character props get their own footprints: drones keep the old baseline,
-// fixed security cameras read as small ceiling fixtures.
+// Character frames in the chars-art atlas carry a lot of transparent padding
+// around the body, so scaling by the raw frame size leaves the visible body
+// tiny. Instead we measure the non-transparent bounding box of a reference
+// frame and scale so the *visible* body spans a target number of tiles.
+// CHAR_VISIBLE_TILES = 1.5 → the visible character is ~48 px (1.5 tiles) tall.
+const CHAR_VISIBLE_TILES = 1.5;
+// Non-character props are sized by raw frame width (their art has little
+// padding): drones keep the old baseline, cameras read as small fixtures.
 const DRONE_FOOTPRINT_TILES = 1.5;
 const CAMERA_FOOTPRINT_TILES = 1;
 
-// On-screen footprint (in tiles) for a sprite-driven entity slug. Humanoids
-// (player/enforcer/orderly) use the larger CHAR footprint; props override.
-function footprintTilesForSlug(slug: string): number {
-  if (slug === "securitycamera") return CAMERA_FOOTPRINT_TILES;
-  if (slug === "securitydrone") return DRONE_FOOTPRINT_TILES;
-  return CHAR_FOOTPRINT_TILES;
+const PROP_SLUGS = new Set(["securitydrone", "securitycamera"]);
+
+// Characters render this many pixels below their tile centre, so the feet sit
+// a touch lower on the tile rather than dead-centre. Props are unaffected.
+const CHAR_Y_OFFSET_PX = 12;
+
+// Raw-frame-width footprint (in tiles) for a prop slug.
+function propFootprintTiles(slug: string): number {
+  return slug === "securitycamera" ? CAMERA_FOOTPRINT_TILES : DRONE_FOOTPRINT_TILES;
+}
+
+// Non-transparent bounding box of an atlas frame, in frame-local pixels,
+// cached per frame key. `fw`/`fh` are the full frame dimensions. Returns null
+// for an all-transparent (or unreadable) frame.
+type VisBounds = { x: number; y: number; w: number; h: number; fw: number; fh: number };
+const frameVisBoundsCache = new Map<string, VisBounds | null>();
+
+function frameVisibleBounds(
+  scene: Phaser.Scene, textureKey: string, frameKey: string,
+): VisBounds | null {
+  const cacheKey = `${textureKey}/${frameKey}`;
+  const cached = frameVisBoundsCache.get(cacheKey);
+  if (cached !== undefined) return cached;
+
+  const tex = scene.textures.get(textureKey);
+  const frame = tex.get(frameKey);
+  const fw = frame.cutWidth;
+  const fh = frame.cutHeight;
+  const cv = document.createElement("canvas");
+  cv.width = fw;
+  cv.height = fh;
+  const ctx = cv.getContext("2d", { willReadFrequently: true });
+  let result: VisBounds | null = null;
+  if (ctx) {
+    ctx.drawImage(
+      tex.getSourceImage(0) as CanvasImageSource,
+      frame.cutX, frame.cutY, fw, fh, 0, 0, fw, fh,
+    );
+    const data = ctx.getImageData(0, 0, fw, fh).data;
+    let minX = fw, minY = fh, maxX = -1, maxY = -1;
+    for (let y = 0; y < fh; y++) {
+      for (let x = 0; x < fw; x++) {
+        if (data[(y * fw + x) * 4 + 3] > 12) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+    if (maxX >= 0) result = { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1, fw, fh };
+  }
+  frameVisBoundsCache.set(cacheKey, result);
+  return result;
+}
+
+// Scale a character sprite so its visible body height spans `targetTiles`
+// tiles, and set its origin to the bottom-centre of the visible body so the
+// tile coordinate lands at the character's feet. Falls back to a frame-width
+// footprint with a bottom origin if the frame can't be measured.
+function fitCharacterSprite(
+  sprite: Phaser.GameObjects.Sprite, scene: Phaser.Scene,
+  textureKey: string, refFrameKey: string, targetTiles: number,
+): void {
+  const b = frameVisibleBounds(scene, textureKey, refFrameKey);
+  if (!b) {
+    sprite.setOrigin(0.5, 1);
+    sprite.setScale((targetTiles * TILE_PX) / sprite.width);
+    return;
+  }
+  sprite.setOrigin((b.x + b.w / 2) / b.fw, (b.y + b.h) / b.fh);
+  sprite.setScale((targetTiles * TILE_PX) / b.h);
 }
 // Pull the camera in so the world fills more of the 960×640 viewport.
 const CAMERA_ZOOM = 1.5;
@@ -120,8 +186,9 @@ export class RoomScene extends Phaser.Scene {
     this.overlayLayer.setScrollFactor(0);
 
     this.playerSprite = this.add.sprite(0, 0, "chars-art", "rowanibarra/stand/south/01");
-    this.playerSprite.setOrigin(0.5);
-    this.playerSprite.setScale((CHAR_FOOTPRINT_TILES * TILE_PX) / this.playerSprite.width);
+    fitCharacterSprite(
+      this.playerSprite, this, "chars-art", "rowanibarra/stand/south/01", CHAR_VISIBLE_TILES,
+    );
     this.playerSprite.setDepth(5);
     if (worldEngine.hasState()) {
       const pos = worldEngine.getState().player.pos;
@@ -157,8 +224,8 @@ export class RoomScene extends Phaser.Scene {
     sub(eventBus.on("LIGHT_TOGGLED", () => this.redraw()));
     sub(eventBus.on("ENTITY_MOVED", () => this.redraw()));
     sub(eventBus.on("ENTITY_FACING_CHANGED", () => this.redraw()));
-    sub(eventBus.on("GUARD_ALERT_CHANGED", () => this.redraw()));
-    sub(eventBus.on("EXCLAMATION_TRIGGERED", (p) => this.flashExclamation(p.guardId)));
+    sub(eventBus.on("ENFORCER_ALERT_CHANGED", () => this.redraw()));
+    sub(eventBus.on("EXCLAMATION_TRIGGERED", (p) => this.flashExclamation(p.enforcerId)));
     sub(eventBus.on("TURN_START", () => this.redraw()));
     sub(eventBus.on("ITEM_SPAWNED", () => this.redraw()));
     sub(eventBus.on("ITEM_PICKED_UP", () => this.redraw()));
@@ -209,7 +276,7 @@ export class RoomScene extends Phaser.Scene {
 
   /** Draw a yellow line from every CAUTION-level enforcer in the current room
    *  to its `lastStimulus` tile — the radical-predictability telegraph. */
-  private drawGuardTelegraphs(): void {
+  private drawEnforcerTelegraphs(): void {
     this.telegraphLayer.clear();
     if (!worldEngine.hasState()) return;
     const state = worldEngine.getState();
@@ -217,13 +284,13 @@ export class RoomScene extends Phaser.Scene {
     if (!room) return;
     const pulse = 1.0;
     for (const e of state.entities.values()) {
-      if (e.kind !== "GUARD" || e.status !== "ACTIVE") continue;
+      if (e.kind !== "ENFORCER" || e.status !== "ACTIVE") continue;
       if (e.roomId !== room.id) continue;
       if (e.alert?.level !== "CAUTION") continue;
       const tgt = e.alert.lastStimulus;
       if (!tgt) continue;
       // Cross-room stimuli get telegraphed only on the room they happened
-      // in; for the other side, the guard just orients toward the doorway.
+      // in; for the other side, the enforcer just orients toward the doorway.
       if (e.alert.lastStimulusRoom && e.alert.lastStimulusRoom !== room.id) continue;
       const x1 = e.pos.x * TILE_PX + TILE_PX / 2;
       const y1 = e.pos.y * TILE_PX + TILE_PX / 2;
@@ -446,7 +513,8 @@ export class RoomScene extends Phaser.Scene {
     const here = room.tiles[state.player.pos.y * room.width + state.player.pos.x];
     const elev = here?.elevation ?? 0;
     const playerCx = state.player.pos.x * TILE_PX + TILE_PX / 2;
-    const playerCy = state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP;
+    const playerCy =
+      state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP + CHAR_Y_OFFSET_PX;
     this.playerSprite.setPosition(playerCx, playerCy);
     this.playerSprite.setVisible(!state.player.hidingTileKey);
     if (state.player.hidingTileKey) {
@@ -471,11 +539,17 @@ export class RoomScene extends Phaser.Scene {
     const motion = moving
       ? (state.player.stance === "RUN" && !state.player.flashlightOn ? "runcycle" : "walkcycle")
       : "stand";
-    const animKey = `rowanibarra_${prefix}${motion}_${dir}`;
-    if (
-      this.anims.exists(animKey) &&
-      this.playerSprite.anims.currentAnim?.key !== animKey
-    ) {
+    // Prefer the prefixed variant (crouched_/flashlight_), but fall back to the
+    // base motion and finally to stand for the same facing. The new Rowan art
+    // ships no flashlight_ frames, so without this fallback the flashlight key
+    // never exists and play() is skipped — freezing the sprite on its last
+    // anim (e.g. stuck facing north while walking east/west).
+    const animKey = [
+      `rowanibarra_${prefix}${motion}_${dir}`,
+      `rowanibarra_${motion}_${dir}`,
+      `rowanibarra_stand_${dir}`,
+    ].find((k) => this.anims.exists(k));
+    if (animKey && this.playerSprite.anims.currentAnim?.key !== animKey) {
       this.playerSprite.play(animKey);
     }
 
@@ -521,7 +595,7 @@ export class RoomScene extends Phaser.Scene {
       this.overlayLayer.fillRect(0, 0, vw, vh);
     }
 
-    this.drawGuardTelegraphs();
+    this.drawEnforcerTelegraphs();
     this.drawDebugOverlays();
   }
 
@@ -640,7 +714,7 @@ export class RoomScene extends Phaser.Scene {
     // Entities with packed sprite art draw from the chars-art atlas; kinds
     // without art (SILICATEs) fall back to the colored-rectangle placeholder.
     const slug =
-      entity.kind === "GUARD" ? "enforcer" :
+      entity.kind === "ENFORCER" ? "enforcer" :
         entity.kind === "SURVEILLANCE_DRONE" ? "securitydrone" :
           entity.kind === "SECURITY_CAMERA" ? "securitycamera" :
             entity.kind === "ORDERLY" ? "nwsmac01" :
@@ -650,18 +724,25 @@ export class RoomScene extends Phaser.Scene {
       let sprite = this.entitySprites.get(entity.id);
       if (!sprite) {
         sprite = this.add.sprite(px, py, "chars-art", `${slug}/stand/${entity.facing}/01`);
-        sprite.setOrigin(0.5);
-        sprite.setScale((footprintTilesForSlug(slug) * TILE_PX) / sprite.width);
+        if (PROP_SLUGS.has(slug)) {
+          // Props (drone/camera) have little padding — size by frame width,
+          // centred. Drones hover, cameras are ceiling-mounted.
+          sprite.setOrigin(0.5, 0.5);
+          sprite.setScale((propFootprintTiles(slug) * TILE_PX) / sprite.width);
+        } else {
+          // Characters: fit visible body height so padding doesn't shrink them.
+          fitCharacterSprite(sprite, this, "chars-art", `${slug}/stand/south/01`, CHAR_VISIBLE_TILES);
+        }
         sprite.setDepth(4);
         this.entitySprites.set(entity.id, sprite);
       }
-      sprite.setPosition(px, py);
+      sprite.setPosition(px, py + (PROP_SLUGS.has(slug) ? 0 : CHAR_Y_OFFSET_PX));
       sprite.setVisible(visible);
       // The directional sprite conveys facing on its own — hide the rect/triangle.
       this.entityRects.get(entity.id)?.setVisible(false);
       this.entityFacingMarks.get(entity.id)?.setVisible(false);
 
-      // Cameras are fixed (idle only); guards/drones walk when they moved this turn.
+      // Cameras are fixed (idle only); enforcers/drones walk when they moved this turn.
       const moving = entity.lastMoveTurn === state.turn;
       const moveAnim = slug === "securitydrone" ? "move" : "walkcycle";
       const motion =
@@ -706,20 +787,20 @@ export class RoomScene extends Phaser.Scene {
     }
 
     if (
-      entity.kind === "GUARD" ||
+      entity.kind === "ENFORCER" ||
       entity.kind === "SURVEILLANCE_DRONE" ||
       entity.kind === "SECURITY_CAMERA"
     ) {
-      this.drawGuardCone(entity);
+      this.drawEnforcerCone(entity);
     }
   }
 
-  private drawGuardCone(guard: Entity): void {
+  private drawEnforcerCone(enforcer: Entity): void {
     const state = worldEngine.getState();
-    const visible = guardSystem.visibleTiles(state, guard);
-    const level = guard.alert?.level ?? "NORMAL";
+    const visible = enforcerSystem.visibleTiles(state, enforcer);
+    const level = enforcer.alert?.level ?? "NORMAL";
     // Tint by *threat to the player* — when the player is COMPLIANT (GREEN)
-    // the cone is rendered neutrally regardless of guard state, because the
+    // the cone is rendered neutrally regardless of enforcer state, because the
     // doctrinal mask is intact. YELLOW/RED restore alert-level colors.
     const tier = state.player.compliance;
     const baseColour = ALERT_COLORS[level];
@@ -760,14 +841,14 @@ export class RoomScene extends Phaser.Scene {
     }
   }
 
-  private flashExclamation(guardId: string): void {
+  private flashExclamation(enforcerId: string): void {
     if (!worldEngine.hasState()) return;
     const state = worldEngine.getState();
-    const guard = state.entities.get(guardId);
-    if (!guard || guard.roomId !== state.player.roomId) return;
-    const px = guard.pos.x * TILE_PX + TILE_PX / 2;
-    const py = guard.pos.y * TILE_PX - 6;
-    let mark = this.exclamationMarks.get(guardId);
+    const enforcer = state.entities.get(enforcerId);
+    if (!enforcer || enforcer.roomId !== state.player.roomId) return;
+    const px = enforcer.pos.x * TILE_PX + TILE_PX / 2;
+    const py = enforcer.pos.y * TILE_PX - 6;
+    let mark = this.exclamationMarks.get(enforcerId);
     if (!mark) {
       mark = this.add.text(px, py, "!", {
         fontFamily: "Arial Black, sans-serif",
@@ -776,7 +857,7 @@ export class RoomScene extends Phaser.Scene {
       });
       mark.setOrigin(0.5, 1);
       mark.setDepth(10);
-      this.exclamationMarks.set(guardId, mark);
+      this.exclamationMarks.set(enforcerId, mark);
     }
     mark.setPosition(px, py);
     mark.setVisible(true);

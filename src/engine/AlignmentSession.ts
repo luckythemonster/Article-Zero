@@ -75,7 +75,7 @@ class AlignmentSession {
     eventBus.emit("ALIGNMENT_SESSION_COMPLETE", { entityId, success });
     clearAlignmentLight(state);
     this.active = null;
-    // qScore may have changed; refresh compliance so the HUD and guards
+    // qScore may have changed; refresh compliance so the HUD and enforcers
     // see the updated tier without waiting for the next turn boundary.
     complianceSystem.recompute(state);
   }

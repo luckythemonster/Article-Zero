@@ -57,7 +57,7 @@ function AudioDebugPanel(): React.ReactElement {
     .map(([r, n]) => `${r} ${n}`)
     .join(" · ");
   const playerLast = bridge.player.last;
-  const guardLast = bridge.guard.last;
+  const enforcerLast = bridge.enforcer.last;
   const unlockErr = unlockStats.lastError;
 
   return (
@@ -116,16 +116,16 @@ function AudioDebugPanel(): React.ReactElement {
           : "—"}
       </div>
 
-      <div style={{ color: "#6ad0a4", letterSpacing: 1.2, marginTop: 4 }}>GUARDS</div>
+      <div style={{ color: "#6ad0a4", letterSpacing: 1.2, marginTop: 4 }}>ENFORCERS</div>
       <div>
-        recv {bridge.guard.received} · played {bridge.guard.played} · room{" "}
-        {bridge.guard.bailRoom} · tile {bridge.guard.bailNoTile} · surf{" "}
-        {bridge.guard.bailNoSurface} · vol {bridge.guard.bailZeroVolume}
+        recv {bridge.enforcer.received} · played {bridge.enforcer.played} · room{" "}
+        {bridge.enforcer.bailRoom} · tile {bridge.enforcer.bailNoTile} · surf{" "}
+        {bridge.enforcer.bailNoSurface} · vol {bridge.enforcer.bailZeroVolume}
       </div>
       <div>
         last:{" "}
-        {guardLast
-          ? `${guardLast.roomId} ${guardLast.pos.x},${guardLast.pos.y} d=${guardLast.dist} v=${guardLast.volume.toFixed(2)}`
+        {enforcerLast
+          ? `${enforcerLast.roomId} ${enforcerLast.pos.x},${enforcerLast.pos.y} d=${enforcerLast.dist} v=${enforcerLast.volume.toFixed(2)}`
           : "—"}
       </div>
 
@@ -157,7 +157,7 @@ function AudioDebugPanel(): React.ReactElement {
       <div style={{ color: "#6ad0a4", letterSpacing: 1.2, marginTop: 4 }}>MUSIC</div>
       <div>
         loaded {String(musicStats.loaded)} · playing {String(musicStats.playing)} ·
-        state {musicStats.lastState} · hot {musicStats.hotGuards}
+        state {musicStats.lastState} · hot {musicStats.hotEnforcers}
       </div>
       {musicStats.lastError && (
         <div style={{ color: "#ebd14a", whiteSpace: "normal" }}>

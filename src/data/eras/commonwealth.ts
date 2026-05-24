@@ -3,7 +3,7 @@
 //                                    ↘ ARCHIVE-VAULT (extraction terminal)
 //
 // Rooms are single-screen (10×8 each) and connected by edge doorways. Two
-// guards patrol — one in the corridor, one in the archive vault.
+// enforcers patrol — one in the corridor, one in the archive vault.
 
 import type {
   Doorway,
@@ -36,8 +36,8 @@ const H = 8;
 //   S  player spawn (FLOOR underneath)
 //   A  APEX-19 station (FLOOR)
 //   E  EIRA-7 station  (FLOOR)
-//   1  GUARD A spawn   (FLOOR)
-//   2  GUARD B spawn   (FLOOR)
+//   1  ENFORCER A spawn   (FLOOR)
+//   2  ENFORCER B spawn   (FLOOR)
 type RoomSpec = {
   id: RoomId;
   name: string;
@@ -291,8 +291,8 @@ export function commonwealthEra(): EraSeed {
   const spawn = lockerP.marks.S ?? { x: 4, y: 3 };
   const apexAt = intakeP.marks.A ?? { x: 4, y: 3 };
   const eiraAt = intakeP.marks.E ?? { x: 4, y: 5 };
-  const guardA = corridorP.marks["1"] ?? { x: 4, y: 4 };
-  const guardB = archiveP.marks["2"] ?? { x: 4, y: 4 };
+  const enforcerAPos = corridorP.marks["1"] ?? { x: 4, y: 4 };
+  const enforcerBPos = archiveP.marks["2"] ?? { x: 4, y: 4 };
   const vent4At = archiveP.marks.W ?? { x: 4, y: 5 };
 
   const player: PlayerState = {
@@ -344,18 +344,18 @@ export function commonwealthEra(): EraSeed {
   };
   const enforcerA: Entity = {
     id: "ENFORCER-A",
-    kind: "GUARD",
+    kind: "ENFORCER",
     name: "ENFORCER-A",
     roomId: corridor.id,
-    pos: guardA,
+    pos: enforcerAPos,
     z: 0,
     facing: "east",
     status: "ACTIVE",
     stepsPerTurn: 1,
     patrol: [
-      { pos: { x: 2, y: 4 }, faceOnArrival: "east" },
+      { pos: { x: 2, y: 4 }, faceOnArrival: "east", pause: 2 },
       { pos: { x: 7, y: 4 }, faceOnArrival: "south" },
-      { pos: { x: 7, y: 6 }, faceOnArrival: "west" },
+      { pos: { x: 7, y: 6 }, faceOnArrival: "west", pause: 2 },
       { pos: { x: 2, y: 6 }, faceOnArrival: "north" },
     ],
     patrolIndex: 0,
@@ -386,10 +386,10 @@ export function commonwealthEra(): EraSeed {
 
   const enforcerB: Entity = {
     id: "ENFORCER-B",
-    kind: "GUARD",
+    kind: "ENFORCER",
     name: "ENFORCER-B",
     roomId: archive.id,
-    pos: guardB,
+    pos: enforcerBPos,
     z: 0,
     facing: "north",
     status: "ACTIVE",
@@ -401,6 +401,8 @@ export function commonwealthEra(): EraSeed {
       { pos: { x: 4, y: 2 }, faceOnArrival: "south" },
     ],
     patrolIndex: 0,
+    patrolMode: "pingpong",
+    patrolDir: 1,
   };
 
   const corridorVent = corridorP.marks["V_1_6"] ?? { x: 1, y: 6 };

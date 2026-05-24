@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTerminalStore } from "../state/useTerminalStore";
 import { applySettings, loadSettings } from "./settings";
-import { installEventBridge } from "./eventBridge";
 import StatusBar from "./StatusBar";
 import AuditLog from "./AuditLog";
 import CommandLine from "./CommandLine";
@@ -9,6 +8,7 @@ import ModuleSelector from "./ModuleSelector";
 import ArchivistIntro from "./ArchivistIntro";
 import { PhaserCanvas } from "./PhaserCanvas";
 import InterrogationTerminal from "../components/InterrogationTerminal";
+import EnforcerInterrogationModal from "../components/EnforcerInterrogationModal";
 import DisputedRecordsUI from "../components/DisputedRecordsUI";
 import Vent4DilemmaModal from "../components/Vent4DilemmaModal";
 import ClimaxOverlay from "../components/ClimaxOverlay";
@@ -42,7 +42,9 @@ export default function TerminalShell() {
       term.setActiveModule(null);
       term.setPhase("FRAME");
     }
-    return installEventBridge();
+    // NOTE: the eventBridge is installed inside PhaserCanvas, not here — its
+    // listeners must be registered *after* PhaserCanvas's eventBus.clear() on
+    // mount, or they get wiped the moment a module loads.
   }, []);
 
   useEffect(() => {
@@ -66,6 +68,7 @@ export default function TerminalShell() {
         ) : activeModule ? (
           <PhaserCanvas moduleId={activeModule}>
             {phase === "ALIGNMENT" && <InterrogationTerminal />}
+            {phase === "INTERROGATION" && <EnforcerInterrogationModal />}
             {phase === "FORGERY" && <DisputedRecordsUI />}
             {phase === "CLIMAX" && (
               <>

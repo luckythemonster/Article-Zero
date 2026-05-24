@@ -11,6 +11,7 @@ import { RoomScene } from "../phaser/RoomScene";
 import { useSimStore } from "../state/useSimStore";
 import { useInput } from "../hooks/useInput";
 import { installDebugEventTap } from "../engine/DebugEventTap";
+import { installEventBridge } from "./eventBridge";
 import { installFootstepBridge } from "../audio/footstep-bridge";
 import { installMusicBridge } from "../audio/MusicBridge";
 import { installSfxBridge } from "../audio/sfx-bridge";
@@ -43,10 +44,12 @@ export function PhaserCanvas({ moduleId, children }: Props) {
     game.registry.set("moduleId", moduleId);
     gameRef.current = game;
 
-    // Install debug tap AFTER eventBus.clear so its handlers survive the
-    // canvas lifecycle. Detach on unmount before the next clear. The footstep
-    // audio bridge rides alongside for the same reason — TerminalShell-level
-    // subscription would be wiped by the clear on every PhaserCanvas mount.
+    // Install bridges AFTER eventBus.clear so their handlers survive the
+    // canvas lifecycle. Detach on unmount before the next clear. A
+    // TerminalShell-level subscription would be wiped by the clear on every
+    // PhaserCanvas mount — so the audit-log/phase eventBridge lives here too,
+    // alongside the debug tap and audio bridges.
+    const offEventBridge = installEventBridge();
     const offTap = installDebugEventTap();
     const offFootsteps = installFootstepBridge();
     const offMusic = installMusicBridge();
@@ -57,6 +60,7 @@ export function PhaserCanvas({ moduleId, children }: Props) {
       offMusic();
       offFootsteps();
       offTap();
+      offEventBridge();
       gameRef.current?.destroy(true);
       gameRef.current = null;
       eventBus.clear();
