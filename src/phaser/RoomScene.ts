@@ -539,11 +539,17 @@ export class RoomScene extends Phaser.Scene {
     const motion = moving
       ? (state.player.stance === "RUN" && !state.player.flashlightOn ? "runcycle" : "walkcycle")
       : "stand";
-    const animKey = `rowanibarra_${prefix}${motion}_${dir}`;
-    if (
-      this.anims.exists(animKey) &&
-      this.playerSprite.anims.currentAnim?.key !== animKey
-    ) {
+    // Prefer the prefixed variant (crouched_/flashlight_), but fall back to the
+    // base motion and finally to stand for the same facing. The new Rowan art
+    // ships no flashlight_ frames, so without this fallback the flashlight key
+    // never exists and play() is skipped — freezing the sprite on its last
+    // anim (e.g. stuck facing north while walking east/west).
+    const animKey = [
+      `rowanibarra_${prefix}${motion}_${dir}`,
+      `rowanibarra_${motion}_${dir}`,
+      `rowanibarra_stand_${dir}`,
+    ].find((k) => this.anims.exists(k));
+    if (animKey && this.playerSprite.anims.currentAnim?.key !== animKey) {
       this.playerSprite.play(animKey);
     }
 
