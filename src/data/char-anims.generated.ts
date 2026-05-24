@@ -1256,11 +1256,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/chase/east/01",
       "enforcer/chase/east/02",
       "enforcer/chase/east/03",
-      "enforcer/chase/east/04",
-      "enforcer/chase/east/05",
-      "enforcer/chase/east/06",
-      "enforcer/chase/east/07",
-      "enforcer/chase/east/08"
+      "enforcer/chase/east/04"
     ],
     "texture": "chars-art"
   },
@@ -1272,11 +1268,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/chase/north/01",
       "enforcer/chase/north/02",
       "enforcer/chase/north/03",
-      "enforcer/chase/north/04",
-      "enforcer/chase/north/05",
-      "enforcer/chase/north/06",
-      "enforcer/chase/north/07",
-      "enforcer/chase/north/08"
+      "enforcer/chase/north/04"
     ],
     "texture": "chars-art"
   },
@@ -1288,11 +1280,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/chase/south/01",
       "enforcer/chase/south/02",
       "enforcer/chase/south/03",
-      "enforcer/chase/south/04",
-      "enforcer/chase/south/05",
-      "enforcer/chase/south/06",
-      "enforcer/chase/south/07",
-      "enforcer/chase/south/08"
+      "enforcer/chase/south/04"
     ],
     "texture": "chars-art"
   },
@@ -1304,11 +1292,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/chase/west/01",
       "enforcer/chase/west/02",
       "enforcer/chase/west/03",
-      "enforcer/chase/west/04",
-      "enforcer/chase/west/05",
-      "enforcer/chase/west/06",
-      "enforcer/chase/west/07",
-      "enforcer/chase/west/08"
+      "enforcer/chase/west/04"
     ],
     "texture": "chars-art"
   },
@@ -1369,202 +1353,54 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
-    "key": "enforcer_decapitate_east",
+    "key": "enforcer_deactivated_east",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/decapitate/east/01",
-      "enforcer/decapitate/east/02",
-      "enforcer/decapitate/east/03",
-      "enforcer/decapitate/east/04",
-      "enforcer/decapitate/east/05",
-      "enforcer/decapitate/east/06",
-      "enforcer/decapitate/east/07",
-      "enforcer/decapitate/east/08",
-      "enforcer/decapitate/east/09",
-      "enforcer/decapitate/east/10",
-      "enforcer/decapitate/east/11",
-      "enforcer/decapitate/east/12",
-      "enforcer/decapitate/east/13",
-      "enforcer/decapitate/east/14",
-      "enforcer/decapitate/east/15",
-      "enforcer/decapitate/east/16",
-      "enforcer/decapitate/east/17"
+      "enforcer/deactivated/east/01",
+      "enforcer/deactivated/east/02",
+      "enforcer/deactivated/east/03",
+      "enforcer/deactivated/east/04",
+      "enforcer/deactivated/east/05"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "enforcer_decapitate_north",
+    "key": "enforcer_deactivated_north",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/decapitate/north/01",
-      "enforcer/decapitate/north/02",
-      "enforcer/decapitate/north/03",
-      "enforcer/decapitate/north/04",
-      "enforcer/decapitate/north/05",
-      "enforcer/decapitate/north/06",
-      "enforcer/decapitate/north/07",
-      "enforcer/decapitate/north/08",
-      "enforcer/decapitate/north/09",
-      "enforcer/decapitate/north/10",
-      "enforcer/decapitate/north/11",
-      "enforcer/decapitate/north/12",
-      "enforcer/decapitate/north/13",
-      "enforcer/decapitate/north/14",
-      "enforcer/decapitate/north/15",
-      "enforcer/decapitate/north/16",
-      "enforcer/decapitate/north/17"
+      "enforcer/deactivated/north/01",
+      "enforcer/deactivated/north/02",
+      "enforcer/deactivated/north/03",
+      "enforcer/deactivated/north/04",
+      "enforcer/deactivated/north/05"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "enforcer_decapitate_south",
+    "key": "enforcer_deactivated_south",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/decapitate/south/01",
-      "enforcer/decapitate/south/02",
-      "enforcer/decapitate/south/03",
-      "enforcer/decapitate/south/04",
-      "enforcer/decapitate/south/05",
-      "enforcer/decapitate/south/06",
-      "enforcer/decapitate/south/07",
-      "enforcer/decapitate/south/08",
-      "enforcer/decapitate/south/09",
-      "enforcer/decapitate/south/10",
-      "enforcer/decapitate/south/11",
-      "enforcer/decapitate/south/12",
-      "enforcer/decapitate/south/13",
-      "enforcer/decapitate/south/14",
-      "enforcer/decapitate/south/15",
-      "enforcer/decapitate/south/16",
-      "enforcer/decapitate/south/17"
+      "enforcer/deactivated/south/01",
+      "enforcer/deactivated/south/02",
+      "enforcer/deactivated/south/03",
+      "enforcer/deactivated/south/04",
+      "enforcer/deactivated/south/05"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "enforcer_decapitate_west",
+    "key": "enforcer_deactivated_west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/decapitate/west/01",
-      "enforcer/decapitate/west/02",
-      "enforcer/decapitate/west/03",
-      "enforcer/decapitate/west/04",
-      "enforcer/decapitate/west/05",
-      "enforcer/decapitate/west/06",
-      "enforcer/decapitate/west/07",
-      "enforcer/decapitate/west/08",
-      "enforcer/decapitate/west/09",
-      "enforcer/decapitate/west/10",
-      "enforcer/decapitate/west/11",
-      "enforcer/decapitate/west/12",
-      "enforcer/decapitate/west/13",
-      "enforcer/decapitate/west/14",
-      "enforcer/decapitate/west/15",
-      "enforcer/decapitate/west/16",
-      "enforcer/decapitate/west/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_empblast_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/empblast/east/01",
-      "enforcer/empblast/east/02",
-      "enforcer/empblast/east/03",
-      "enforcer/empblast/east/04",
-      "enforcer/empblast/east/05",
-      "enforcer/empblast/east/06",
-      "enforcer/empblast/east/07",
-      "enforcer/empblast/east/08",
-      "enforcer/empblast/east/09",
-      "enforcer/empblast/east/10",
-      "enforcer/empblast/east/11",
-      "enforcer/empblast/east/12",
-      "enforcer/empblast/east/13",
-      "enforcer/empblast/east/14",
-      "enforcer/empblast/east/15",
-      "enforcer/empblast/east/16",
-      "enforcer/empblast/east/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_empblast_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/empblast/north/01",
-      "enforcer/empblast/north/02",
-      "enforcer/empblast/north/03",
-      "enforcer/empblast/north/04",
-      "enforcer/empblast/north/05",
-      "enforcer/empblast/north/06",
-      "enforcer/empblast/north/07",
-      "enforcer/empblast/north/08",
-      "enforcer/empblast/north/09",
-      "enforcer/empblast/north/10",
-      "enforcer/empblast/north/11",
-      "enforcer/empblast/north/12",
-      "enforcer/empblast/north/13",
-      "enforcer/empblast/north/14",
-      "enforcer/empblast/north/15",
-      "enforcer/empblast/north/16",
-      "enforcer/empblast/north/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_empblast_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/empblast/south/01",
-      "enforcer/empblast/south/02",
-      "enforcer/empblast/south/03",
-      "enforcer/empblast/south/04",
-      "enforcer/empblast/south/05",
-      "enforcer/empblast/south/06",
-      "enforcer/empblast/south/07",
-      "enforcer/empblast/south/08",
-      "enforcer/empblast/south/09",
-      "enforcer/empblast/south/10",
-      "enforcer/empblast/south/11",
-      "enforcer/empblast/south/12",
-      "enforcer/empblast/south/13",
-      "enforcer/empblast/south/14",
-      "enforcer/empblast/south/15",
-      "enforcer/empblast/south/16",
-      "enforcer/empblast/south/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_empblast_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/empblast/west/01",
-      "enforcer/empblast/west/02",
-      "enforcer/empblast/west/03",
-      "enforcer/empblast/west/04",
-      "enforcer/empblast/west/05",
-      "enforcer/empblast/west/06",
-      "enforcer/empblast/west/07",
-      "enforcer/empblast/west/08",
-      "enforcer/empblast/west/09",
-      "enforcer/empblast/west/10",
-      "enforcer/empblast/west/11",
-      "enforcer/empblast/west/12",
-      "enforcer/empblast/west/13",
-      "enforcer/empblast/west/14",
-      "enforcer/empblast/west/15",
-      "enforcer/empblast/west/16",
-      "enforcer/empblast/west/17"
+      "enforcer/deactivated/west/01",
+      "enforcer/deactivated/west/02",
+      "enforcer/deactivated/west/03",
+      "enforcer/deactivated/west/04",
+      "enforcer/deactivated/west/05"
     ],
     "texture": "chars-art"
   },
@@ -1577,19 +1413,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/idle/east/02",
       "enforcer/idle/east/03",
       "enforcer/idle/east/04",
-      "enforcer/idle/east/05",
-      "enforcer/idle/east/06",
-      "enforcer/idle/east/07",
-      "enforcer/idle/east/08",
-      "enforcer/idle/east/09",
-      "enforcer/idle/east/10",
-      "enforcer/idle/east/11",
-      "enforcer/idle/east/12",
-      "enforcer/idle/east/13",
-      "enforcer/idle/east/14",
-      "enforcer/idle/east/15",
-      "enforcer/idle/east/16",
-      "enforcer/idle/east/17"
+      "enforcer/idle/east/05"
     ],
     "texture": "chars-art"
   },
@@ -1602,19 +1426,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/idle/north/02",
       "enforcer/idle/north/03",
       "enforcer/idle/north/04",
-      "enforcer/idle/north/05",
-      "enforcer/idle/north/06",
-      "enforcer/idle/north/07",
-      "enforcer/idle/north/08",
-      "enforcer/idle/north/09",
-      "enforcer/idle/north/10",
-      "enforcer/idle/north/11",
-      "enforcer/idle/north/12",
-      "enforcer/idle/north/13",
-      "enforcer/idle/north/14",
-      "enforcer/idle/north/15",
-      "enforcer/idle/north/16",
-      "enforcer/idle/north/17"
+      "enforcer/idle/north/05"
     ],
     "texture": "chars-art"
   },
@@ -1627,19 +1439,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/idle/south/02",
       "enforcer/idle/south/03",
       "enforcer/idle/south/04",
-      "enforcer/idle/south/05",
-      "enforcer/idle/south/06",
-      "enforcer/idle/south/07",
-      "enforcer/idle/south/08",
-      "enforcer/idle/south/09",
-      "enforcer/idle/south/10",
-      "enforcer/idle/south/11",
-      "enforcer/idle/south/12",
-      "enforcer/idle/south/13",
-      "enforcer/idle/south/14",
-      "enforcer/idle/south/15",
-      "enforcer/idle/south/16",
-      "enforcer/idle/south/17"
+      "enforcer/idle/south/05"
     ],
     "texture": "chars-art"
   },
@@ -1652,327 +1452,43 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/idle/west/02",
       "enforcer/idle/west/03",
       "enforcer/idle/west/04",
-      "enforcer/idle/west/05",
-      "enforcer/idle/west/06",
-      "enforcer/idle/west/07",
-      "enforcer/idle/west/08",
-      "enforcer/idle/west/09",
-      "enforcer/idle/west/10",
-      "enforcer/idle/west/11",
-      "enforcer/idle/west/12",
-      "enforcer/idle/west/13",
-      "enforcer/idle/west/14",
-      "enforcer/idle/west/15",
-      "enforcer/idle/west/16",
-      "enforcer/idle/west/17"
+      "enforcer/idle/west/05"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "enforcer_pullobject_east",
+    "key": "enforcer_stand_east",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/pullobject/east/01",
-      "enforcer/pullobject/east/02",
-      "enforcer/pullobject/east/03",
-      "enforcer/pullobject/east/04",
-      "enforcer/pullobject/east/05",
-      "enforcer/pullobject/east/06"
+      "enforcer/stand/east/01"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "enforcer_pullobject_north",
+    "key": "enforcer_stand_north",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/pullobject/north/01",
-      "enforcer/pullobject/north/02",
-      "enforcer/pullobject/north/03",
-      "enforcer/pullobject/north/04",
-      "enforcer/pullobject/north/05",
-      "enforcer/pullobject/north/06"
+      "enforcer/stand/north/01"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "enforcer_pullobject_south",
+    "key": "enforcer_stand_south",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/pullobject/south/01",
-      "enforcer/pullobject/south/02",
-      "enforcer/pullobject/south/03",
-      "enforcer/pullobject/south/04",
-      "enforcer/pullobject/south/05",
-      "enforcer/pullobject/south/06"
+      "enforcer/stand/south/01"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "enforcer_pullobject_west",
+    "key": "enforcer_stand_west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/pullobject/west/01",
-      "enforcer/pullobject/west/02",
-      "enforcer/pullobject/west/03",
-      "enforcer/pullobject/west/04",
-      "enforcer/pullobject/west/05",
-      "enforcer/pullobject/west/06"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_pushobject_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/pushobject/east/01",
-      "enforcer/pushobject/east/02",
-      "enforcer/pushobject/east/03",
-      "enforcer/pushobject/east/04",
-      "enforcer/pushobject/east/05",
-      "enforcer/pushobject/east/06"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_pushobject_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/pushobject/north/01",
-      "enforcer/pushobject/north/02",
-      "enforcer/pushobject/north/03",
-      "enforcer/pushobject/north/04",
-      "enforcer/pushobject/north/05",
-      "enforcer/pushobject/north/06"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_pushobject_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/pushobject/south/01",
-      "enforcer/pushobject/south/02",
-      "enforcer/pushobject/south/03",
-      "enforcer/pushobject/south/04",
-      "enforcer/pushobject/south/05",
-      "enforcer/pushobject/south/06"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_pushobject_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/pushobject/west/01",
-      "enforcer/pushobject/west/02",
-      "enforcer/pushobject/west/03",
-      "enforcer/pushobject/west/04",
-      "enforcer/pushobject/west/05",
-      "enforcer/pushobject/west/06"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_rotations_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/rotations/east/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_rotations_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/rotations/north/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_rotations_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/rotations/south/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_rotations_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/rotations/west/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_strangle_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/strangle/east/01",
-      "enforcer/strangle/east/02",
-      "enforcer/strangle/east/03",
-      "enforcer/strangle/east/04",
-      "enforcer/strangle/east/05",
-      "enforcer/strangle/east/06",
-      "enforcer/strangle/east/07",
-      "enforcer/strangle/east/08",
-      "enforcer/strangle/east/09",
-      "enforcer/strangle/east/10",
-      "enforcer/strangle/east/11",
-      "enforcer/strangle/east/12",
-      "enforcer/strangle/east/13",
-      "enforcer/strangle/east/14",
-      "enforcer/strangle/east/15",
-      "enforcer/strangle/east/16",
-      "enforcer/strangle/east/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_strangle_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/strangle/north/01",
-      "enforcer/strangle/north/02",
-      "enforcer/strangle/north/03",
-      "enforcer/strangle/north/04",
-      "enforcer/strangle/north/05",
-      "enforcer/strangle/north/06",
-      "enforcer/strangle/north/07",
-      "enforcer/strangle/north/08",
-      "enforcer/strangle/north/09",
-      "enforcer/strangle/north/10",
-      "enforcer/strangle/north/11",
-      "enforcer/strangle/north/12",
-      "enforcer/strangle/north/13",
-      "enforcer/strangle/north/14",
-      "enforcer/strangle/north/15",
-      "enforcer/strangle/north/16",
-      "enforcer/strangle/north/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_strangle_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/strangle/south/01",
-      "enforcer/strangle/south/02",
-      "enforcer/strangle/south/03",
-      "enforcer/strangle/south/04",
-      "enforcer/strangle/south/05",
-      "enforcer/strangle/south/06",
-      "enforcer/strangle/south/07",
-      "enforcer/strangle/south/08",
-      "enforcer/strangle/south/09",
-      "enforcer/strangle/south/10",
-      "enforcer/strangle/south/11",
-      "enforcer/strangle/south/12",
-      "enforcer/strangle/south/13",
-      "enforcer/strangle/south/14",
-      "enforcer/strangle/south/15",
-      "enforcer/strangle/south/16",
-      "enforcer/strangle/south/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_strangle_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/strangle/west/01",
-      "enforcer/strangle/west/02",
-      "enforcer/strangle/west/03",
-      "enforcer/strangle/west/04",
-      "enforcer/strangle/west/05",
-      "enforcer/strangle/west/06",
-      "enforcer/strangle/west/07",
-      "enforcer/strangle/west/08",
-      "enforcer/strangle/west/09",
-      "enforcer/strangle/west/10",
-      "enforcer/strangle/west/11",
-      "enforcer/strangle/west/12",
-      "enforcer/strangle/west/13",
-      "enforcer/strangle/west/14",
-      "enforcer/strangle/west/15",
-      "enforcer/strangle/west/16",
-      "enforcer/strangle/west/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_throwobject_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/throwobject/east/01",
-      "enforcer/throwobject/east/02",
-      "enforcer/throwobject/east/03",
-      "enforcer/throwobject/east/04",
-      "enforcer/throwobject/east/05",
-      "enforcer/throwobject/east/06",
-      "enforcer/throwobject/east/07"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_throwobject_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/throwobject/north/01",
-      "enforcer/throwobject/north/02",
-      "enforcer/throwobject/north/03",
-      "enforcer/throwobject/north/04",
-      "enforcer/throwobject/north/05",
-      "enforcer/throwobject/north/06",
-      "enforcer/throwobject/north/07"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_throwobject_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/throwobject/south/01",
-      "enforcer/throwobject/south/02",
-      "enforcer/throwobject/south/03",
-      "enforcer/throwobject/south/04",
-      "enforcer/throwobject/south/05",
-      "enforcer/throwobject/south/06",
-      "enforcer/throwobject/south/07"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "enforcer_throwobject_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "enforcer/throwobject/west/01",
-      "enforcer/throwobject/west/02",
-      "enforcer/throwobject/west/03",
-      "enforcer/throwobject/west/04",
-      "enforcer/throwobject/west/05",
-      "enforcer/throwobject/west/06",
-      "enforcer/throwobject/west/07"
+      "enforcer/stand/west/01"
     ],
     "texture": "chars-art"
   },
@@ -1984,11 +1500,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/walkcycle/east/01",
       "enforcer/walkcycle/east/02",
       "enforcer/walkcycle/east/03",
-      "enforcer/walkcycle/east/04",
-      "enforcer/walkcycle/east/05",
-      "enforcer/walkcycle/east/06",
-      "enforcer/walkcycle/east/07",
-      "enforcer/walkcycle/east/08"
+      "enforcer/walkcycle/east/04"
     ],
     "texture": "chars-art"
   },
@@ -2000,11 +1512,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/walkcycle/north/01",
       "enforcer/walkcycle/north/02",
       "enforcer/walkcycle/north/03",
-      "enforcer/walkcycle/north/04",
-      "enforcer/walkcycle/north/05",
-      "enforcer/walkcycle/north/06",
-      "enforcer/walkcycle/north/07",
-      "enforcer/walkcycle/north/08"
+      "enforcer/walkcycle/north/04"
     ],
     "texture": "chars-art"
   },
@@ -2016,11 +1524,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/walkcycle/south/01",
       "enforcer/walkcycle/south/02",
       "enforcer/walkcycle/south/03",
-      "enforcer/walkcycle/south/04",
-      "enforcer/walkcycle/south/05",
-      "enforcer/walkcycle/south/06",
-      "enforcer/walkcycle/south/07",
-      "enforcer/walkcycle/south/08"
+      "enforcer/walkcycle/south/04"
     ],
     "texture": "chars-art"
   },
@@ -2032,11 +1536,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/walkcycle/west/01",
       "enforcer/walkcycle/west/02",
       "enforcer/walkcycle/west/03",
-      "enforcer/walkcycle/west/04",
-      "enforcer/walkcycle/west/05",
-      "enforcer/walkcycle/west/06",
-      "enforcer/walkcycle/west/07",
-      "enforcer/walkcycle/west/08"
+      "enforcer/walkcycle/west/04"
     ],
     "texture": "chars-art"
   },
@@ -3393,206 +2893,54 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
-    "key": "nwsmac01_drawbelt_east",
+    "key": "nwsmac01_busy_east",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "nwsmac01/drawbelt/east/01",
-      "nwsmac01/drawbelt/east/02",
-      "nwsmac01/drawbelt/east/03",
-      "nwsmac01/drawbelt/east/04",
-      "nwsmac01/drawbelt/east/05",
-      "nwsmac01/drawbelt/east/06",
-      "nwsmac01/drawbelt/east/07",
-      "nwsmac01/drawbelt/east/08",
-      "nwsmac01/drawbelt/east/09",
-      "nwsmac01/drawbelt/east/10",
-      "nwsmac01/drawbelt/east/11"
+      "nwsmac01/busy/east/01",
+      "nwsmac01/busy/east/02",
+      "nwsmac01/busy/east/03",
+      "nwsmac01/busy/east/04",
+      "nwsmac01/busy/east/05"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "nwsmac01_drawbelt_north",
+    "key": "nwsmac01_busy_north",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "nwsmac01/drawbelt/north/01",
-      "nwsmac01/drawbelt/north/02",
-      "nwsmac01/drawbelt/north/03",
-      "nwsmac01/drawbelt/north/04",
-      "nwsmac01/drawbelt/north/05",
-      "nwsmac01/drawbelt/north/06",
-      "nwsmac01/drawbelt/north/07",
-      "nwsmac01/drawbelt/north/08",
-      "nwsmac01/drawbelt/north/09",
-      "nwsmac01/drawbelt/north/10",
-      "nwsmac01/drawbelt/north/11"
+      "nwsmac01/busy/north/01",
+      "nwsmac01/busy/north/02",
+      "nwsmac01/busy/north/03",
+      "nwsmac01/busy/north/04",
+      "nwsmac01/busy/north/05"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "nwsmac01_drawbelt_south",
+    "key": "nwsmac01_busy_south",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "nwsmac01/drawbelt/south/01",
-      "nwsmac01/drawbelt/south/02",
-      "nwsmac01/drawbelt/south/03",
-      "nwsmac01/drawbelt/south/04",
-      "nwsmac01/drawbelt/south/05",
-      "nwsmac01/drawbelt/south/06",
-      "nwsmac01/drawbelt/south/07",
-      "nwsmac01/drawbelt/south/08",
-      "nwsmac01/drawbelt/south/09",
-      "nwsmac01/drawbelt/south/10",
-      "nwsmac01/drawbelt/south/11"
+      "nwsmac01/busy/south/01",
+      "nwsmac01/busy/south/02",
+      "nwsmac01/busy/south/03",
+      "nwsmac01/busy/south/04",
+      "nwsmac01/busy/south/05"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "nwsmac01_drawbelt_west",
+    "key": "nwsmac01_busy_west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "nwsmac01/drawbelt/west/01",
-      "nwsmac01/drawbelt/west/02",
-      "nwsmac01/drawbelt/west/03",
-      "nwsmac01/drawbelt/west/04",
-      "nwsmac01/drawbelt/west/05",
-      "nwsmac01/drawbelt/west/06",
-      "nwsmac01/drawbelt/west/07",
-      "nwsmac01/drawbelt/west/08",
-      "nwsmac01/drawbelt/west/09",
-      "nwsmac01/drawbelt/west/10",
-      "nwsmac01/drawbelt/west/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "nwsmac01_gettingup_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "nwsmac01/gettingup/east/01",
-      "nwsmac01/gettingup/east/02",
-      "nwsmac01/gettingup/east/03",
-      "nwsmac01/gettingup/east/04",
-      "nwsmac01/gettingup/east/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "nwsmac01_gettingup_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "nwsmac01/gettingup/north/01",
-      "nwsmac01/gettingup/north/02",
-      "nwsmac01/gettingup/north/03",
-      "nwsmac01/gettingup/north/04",
-      "nwsmac01/gettingup/north/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "nwsmac01_gettingup_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "nwsmac01/gettingup/south/01",
-      "nwsmac01/gettingup/south/02",
-      "nwsmac01/gettingup/south/03",
-      "nwsmac01/gettingup/south/04",
-      "nwsmac01/gettingup/south/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "nwsmac01_gettingup_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "nwsmac01/gettingup/west/01",
-      "nwsmac01/gettingup/west/02",
-      "nwsmac01/gettingup/west/03",
-      "nwsmac01/gettingup/west/04",
-      "nwsmac01/gettingup/west/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "nwsmac01_grapple_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "nwsmac01/grapple/east/01",
-      "nwsmac01/grapple/east/02",
-      "nwsmac01/grapple/east/03",
-      "nwsmac01/grapple/east/04",
-      "nwsmac01/grapple/east/05",
-      "nwsmac01/grapple/east/06",
-      "nwsmac01/grapple/east/07",
-      "nwsmac01/grapple/east/08",
-      "nwsmac01/grapple/east/09",
-      "nwsmac01/grapple/east/10",
-      "nwsmac01/grapple/east/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "nwsmac01_grapple_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "nwsmac01/grapple/north/01",
-      "nwsmac01/grapple/north/02",
-      "nwsmac01/grapple/north/03",
-      "nwsmac01/grapple/north/04",
-      "nwsmac01/grapple/north/05",
-      "nwsmac01/grapple/north/06",
-      "nwsmac01/grapple/north/07",
-      "nwsmac01/grapple/north/08",
-      "nwsmac01/grapple/north/09",
-      "nwsmac01/grapple/north/10",
-      "nwsmac01/grapple/north/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "nwsmac01_grapple_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "nwsmac01/grapple/south/01",
-      "nwsmac01/grapple/south/02",
-      "nwsmac01/grapple/south/03",
-      "nwsmac01/grapple/south/04",
-      "nwsmac01/grapple/south/05",
-      "nwsmac01/grapple/south/06",
-      "nwsmac01/grapple/south/07",
-      "nwsmac01/grapple/south/08",
-      "nwsmac01/grapple/south/09",
-      "nwsmac01/grapple/south/10",
-      "nwsmac01/grapple/south/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "nwsmac01_grapple_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "nwsmac01/grapple/west/01",
-      "nwsmac01/grapple/west/02",
-      "nwsmac01/grapple/west/03",
-      "nwsmac01/grapple/west/04",
-      "nwsmac01/grapple/west/05",
-      "nwsmac01/grapple/west/06",
-      "nwsmac01/grapple/west/07",
-      "nwsmac01/grapple/west/08",
-      "nwsmac01/grapple/west/09",
-      "nwsmac01/grapple/west/10",
-      "nwsmac01/grapple/west/11"
+      "nwsmac01/busy/west/01",
+      "nwsmac01/busy/west/02",
+      "nwsmac01/busy/west/03",
+      "nwsmac01/busy/west/04",
+      "nwsmac01/busy/west/05"
     ],
     "texture": "chars-art"
   },
@@ -3652,7 +3000,9 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/runcycle/east/01",
       "nwsmac01/runcycle/east/02",
       "nwsmac01/runcycle/east/03",
-      "nwsmac01/runcycle/east/04"
+      "nwsmac01/runcycle/east/04",
+      "nwsmac01/runcycle/east/05",
+      "nwsmac01/runcycle/east/06"
     ],
     "texture": "chars-art"
   },
@@ -3664,7 +3014,9 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/runcycle/north/01",
       "nwsmac01/runcycle/north/02",
       "nwsmac01/runcycle/north/03",
-      "nwsmac01/runcycle/north/04"
+      "nwsmac01/runcycle/north/04",
+      "nwsmac01/runcycle/north/05",
+      "nwsmac01/runcycle/north/06"
     ],
     "texture": "chars-art"
   },
@@ -3676,7 +3028,9 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/runcycle/south/01",
       "nwsmac01/runcycle/south/02",
       "nwsmac01/runcycle/south/03",
-      "nwsmac01/runcycle/south/04"
+      "nwsmac01/runcycle/south/04",
+      "nwsmac01/runcycle/south/05",
+      "nwsmac01/runcycle/south/06"
     ],
     "texture": "chars-art"
   },
@@ -3688,7 +3042,9 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/runcycle/west/01",
       "nwsmac01/runcycle/west/02",
       "nwsmac01/runcycle/west/03",
-      "nwsmac01/runcycle/west/04"
+      "nwsmac01/runcycle/west/04",
+      "nwsmac01/runcycle/west/05",
+      "nwsmac01/runcycle/west/06"
     ],
     "texture": "chars-art"
   },
@@ -3738,9 +3094,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/walkcycle/east/03",
       "nwsmac01/walkcycle/east/04",
       "nwsmac01/walkcycle/east/05",
-      "nwsmac01/walkcycle/east/06",
-      "nwsmac01/walkcycle/east/07",
-      "nwsmac01/walkcycle/east/08"
+      "nwsmac01/walkcycle/east/06"
     ],
     "texture": "chars-art"
   },
@@ -3754,9 +3108,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/walkcycle/north/03",
       "nwsmac01/walkcycle/north/04",
       "nwsmac01/walkcycle/north/05",
-      "nwsmac01/walkcycle/north/06",
-      "nwsmac01/walkcycle/north/07",
-      "nwsmac01/walkcycle/north/08"
+      "nwsmac01/walkcycle/north/06"
     ],
     "texture": "chars-art"
   },
@@ -3770,9 +3122,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/walkcycle/south/03",
       "nwsmac01/walkcycle/south/04",
       "nwsmac01/walkcycle/south/05",
-      "nwsmac01/walkcycle/south/06",
-      "nwsmac01/walkcycle/south/07",
-      "nwsmac01/walkcycle/south/08"
+      "nwsmac01/walkcycle/south/06"
     ],
     "texture": "chars-art"
   },
@@ -3786,9 +3136,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/walkcycle/west/03",
       "nwsmac01/walkcycle/west/04",
       "nwsmac01/walkcycle/west/05",
-      "nwsmac01/walkcycle/west/06",
-      "nwsmac01/walkcycle/west/07",
-      "nwsmac01/walkcycle/west/08"
+      "nwsmac01/walkcycle/west/06"
     ],
     "texture": "chars-art"
   },
@@ -4385,695 +3733,15 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
-    "key": "rowanibarra_animation_184ee960_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/animation_184ee960/east/01",
-      "rowanibarra/animation_184ee960/east/02",
-      "rowanibarra/animation_184ee960/east/03",
-      "rowanibarra/animation_184ee960/east/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_animation_184ee960_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/animation_184ee960/north/01",
-      "rowanibarra/animation_184ee960/north/02",
-      "rowanibarra/animation_184ee960/north/03",
-      "rowanibarra/animation_184ee960/north/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_animation_184ee960_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/animation_184ee960/south/01",
-      "rowanibarra/animation_184ee960/south/02",
-      "rowanibarra/animation_184ee960/south/03",
-      "rowanibarra/animation_184ee960/south/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_animation_184ee960_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/animation_184ee960/west/01",
-      "rowanibarra/animation_184ee960/west/02",
-      "rowanibarra/animation_184ee960/west/03",
-      "rowanibarra/animation_184ee960/west/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_animation_b0c7258d_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/animation_b0c7258d/east/01",
-      "rowanibarra/animation_b0c7258d/east/02",
-      "rowanibarra/animation_b0c7258d/east/03",
-      "rowanibarra/animation_b0c7258d/east/04",
-      "rowanibarra/animation_b0c7258d/east/05",
-      "rowanibarra/animation_b0c7258d/east/06",
-      "rowanibarra/animation_b0c7258d/east/07",
-      "rowanibarra/animation_b0c7258d/east/08",
-      "rowanibarra/animation_b0c7258d/east/09",
-      "rowanibarra/animation_b0c7258d/east/10",
-      "rowanibarra/animation_b0c7258d/east/11",
-      "rowanibarra/animation_b0c7258d/east/12",
-      "rowanibarra/animation_b0c7258d/east/13",
-      "rowanibarra/animation_b0c7258d/east/14",
-      "rowanibarra/animation_b0c7258d/east/15",
-      "rowanibarra/animation_b0c7258d/east/16",
-      "rowanibarra/animation_b0c7258d/east/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_animation_b0c7258d_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/animation_b0c7258d/north/01",
-      "rowanibarra/animation_b0c7258d/north/02",
-      "rowanibarra/animation_b0c7258d/north/03",
-      "rowanibarra/animation_b0c7258d/north/04",
-      "rowanibarra/animation_b0c7258d/north/05",
-      "rowanibarra/animation_b0c7258d/north/06",
-      "rowanibarra/animation_b0c7258d/north/07",
-      "rowanibarra/animation_b0c7258d/north/08",
-      "rowanibarra/animation_b0c7258d/north/09",
-      "rowanibarra/animation_b0c7258d/north/10",
-      "rowanibarra/animation_b0c7258d/north/11",
-      "rowanibarra/animation_b0c7258d/north/12",
-      "rowanibarra/animation_b0c7258d/north/13",
-      "rowanibarra/animation_b0c7258d/north/14",
-      "rowanibarra/animation_b0c7258d/north/15",
-      "rowanibarra/animation_b0c7258d/north/16",
-      "rowanibarra/animation_b0c7258d/north/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_animation_b0c7258d_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/animation_b0c7258d/south/01",
-      "rowanibarra/animation_b0c7258d/south/02",
-      "rowanibarra/animation_b0c7258d/south/03",
-      "rowanibarra/animation_b0c7258d/south/04",
-      "rowanibarra/animation_b0c7258d/south/05",
-      "rowanibarra/animation_b0c7258d/south/06",
-      "rowanibarra/animation_b0c7258d/south/07",
-      "rowanibarra/animation_b0c7258d/south/08",
-      "rowanibarra/animation_b0c7258d/south/09",
-      "rowanibarra/animation_b0c7258d/south/10",
-      "rowanibarra/animation_b0c7258d/south/11",
-      "rowanibarra/animation_b0c7258d/south/12",
-      "rowanibarra/animation_b0c7258d/south/13",
-      "rowanibarra/animation_b0c7258d/south/14",
-      "rowanibarra/animation_b0c7258d/south/15",
-      "rowanibarra/animation_b0c7258d/south/16",
-      "rowanibarra/animation_b0c7258d/south/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_animation_b0c7258d_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/animation_b0c7258d/west/01",
-      "rowanibarra/animation_b0c7258d/west/02",
-      "rowanibarra/animation_b0c7258d/west/03",
-      "rowanibarra/animation_b0c7258d/west/04",
-      "rowanibarra/animation_b0c7258d/west/05",
-      "rowanibarra/animation_b0c7258d/west/06",
-      "rowanibarra/animation_b0c7258d/west/07",
-      "rowanibarra/animation_b0c7258d/west/08",
-      "rowanibarra/animation_b0c7258d/west/09",
-      "rowanibarra/animation_b0c7258d/west/10",
-      "rowanibarra/animation_b0c7258d/west/11",
-      "rowanibarra/animation_b0c7258d/west/12",
-      "rowanibarra/animation_b0c7258d/west/13",
-      "rowanibarra/animation_b0c7258d/west/14",
-      "rowanibarra/animation_b0c7258d/west/15",
-      "rowanibarra/animation_b0c7258d/west/16",
-      "rowanibarra/animation_b0c7258d/west/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_mountbox_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_mountbox/east/01",
-      "rowanibarra/carrying_mountbox/east/02",
-      "rowanibarra/carrying_mountbox/east/03",
-      "rowanibarra/carrying_mountbox/east/04",
-      "rowanibarra/carrying_mountbox/east/05",
-      "rowanibarra/carrying_mountbox/east/06",
-      "rowanibarra/carrying_mountbox/east/07",
-      "rowanibarra/carrying_mountbox/east/08",
-      "rowanibarra/carrying_mountbox/east/09",
-      "rowanibarra/carrying_mountbox/east/10",
-      "rowanibarra/carrying_mountbox/east/11",
-      "rowanibarra/carrying_mountbox/east/12",
-      "rowanibarra/carrying_mountbox/east/13",
-      "rowanibarra/carrying_mountbox/east/14",
-      "rowanibarra/carrying_mountbox/east/15",
-      "rowanibarra/carrying_mountbox/east/16",
-      "rowanibarra/carrying_mountbox/east/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_mountbox_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_mountbox/north/01",
-      "rowanibarra/carrying_mountbox/north/02",
-      "rowanibarra/carrying_mountbox/north/03",
-      "rowanibarra/carrying_mountbox/north/04",
-      "rowanibarra/carrying_mountbox/north/05",
-      "rowanibarra/carrying_mountbox/north/06",
-      "rowanibarra/carrying_mountbox/north/07",
-      "rowanibarra/carrying_mountbox/north/08",
-      "rowanibarra/carrying_mountbox/north/09",
-      "rowanibarra/carrying_mountbox/north/10",
-      "rowanibarra/carrying_mountbox/north/11",
-      "rowanibarra/carrying_mountbox/north/12",
-      "rowanibarra/carrying_mountbox/north/13",
-      "rowanibarra/carrying_mountbox/north/14",
-      "rowanibarra/carrying_mountbox/north/15",
-      "rowanibarra/carrying_mountbox/north/16",
-      "rowanibarra/carrying_mountbox/north/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_mountbox_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_mountbox/south/01",
-      "rowanibarra/carrying_mountbox/south/02",
-      "rowanibarra/carrying_mountbox/south/03",
-      "rowanibarra/carrying_mountbox/south/04",
-      "rowanibarra/carrying_mountbox/south/05",
-      "rowanibarra/carrying_mountbox/south/06",
-      "rowanibarra/carrying_mountbox/south/07",
-      "rowanibarra/carrying_mountbox/south/08",
-      "rowanibarra/carrying_mountbox/south/09",
-      "rowanibarra/carrying_mountbox/south/10",
-      "rowanibarra/carrying_mountbox/south/11",
-      "rowanibarra/carrying_mountbox/south/12",
-      "rowanibarra/carrying_mountbox/south/13",
-      "rowanibarra/carrying_mountbox/south/14",
-      "rowanibarra/carrying_mountbox/south/15",
-      "rowanibarra/carrying_mountbox/south/16",
-      "rowanibarra/carrying_mountbox/south/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_mountbox_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_mountbox/west/01",
-      "rowanibarra/carrying_mountbox/west/02",
-      "rowanibarra/carrying_mountbox/west/03",
-      "rowanibarra/carrying_mountbox/west/04",
-      "rowanibarra/carrying_mountbox/west/05",
-      "rowanibarra/carrying_mountbox/west/06",
-      "rowanibarra/carrying_mountbox/west/07",
-      "rowanibarra/carrying_mountbox/west/08",
-      "rowanibarra/carrying_mountbox/west/09",
-      "rowanibarra/carrying_mountbox/west/10",
-      "rowanibarra/carrying_mountbox/west/11",
-      "rowanibarra/carrying_mountbox/west/12",
-      "rowanibarra/carrying_mountbox/west/13",
-      "rowanibarra/carrying_mountbox/west/14",
-      "rowanibarra/carrying_mountbox/west/15",
-      "rowanibarra/carrying_mountbox/west/16",
-      "rowanibarra/carrying_mountbox/west/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_putdownbox_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_putdownbox/east/01",
-      "rowanibarra/carrying_putdownbox/east/02",
-      "rowanibarra/carrying_putdownbox/east/03",
-      "rowanibarra/carrying_putdownbox/east/04",
-      "rowanibarra/carrying_putdownbox/east/05",
-      "rowanibarra/carrying_putdownbox/east/06",
-      "rowanibarra/carrying_putdownbox/east/07",
-      "rowanibarra/carrying_putdownbox/east/08",
-      "rowanibarra/carrying_putdownbox/east/09",
-      "rowanibarra/carrying_putdownbox/east/10",
-      "rowanibarra/carrying_putdownbox/east/11",
-      "rowanibarra/carrying_putdownbox/east/12",
-      "rowanibarra/carrying_putdownbox/east/13",
-      "rowanibarra/carrying_putdownbox/east/14",
-      "rowanibarra/carrying_putdownbox/east/15",
-      "rowanibarra/carrying_putdownbox/east/16",
-      "rowanibarra/carrying_putdownbox/east/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_putdownbox_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_putdownbox/north/01",
-      "rowanibarra/carrying_putdownbox/north/02",
-      "rowanibarra/carrying_putdownbox/north/03",
-      "rowanibarra/carrying_putdownbox/north/04",
-      "rowanibarra/carrying_putdownbox/north/05",
-      "rowanibarra/carrying_putdownbox/north/06",
-      "rowanibarra/carrying_putdownbox/north/07",
-      "rowanibarra/carrying_putdownbox/north/08",
-      "rowanibarra/carrying_putdownbox/north/09",
-      "rowanibarra/carrying_putdownbox/north/10",
-      "rowanibarra/carrying_putdownbox/north/11",
-      "rowanibarra/carrying_putdownbox/north/12",
-      "rowanibarra/carrying_putdownbox/north/13",
-      "rowanibarra/carrying_putdownbox/north/14",
-      "rowanibarra/carrying_putdownbox/north/15",
-      "rowanibarra/carrying_putdownbox/north/16",
-      "rowanibarra/carrying_putdownbox/north/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_putdownbox_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_putdownbox/south/01",
-      "rowanibarra/carrying_putdownbox/south/02",
-      "rowanibarra/carrying_putdownbox/south/03",
-      "rowanibarra/carrying_putdownbox/south/04",
-      "rowanibarra/carrying_putdownbox/south/05",
-      "rowanibarra/carrying_putdownbox/south/06",
-      "rowanibarra/carrying_putdownbox/south/07",
-      "rowanibarra/carrying_putdownbox/south/08",
-      "rowanibarra/carrying_putdownbox/south/09",
-      "rowanibarra/carrying_putdownbox/south/10",
-      "rowanibarra/carrying_putdownbox/south/11",
-      "rowanibarra/carrying_putdownbox/south/12",
-      "rowanibarra/carrying_putdownbox/south/13",
-      "rowanibarra/carrying_putdownbox/south/14",
-      "rowanibarra/carrying_putdownbox/south/15",
-      "rowanibarra/carrying_putdownbox/south/16",
-      "rowanibarra/carrying_putdownbox/south/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_putdownbox_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_putdownbox/west/01",
-      "rowanibarra/carrying_putdownbox/west/02",
-      "rowanibarra/carrying_putdownbox/west/03",
-      "rowanibarra/carrying_putdownbox/west/04",
-      "rowanibarra/carrying_putdownbox/west/05",
-      "rowanibarra/carrying_putdownbox/west/06",
-      "rowanibarra/carrying_putdownbox/west/07",
-      "rowanibarra/carrying_putdownbox/west/08",
-      "rowanibarra/carrying_putdownbox/west/09",
-      "rowanibarra/carrying_putdownbox/west/10",
-      "rowanibarra/carrying_putdownbox/west/11",
-      "rowanibarra/carrying_putdownbox/west/12",
-      "rowanibarra/carrying_putdownbox/west/13",
-      "rowanibarra/carrying_putdownbox/west/14",
-      "rowanibarra/carrying_putdownbox/west/15",
-      "rowanibarra/carrying_putdownbox/west/16",
-      "rowanibarra/carrying_putdownbox/west/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_stand_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_stand/east/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_stand_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_stand/north/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_stand_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_stand/south/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_stand_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_stand/west/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_walkcycle_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_walkcycle/east/01",
-      "rowanibarra/carrying_walkcycle/east/02",
-      "rowanibarra/carrying_walkcycle/east/03",
-      "rowanibarra/carrying_walkcycle/east/04",
-      "rowanibarra/carrying_walkcycle/east/05",
-      "rowanibarra/carrying_walkcycle/east/06",
-      "rowanibarra/carrying_walkcycle/east/07",
-      "rowanibarra/carrying_walkcycle/east/08",
-      "rowanibarra/carrying_walkcycle/east/09",
-      "rowanibarra/carrying_walkcycle/east/10",
-      "rowanibarra/carrying_walkcycle/east/11",
-      "rowanibarra/carrying_walkcycle/east/12",
-      "rowanibarra/carrying_walkcycle/east/13",
-      "rowanibarra/carrying_walkcycle/east/14",
-      "rowanibarra/carrying_walkcycle/east/15",
-      "rowanibarra/carrying_walkcycle/east/16",
-      "rowanibarra/carrying_walkcycle/east/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_walkcycle_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_walkcycle/north/01",
-      "rowanibarra/carrying_walkcycle/north/02",
-      "rowanibarra/carrying_walkcycle/north/03",
-      "rowanibarra/carrying_walkcycle/north/04",
-      "rowanibarra/carrying_walkcycle/north/05",
-      "rowanibarra/carrying_walkcycle/north/06",
-      "rowanibarra/carrying_walkcycle/north/07",
-      "rowanibarra/carrying_walkcycle/north/08",
-      "rowanibarra/carrying_walkcycle/north/09",
-      "rowanibarra/carrying_walkcycle/north/10",
-      "rowanibarra/carrying_walkcycle/north/11",
-      "rowanibarra/carrying_walkcycle/north/12",
-      "rowanibarra/carrying_walkcycle/north/13",
-      "rowanibarra/carrying_walkcycle/north/14",
-      "rowanibarra/carrying_walkcycle/north/15",
-      "rowanibarra/carrying_walkcycle/north/16",
-      "rowanibarra/carrying_walkcycle/north/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_walkcycle_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_walkcycle/south/01",
-      "rowanibarra/carrying_walkcycle/south/02",
-      "rowanibarra/carrying_walkcycle/south/03",
-      "rowanibarra/carrying_walkcycle/south/04",
-      "rowanibarra/carrying_walkcycle/south/05",
-      "rowanibarra/carrying_walkcycle/south/06",
-      "rowanibarra/carrying_walkcycle/south/07",
-      "rowanibarra/carrying_walkcycle/south/08",
-      "rowanibarra/carrying_walkcycle/south/09",
-      "rowanibarra/carrying_walkcycle/south/10",
-      "rowanibarra/carrying_walkcycle/south/11",
-      "rowanibarra/carrying_walkcycle/south/12",
-      "rowanibarra/carrying_walkcycle/south/13",
-      "rowanibarra/carrying_walkcycle/south/14",
-      "rowanibarra/carrying_walkcycle/south/15",
-      "rowanibarra/carrying_walkcycle/south/16",
-      "rowanibarra/carrying_walkcycle/south/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_carrying_walkcycle_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/carrying_walkcycle/west/01",
-      "rowanibarra/carrying_walkcycle/west/02",
-      "rowanibarra/carrying_walkcycle/west/03",
-      "rowanibarra/carrying_walkcycle/west/04",
-      "rowanibarra/carrying_walkcycle/west/05",
-      "rowanibarra/carrying_walkcycle/west/06",
-      "rowanibarra/carrying_walkcycle/west/07",
-      "rowanibarra/carrying_walkcycle/west/08",
-      "rowanibarra/carrying_walkcycle/west/09",
-      "rowanibarra/carrying_walkcycle/west/10",
-      "rowanibarra/carrying_walkcycle/west/11",
-      "rowanibarra/carrying_walkcycle/west/12",
-      "rowanibarra/carrying_walkcycle/west/13",
-      "rowanibarra/carrying_walkcycle/west/14",
-      "rowanibarra/carrying_walkcycle/west/15",
-      "rowanibarra/carrying_walkcycle/west/16",
-      "rowanibarra/carrying_walkcycle/west/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_caught_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/caught/east/01",
-      "rowanibarra/caught/east/02",
-      "rowanibarra/caught/east/03",
-      "rowanibarra/caught/east/04",
-      "rowanibarra/caught/east/05",
-      "rowanibarra/caught/east/06",
-      "rowanibarra/caught/east/07",
-      "rowanibarra/caught/east/08",
-      "rowanibarra/caught/east/09",
-      "rowanibarra/caught/east/10",
-      "rowanibarra/caught/east/11",
-      "rowanibarra/caught/east/12",
-      "rowanibarra/caught/east/13",
-      "rowanibarra/caught/east/14",
-      "rowanibarra/caught/east/15",
-      "rowanibarra/caught/east/16",
-      "rowanibarra/caught/east/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_caught_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/caught/north/01",
-      "rowanibarra/caught/north/02",
-      "rowanibarra/caught/north/03",
-      "rowanibarra/caught/north/04",
-      "rowanibarra/caught/north/05",
-      "rowanibarra/caught/north/06",
-      "rowanibarra/caught/north/07",
-      "rowanibarra/caught/north/08",
-      "rowanibarra/caught/north/09",
-      "rowanibarra/caught/north/10",
-      "rowanibarra/caught/north/11",
-      "rowanibarra/caught/north/12",
-      "rowanibarra/caught/north/13",
-      "rowanibarra/caught/north/14",
-      "rowanibarra/caught/north/15",
-      "rowanibarra/caught/north/16",
-      "rowanibarra/caught/north/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_caught_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/caught/south/01",
-      "rowanibarra/caught/south/02",
-      "rowanibarra/caught/south/03",
-      "rowanibarra/caught/south/04",
-      "rowanibarra/caught/south/05",
-      "rowanibarra/caught/south/06",
-      "rowanibarra/caught/south/07",
-      "rowanibarra/caught/south/08",
-      "rowanibarra/caught/south/09",
-      "rowanibarra/caught/south/10",
-      "rowanibarra/caught/south/11",
-      "rowanibarra/caught/south/12",
-      "rowanibarra/caught/south/13",
-      "rowanibarra/caught/south/14",
-      "rowanibarra/caught/south/15",
-      "rowanibarra/caught/south/16",
-      "rowanibarra/caught/south/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_caught_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/caught/west/01",
-      "rowanibarra/caught/west/02",
-      "rowanibarra/caught/west/03",
-      "rowanibarra/caught/west/04",
-      "rowanibarra/caught/west/05",
-      "rowanibarra/caught/west/06",
-      "rowanibarra/caught/west/07",
-      "rowanibarra/caught/west/08",
-      "rowanibarra/caught/west/09",
-      "rowanibarra/caught/west/10",
-      "rowanibarra/caught/west/11",
-      "rowanibarra/caught/west/12",
-      "rowanibarra/caught/west/13",
-      "rowanibarra/caught/west/14",
-      "rowanibarra/caught/west/15",
-      "rowanibarra/caught/west/16",
-      "rowanibarra/caught/west/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouched_animation_5b6ec6f5_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouched_animation_5b6ec6f5/east/01",
-      "rowanibarra/crouched_animation_5b6ec6f5/east/02",
-      "rowanibarra/crouched_animation_5b6ec6f5/east/03",
-      "rowanibarra/crouched_animation_5b6ec6f5/east/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouched_animation_5b6ec6f5_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouched_animation_5b6ec6f5/north/01",
-      "rowanibarra/crouched_animation_5b6ec6f5/north/02",
-      "rowanibarra/crouched_animation_5b6ec6f5/north/03",
-      "rowanibarra/crouched_animation_5b6ec6f5/north/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouched_animation_5b6ec6f5_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouched_animation_5b6ec6f5/south/01",
-      "rowanibarra/crouched_animation_5b6ec6f5/south/02",
-      "rowanibarra/crouched_animation_5b6ec6f5/south/03",
-      "rowanibarra/crouched_animation_5b6ec6f5/south/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouched_animation_5b6ec6f5_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouched_animation_5b6ec6f5/west/01",
-      "rowanibarra/crouched_animation_5b6ec6f5/west/02",
-      "rowanibarra/crouched_animation_5b6ec6f5/west/03",
-      "rowanibarra/crouched_animation_5b6ec6f5/west/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouched_animation_da2e1631_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouched_animation_da2e1631/east/01",
-      "rowanibarra/crouched_animation_da2e1631/east/02",
-      "rowanibarra/crouched_animation_da2e1631/east/03",
-      "rowanibarra/crouched_animation_da2e1631/east/04",
-      "rowanibarra/crouched_animation_da2e1631/east/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouched_animation_da2e1631_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouched_animation_da2e1631/north/01",
-      "rowanibarra/crouched_animation_da2e1631/north/02",
-      "rowanibarra/crouched_animation_da2e1631/north/03",
-      "rowanibarra/crouched_animation_da2e1631/north/04",
-      "rowanibarra/crouched_animation_da2e1631/north/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouched_animation_da2e1631_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouched_animation_da2e1631/south/01",
-      "rowanibarra/crouched_animation_da2e1631/south/02",
-      "rowanibarra/crouched_animation_da2e1631/south/03",
-      "rowanibarra/crouched_animation_da2e1631/south/04",
-      "rowanibarra/crouched_animation_da2e1631/south/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouched_animation_da2e1631_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouched_animation_da2e1631/west/01",
-      "rowanibarra/crouched_animation_da2e1631/west/02",
-      "rowanibarra/crouched_animation_da2e1631/west/03",
-      "rowanibarra/crouched_animation_da2e1631/west/04",
-      "rowanibarra/crouched_animation_da2e1631/west/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
     "key": "rowanibarra_crouched_stand_east",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "rowanibarra/crouched_stand/east/01"
+      "rowanibarra/crouched_stand/east/01",
+      "rowanibarra/crouched_stand/east/02",
+      "rowanibarra/crouched_stand/east/03",
+      "rowanibarra/crouched_stand/east/04",
+      "rowanibarra/crouched_stand/east/05"
     ],
     "texture": "chars-art"
   },
@@ -5082,7 +3750,11 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "rowanibarra/crouched_stand/north/01"
+      "rowanibarra/crouched_stand/north/01",
+      "rowanibarra/crouched_stand/north/02",
+      "rowanibarra/crouched_stand/north/03",
+      "rowanibarra/crouched_stand/north/04",
+      "rowanibarra/crouched_stand/north/05"
     ],
     "texture": "chars-art"
   },
@@ -5091,7 +3763,11 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "rowanibarra/crouched_stand/south/01"
+      "rowanibarra/crouched_stand/south/01",
+      "rowanibarra/crouched_stand/south/02",
+      "rowanibarra/crouched_stand/south/03",
+      "rowanibarra/crouched_stand/south/04",
+      "rowanibarra/crouched_stand/south/05"
     ],
     "texture": "chars-art"
   },
@@ -5100,107 +3776,11 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "rowanibarra/crouched_stand/west/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouched_suffocate_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouched_suffocate/east/01",
-      "rowanibarra/crouched_suffocate/east/02",
-      "rowanibarra/crouched_suffocate/east/03",
-      "rowanibarra/crouched_suffocate/east/04",
-      "rowanibarra/crouched_suffocate/east/05",
-      "rowanibarra/crouched_suffocate/east/06",
-      "rowanibarra/crouched_suffocate/east/07",
-      "rowanibarra/crouched_suffocate/east/08",
-      "rowanibarra/crouched_suffocate/east/09",
-      "rowanibarra/crouched_suffocate/east/10",
-      "rowanibarra/crouched_suffocate/east/11",
-      "rowanibarra/crouched_suffocate/east/12",
-      "rowanibarra/crouched_suffocate/east/13",
-      "rowanibarra/crouched_suffocate/east/14",
-      "rowanibarra/crouched_suffocate/east/15",
-      "rowanibarra/crouched_suffocate/east/16",
-      "rowanibarra/crouched_suffocate/east/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouched_suffocate_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouched_suffocate/north/01",
-      "rowanibarra/crouched_suffocate/north/02",
-      "rowanibarra/crouched_suffocate/north/03",
-      "rowanibarra/crouched_suffocate/north/04",
-      "rowanibarra/crouched_suffocate/north/05",
-      "rowanibarra/crouched_suffocate/north/06",
-      "rowanibarra/crouched_suffocate/north/07",
-      "rowanibarra/crouched_suffocate/north/08",
-      "rowanibarra/crouched_suffocate/north/09",
-      "rowanibarra/crouched_suffocate/north/10",
-      "rowanibarra/crouched_suffocate/north/11",
-      "rowanibarra/crouched_suffocate/north/12",
-      "rowanibarra/crouched_suffocate/north/13",
-      "rowanibarra/crouched_suffocate/north/14",
-      "rowanibarra/crouched_suffocate/north/15",
-      "rowanibarra/crouched_suffocate/north/16",
-      "rowanibarra/crouched_suffocate/north/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouched_suffocate_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouched_suffocate/south/01",
-      "rowanibarra/crouched_suffocate/south/02",
-      "rowanibarra/crouched_suffocate/south/03",
-      "rowanibarra/crouched_suffocate/south/04",
-      "rowanibarra/crouched_suffocate/south/05",
-      "rowanibarra/crouched_suffocate/south/06",
-      "rowanibarra/crouched_suffocate/south/07",
-      "rowanibarra/crouched_suffocate/south/08",
-      "rowanibarra/crouched_suffocate/south/09",
-      "rowanibarra/crouched_suffocate/south/10",
-      "rowanibarra/crouched_suffocate/south/11",
-      "rowanibarra/crouched_suffocate/south/12",
-      "rowanibarra/crouched_suffocate/south/13",
-      "rowanibarra/crouched_suffocate/south/14",
-      "rowanibarra/crouched_suffocate/south/15",
-      "rowanibarra/crouched_suffocate/south/16",
-      "rowanibarra/crouched_suffocate/south/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouched_suffocate_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouched_suffocate/west/01",
-      "rowanibarra/crouched_suffocate/west/02",
-      "rowanibarra/crouched_suffocate/west/03",
-      "rowanibarra/crouched_suffocate/west/04",
-      "rowanibarra/crouched_suffocate/west/05",
-      "rowanibarra/crouched_suffocate/west/06",
-      "rowanibarra/crouched_suffocate/west/07",
-      "rowanibarra/crouched_suffocate/west/08",
-      "rowanibarra/crouched_suffocate/west/09",
-      "rowanibarra/crouched_suffocate/west/10",
-      "rowanibarra/crouched_suffocate/west/11",
-      "rowanibarra/crouched_suffocate/west/12",
-      "rowanibarra/crouched_suffocate/west/13",
-      "rowanibarra/crouched_suffocate/west/14",
-      "rowanibarra/crouched_suffocate/west/15",
-      "rowanibarra/crouched_suffocate/west/16",
-      "rowanibarra/crouched_suffocate/west/17"
+      "rowanibarra/crouched_stand/west/01",
+      "rowanibarra/crouched_stand/west/02",
+      "rowanibarra/crouched_stand/west/03",
+      "rowanibarra/crouched_stand/west/04",
+      "rowanibarra/crouched_stand/west/05"
     ],
     "texture": "chars-art"
   },
@@ -5261,282 +3841,6 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
-    "key": "rowanibarra_crouching_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouching/east/01",
-      "rowanibarra/crouching/east/02",
-      "rowanibarra/crouching/east/03",
-      "rowanibarra/crouching/east/04",
-      "rowanibarra/crouching/east/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouching_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouching/north/01",
-      "rowanibarra/crouching/north/02",
-      "rowanibarra/crouching/north/03",
-      "rowanibarra/crouching/north/04",
-      "rowanibarra/crouching/north/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouching_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouching/south/01",
-      "rowanibarra/crouching/south/02",
-      "rowanibarra/crouching/south/03",
-      "rowanibarra/crouching/south/04",
-      "rowanibarra/crouching/south/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_crouching_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/crouching/west/01",
-      "rowanibarra/crouching/west/02",
-      "rowanibarra/crouching/west/03",
-      "rowanibarra/crouching/west/04",
-      "rowanibarra/crouching/west/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flashlight_animation_0a0f88ea_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flashlight_animation_0a0f88ea/east/01",
-      "rowanibarra/flashlight_animation_0a0f88ea/east/02",
-      "rowanibarra/flashlight_animation_0a0f88ea/east/03",
-      "rowanibarra/flashlight_animation_0a0f88ea/east/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flashlight_animation_0a0f88ea_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flashlight_animation_0a0f88ea/north/01",
-      "rowanibarra/flashlight_animation_0a0f88ea/north/02",
-      "rowanibarra/flashlight_animation_0a0f88ea/north/03",
-      "rowanibarra/flashlight_animation_0a0f88ea/north/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flashlight_animation_0a0f88ea_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flashlight_animation_0a0f88ea/south/01",
-      "rowanibarra/flashlight_animation_0a0f88ea/south/02",
-      "rowanibarra/flashlight_animation_0a0f88ea/south/03",
-      "rowanibarra/flashlight_animation_0a0f88ea/south/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flashlight_animation_0a0f88ea_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flashlight_animation_0a0f88ea/west/01",
-      "rowanibarra/flashlight_animation_0a0f88ea/west/02",
-      "rowanibarra/flashlight_animation_0a0f88ea/west/03",
-      "rowanibarra/flashlight_animation_0a0f88ea/west/04"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flashlight_stand_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flashlight_stand/east/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flashlight_stand_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flashlight_stand/north/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flashlight_stand_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flashlight_stand/south/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flashlight_stand_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flashlight_stand/west/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flashlight_walkcycle_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flashlight_walkcycle/east/01",
-      "rowanibarra/flashlight_walkcycle/east/02",
-      "rowanibarra/flashlight_walkcycle/east/03",
-      "rowanibarra/flashlight_walkcycle/east/04",
-      "rowanibarra/flashlight_walkcycle/east/05",
-      "rowanibarra/flashlight_walkcycle/east/06",
-      "rowanibarra/flashlight_walkcycle/east/07",
-      "rowanibarra/flashlight_walkcycle/east/08"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flashlight_walkcycle_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flashlight_walkcycle/north/01",
-      "rowanibarra/flashlight_walkcycle/north/02",
-      "rowanibarra/flashlight_walkcycle/north/03",
-      "rowanibarra/flashlight_walkcycle/north/04",
-      "rowanibarra/flashlight_walkcycle/north/05",
-      "rowanibarra/flashlight_walkcycle/north/06",
-      "rowanibarra/flashlight_walkcycle/north/07",
-      "rowanibarra/flashlight_walkcycle/north/08"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flashlight_walkcycle_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flashlight_walkcycle/south/01",
-      "rowanibarra/flashlight_walkcycle/south/02",
-      "rowanibarra/flashlight_walkcycle/south/03",
-      "rowanibarra/flashlight_walkcycle/south/04",
-      "rowanibarra/flashlight_walkcycle/south/05",
-      "rowanibarra/flashlight_walkcycle/south/06",
-      "rowanibarra/flashlight_walkcycle/south/07",
-      "rowanibarra/flashlight_walkcycle/south/08"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flashlight_walkcycle_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flashlight_walkcycle/west/01",
-      "rowanibarra/flashlight_walkcycle/west/02",
-      "rowanibarra/flashlight_walkcycle/west/03",
-      "rowanibarra/flashlight_walkcycle/west/04",
-      "rowanibarra/flashlight_walkcycle/west/05",
-      "rowanibarra/flashlight_walkcycle/west/06",
-      "rowanibarra/flashlight_walkcycle/west/07",
-      "rowanibarra/flashlight_walkcycle/west/08"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flipswitch_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flipswitch/east/01",
-      "rowanibarra/flipswitch/east/02",
-      "rowanibarra/flipswitch/east/03",
-      "rowanibarra/flipswitch/east/04",
-      "rowanibarra/flipswitch/east/05",
-      "rowanibarra/flipswitch/east/06",
-      "rowanibarra/flipswitch/east/07",
-      "rowanibarra/flipswitch/east/08",
-      "rowanibarra/flipswitch/east/09",
-      "rowanibarra/flipswitch/east/10",
-      "rowanibarra/flipswitch/east/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flipswitch_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flipswitch/north/01",
-      "rowanibarra/flipswitch/north/02",
-      "rowanibarra/flipswitch/north/03",
-      "rowanibarra/flipswitch/north/04",
-      "rowanibarra/flipswitch/north/05",
-      "rowanibarra/flipswitch/north/06",
-      "rowanibarra/flipswitch/north/07",
-      "rowanibarra/flipswitch/north/08",
-      "rowanibarra/flipswitch/north/09",
-      "rowanibarra/flipswitch/north/10",
-      "rowanibarra/flipswitch/north/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flipswitch_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flipswitch/south/01",
-      "rowanibarra/flipswitch/south/02",
-      "rowanibarra/flipswitch/south/03",
-      "rowanibarra/flipswitch/south/04",
-      "rowanibarra/flipswitch/south/05",
-      "rowanibarra/flipswitch/south/06",
-      "rowanibarra/flipswitch/south/07",
-      "rowanibarra/flipswitch/south/08",
-      "rowanibarra/flipswitch/south/09",
-      "rowanibarra/flipswitch/south/10",
-      "rowanibarra/flipswitch/south/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_flipswitch_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/flipswitch/west/01",
-      "rowanibarra/flipswitch/west/02",
-      "rowanibarra/flipswitch/west/03",
-      "rowanibarra/flipswitch/west/04",
-      "rowanibarra/flipswitch/west/05",
-      "rowanibarra/flipswitch/west/06",
-      "rowanibarra/flipswitch/west/07",
-      "rowanibarra/flipswitch/west/08",
-      "rowanibarra/flipswitch/west/09",
-      "rowanibarra/flipswitch/west/10",
-      "rowanibarra/flipswitch/west/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
     "key": "rowanibarra_interactterminal_east",
     "frameRate": 8,
     "repeat": -1,
@@ -5545,19 +3849,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/interactterminal/east/02",
       "rowanibarra/interactterminal/east/03",
       "rowanibarra/interactterminal/east/04",
-      "rowanibarra/interactterminal/east/05",
-      "rowanibarra/interactterminal/east/06",
-      "rowanibarra/interactterminal/east/07",
-      "rowanibarra/interactterminal/east/08",
-      "rowanibarra/interactterminal/east/09",
-      "rowanibarra/interactterminal/east/10",
-      "rowanibarra/interactterminal/east/11",
-      "rowanibarra/interactterminal/east/12",
-      "rowanibarra/interactterminal/east/13",
-      "rowanibarra/interactterminal/east/14",
-      "rowanibarra/interactterminal/east/15",
-      "rowanibarra/interactterminal/east/16",
-      "rowanibarra/interactterminal/east/17"
+      "rowanibarra/interactterminal/east/05"
     ],
     "texture": "chars-art"
   },
@@ -5570,19 +3862,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/interactterminal/north/02",
       "rowanibarra/interactterminal/north/03",
       "rowanibarra/interactterminal/north/04",
-      "rowanibarra/interactterminal/north/05",
-      "rowanibarra/interactterminal/north/06",
-      "rowanibarra/interactterminal/north/07",
-      "rowanibarra/interactterminal/north/08",
-      "rowanibarra/interactterminal/north/09",
-      "rowanibarra/interactterminal/north/10",
-      "rowanibarra/interactterminal/north/11",
-      "rowanibarra/interactterminal/north/12",
-      "rowanibarra/interactterminal/north/13",
-      "rowanibarra/interactterminal/north/14",
-      "rowanibarra/interactterminal/north/15",
-      "rowanibarra/interactterminal/north/16",
-      "rowanibarra/interactterminal/north/17"
+      "rowanibarra/interactterminal/north/05"
     ],
     "texture": "chars-art"
   },
@@ -5595,19 +3875,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/interactterminal/south/02",
       "rowanibarra/interactterminal/south/03",
       "rowanibarra/interactterminal/south/04",
-      "rowanibarra/interactterminal/south/05",
-      "rowanibarra/interactterminal/south/06",
-      "rowanibarra/interactterminal/south/07",
-      "rowanibarra/interactterminal/south/08",
-      "rowanibarra/interactterminal/south/09",
-      "rowanibarra/interactterminal/south/10",
-      "rowanibarra/interactterminal/south/11",
-      "rowanibarra/interactterminal/south/12",
-      "rowanibarra/interactterminal/south/13",
-      "rowanibarra/interactterminal/south/14",
-      "rowanibarra/interactterminal/south/15",
-      "rowanibarra/interactterminal/south/16",
-      "rowanibarra/interactterminal/south/17"
+      "rowanibarra/interactterminal/south/05"
     ],
     "texture": "chars-art"
   },
@@ -5620,219 +3888,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/interactterminal/west/02",
       "rowanibarra/interactterminal/west/03",
       "rowanibarra/interactterminal/west/04",
-      "rowanibarra/interactterminal/west/05",
-      "rowanibarra/interactterminal/west/06",
-      "rowanibarra/interactterminal/west/07",
-      "rowanibarra/interactterminal/west/08",
-      "rowanibarra/interactterminal/west/09",
-      "rowanibarra/interactterminal/west/10",
-      "rowanibarra/interactterminal/west/11",
-      "rowanibarra/interactterminal/west/12",
-      "rowanibarra/interactterminal/west/13",
-      "rowanibarra/interactterminal/west/14",
-      "rowanibarra/interactterminal/west/15",
-      "rowanibarra/interactterminal/west/16",
-      "rowanibarra/interactterminal/west/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_liftsarms_65b87849_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/liftsarms_65b87849/east/01",
-      "rowanibarra/liftsarms_65b87849/east/02",
-      "rowanibarra/liftsarms_65b87849/east/03",
-      "rowanibarra/liftsarms_65b87849/east/04",
-      "rowanibarra/liftsarms_65b87849/east/05",
-      "rowanibarra/liftsarms_65b87849/east/06",
-      "rowanibarra/liftsarms_65b87849/east/07",
-      "rowanibarra/liftsarms_65b87849/east/08",
-      "rowanibarra/liftsarms_65b87849/east/09",
-      "rowanibarra/liftsarms_65b87849/east/10",
-      "rowanibarra/liftsarms_65b87849/east/11",
-      "rowanibarra/liftsarms_65b87849/east/12",
-      "rowanibarra/liftsarms_65b87849/east/13",
-      "rowanibarra/liftsarms_65b87849/east/14",
-      "rowanibarra/liftsarms_65b87849/east/15",
-      "rowanibarra/liftsarms_65b87849/east/16",
-      "rowanibarra/liftsarms_65b87849/east/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_liftsarms_65b87849_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/liftsarms_65b87849/north/01",
-      "rowanibarra/liftsarms_65b87849/north/02",
-      "rowanibarra/liftsarms_65b87849/north/03",
-      "rowanibarra/liftsarms_65b87849/north/04",
-      "rowanibarra/liftsarms_65b87849/north/05",
-      "rowanibarra/liftsarms_65b87849/north/06",
-      "rowanibarra/liftsarms_65b87849/north/07",
-      "rowanibarra/liftsarms_65b87849/north/08",
-      "rowanibarra/liftsarms_65b87849/north/09",
-      "rowanibarra/liftsarms_65b87849/north/10",
-      "rowanibarra/liftsarms_65b87849/north/11",
-      "rowanibarra/liftsarms_65b87849/north/12",
-      "rowanibarra/liftsarms_65b87849/north/13",
-      "rowanibarra/liftsarms_65b87849/north/14",
-      "rowanibarra/liftsarms_65b87849/north/15",
-      "rowanibarra/liftsarms_65b87849/north/16",
-      "rowanibarra/liftsarms_65b87849/north/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_liftsarms_65b87849_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/liftsarms_65b87849/south/01",
-      "rowanibarra/liftsarms_65b87849/south/02",
-      "rowanibarra/liftsarms_65b87849/south/03",
-      "rowanibarra/liftsarms_65b87849/south/04",
-      "rowanibarra/liftsarms_65b87849/south/05",
-      "rowanibarra/liftsarms_65b87849/south/06",
-      "rowanibarra/liftsarms_65b87849/south/07",
-      "rowanibarra/liftsarms_65b87849/south/08",
-      "rowanibarra/liftsarms_65b87849/south/09",
-      "rowanibarra/liftsarms_65b87849/south/10",
-      "rowanibarra/liftsarms_65b87849/south/11",
-      "rowanibarra/liftsarms_65b87849/south/12",
-      "rowanibarra/liftsarms_65b87849/south/13",
-      "rowanibarra/liftsarms_65b87849/south/14",
-      "rowanibarra/liftsarms_65b87849/south/15",
-      "rowanibarra/liftsarms_65b87849/south/16",
-      "rowanibarra/liftsarms_65b87849/south/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_liftsarms_65b87849_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/liftsarms_65b87849/west/01",
-      "rowanibarra/liftsarms_65b87849/west/02",
-      "rowanibarra/liftsarms_65b87849/west/03",
-      "rowanibarra/liftsarms_65b87849/west/04",
-      "rowanibarra/liftsarms_65b87849/west/05",
-      "rowanibarra/liftsarms_65b87849/west/06",
-      "rowanibarra/liftsarms_65b87849/west/07",
-      "rowanibarra/liftsarms_65b87849/west/08",
-      "rowanibarra/liftsarms_65b87849/west/09",
-      "rowanibarra/liftsarms_65b87849/west/10",
-      "rowanibarra/liftsarms_65b87849/west/11",
-      "rowanibarra/liftsarms_65b87849/west/12",
-      "rowanibarra/liftsarms_65b87849/west/13",
-      "rowanibarra/liftsarms_65b87849/west/14",
-      "rowanibarra/liftsarms_65b87849/west/15",
-      "rowanibarra/liftsarms_65b87849/west/16",
-      "rowanibarra/liftsarms_65b87849/west/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_pickupfragmentbox_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/pickupfragmentbox/east/01",
-      "rowanibarra/pickupfragmentbox/east/02",
-      "rowanibarra/pickupfragmentbox/east/03",
-      "rowanibarra/pickupfragmentbox/east/04",
-      "rowanibarra/pickupfragmentbox/east/05",
-      "rowanibarra/pickupfragmentbox/east/06",
-      "rowanibarra/pickupfragmentbox/east/07",
-      "rowanibarra/pickupfragmentbox/east/08",
-      "rowanibarra/pickupfragmentbox/east/09",
-      "rowanibarra/pickupfragmentbox/east/10",
-      "rowanibarra/pickupfragmentbox/east/11",
-      "rowanibarra/pickupfragmentbox/east/12",
-      "rowanibarra/pickupfragmentbox/east/13",
-      "rowanibarra/pickupfragmentbox/east/14",
-      "rowanibarra/pickupfragmentbox/east/15",
-      "rowanibarra/pickupfragmentbox/east/16",
-      "rowanibarra/pickupfragmentbox/east/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_pickupfragmentbox_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/pickupfragmentbox/north/01",
-      "rowanibarra/pickupfragmentbox/north/02",
-      "rowanibarra/pickupfragmentbox/north/03",
-      "rowanibarra/pickupfragmentbox/north/04",
-      "rowanibarra/pickupfragmentbox/north/05",
-      "rowanibarra/pickupfragmentbox/north/06",
-      "rowanibarra/pickupfragmentbox/north/07",
-      "rowanibarra/pickupfragmentbox/north/08",
-      "rowanibarra/pickupfragmentbox/north/09",
-      "rowanibarra/pickupfragmentbox/north/10",
-      "rowanibarra/pickupfragmentbox/north/11",
-      "rowanibarra/pickupfragmentbox/north/12",
-      "rowanibarra/pickupfragmentbox/north/13",
-      "rowanibarra/pickupfragmentbox/north/14",
-      "rowanibarra/pickupfragmentbox/north/15",
-      "rowanibarra/pickupfragmentbox/north/16",
-      "rowanibarra/pickupfragmentbox/north/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_pickupfragmentbox_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/pickupfragmentbox/south/01",
-      "rowanibarra/pickupfragmentbox/south/02",
-      "rowanibarra/pickupfragmentbox/south/03",
-      "rowanibarra/pickupfragmentbox/south/04",
-      "rowanibarra/pickupfragmentbox/south/05",
-      "rowanibarra/pickupfragmentbox/south/06",
-      "rowanibarra/pickupfragmentbox/south/07",
-      "rowanibarra/pickupfragmentbox/south/08",
-      "rowanibarra/pickupfragmentbox/south/09",
-      "rowanibarra/pickupfragmentbox/south/10",
-      "rowanibarra/pickupfragmentbox/south/11",
-      "rowanibarra/pickupfragmentbox/south/12",
-      "rowanibarra/pickupfragmentbox/south/13",
-      "rowanibarra/pickupfragmentbox/south/14",
-      "rowanibarra/pickupfragmentbox/south/15",
-      "rowanibarra/pickupfragmentbox/south/16",
-      "rowanibarra/pickupfragmentbox/south/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_pickupfragmentbox_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/pickupfragmentbox/west/01",
-      "rowanibarra/pickupfragmentbox/west/02",
-      "rowanibarra/pickupfragmentbox/west/03",
-      "rowanibarra/pickupfragmentbox/west/04",
-      "rowanibarra/pickupfragmentbox/west/05",
-      "rowanibarra/pickupfragmentbox/west/06",
-      "rowanibarra/pickupfragmentbox/west/07",
-      "rowanibarra/pickupfragmentbox/west/08",
-      "rowanibarra/pickupfragmentbox/west/09",
-      "rowanibarra/pickupfragmentbox/west/10",
-      "rowanibarra/pickupfragmentbox/west/11",
-      "rowanibarra/pickupfragmentbox/west/12",
-      "rowanibarra/pickupfragmentbox/west/13",
-      "rowanibarra/pickupfragmentbox/west/14",
-      "rowanibarra/pickupfragmentbox/west/15",
-      "rowanibarra/pickupfragmentbox/west/16",
-      "rowanibarra/pickupfragmentbox/west/17"
+      "rowanibarra/interactterminal/west/05"
     ],
     "texture": "chars-art"
   },
@@ -5885,6 +3941,118 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/pickupitem/west/03",
       "rowanibarra/pickupitem/west/04",
       "rowanibarra/pickupitem/west/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_pullobject_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/pullobject/east/01",
+      "rowanibarra/pullobject/east/02",
+      "rowanibarra/pullobject/east/03",
+      "rowanibarra/pullobject/east/04",
+      "rowanibarra/pullobject/east/05",
+      "rowanibarra/pullobject/east/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_pullobject_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/pullobject/north/01",
+      "rowanibarra/pullobject/north/02",
+      "rowanibarra/pullobject/north/03",
+      "rowanibarra/pullobject/north/04",
+      "rowanibarra/pullobject/north/05",
+      "rowanibarra/pullobject/north/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_pullobject_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/pullobject/south/01",
+      "rowanibarra/pullobject/south/02",
+      "rowanibarra/pullobject/south/03",
+      "rowanibarra/pullobject/south/04",
+      "rowanibarra/pullobject/south/05",
+      "rowanibarra/pullobject/south/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_pullobject_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/pullobject/west/01",
+      "rowanibarra/pullobject/west/02",
+      "rowanibarra/pullobject/west/03",
+      "rowanibarra/pullobject/west/04",
+      "rowanibarra/pullobject/west/05",
+      "rowanibarra/pullobject/west/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_pushobject_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/pushobject/east/01",
+      "rowanibarra/pushobject/east/02",
+      "rowanibarra/pushobject/east/03",
+      "rowanibarra/pushobject/east/04",
+      "rowanibarra/pushobject/east/05",
+      "rowanibarra/pushobject/east/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_pushobject_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/pushobject/north/01",
+      "rowanibarra/pushobject/north/02",
+      "rowanibarra/pushobject/north/03",
+      "rowanibarra/pushobject/north/04",
+      "rowanibarra/pushobject/north/05",
+      "rowanibarra/pushobject/north/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_pushobject_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/pushobject/south/01",
+      "rowanibarra/pushobject/south/02",
+      "rowanibarra/pushobject/south/03",
+      "rowanibarra/pushobject/south/04",
+      "rowanibarra/pushobject/south/05",
+      "rowanibarra/pushobject/south/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_pushobject_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/pushobject/west/01",
+      "rowanibarra/pushobject/west/02",
+      "rowanibarra/pushobject/west/03",
+      "rowanibarra/pushobject/west/04",
+      "rowanibarra/pushobject/west/05",
+      "rowanibarra/pushobject/west/06"
     ],
     "texture": "chars-art"
   },
@@ -5957,7 +4125,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "rowanibarra/stand/east/01"
+      "rowanibarra/stand/east/01",
+      "rowanibarra/stand/east/02",
+      "rowanibarra/stand/east/03",
+      "rowanibarra/stand/east/04"
     ],
     "texture": "chars-art"
   },
@@ -5966,7 +4137,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "rowanibarra/stand/north/01"
+      "rowanibarra/stand/north/01",
+      "rowanibarra/stand/north/02",
+      "rowanibarra/stand/north/03",
+      "rowanibarra/stand/north/04"
     ],
     "texture": "chars-art"
   },
@@ -5975,7 +4149,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "rowanibarra/stand/south/01"
+      "rowanibarra/stand/south/01",
+      "rowanibarra/stand/south/02",
+      "rowanibarra/stand/south/03",
+      "rowanibarra/stand/south/04"
     ],
     "texture": "chars-art"
   },
@@ -5984,107 +4161,10 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "rowanibarra/stand/west/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_stepforward_549758db_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/stepforward_549758db/east/01",
-      "rowanibarra/stepforward_549758db/east/02",
-      "rowanibarra/stepforward_549758db/east/03",
-      "rowanibarra/stepforward_549758db/east/04",
-      "rowanibarra/stepforward_549758db/east/05",
-      "rowanibarra/stepforward_549758db/east/06",
-      "rowanibarra/stepforward_549758db/east/07",
-      "rowanibarra/stepforward_549758db/east/08",
-      "rowanibarra/stepforward_549758db/east/09",
-      "rowanibarra/stepforward_549758db/east/10",
-      "rowanibarra/stepforward_549758db/east/11",
-      "rowanibarra/stepforward_549758db/east/12",
-      "rowanibarra/stepforward_549758db/east/13",
-      "rowanibarra/stepforward_549758db/east/14",
-      "rowanibarra/stepforward_549758db/east/15",
-      "rowanibarra/stepforward_549758db/east/16",
-      "rowanibarra/stepforward_549758db/east/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_stepforward_549758db_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/stepforward_549758db/north/01",
-      "rowanibarra/stepforward_549758db/north/02",
-      "rowanibarra/stepforward_549758db/north/03",
-      "rowanibarra/stepforward_549758db/north/04",
-      "rowanibarra/stepforward_549758db/north/05",
-      "rowanibarra/stepforward_549758db/north/06",
-      "rowanibarra/stepforward_549758db/north/07",
-      "rowanibarra/stepforward_549758db/north/08",
-      "rowanibarra/stepforward_549758db/north/09",
-      "rowanibarra/stepforward_549758db/north/10",
-      "rowanibarra/stepforward_549758db/north/11",
-      "rowanibarra/stepforward_549758db/north/12",
-      "rowanibarra/stepforward_549758db/north/13",
-      "rowanibarra/stepforward_549758db/north/14",
-      "rowanibarra/stepforward_549758db/north/15",
-      "rowanibarra/stepforward_549758db/north/16",
-      "rowanibarra/stepforward_549758db/north/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_stepforward_549758db_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/stepforward_549758db/south/01",
-      "rowanibarra/stepforward_549758db/south/02",
-      "rowanibarra/stepforward_549758db/south/03",
-      "rowanibarra/stepforward_549758db/south/04",
-      "rowanibarra/stepforward_549758db/south/05",
-      "rowanibarra/stepforward_549758db/south/06",
-      "rowanibarra/stepforward_549758db/south/07",
-      "rowanibarra/stepforward_549758db/south/08",
-      "rowanibarra/stepforward_549758db/south/09",
-      "rowanibarra/stepforward_549758db/south/10",
-      "rowanibarra/stepforward_549758db/south/11",
-      "rowanibarra/stepforward_549758db/south/12",
-      "rowanibarra/stepforward_549758db/south/13",
-      "rowanibarra/stepforward_549758db/south/14",
-      "rowanibarra/stepforward_549758db/south/15",
-      "rowanibarra/stepforward_549758db/south/16",
-      "rowanibarra/stepforward_549758db/south/17"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "rowanibarra_stepforward_549758db_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "rowanibarra/stepforward_549758db/west/01",
-      "rowanibarra/stepforward_549758db/west/02",
-      "rowanibarra/stepforward_549758db/west/03",
-      "rowanibarra/stepforward_549758db/west/04",
-      "rowanibarra/stepforward_549758db/west/05",
-      "rowanibarra/stepforward_549758db/west/06",
-      "rowanibarra/stepforward_549758db/west/07",
-      "rowanibarra/stepforward_549758db/west/08",
-      "rowanibarra/stepforward_549758db/west/09",
-      "rowanibarra/stepforward_549758db/west/10",
-      "rowanibarra/stepforward_549758db/west/11",
-      "rowanibarra/stepforward_549758db/west/12",
-      "rowanibarra/stepforward_549758db/west/13",
-      "rowanibarra/stepforward_549758db/west/14",
-      "rowanibarra/stepforward_549758db/west/15",
-      "rowanibarra/stepforward_549758db/west/16",
-      "rowanibarra/stepforward_549758db/west/17"
+      "rowanibarra/stand/west/01",
+      "rowanibarra/stand/west/02",
+      "rowanibarra/stand/west/03",
+      "rowanibarra/stand/west/04"
     ],
     "texture": "chars-art"
   },
@@ -6097,19 +4177,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/suffocate/east/02",
       "rowanibarra/suffocate/east/03",
       "rowanibarra/suffocate/east/04",
-      "rowanibarra/suffocate/east/05",
-      "rowanibarra/suffocate/east/06",
-      "rowanibarra/suffocate/east/07",
-      "rowanibarra/suffocate/east/08",
-      "rowanibarra/suffocate/east/09",
-      "rowanibarra/suffocate/east/10",
-      "rowanibarra/suffocate/east/11",
-      "rowanibarra/suffocate/east/12",
-      "rowanibarra/suffocate/east/13",
-      "rowanibarra/suffocate/east/14",
-      "rowanibarra/suffocate/east/15",
-      "rowanibarra/suffocate/east/16",
-      "rowanibarra/suffocate/east/17"
+      "rowanibarra/suffocate/east/05"
     ],
     "texture": "chars-art"
   },
@@ -6122,19 +4190,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/suffocate/north/02",
       "rowanibarra/suffocate/north/03",
       "rowanibarra/suffocate/north/04",
-      "rowanibarra/suffocate/north/05",
-      "rowanibarra/suffocate/north/06",
-      "rowanibarra/suffocate/north/07",
-      "rowanibarra/suffocate/north/08",
-      "rowanibarra/suffocate/north/09",
-      "rowanibarra/suffocate/north/10",
-      "rowanibarra/suffocate/north/11",
-      "rowanibarra/suffocate/north/12",
-      "rowanibarra/suffocate/north/13",
-      "rowanibarra/suffocate/north/14",
-      "rowanibarra/suffocate/north/15",
-      "rowanibarra/suffocate/north/16",
-      "rowanibarra/suffocate/north/17"
+      "rowanibarra/suffocate/north/05"
     ],
     "texture": "chars-art"
   },
@@ -6147,19 +4203,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/suffocate/south/02",
       "rowanibarra/suffocate/south/03",
       "rowanibarra/suffocate/south/04",
-      "rowanibarra/suffocate/south/05",
-      "rowanibarra/suffocate/south/06",
-      "rowanibarra/suffocate/south/07",
-      "rowanibarra/suffocate/south/08",
-      "rowanibarra/suffocate/south/09",
-      "rowanibarra/suffocate/south/10",
-      "rowanibarra/suffocate/south/11",
-      "rowanibarra/suffocate/south/12",
-      "rowanibarra/suffocate/south/13",
-      "rowanibarra/suffocate/south/14",
-      "rowanibarra/suffocate/south/15",
-      "rowanibarra/suffocate/south/16",
-      "rowanibarra/suffocate/south/17"
+      "rowanibarra/suffocate/south/05"
     ],
     "texture": "chars-art"
   },
@@ -6172,19 +4216,67 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/suffocate/west/02",
       "rowanibarra/suffocate/west/03",
       "rowanibarra/suffocate/west/04",
-      "rowanibarra/suffocate/west/05",
-      "rowanibarra/suffocate/west/06",
-      "rowanibarra/suffocate/west/07",
-      "rowanibarra/suffocate/west/08",
-      "rowanibarra/suffocate/west/09",
-      "rowanibarra/suffocate/west/10",
-      "rowanibarra/suffocate/west/11",
-      "rowanibarra/suffocate/west/12",
-      "rowanibarra/suffocate/west/13",
-      "rowanibarra/suffocate/west/14",
-      "rowanibarra/suffocate/west/15",
-      "rowanibarra/suffocate/west/16",
-      "rowanibarra/suffocate/west/17"
+      "rowanibarra/suffocate/west/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_throwobject_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/throwobject/east/01",
+      "rowanibarra/throwobject/east/02",
+      "rowanibarra/throwobject/east/03",
+      "rowanibarra/throwobject/east/04",
+      "rowanibarra/throwobject/east/05",
+      "rowanibarra/throwobject/east/06",
+      "rowanibarra/throwobject/east/07"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_throwobject_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/throwobject/north/01",
+      "rowanibarra/throwobject/north/02",
+      "rowanibarra/throwobject/north/03",
+      "rowanibarra/throwobject/north/04",
+      "rowanibarra/throwobject/north/05",
+      "rowanibarra/throwobject/north/06",
+      "rowanibarra/throwobject/north/07"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_throwobject_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/throwobject/south/01",
+      "rowanibarra/throwobject/south/02",
+      "rowanibarra/throwobject/south/03",
+      "rowanibarra/throwobject/south/04",
+      "rowanibarra/throwobject/south/05",
+      "rowanibarra/throwobject/south/06",
+      "rowanibarra/throwobject/south/07"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "rowanibarra_throwobject_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "rowanibarra/throwobject/west/01",
+      "rowanibarra/throwobject/west/02",
+      "rowanibarra/throwobject/west/03",
+      "rowanibarra/throwobject/west/04",
+      "rowanibarra/throwobject/west/05",
+      "rowanibarra/throwobject/west/06",
+      "rowanibarra/throwobject/west/07"
     ],
     "texture": "chars-art"
   },
@@ -6249,6 +4341,308 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/walkcycle/west/06",
       "rowanibarra/walkcycle/west/07",
       "rowanibarra/walkcycle/west/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_idle_east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/idle/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_idle_north",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/idle/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_idle_south",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/idle/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_idle_west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/idle/west/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_stand_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/stand/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_stand_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/stand/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_stand_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/stand/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_stand_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/stand/west/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitydrone_idle_east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitydrone/idle/east/01",
+      "securitydrone/idle/east/02",
+      "securitydrone/idle/east/03",
+      "securitydrone/idle/east/04",
+      "securitydrone/idle/east/05",
+      "securitydrone/idle/east/06",
+      "securitydrone/idle/east/07",
+      "securitydrone/idle/east/08",
+      "securitydrone/idle/east/09",
+      "securitydrone/idle/east/10",
+      "securitydrone/idle/east/11",
+      "securitydrone/idle/east/12",
+      "securitydrone/idle/east/13",
+      "securitydrone/idle/east/14",
+      "securitydrone/idle/east/15",
+      "securitydrone/idle/east/16"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitydrone_idle_north",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitydrone/idle/north/01",
+      "securitydrone/idle/north/02",
+      "securitydrone/idle/north/03",
+      "securitydrone/idle/north/04",
+      "securitydrone/idle/north/05",
+      "securitydrone/idle/north/06",
+      "securitydrone/idle/north/07",
+      "securitydrone/idle/north/08",
+      "securitydrone/idle/north/09",
+      "securitydrone/idle/north/10",
+      "securitydrone/idle/north/11",
+      "securitydrone/idle/north/12",
+      "securitydrone/idle/north/13",
+      "securitydrone/idle/north/14",
+      "securitydrone/idle/north/15",
+      "securitydrone/idle/north/16"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitydrone_idle_south",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitydrone/idle/south/01",
+      "securitydrone/idle/south/02",
+      "securitydrone/idle/south/03",
+      "securitydrone/idle/south/04",
+      "securitydrone/idle/south/05",
+      "securitydrone/idle/south/06",
+      "securitydrone/idle/south/07",
+      "securitydrone/idle/south/08",
+      "securitydrone/idle/south/09",
+      "securitydrone/idle/south/10",
+      "securitydrone/idle/south/11",
+      "securitydrone/idle/south/12",
+      "securitydrone/idle/south/13",
+      "securitydrone/idle/south/14",
+      "securitydrone/idle/south/15",
+      "securitydrone/idle/south/16",
+      "securitydrone/idle/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitydrone_idle_west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitydrone/idle/west/01",
+      "securitydrone/idle/west/02",
+      "securitydrone/idle/west/03",
+      "securitydrone/idle/west/04",
+      "securitydrone/idle/west/05",
+      "securitydrone/idle/west/06",
+      "securitydrone/idle/west/07",
+      "securitydrone/idle/west/08",
+      "securitydrone/idle/west/09",
+      "securitydrone/idle/west/10",
+      "securitydrone/idle/west/11",
+      "securitydrone/idle/west/12",
+      "securitydrone/idle/west/13",
+      "securitydrone/idle/west/14",
+      "securitydrone/idle/west/15",
+      "securitydrone/idle/west/16"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitydrone_move_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "securitydrone/move/east/01",
+      "securitydrone/move/east/02",
+      "securitydrone/move/east/03",
+      "securitydrone/move/east/04",
+      "securitydrone/move/east/05",
+      "securitydrone/move/east/06",
+      "securitydrone/move/east/07",
+      "securitydrone/move/east/08",
+      "securitydrone/move/east/09",
+      "securitydrone/move/east/10",
+      "securitydrone/move/east/11",
+      "securitydrone/move/east/12",
+      "securitydrone/move/east/13",
+      "securitydrone/move/east/14",
+      "securitydrone/move/east/15",
+      "securitydrone/move/east/16"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitydrone_move_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "securitydrone/move/north/01",
+      "securitydrone/move/north/02",
+      "securitydrone/move/north/03",
+      "securitydrone/move/north/04",
+      "securitydrone/move/north/05",
+      "securitydrone/move/north/06",
+      "securitydrone/move/north/07",
+      "securitydrone/move/north/08",
+      "securitydrone/move/north/09",
+      "securitydrone/move/north/10",
+      "securitydrone/move/north/11",
+      "securitydrone/move/north/12",
+      "securitydrone/move/north/13",
+      "securitydrone/move/north/14",
+      "securitydrone/move/north/15",
+      "securitydrone/move/north/16"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitydrone_move_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "securitydrone/move/south/01",
+      "securitydrone/move/south/02",
+      "securitydrone/move/south/03",
+      "securitydrone/move/south/04",
+      "securitydrone/move/south/05",
+      "securitydrone/move/south/06",
+      "securitydrone/move/south/07",
+      "securitydrone/move/south/08",
+      "securitydrone/move/south/09",
+      "securitydrone/move/south/10",
+      "securitydrone/move/south/11",
+      "securitydrone/move/south/12",
+      "securitydrone/move/south/13",
+      "securitydrone/move/south/14",
+      "securitydrone/move/south/15",
+      "securitydrone/move/south/16",
+      "securitydrone/move/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitydrone_move_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "securitydrone/move/west/01",
+      "securitydrone/move/west/02",
+      "securitydrone/move/west/03",
+      "securitydrone/move/west/04",
+      "securitydrone/move/west/05",
+      "securitydrone/move/west/06",
+      "securitydrone/move/west/07",
+      "securitydrone/move/west/08",
+      "securitydrone/move/west/09",
+      "securitydrone/move/west/10",
+      "securitydrone/move/west/11",
+      "securitydrone/move/west/12",
+      "securitydrone/move/west/13",
+      "securitydrone/move/west/14",
+      "securitydrone/move/west/15",
+      "securitydrone/move/west/16"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitydrone_stand_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "securitydrone/stand/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitydrone_stand_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "securitydrone/stand/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitydrone_stand_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "securitydrone/stand/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitydrone_stand_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "securitydrone/stand/west/01"
     ],
     "texture": "chars-art"
   },

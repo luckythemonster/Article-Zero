@@ -22,13 +22,15 @@ Status: The Commonwealth opening (Era 1, NW-SMAC-01) has been rebuilt to a **7-l
 | Character | Era | State |
 | --- | --- | --- |
 | Sol Ibarra-Castro (`solibarracastro`) | 3 + placeholder for Era 1 | idle, walk, run, crouch, pickup, hoist, decapitated, incinerated, terminal use |
-| Rowan Ibarra (`rowanibarra`) | 1 protagonist | **full set authored & packed** (~1000 frames: stand, walk/run, crouch states, flashlight, carrying, pickup, terminal, suffocate, caught). Renderer still draws a Rectangle placeholder — **wiring pending, not art**. |
-| Enforcer (`enforcer`) | 1 | idle, chase, melee, EMP, decapitate, strangle |
+| Rowan Ibarra (`rowanibarra`) | 1 protagonist | **re-authored at 64×64 & mounted** (stand, walk/run, crouch states, suffocate, terminal, pickup, push/pull/throw). Player renderer drives `rowanibarra_<prefix><motion>_<dir>` — wired. |
+| Enforcer (`enforcer`) | 1 | **64×64, wired to GUARD entities** — idle, walk, chase, crosspunch, deactivated, stand |
+| Security drone (`securitydrone`) | 1/2 | **64×64-ish (48px), wired to SURVEILLANCE_DRONE** — idle/hover, move, stand |
+| Security camera (`securitycamera`) | 1 | **56px, wired to SECURITY_CAMERA** — static directional idle/stand (from 8-dir rotations) |
 | APEX-19 (`apex19`) | 1 | idle, vibration, long-idle, rotations (92×92, room-scale) |
 | EIRA-7 (`eira7`) | 1 | walk, rise, power-failure, pulse |
 | VENT-4 (`vent4`) | 1 | idle |
 | MITE-3 swarm (`mite3swarm`) | 1/2 | forming, dissipating (verify wiring) |
-| NW-SMAC-01 entity (`nwsmac01`) | 1 | idle, grapple, belt-drawing, locomotion |
+| NW-SMAC-01 Orderly (`nwsmac01`) | 1 | **re-authored at 64×64 & packed** — idle, walk, run, busy, stand. Art mounted; no entity currently spawns it (no placement yet). |
 | Iria Cala (`iriacala`) | 1 flashback | — (verify) |
 | Commonwealth tower resident A/B | 1 | — (verify) |
 | Post-Commonwealth survivor A/B | 2 | — (verify) |
@@ -38,13 +40,12 @@ Status: The Commonwealth opening (Era 1, NW-SMAC-01) has been rebuilt to a **7-l
 
 ### Need (new sprite work)
 
-- **Surveillance camera + drone** — the surveillance feature (commit `6269b70`: cameras, faster drones, area-effect EMP) ships with **no dedicated `art/` folder**. Need bespoke sprites (or confirm intended reuse of an existing entity).
 - **Mara Ibarra** — full set for Era 3. MIRADOR stub references her.
 - **The Finder** — full set for Era 2: filter-mesh wrap, "Reader" terminal carry, thermal-bloom emission frames.
 - **Era 2 hostile life** — corrupted blast-door avatars, scavengers, rogue MITE-3 cloud variants beyond `mite3swarm`.
 - **Era 3 environment hazards** — vitrifying-metal NPCs, shearing-floor states.
 
-> Rowan is no longer a sprite gap — his art is done and packed. The remaining Rowan task is renderer wiring (swap the Rectangle placeholder for the `chars-art` atlas), tracked as code work, not asset work.
+> Rowan, the Enforcer, the surveillance drone, and the security camera are now mounted **and** wired: `RoomScene.drawEntity` draws GUARD/SURVEILLANCE_DRONE/SECURITY_CAMERA from the `chars-art` atlas (with a colored-rectangle fallback only for SILICATEs), and the player loop drives Rowan's frames. The NW-SMAC-01 Orderly art is packed but unplaced (no entity spawns it yet).
 
 ---
 
@@ -189,11 +190,11 @@ The full, current listing is auto-generated at **`src/data/unmounted.generated.t
 
 ## 7b. Sprite size convention — 24×24 → 32×32 (with 36×36 frame padding)
 
-Characters were previously 24×24, now re-exported at **32×32 character art inside ~36×36 frames** (4px padding for overdraw/offset). Source PNGs in `art/solibarracastro/` and `art/enforcer/` are 36×36 — the new ones.
+Characters were previously 24×24, then re-exported at **32×32 art inside ~36×36 frames** (e.g. `art/solibarracastro/`). The newest character batch (`rowanibarra`, `enforcer`, `nwsmac01`) is authored at **64×64**; the surveillance entities are smaller (`securitydrone` 48×48, `securitycamera` 56×56). These were exporter-native 120–128px and downscaled to 64 on import so the atlas cell stays ≤ APEX-19's 92×92.
 
 - **No code change required** for the size switch. `scripts/build-atlas.mjs` reads PNG dimensions dynamically (build-atlas.mjs:130) and enforces per-character consistency (:144–149); cell size = global max across all characters.
 - **No hardcoded `24`** in `src/phaser/` or `scripts/` — `TILE_PX = 32` in RoomScene.ts is the *tile* render size, unrelated to source frame size.
-- **All `Need` sprite work in §1** should be authored at **32×32 art in 36×36 frames**.
+- **All `Need` sprite work in §1** should be authored at **32–64px** art; keep any single character ≤ 92×92 so it doesn't inflate the global atlas cell.
 - **APEX-19 at 92×92** is intentional (room-scale entity); leave it.
 - **Mismatched-size warning**: a future character at a different frame size throws `Frame size mismatch for "<name>"` (build-atlas.mjs:147). Per-character consistency is enforced; cross-character mixing inflates the atlas cell to the global max.
 
@@ -221,8 +222,8 @@ Assets that already exist on disk but aren't wired in. Each is an actionable tas
 ## 9. Priority Recommendation
 
 1. **Mount the item PNGs + Fragment Box + NW-SMAC-01 items** — fastest gap closure; art already exists and unblocks the Era 1 gameplay loop.
-2. **Wire Rowan's renderer** — swap the Sol/Rectangle placeholder for the packed `rowanibarra` atlas (code task; art is done).
-3. **Surveillance camera + drone art** — the shipped surveillance feature currently has no bespoke sprites.
+2. ~~Wire Rowan's renderer~~ — **done.** Player draws from the `rowanibarra` atlas.
+3. ~~Surveillance camera + drone art~~ — **done.** Bespoke `securitydrone`/`securitycamera` sprites mounted and wired into `drawEntity`.
 4. **Mount EMP animation** — covers both enforcer EMP and the new player `EMP` item VFX.
 5. **Audio polish** — per-character footstep wiring, MITE-3 sanding wind, Era 2/3 ambient beds (foundation is already in place).
 6. **Era 2 (Baffle)** — author tileset from `baffle theme.json`, finish The Finder sprite, build one level. Unlocks the anthology.

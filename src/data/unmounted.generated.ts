@@ -31,6 +31,46 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "zip"
   },
   {
+    "path": "added by Lucky/character sprites/Commonwealth Enforcer/Commonwealth_Enforcer.zip",
+    "sizeBytes": 390544,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/character sprites/Commonwealth Enforcer/readme",
+    "sizeBytes": 17,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/character sprites/NW-SMAC-01 Orderly/NW-SMAC-01_Orderly.zip",
+    "sizeBytes": 317681,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/character sprites/NW-SMAC-01 Orderly/readme",
+    "sizeBytes": 87,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/character sprites/NW-SMAC-01 Orderly/walking south.png",
+    "sizeBytes": 19534,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/character sprites/reADME",
+    "sizeBytes": 52,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/character sprites/Rowan Ibarra/readme",
+    "sizeBytes": 18,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/character sprites/Rowan Ibarra/Rowan_Ibarra.zip",
+    "sizeBytes": 1379009,
+    "ext": "zip"
+  },
+  {
     "path": "added by Lucky/CMPTDriv_Decryption Server_VZ_GN.wav",
     "sizeBytes": 8641148,
     "ext": "wav"
@@ -136,6 +176,66 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "zip"
   },
   {
+    "path": "added by Lucky/music/ALIGNMENT.json",
+    "sizeBytes": 35394,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/bloz.json",
+    "sizeBytes": 26802,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/crazy monkeou.json",
+    "sizeBytes": 30539,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/ff7 shinra vibes.json",
+    "sizeBytes": 44629,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/here come the robots again.json",
+    "sizeBytes": 23695,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/here come the robots.json",
+    "sizeBytes": 48143,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/lattice.json",
+    "sizeBytes": 27504,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/ploporchestra.json",
+    "sizeBytes": 29008,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/readme",
+    "sizeBytes": 40,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/music/spoit.json",
+    "sizeBytes": 28218,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/sporko.json",
+    "sizeBytes": 24160,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/sweeeo.json",
+    "sizeBytes": 31664,
+    "ext": "json"
+  },
+  {
     "path": "added by Lucky/NW-SMAC-01 chase.json",
     "sizeBytes": 26522,
     "ext": "json"
@@ -181,8 +281,43 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "wav"
   },
   {
+    "path": "added by Lucky/security camera/ north security camera.aseprite",
+    "sizeBytes": 17142,
+    "ext": "aseprite"
+  },
+  {
+    "path": "added by Lucky/security camera/readme",
+    "sizeBytes": 1,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/security camera/Security_Camera.zip",
+    "sizeBytes": 231999,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/sound metadata/Essentials_Series_README.pdf",
+    "sizeBytes": 44453,
+    "ext": "pdf"
+  },
+  {
+    "path": "added by Lucky/sound metadata/Metadata.csv",
+    "sizeBytes": 184235,
+    "ext": "csv"
+  },
+  {
+    "path": "added by Lucky/sound metadata/Read Me.pdf",
+    "sizeBytes": 84010,
+    "ext": "pdf"
+  },
+  {
+    "path": "added by Lucky/sound metadata/readme",
+    "sizeBytes": 41,
+    "ext": ""
+  },
+  {
     "path": "added by Lucky/sounds",
-    "sizeBytes": 7129,
+    "sizeBytes": 7117,
     "ext": ""
   },
   {
@@ -197,7 +332,7 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
   },
   {
     "path": "added by Lucky/sounds 4 _NEW_",
-    "sizeBytes": 3567,
+    "sizeBytes": 5076,
     "ext": ""
   },
   {
@@ -386,9 +521,64 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": ""
   },
   {
+    "path": "security drone/commonwealth surveillance_drone.zip",
+    "sizeBytes": 398462,
+    "ext": "zip"
+  },
+  {
+    "path": "security drone/readme",
+    "sizeBytes": 1,
+    "ext": ""
+  },
+  {
     "path": "sounds.txt",
     "sizeBytes": 7152,
     "ext": "txt"
+  },
+  {
+    "path": "sprites/fragment box/empty/readme",
+    "sizeBytes": 6,
+    "ext": ""
+  },
+  {
+    "path": "sprites/fragment box/empty/south-east.png",
+    "sizeBytes": 2418,
+    "ext": "png"
+  },
+  {
+    "path": "sprites/fragment box/loaded/frame_000.png",
+    "sizeBytes": 2418,
+    "ext": "png"
+  },
+  {
+    "path": "sprites/fragment box/loaded/frame_001.png",
+    "sizeBytes": 1699,
+    "ext": "png"
+  },
+  {
+    "path": "sprites/fragment box/loaded/frame_002.png",
+    "sizeBytes": 1580,
+    "ext": "png"
+  },
+  {
+    "path": "sprites/fragment box/loaded/frame_003.png",
+    "sizeBytes": 2292,
+    "ext": "png"
+  },
+  {
+    "path": "sprites/fragment box/loaded/frame_004.png",
+    "sizeBytes": 1090,
+    "ext": "png"
+  },
+  {
+    "path": "sprites/fragment box/loaded/readme",
+    "sizeBytes": 7,
+    "ext": ""
+  },
+  {
+    "path": "sprites/fragment box/readme",
+    "sizeBytes": 20,
+    "ext": ""
   },
   {
     "path": "The_Fragment_Box.zip",

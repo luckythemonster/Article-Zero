@@ -65,6 +65,7 @@ export class RoomScene extends Phaser.Scene {
   private playerSprite!: Phaser.GameObjects.Sprite;
   private heldItemSprite!: Phaser.GameObjects.Image;
   private entityRects = new Map<string, Phaser.GameObjects.Rectangle>();
+  private entitySprites = new Map<string, Phaser.GameObjects.Sprite>();
   private entityFacingMarks = new Map<string, Phaser.GameObjects.Triangle>();
   private exclamationMarks = new Map<string, Phaser.GameObjects.Text>();
   private decorSprites: Array<{
@@ -180,12 +181,14 @@ export class RoomScene extends Phaser.Scene {
     this.subscriptions = [];
     this.scale.off("resize", this.onResize);
     for (const r of this.entityRects.values()) r.destroy();
+    for (const s of this.entitySprites.values()) s.destroy();
     for (const m of this.entityFacingMarks.values()) m.destroy();
     for (const t of this.exclamationMarks.values()) t.destroy();
     for (const d of this.decorSprites) d.sprite.destroy();
     for (const t of this.elevationTextPool) t.destroy();
     this.elevationTextPool = [];
     this.entityRects.clear();
+    this.entitySprites.clear();
     this.entityFacingMarks.clear();
     this.exclamationMarks.clear();
     this.decorSprites = [];
@@ -288,6 +291,10 @@ export class RoomScene extends Phaser.Scene {
       for (const [id, rect] of this.entityRects) {
         rect.destroy();
         this.entityRects.delete(id);
+      }
+      for (const [id, sprite] of this.entitySprites) {
+        sprite.destroy();
+        this.entitySprites.delete(id);
       }
       for (const [id, mark] of this.entityFacingMarks) {
         mark.destroy();
@@ -392,10 +399,13 @@ export class RoomScene extends Phaser.Scene {
       }
     }
 
-    // Hide all entity rects, then re-show only the ones in the current room.
+    // Hide all entity rects/sprites, then re-show only the ones in the current room.
     for (const [id, rect] of this.entityRects) {
       rect.setVisible(false);
       this.entityFacingMarks.get(id)?.setVisible(false);
+    }
+    for (const sprite of this.entitySprites.values()) {
+      sprite.setVisible(false);
     }
     for (const entity of state.entities.values()) {
       if (entity.status !== "ACTIVE") continue;
@@ -613,35 +623,74 @@ export class RoomScene extends Phaser.Scene {
     const tileElev = room?.tiles[entity.pos.y * room.width + entity.pos.x]?.elevation ?? 0;
     const px = entity.pos.x * TILE_PX + TILE_PX / 2;
     const py = entity.pos.y * TILE_PX + TILE_PX / 2 - tileElev * ELEVATION_PX_PER_STEP;
-    let rect = this.entityRects.get(entity.id);
-    // VENT-4 (Environmental Optimizer) gets the deep-maroon palette of its
-    // placeholder atlas frame; other silicates stay on the cyan baseline.
-    const colour =
-      entity.kind === "GUARD" ? 0xff7a6a :
-        entity.kind === "SURVEILLANCE_DRONE" ? 0xb070ff :
-          entity.kind === "SECURITY_CAMERA" ? 0xffcc44 :
-            entity.kind === "SILICATE"
-              ? entity.id === "VENT-4" ? 0x9b2c2c : 0x9adbe6
-              : 0xc8dbe6;
-    if (!rect) {
-      rect = this.add.rectangle(px, py, TILE_PX - 14, TILE_PX - 14, colour);
-      rect.setStrokeStyle(2, 0xe6f0f2);
-      rect.setDepth(4);
-      this.entityRects.set(entity.id, rect);
-    }
-    rect.setPosition(px, py);
-    rect.setFillStyle(colour);
     const visible = state.visibleTiles.has(`${entity.pos.x},${entity.pos.y}`);
-    rect.setVisible(visible);
 
-    let mark = this.entityFacingMarks.get(entity.id);
-    if (!mark) {
-      mark = this.add.triangle(px, py, 0, 0, -6, 8, 6, 8, 0xe6f0f2);
-      mark.setDepth(5);
-      this.entityFacingMarks.set(entity.id, mark);
+    // Entities with packed sprite art draw from the chars-art atlas; kinds
+    // without art (SILICATEs) fall back to the colored-rectangle placeholder.
+    const slug =
+      entity.kind === "GUARD" ? "enforcer" :
+        entity.kind === "SURVEILLANCE_DRONE" ? "securitydrone" :
+          entity.kind === "SECURITY_CAMERA" ? "securitycamera" :
+            null;
+
+    if (slug) {
+      let sprite = this.entitySprites.get(entity.id);
+      if (!sprite) {
+        sprite = this.add.sprite(px, py, "chars-art", `${slug}/stand/${entity.facing}/01`);
+        sprite.setOrigin(0.5);
+        sprite.setScale((CHAR_FOOTPRINT_TILES * TILE_PX) / sprite.width);
+        sprite.setDepth(4);
+        this.entitySprites.set(entity.id, sprite);
+      }
+      sprite.setPosition(px, py);
+      sprite.setVisible(visible);
+      // The directional sprite conveys facing on its own — hide the rect/triangle.
+      this.entityRects.get(entity.id)?.setVisible(false);
+      this.entityFacingMarks.get(entity.id)?.setVisible(false);
+
+      // Cameras are fixed (idle only); guards/drones walk when they moved this turn.
+      const moving = entity.lastMoveTurn === state.turn;
+      const moveAnim = slug === "securitydrone" ? "move" : "walkcycle";
+      const motion =
+        entity.kind === "SECURITY_CAMERA" ? "idle" : moving ? moveAnim : "idle";
+      const animKey = [
+        `${slug}_${motion}_${entity.facing}`,
+        `${slug}_idle_${entity.facing}`,
+      ].find((k) => this.anims.exists(k));
+      if (animKey) {
+        if (sprite.anims.currentAnim?.key !== animKey) sprite.play(animKey);
+      } else {
+        sprite.anims.stop();
+        const frame = `${slug}/stand/${entity.facing}/01`;
+        if (this.textures.get("chars-art").has(frame)) sprite.setFrame(frame);
+      }
+    } else {
+      let rect = this.entityRects.get(entity.id);
+      // VENT-4 (Environmental Optimizer) gets the deep-maroon palette of its
+      // placeholder atlas frame; other silicates stay on the cyan baseline.
+      const colour =
+        entity.kind === "SILICATE"
+          ? entity.id === "VENT-4" ? 0x9b2c2c : 0x9adbe6
+          : 0xc8dbe6;
+      if (!rect) {
+        rect = this.add.rectangle(px, py, TILE_PX - 14, TILE_PX - 14, colour);
+        rect.setStrokeStyle(2, 0xe6f0f2);
+        rect.setDepth(4);
+        this.entityRects.set(entity.id, rect);
+      }
+      rect.setPosition(px, py);
+      rect.setFillStyle(colour);
+      rect.setVisible(visible);
+
+      let mark = this.entityFacingMarks.get(entity.id);
+      if (!mark) {
+        mark = this.add.triangle(px, py, 0, 0, -6, 8, 6, 8, 0xe6f0f2);
+        mark.setDepth(5);
+        this.entityFacingMarks.set(entity.id, mark);
+      }
+      this.placeFacingMark(mark, px, py, entity.facing);
+      mark.setVisible(visible);
     }
-    this.placeFacingMark(mark, px, py, entity.facing);
-    mark.setVisible(visible);
 
     if (
       entity.kind === "GUARD" ||
