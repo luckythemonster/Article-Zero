@@ -11,10 +11,24 @@
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { worldEngine } from "../engine/WorldEngine";
 import { useDebugStore } from "../state/useDebugStore";
+import { useTerminalStore } from "../state/useTerminalStore";
 
 function tap(fn: () => void) {
   return (e: ReactPointerEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    fn();
+  };
+}
+
+/** Gameplay verbs are only live during FLOOR/CLIMAX — modal phases (ALIGNMENT,
+ *  INTERROGATION, FORGERY) must swallow taps so the player can't move "under"
+ *  an open modal. Mirrors the phase gate in useInput.ts for the keyboard. */
+function gameTap(fn: () => void) {
+  return (e: ReactPointerEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const term = useTerminalStore.getState();
+    if (term.phase !== "FLOOR" && term.phase !== "CLIMAX") return;
+    if (term.phase === "CLIMAX" && term.runFlags.vent4Choice === null) return;
     fn();
   };
 }
@@ -28,28 +42,28 @@ export default function TouchControls() {
         <button
           className="touch-dpad__btn touch-dpad__btn--up"
           aria-label="Move up"
-          onPointerDown={tap(() => worldEngine.move(0, -1))}
+          onPointerDown={gameTap(() => worldEngine.move(0, -1))}
         >
           ▲
         </button>
         <button
           className="touch-dpad__btn touch-dpad__btn--left"
           aria-label="Move left"
-          onPointerDown={tap(() => worldEngine.move(-1, 0))}
+          onPointerDown={gameTap(() => worldEngine.move(-1, 0))}
         >
           ◀
         </button>
         <button
           className="touch-dpad__btn touch-dpad__btn--right"
           aria-label="Move right"
-          onPointerDown={tap(() => worldEngine.move(1, 0))}
+          onPointerDown={gameTap(() => worldEngine.move(1, 0))}
         >
           ▶
         </button>
         <button
           className="touch-dpad__btn touch-dpad__btn--down"
           aria-label="Move down"
-          onPointerDown={tap(() => worldEngine.move(0, 1))}
+          onPointerDown={gameTap(() => worldEngine.move(0, 1))}
         >
           ▼
         </button>
@@ -59,42 +73,42 @@ export default function TouchControls() {
         <button
           className="touch-actions__btn"
           aria-label="Interact"
-          onPointerDown={tap(() => worldEngine.interact())}
+          onPointerDown={gameTap(() => worldEngine.interact())}
         >
           E
         </button>
         <button
           className="touch-actions__btn"
           aria-label="Knock"
-          onPointerDown={tap(() => worldEngine.knock())}
+          onPointerDown={gameTap(() => worldEngine.knock())}
         >
           K
         </button>
         <button
           className="touch-actions__btn"
           aria-label="Peek"
-          onPointerDown={tap(() => worldEngine.peek())}
+          onPointerDown={gameTap(() => worldEngine.peek())}
         >
           Q
         </button>
         <button
           className="touch-actions__btn"
           aria-label="Toggle stance"
-          onPointerDown={tap(() => worldEngine.toggleStance())}
+          onPointerDown={gameTap(() => worldEngine.toggleStance())}
         >
           C
         </button>
         <button
           className="touch-actions__btn"
           aria-label="Toggle flashlight"
-          onPointerDown={tap(() => worldEngine.toggleFlashlight())}
+          onPointerDown={gameTap(() => worldEngine.toggleFlashlight())}
         >
           L
         </button>
         <button
           className="touch-actions__btn touch-actions__btn--wide"
           aria-label="End turn"
-          onPointerDown={tap(() => worldEngine.endTurn())}
+          onPointerDown={gameTap(() => worldEngine.endTurn())}
         >
           END TURN
         </button>
