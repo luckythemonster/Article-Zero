@@ -16,9 +16,10 @@ const ELEVATION_PX_PER_STEP = 8;
 // Character frames in the chars-art atlas carry transparent padding around the
 // body. We size characters to a fixed on-screen footprint instead of a fixed
 // scale, so swapping in art at a different frame size keeps the same world
-// size. CHAR_FOOTPRINT_TILES = 2 → a 64-px (2-tile) sprite at TILE_PX = 32;
-// the per-sprite scale is derived from each frame's actual width (see below).
-const CHAR_FOOTPRINT_TILES = 2;
+// size. CHAR_FOOTPRINT_TILES = 4 → a 128-px (4-tile) sprite at TILE_PX = 32,
+// i.e. 2× the 64-px native frame; the per-sprite scale is derived from each
+// frame's actual width (see below).
+const CHAR_FOOTPRINT_TILES = 4;
 // Non-character props get their own footprints: drones keep the old baseline,
 // fixed security cameras read as small ceiling fixtures.
 const DRONE_FOOTPRINT_TILES = 1.5;
