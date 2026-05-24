@@ -26,6 +26,10 @@ const CAMERA_FOOTPRINT_TILES = 1;
 
 const PROP_SLUGS = new Set(["securitydrone", "securitycamera"]);
 
+// Characters render this many pixels below their tile centre, so the feet sit
+// a touch lower on the tile rather than dead-centre. Props are unaffected.
+const CHAR_Y_OFFSET_PX = 16;
+
 // Raw-frame-width footprint (in tiles) for a prop slug.
 function propFootprintTiles(slug: string): number {
   return slug === "securitycamera" ? CAMERA_FOOTPRINT_TILES : DRONE_FOOTPRINT_TILES;
@@ -509,7 +513,8 @@ export class RoomScene extends Phaser.Scene {
     const here = room.tiles[state.player.pos.y * room.width + state.player.pos.x];
     const elev = here?.elevation ?? 0;
     const playerCx = state.player.pos.x * TILE_PX + TILE_PX / 2;
-    const playerCy = state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP;
+    const playerCy =
+      state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP + CHAR_Y_OFFSET_PX;
     this.playerSprite.setPosition(playerCx, playerCy);
     this.playerSprite.setVisible(!state.player.hidingTileKey);
     if (state.player.hidingTileKey) {
@@ -725,7 +730,7 @@ export class RoomScene extends Phaser.Scene {
         sprite.setDepth(4);
         this.entitySprites.set(entity.id, sprite);
       }
-      sprite.setPosition(px, py);
+      sprite.setPosition(px, py + (PROP_SLUGS.has(slug) ? 0 : CHAR_Y_OFFSET_PX));
       sprite.setVisible(visible);
       // The directional sprite conveys facing on its own — hide the rect/triangle.
       this.entityRects.get(entity.id)?.setVisible(false);
