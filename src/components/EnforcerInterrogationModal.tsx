@@ -1,6 +1,6 @@
 // Enforcer checkpoint shakedown modal. Mounts only while phase ===
 // "INTERROGATION" (gated by TerminalShell). Walks the player through the
-// guardInterrogation steps and calls InterrogationSession.advance/complete so
+// enforcerInterrogation steps and calls InterrogationSession.advance/complete so
 // qScore/compliance stay consistent with the engine.
 //
 // Structure mirrors InterrogationTerminal (the APEX-19 alignment modal). On a
@@ -14,9 +14,9 @@ import { interrogationSession } from "../engine/InterrogationSession";
 import {
   ENFORCER_CLEAR,
   ENFORCER_OPENING,
-  guardInterrogationSteps,
+  enforcerInterrogationSteps,
   type InterrogationChoice,
-} from "../data/scripted-dialogue/guardInterrogation";
+} from "../data/scripted-dialogue/enforcerInterrogation";
 
 interface Line {
   speaker: "ENFORCER" | "ROWAN" | "SYSTEM";
@@ -24,7 +24,7 @@ interface Line {
   cls: "is-apex" | "is-rowan" | "is-system";
 }
 
-export default function GuardInterrogationModal() {
+export default function EnforcerInterrogationModal() {
   const [stepIdx, setStepIdx] = useState(0);
   const [history, setHistory] = useState<Line[]>([
     { speaker: "SYSTEM", text: "// FLOOR AUDIT — COMPLIANCE CHECKPOINT", cls: "is-system" },
@@ -33,7 +33,7 @@ export default function GuardInterrogationModal() {
   const [resolving, setResolving] = useState(false);
   const [stamp, setStamp] = useState<"closed" | "failed" | null>(null);
 
-  const step = guardInterrogationSteps[stepIdx];
+  const step = enforcerInterrogationSteps[stepIdx];
 
   function pick(choice: InterrogationChoice): void {
     if (resolving) return;
@@ -67,11 +67,11 @@ export default function GuardInterrogationModal() {
     setHistory(nextHistory);
 
     const nextIdx = stepIdx + 1;
-    if (nextIdx < guardInterrogationSteps.length) {
+    if (nextIdx < enforcerInterrogationSteps.length) {
       window.setTimeout(() => {
         setHistory((h) => [
           ...h,
-          { speaker: "ENFORCER", text: guardInterrogationSteps[nextIdx].enforcerPrompt, cls: "is-apex" },
+          { speaker: "ENFORCER", text: enforcerInterrogationSteps[nextIdx].enforcerPrompt, cls: "is-apex" },
         ]);
         setStepIdx(nextIdx);
         setResolving(false);

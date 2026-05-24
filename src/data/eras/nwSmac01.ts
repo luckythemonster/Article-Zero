@@ -207,9 +207,9 @@ export function nwSmac01Era(): EraSeed {
   seed.player.inventory.push({ id: "thermal-baffle-1",  itemType: "THERMAL_BAFFLE" });
   seed.player.inventory.push({ id: "override-key-1",    itemType: "OVERRIDE_KEY" });
 
-  // Enforcers — Lucky paints guard positions on an `enforcers` tile layer
+  // Enforcers — Lucky paints enforcer positions on an `enforcers` tile layer
   // (not entity:<id> markers), so seed them directly onto the EraSeed. Each
-  // painted cell becomes a stationary GUARD that reuses the existing
+  // painted cell becomes a stationary ENFORCER that reuses the existing
   // vision/alert AI (homeRoomId + alert are stamped at world-seed time).
   const enforcerRooms: Array<[string, MooseLevel | undefined]> = [
     ["main_1", lvMain1],
@@ -220,9 +220,9 @@ export function nwSmac01Era(): EraSeed {
   for (const [roomId, lv] of enforcerRooms) {
     paintedCells(lv, "enforcers").forEach((pos, i) => {
       const tag = `${roomId.toUpperCase()}-${i + 1}`;
-      const guard: Entity = {
+      const enforcer: Entity = {
         id: `ENFORCER-${tag}`,
-        kind: "GUARD",
+        kind: "ENFORCER",
         name: `ENFORCER ${tag}`,
         roomId,
         pos,
@@ -231,7 +231,7 @@ export function nwSmac01Era(): EraSeed {
         status: "ACTIVE",
         stepsPerTurn: 1,
       };
-      seed.entities.push(guard);
+      seed.entities.push(enforcer);
     });
   }
 

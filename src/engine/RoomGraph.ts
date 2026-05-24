@@ -82,7 +82,7 @@ class RoomGraph {
   /** BFS the room graph through OPEN doorways only, returning the doorway
    *  chain from `fromRoomId` to `toRoomId`. First hop is `result[0]`.
    *  Returns undefined if `toRoomId` is unreachable (or equals `fromRoomId`).
-   *  Closed doors are skipped — they block guard pursuit, which is what
+   *  Closed doors are skipped — they block enforcer pursuit, which is what
    *  keeps a spotter trapped inside the lockdown room until the player pries. */
   bfsPath(state: WorldState, fromRoomId: RoomId, toRoomId: RoomId): Doorway[] | undefined {
     if (fromRoomId === toRoomId) return undefined;

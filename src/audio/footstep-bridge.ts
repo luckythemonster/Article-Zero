@@ -1,7 +1,7 @@
 // Bridges engine events into actual footstep playback. The engine stays
-// audio-unaware: it emits SOUND_EMITTED (player verbs) and GUARD_FOOTSTEP
-// (guard tile-steps); this module resolves surface from the tile underfoot
-// and calls `footsteps.play()`. Distance-attenuates guard steps so distant
+// audio-unaware: it emits SOUND_EMITTED (player verbs) and ENFORCER_FOOTSTEP
+// (enforcer tile-steps); this module resolves surface from the tile underfoot
+// and calls `footsteps.play()`. Distance-attenuates enforcer steps so distant
 // patrols are quieter than the player's own footfalls.
 //
 // Each branch of each handler increments a counter so the AUDIO debug panel
@@ -34,7 +34,7 @@ interface PlayerStats {
   last: null | { reason: string; roomId: string; pos: Vec2; surface: string | null };
 }
 
-interface GuardStats {
+interface EnforcerStats {
   received: number;
   bailRoom: number;
   bailNoTile: number;
@@ -54,7 +54,7 @@ const playerStats: PlayerStats = {
   last: null,
 };
 
-const guardStats: GuardStats = {
+const enforcerStats: EnforcerStats = {
   received: 0,
   bailRoom: 0,
   bailNoTile: 0,
@@ -64,8 +64,8 @@ const guardStats: GuardStats = {
   last: null,
 };
 
-export function getBridgeStats(): { player: PlayerStats; guard: GuardStats } {
-  return { player: playerStats, guard: guardStats };
+export function getBridgeStats(): { player: PlayerStats; enforcer: EnforcerStats } {
+  return { player: playerStats, enforcer: enforcerStats };
 }
 
 function tileAt(roomId: RoomId, pos: Vec2) {
@@ -113,10 +113,10 @@ export function installFootstepBridge(): () => void {
   );
 
   offs.push(
-    eventBus.on("GUARD_FOOTSTEP", (p) => {
-      guardStats.received++;
+    eventBus.on("ENFORCER_FOOTSTEP", (p) => {
+      enforcerStats.received++;
       if (!worldEngine.hasState()) {
-        guardStats.bailRoom++;
+        enforcerStats.bailRoom++;
         return;
       }
       const state = worldEngine.getState();
@@ -128,27 +128,27 @@ export function installFootstepBridge(): () => void {
           .openNeighbors(state, player.roomId)
           .some((n) => n.doorway.to === p.roomId);
       if (!sameRoom && !adjacent) {
-        guardStats.bailRoom++;
+        enforcerStats.bailRoom++;
         return;
       }
       const lookup = tileAt(p.roomId, p.pos);
       if (!lookup) {
-        guardStats.bailNoTile++;
+        enforcerStats.bailNoTile++;
         return;
       }
       const surface = tileSurface(lookup.tile, lookup.room);
       if (!surface) {
-        guardStats.bailNoSurface++;
+        enforcerStats.bailNoSurface++;
         return;
       }
       const dist = sameRoom ? manhattan(player.pos, p.pos) : 6;
       const volume = Math.max(0, Math.min(0.6, 1 - dist / 8));
       if (volume <= 0) {
-        guardStats.bailZeroVolume++;
+        enforcerStats.bailZeroVolume++;
         return;
       }
-      guardStats.played++;
-      guardStats.last = { roomId: p.roomId, pos: p.pos, dist, volume };
+      enforcerStats.played++;
+      enforcerStats.last = { roomId: p.roomId, pos: p.pos, dist, volume };
       footsteps.play({ surface, action: "walk", volume });
     }),
   );

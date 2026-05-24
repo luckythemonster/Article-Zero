@@ -99,7 +99,7 @@ export function slicesToWorldState(
     const mind = subjective.entityMinds.get(id);
     entities.set(id, {
       id,
-      kind: kind?.kind ?? "GUARD",
+      kind: kind?.kind ?? "ENFORCER",
       name: kind?.name ?? id,
       roomId: phys.roomId,
       homeRoomId: phys.homeRoomId ?? phys.roomId,

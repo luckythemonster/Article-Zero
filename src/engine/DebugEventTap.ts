@@ -58,10 +58,10 @@ export function installDebugEventTap(): () => void {
   offs.push(eventBus.on("TURN_END", (p) => push("TURN_END", p)));
 
   offs.push(eventBus.on("SOUND_EMITTED", (p) => push("SOUND_EMITTED", p)));
-  offs.push(eventBus.on("GUARD_FOOTSTEP", (p) => push("GUARD_FOOTSTEP", p)));
+  offs.push(eventBus.on("ENFORCER_FOOTSTEP", (p) => push("ENFORCER_FOOTSTEP", p)));
 
-  offs.push(eventBus.on("GUARD_ALERT_CHANGED", (p) =>
-    push("GUARD_ALERT_CHANGED", p, p.to === "ALERT" ? "WARN" : "INFO"),
+  offs.push(eventBus.on("ENFORCER_ALERT_CHANGED", (p) =>
+    push("ENFORCER_ALERT_CHANGED", p, p.to === "ALERT" ? "WARN" : "INFO"),
   ));
   offs.push(eventBus.on("EXCLAMATION_TRIGGERED", (p) =>
     push("EXCLAMATION_TRIGGERED", p, "WARN"),

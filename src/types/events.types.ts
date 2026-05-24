@@ -26,9 +26,9 @@ export interface EventMap {
   PLAYER_AP_CHANGED: { previous: number; current: number };
   PLAYER_FACING_CHANGED: { facing: Facing };
   PLAYER_STANCE_CHANGED: { stance: Stance };
-  PLAYER_DETECTED: { guardId: EntityId; pos: Vec2 };
+  PLAYER_DETECTED: { enforcerId: EntityId; pos: Vec2 };
   PLAYER_DETECTION_CLEARED: Record<string, never>;
-  PLAYER_DETAINED: { guardId: EntityId; turn: number };
+  PLAYER_DETAINED: { enforcerId: EntityId; turn: number };
 
   // Rooms
   ROOM_ENTERED: { roomId: RoomId; from?: RoomId };
@@ -48,22 +48,22 @@ export interface EventMap {
 
   // Entities
   ENTITY_MOVED: { entityId: EntityId; roomId: RoomId; from: Vec2; to: Vec2 };
-  /** Per-tile-step footstep emitted by a guard. Distinct from SOUND_EMITTED:
-   *  guard footsteps are for audio only and never feed back into the
-   *  AlertFSM / SoundField (that would let the player exploit guard noise
+  /** Per-tile-step footstep emitted by a enforcer. Distinct from SOUND_EMITTED:
+   *  enforcer footsteps are for audio only and never feed back into the
+   *  AlertFSM / SoundField (that would let the player exploit enforcer noise
    *  as a sonar ping). */
-  GUARD_FOOTSTEP: { guardId: EntityId; roomId: RoomId; pos: Vec2 };
+  ENFORCER_FOOTSTEP: { enforcerId: EntityId; roomId: RoomId; pos: Vec2 };
   ENTITY_FACING_CHANGED: { entityId: EntityId; facing: Facing };
   ENTITY_STATUS_CHANGED: { entityId: EntityId; previous: string; current: string };
 
-  // Guards (M2)
-  GUARD_ALERT_CHANGED: {
-    guardId: EntityId;
+  // Enforcers (M2)
+  ENFORCER_ALERT_CHANGED: {
+    enforcerId: EntityId;
     from: "NORMAL" | "CAUTION" | "ALERT" | "EVASION";
     to: "NORMAL" | "CAUTION" | "ALERT" | "EVASION";
   };
-  EXCLAMATION_TRIGGERED: { guardId: EntityId; pos: Vec2; roomId: RoomId };
-  GUARD_VISION_UPDATED: { guardId: EntityId; visibleTiles: string[] };
+  EXCLAMATION_TRIGGERED: { enforcerId: EntityId; pos: Vec2; roomId: RoomId };
+  ENFORCER_VISION_UPDATED: { enforcerId: EntityId; visibleTiles: string[] };
 
   // Sound (M3)
   SOUND_EMITTED: { roomId: RoomId; pos: Vec2; intensity: number; reason: string };
@@ -79,10 +79,10 @@ export interface EventMap {
   // Enforcer interrogation — a YELLOW-compliance sighting halts the player for
   // a checkpoint shakedown. Pass keeps the player YELLOW; fail bumps qScore.
   INTERROGATION_SESSION_START: {
-    guardId: EntityId;
+    enforcerId: EntityId;
     stage: "INTAKE" | "DECOMP" | "CORRECTION";
   };
-  INTERROGATION_SESSION_COMPLETE: { guardId: EntityId; success: boolean };
+  INTERROGATION_SESSION_COMPLETE: { enforcerId: EntityId; success: boolean };
 
   // Extraction terminal (M4)
   EXTRACTION_STARTED: { terminalId: string; roomId: RoomId };

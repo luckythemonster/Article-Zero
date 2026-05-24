@@ -26,7 +26,7 @@ import type { DocumentCase } from "../types/documents.types";
 
 export interface EntityPhysical {
   roomId: RoomId;
-  /** GUARD only — the room this guard belongs to. Used after EVASION to walk
+  /** ENFORCER only — the room this enforcer belongs to. Used after EVASION to walk
    *  back to patrol. Optional in snapshots for backwards compat; deserialiser
    *  defaults to `roomId`. */
   homeRoomId?: RoomId;

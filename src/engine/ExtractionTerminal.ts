@@ -46,7 +46,7 @@ class ExtractionTerminalSystem {
     return Array.from(this.terminals.values());
   }
 
-  /** Called at end-of-turn after guards have ticked. Increments progress on
+  /** Called at end-of-turn after enforcers have ticked. Increments progress on
    *  the terminal the player is currently extracting from. */
   tick(state: WorldState): void {
     for (const term of this.terminals.values()) {

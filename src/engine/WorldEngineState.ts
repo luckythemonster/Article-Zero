@@ -82,9 +82,9 @@ export function seedToWorldState(seed: EraSeed): WorldState {
   state.player = seed.player;
   for (const room of seed.rooms) state.rooms.set(room.id, room);
   for (const entity of seed.entities) {
-    // Stamp the guard's home room so it can return to patrol after EVASION.
+    // Stamp the enforcer's home room so it can return to patrol after EVASION.
     // Every era seed funnels through here, so a single edit covers them all.
-    if (entity.kind === "GUARD" && entity.homeRoomId === undefined) {
+    if (entity.kind === "ENFORCER" && entity.homeRoomId === undefined) {
       entity.homeRoomId = entity.roomId;
     }
     state.entities.set(entity.id, entity);

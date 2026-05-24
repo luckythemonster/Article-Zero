@@ -1,4 +1,4 @@
-// AlertFSM — per-guard alert state machine.
+// AlertFSM — per-enforcer alert state machine.
 //
 //   NORMAL   — patrol. Sound or peripheral sighting → CAUTION.
 //   CAUTION  — orient + investigate. Confirmed sighting → ALERT (! marker).
@@ -13,18 +13,18 @@ export type AlertLevel = AlertState["level"];
 
 export const CAUTION_DECAY = 4;
 export const EVASION_TIMEOUT = 6;
-/** Turns since the last confirmed sighting before an ALERT guard demotes
+/** Turns since the last confirmed sighting before an ALERT enforcer demotes
  *  to EVASION. Loose enough that the spotter keeps pursuing through one
  *  or two rooms before giving up. */
 export const ALERT_LOSE_SIGHT_TURNS = 4;
-/** Sound intensity that pulls a NORMAL guard into CAUTION. */
+/** Sound intensity that pulls a NORMAL enforcer into CAUTION. */
 export const CAUTION_SOUND_THRESHOLD = 1;
-/** Sound intensity that escalates a CAUTION guard to ALERT (very loud — knock,
+/** Sound intensity that escalates a CAUTION enforcer to ALERT (very loud — knock,
  *  alignment-light spill, etc.). */
 export const ALERT_SOUND_THRESHOLD = 4;
 
 export interface StimulusInput {
-  /** Guard sees the player THIS tick. */
+  /** Enforcer sees the player THIS tick. */
   seesPlayer: boolean;
   /** Heard intensity (delivered by SoundField). 0 if no sound. */
   heardIntensity: number;
@@ -34,15 +34,15 @@ export interface StimulusInput {
 }
 
 class AlertFSM {
-  ensure(state: WorldState, guard: Entity): AlertState {
-    if (!guard.alert) {
-      guard.alert = { level: "NORMAL", enteredTurn: state.turn };
+  ensure(state: WorldState, enforcer: Entity): AlertState {
+    if (!enforcer.alert) {
+      enforcer.alert = { level: "NORMAL", enteredTurn: state.turn };
     }
-    return guard.alert;
+    return enforcer.alert;
   }
 
-  step(state: WorldState, guard: Entity, input: StimulusInput): void {
-    const alert = this.ensure(state, guard);
+  step(state: WorldState, enforcer: Entity, input: StimulusInput): void {
+    const alert = this.ensure(state, enforcer);
     const prev = alert.level;
 
     // Compliance gate — the cardboard-box mechanic. Sighting a GREEN
@@ -61,9 +61,9 @@ class AlertFSM {
         alert.level = "ALERT";
         alert.enteredTurn = state.turn;
         eventBus.emit("EXCLAMATION_TRIGGERED", {
-          guardId: guard.id,
-          pos: guard.pos,
-          roomId: guard.roomId,
+          enforcerId: enforcer.id,
+          pos: enforcer.pos,
+          roomId: enforcer.roomId,
         });
       }
     } else if (sees) {
@@ -84,9 +84,9 @@ class AlertFSM {
         alert.level = "ALERT";
         alert.enteredTurn = state.turn;
         eventBus.emit("EXCLAMATION_TRIGGERED", {
-          guardId: guard.id,
-          pos: guard.pos,
-          roomId: guard.roomId,
+          enforcerId: enforcer.id,
+          pos: enforcer.pos,
+          roomId: enforcer.roomId,
         });
       }
     } else if (input.heardIntensity >= CAUTION_SOUND_THRESHOLD) {
@@ -111,7 +111,7 @@ class AlertFSM {
       }
       if (alert.level === "ALERT" && sinceSeen >= ALERT_LOSE_SIGHT_TURNS) {
         // Lost the player long enough — drop to EVASION and let the
-        // pursuing guard scan, then return to patrol.
+        // pursuing enforcer scan, then return to patrol.
         alert.level = "EVASION";
         alert.enteredTurn = state.turn;
       } else if (alert.level === "EVASION" && sinceEntry >= EVASION_TIMEOUT) {
@@ -128,7 +128,7 @@ class AlertFSM {
     }
 
     if (alert.level !== prev) {
-      eventBus.emit("GUARD_ALERT_CHANGED", { guardId: guard.id, from: prev, to: alert.level });
+      eventBus.emit("ENFORCER_ALERT_CHANGED", { enforcerId: enforcer.id, from: prev, to: alert.level });
     }
   }
 }

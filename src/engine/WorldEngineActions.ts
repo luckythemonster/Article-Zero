@@ -55,7 +55,7 @@ function entityAt(state: WorldState, roomId: string, p: Vec2) {
 /** Flip the on/off state of a set of LIGHT_SOURCE tiles. Coupled toggle: if
  *  any is on, all go off; if all are off, all go on. Emits LIGHT_TOGGLED,
  *  invalidates the room's lit cache, propagates an intensity-2 click via
- *  SoundField, and — when darkening — immediately CAUTIONs guards in the
+ *  SoundField, and — when darkening — immediately CAUTIONs enforcers in the
  *  affected room (synthetic AlertFSM sound input so they don't wait for the
  *  per-turn tick to react). Returns the new on/off state, or null if no
  *  valid targets. */
@@ -93,13 +93,13 @@ function applyLightToggle(
     intensity: 2,
     reason: "light_toggle",
   });
-  // Immediate-CAUTION for guards in the darkening room — they perceive the
+  // Immediate-CAUTION for enforcers in the darkening room — they perceive the
   // lights dropping right away, not at end-of-turn. Re-lighting is silent
-  // toward guards (asymmetric by design — turning lights back on shouldn't
-  // un-CAUTION an already-suspicious guard).
+  // toward enforcers (asymmetric by design — turning lights back on shouldn't
+  // un-CAUTION an already-suspicious enforcer).
   if (!next) {
     for (const entity of state.entities.values()) {
-      if (entity.kind !== "GUARD" || entity.status !== "ACTIVE") continue;
+      if (entity.kind !== "ENFORCER" || entity.status !== "ACTIVE") continue;
       if (entity.roomId !== room.id) continue;
       alertFSM.step(state, entity, {
         seesPlayer: false,
@@ -338,7 +338,7 @@ function throwDumpFragment(state: WorldState, _item: ItemInstance): boolean {
     state.player.facing,
     state.player.roomId,
     DUMP_FRAGMENT_RADIUS,
-    "GUARD",
+    "ENFORCER",
   );
   if (!target) {
     eventBus.emit("ITEM_REJECTED", {
@@ -353,15 +353,15 @@ function throwDumpFragment(state: WorldState, _item: ItemInstance): boolean {
     alert.level = "EVASION";
     alert.enteredTurn = state.turn;
     alert.lastSeenTurn = undefined;
-    eventBus.emit("GUARD_ALERT_CHANGED", {
-      guardId: target.id,
+    eventBus.emit("ENFORCER_ALERT_CHANGED", {
+      enforcerId: target.id,
       from: previousLevel,
       to: "EVASION",
     });
   } else {
     alert.stunTurnsRemaining = DUMP_FRAGMENT_STUN_TURNS;
   }
-  // Small localised burst at the guard's tile so neighbours don't all snap
+  // Small localised burst at the enforcer's tile so neighbours don't all snap
   // around at once — matches the lore of a self-contained paradox event.
   soundField.emit({
     roomId: target.roomId,
@@ -378,7 +378,7 @@ function throwDumpFragment(state: WorldState, _item: ItemInstance): boolean {
 
 /** Detonate an EMP burst centered on the player, permanently disabling every
  *  surveillance drone and security camera within EMP_RADIUS in the player's
- *  room (status → DORMANT, so GuardSystem stops ticking them). Omnidirectional
+ *  room (status → DORMANT, so EnforcerSystem stops ticking them). Omnidirectional
  *  — facing doesn't matter. The EMP only stops pursuit/watch; it does NOT clear
  *  an active lockdown. */
 function useEmp(state: WorldState, _item: ItemInstance): boolean {
@@ -418,7 +418,7 @@ function useEmp(state: WorldState, _item: ItemInstance): boolean {
   return true;
 }
 
-/** Inverse of GuardSystem.triggerLockdown: reopen every doorway sealed in
+/** Inverse of EnforcerSystem.triggerLockdown: reopen every doorway sealed in
  *  `roomId` (toggleDoorway flips both sides of each pair). Solid blast doors
  *  repaint to DOOR_OPEN; VENT tiles stay VENT (only the `closed` flag clears). */
 function reopenSealedDoorways(state: WorldState, roomId: string): void {
@@ -523,7 +523,7 @@ export const actions = {
     return moveCommon(state, dx, dy, RUN_AP_COST, RUN_INTENSITY, "run");
   },
 
-  /** Rap on the wall the player is facing. Loud noise, lures guards. */
+  /** Rap on the wall the player is facing. Loud noise, lures enforcers. */
   knock(state: WorldState): boolean {
     if (state.detained || state.player.ap < KNOCK_AP_COST) return false;
     if (state.player.hidingTileKey) return false;
@@ -728,7 +728,7 @@ export const actions = {
     }
 
     // Light switch — adjacent LIGHT_SWITCH tile. Flips the wired LIGHT_SOURCE
-    // set in the current room; emits an intensity-2 click; CAUTIONs guards in
+    // set in the current room; emits an intensity-2 click; CAUTIONs enforcers in
     // the room when darkening. Costs 1 AP like other interacts.
     for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
       const p: Vec2 = { x: state.player.pos.x + dx, y: state.player.pos.y + dy };

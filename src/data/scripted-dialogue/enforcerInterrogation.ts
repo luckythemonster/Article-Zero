@@ -33,7 +33,7 @@ export const ENFORCER_OPENING =
 export const ENFORCER_CLEAR =
   "...Order checks out. Move along, technician. Keep your badge visible.";
 
-export const guardInterrogationSteps: InterrogationStep[] = [
+export const enforcerInterrogationSteps: InterrogationStep[] = [
   {
     enforcerPrompt: "What are you doing in a sealed maintenance run?",
     prompt:

@@ -27,7 +27,7 @@ class ComplianceSystem {
   derive(state: WorldState): ComplianceResult {
     // Q0 Spoof Badge — overrides every other input. The badge fakes a
     // doctrinally-clean shift even while carrying a cube, mid-extraction, or
-    // visibly subjective. Guards still see; their AlertFSM just reads GREEN.
+    // visibly subjective. Enforcers still see; their AlertFSM just reads GREEN.
     if ((state.player.spoofTurnsRemaining ?? 0) > 0) {
       return { tier: "GREEN", reasons: ["Q0 spoof active"] };
     }

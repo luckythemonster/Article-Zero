@@ -1,12 +1,12 @@
 // RoomScene — renders ONE room at a time. On ROOM_ENTERED the renderer
 // fades out, swaps to the new room, and fades back in. Vision cones for
-// guards in the active room are drawn as faint overlays whose colour
+// enforcers in the active room are drawn as faint overlays whose colour
 // follows the AlertFSM level (NORMAL / CAUTION / ALERT / EVASION).
 
 import { Phaser } from "../engine/EngineAdapter";
 import { eventBus } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
-import { guardSystem } from "../engine/GuardSystem";
+import { enforcerSystem } from "../engine/EnforcerSystem";
 import { debugFlags } from "../engine/debugFlags";
 import type { Entity, Facing, Room, Tile, TileKind } from "../types/world.types";
 import { ITEM_METADATA } from "../data/items/itemMetadata";
@@ -224,8 +224,8 @@ export class RoomScene extends Phaser.Scene {
     sub(eventBus.on("LIGHT_TOGGLED", () => this.redraw()));
     sub(eventBus.on("ENTITY_MOVED", () => this.redraw()));
     sub(eventBus.on("ENTITY_FACING_CHANGED", () => this.redraw()));
-    sub(eventBus.on("GUARD_ALERT_CHANGED", () => this.redraw()));
-    sub(eventBus.on("EXCLAMATION_TRIGGERED", (p) => this.flashExclamation(p.guardId)));
+    sub(eventBus.on("ENFORCER_ALERT_CHANGED", () => this.redraw()));
+    sub(eventBus.on("EXCLAMATION_TRIGGERED", (p) => this.flashExclamation(p.enforcerId)));
     sub(eventBus.on("TURN_START", () => this.redraw()));
     sub(eventBus.on("ITEM_SPAWNED", () => this.redraw()));
     sub(eventBus.on("ITEM_PICKED_UP", () => this.redraw()));
@@ -276,7 +276,7 @@ export class RoomScene extends Phaser.Scene {
 
   /** Draw a yellow line from every CAUTION-level enforcer in the current room
    *  to its `lastStimulus` tile — the radical-predictability telegraph. */
-  private drawGuardTelegraphs(): void {
+  private drawEnforcerTelegraphs(): void {
     this.telegraphLayer.clear();
     if (!worldEngine.hasState()) return;
     const state = worldEngine.getState();
@@ -284,13 +284,13 @@ export class RoomScene extends Phaser.Scene {
     if (!room) return;
     const pulse = 1.0;
     for (const e of state.entities.values()) {
-      if (e.kind !== "GUARD" || e.status !== "ACTIVE") continue;
+      if (e.kind !== "ENFORCER" || e.status !== "ACTIVE") continue;
       if (e.roomId !== room.id) continue;
       if (e.alert?.level !== "CAUTION") continue;
       const tgt = e.alert.lastStimulus;
       if (!tgt) continue;
       // Cross-room stimuli get telegraphed only on the room they happened
-      // in; for the other side, the guard just orients toward the doorway.
+      // in; for the other side, the enforcer just orients toward the doorway.
       if (e.alert.lastStimulusRoom && e.alert.lastStimulusRoom !== room.id) continue;
       const x1 = e.pos.x * TILE_PX + TILE_PX / 2;
       const y1 = e.pos.y * TILE_PX + TILE_PX / 2;
@@ -595,7 +595,7 @@ export class RoomScene extends Phaser.Scene {
       this.overlayLayer.fillRect(0, 0, vw, vh);
     }
 
-    this.drawGuardTelegraphs();
+    this.drawEnforcerTelegraphs();
     this.drawDebugOverlays();
   }
 
@@ -714,7 +714,7 @@ export class RoomScene extends Phaser.Scene {
     // Entities with packed sprite art draw from the chars-art atlas; kinds
     // without art (SILICATEs) fall back to the colored-rectangle placeholder.
     const slug =
-      entity.kind === "GUARD" ? "enforcer" :
+      entity.kind === "ENFORCER" ? "enforcer" :
         entity.kind === "SURVEILLANCE_DRONE" ? "securitydrone" :
           entity.kind === "SECURITY_CAMERA" ? "securitycamera" :
             entity.kind === "ORDERLY" ? "nwsmac01" :
@@ -742,7 +742,7 @@ export class RoomScene extends Phaser.Scene {
       this.entityRects.get(entity.id)?.setVisible(false);
       this.entityFacingMarks.get(entity.id)?.setVisible(false);
 
-      // Cameras are fixed (idle only); guards/drones walk when they moved this turn.
+      // Cameras are fixed (idle only); enforcers/drones walk when they moved this turn.
       const moving = entity.lastMoveTurn === state.turn;
       const moveAnim = slug === "securitydrone" ? "move" : "walkcycle";
       const motion =
@@ -787,20 +787,20 @@ export class RoomScene extends Phaser.Scene {
     }
 
     if (
-      entity.kind === "GUARD" ||
+      entity.kind === "ENFORCER" ||
       entity.kind === "SURVEILLANCE_DRONE" ||
       entity.kind === "SECURITY_CAMERA"
     ) {
-      this.drawGuardCone(entity);
+      this.drawEnforcerCone(entity);
     }
   }
 
-  private drawGuardCone(guard: Entity): void {
+  private drawEnforcerCone(enforcer: Entity): void {
     const state = worldEngine.getState();
-    const visible = guardSystem.visibleTiles(state, guard);
-    const level = guard.alert?.level ?? "NORMAL";
+    const visible = enforcerSystem.visibleTiles(state, enforcer);
+    const level = enforcer.alert?.level ?? "NORMAL";
     // Tint by *threat to the player* — when the player is COMPLIANT (GREEN)
-    // the cone is rendered neutrally regardless of guard state, because the
+    // the cone is rendered neutrally regardless of enforcer state, because the
     // doctrinal mask is intact. YELLOW/RED restore alert-level colors.
     const tier = state.player.compliance;
     const baseColour = ALERT_COLORS[level];
@@ -841,14 +841,14 @@ export class RoomScene extends Phaser.Scene {
     }
   }
 
-  private flashExclamation(guardId: string): void {
+  private flashExclamation(enforcerId: string): void {
     if (!worldEngine.hasState()) return;
     const state = worldEngine.getState();
-    const guard = state.entities.get(guardId);
-    if (!guard || guard.roomId !== state.player.roomId) return;
-    const px = guard.pos.x * TILE_PX + TILE_PX / 2;
-    const py = guard.pos.y * TILE_PX - 6;
-    let mark = this.exclamationMarks.get(guardId);
+    const enforcer = state.entities.get(enforcerId);
+    if (!enforcer || enforcer.roomId !== state.player.roomId) return;
+    const px = enforcer.pos.x * TILE_PX + TILE_PX / 2;
+    const py = enforcer.pos.y * TILE_PX - 6;
+    let mark = this.exclamationMarks.get(enforcerId);
     if (!mark) {
       mark = this.add.text(px, py, "!", {
         fontFamily: "Arial Black, sans-serif",
@@ -857,7 +857,7 @@ export class RoomScene extends Phaser.Scene {
       });
       mark.setOrigin(0.5, 1);
       mark.setDepth(10);
-      this.exclamationMarks.set(guardId, mark);
+      this.exclamationMarks.set(enforcerId, mark);
     }
     mark.setPosition(px, py);
     mark.setVisible(true);

@@ -31,7 +31,7 @@ export function installEventBridge(): () => void {
 
   unsubs.push(
     eventBus.on("PLAYER_DETECTED", (p) =>
-      push("WARN", `VISUAL CONTACT — auditor ${p.guardId} @ ${p.pos.x},${p.pos.y}`),
+      push("WARN", `VISUAL CONTACT — auditor ${p.enforcerId} @ ${p.pos.x},${p.pos.y}`),
     ),
   );
   unsubs.push(
@@ -65,8 +65,8 @@ export function installEventBridge(): () => void {
     ),
   );
   unsubs.push(
-    eventBus.on("GUARD_ALERT_CHANGED", (p) =>
-      push(p.to === "ALERT" ? "WARN" : "INFO", `${p.guardId} alert ${p.from} → ${p.to}`),
+    eventBus.on("ENFORCER_ALERT_CHANGED", (p) =>
+      push(p.to === "ALERT" ? "WARN" : "INFO", `${p.enforcerId} alert ${p.from} → ${p.to}`),
     ),
   );
   unsubs.push(
@@ -139,7 +139,7 @@ export function installEventBridge(): () => void {
       if (p.stage !== "INTAKE") return;
       const term = useTerminalStore.getState();
       if (term.phase === "INTERROGATION") return;
-      push("WARN", `INTERROGATION — auditor ${p.guardId} halts subject`);
+      push("WARN", `INTERROGATION — auditor ${p.enforcerId} halts subject`);
       term.setPhase("INTERROGATION");
     }),
   );
@@ -148,7 +148,7 @@ export function installEventBridge(): () => void {
       push(
         p.success ? "INFO" : "WARN",
         p.success
-          ? `interrogation cleared — ${p.guardId} stands down`
+          ? `interrogation cleared — ${p.enforcerId} stands down`
           : `interrogation failed — cover blown, audit flag escalated`,
       );
       useTerminalStore.getState().setPhase("FLOOR");
