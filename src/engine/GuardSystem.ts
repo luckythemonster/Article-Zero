@@ -86,17 +86,11 @@ class GuardSystem {
     }
     const sees = this.guardSeesPlayer(state, guard);
     // YELLOW interrogation: a clean-mask slip-up (qScore 1) reads as a person
-    // of interest, not a target. On first sighting the Enforcer halts the
-    // player for a checkpoint shakedown rather than investigating/chasing. The
-    // modal phase pauses input + ticks until the player answers; pass keeps
-    // them YELLOW (with a per-guard cooldown), fail escalates to RED.
-    if (
-      guard.kind === "GUARD" &&
-      sees &&
-      state.player.compliance === "YELLOW" &&
-      !interrogationSession.isActive() &&
-      (guard.alert?.interrogateCooldown ?? 0) === 0
-    ) {
+    // of interest, not a target. On sighting the Enforcer halts the player for
+    // a checkpoint shakedown rather than investigating/chasing. The modal phase
+    // pauses input + ticks until the player answers; pass keeps them YELLOW
+    // (with a per-guard cooldown), fail escalates to RED.
+    if (this.canInterrogate(state, guard, sees)) {
       interrogationSession.start(state, guard.id);
       return;
     }
@@ -175,6 +169,34 @@ class GuardSystem {
     if (dx * dx + dy * dy <= GUARD_PROXIMITY_RADIUS * GUARD_PROXIMITY_RADIUS) return true;
     const visible = this.visibleTiles(state, guard);
     return visible.has(`${state.player.pos.x},${state.player.pos.y}`);
+  }
+
+  /** Whether `guard` should halt a YELLOW player it can currently see. Shared
+   *  by the per-turn tick and the on-move scan so the conditions can't drift. */
+  private canInterrogate(state: WorldState, guard: Entity, sees: boolean): boolean {
+    return (
+      guard.kind === "GUARD" &&
+      sees &&
+      state.player.compliance === "YELLOW" &&
+      !interrogationSession.isActive() &&
+      (guard.alert?.interrogateCooldown ?? 0) === 0
+    );
+  }
+
+  /** Scan active guards for a YELLOW-sighting interrogation trigger. Called
+   *  after the player moves so the shakedown fires the instant they step into
+   *  a guard's range, rather than waiting for an explicit END TURN. Does NOT
+   *  advance guard AI — sighting only. */
+  maybeInterrogateOnMove(state: WorldState): void {
+    if (state.detained || debugFlags.disableEnforcerAI) return;
+    if (interrogationSession.isActive() || state.player.compliance !== "YELLOW") return;
+    for (const guard of state.entities.values()) {
+      if (guard.status !== "ACTIVE" || guard.kind !== "GUARD") continue;
+      if (this.canInterrogate(state, guard, this.guardSeesPlayer(state, guard))) {
+        interrogationSession.start(state, guard.id);
+        return;
+      }
+    }
   }
 
   /** Seal every doorway in the player's current room and start the vacuum

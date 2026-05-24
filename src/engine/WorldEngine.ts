@@ -92,6 +92,7 @@ class WorldEngine {
     if (ok) {
       this.recomputeFOV();
       complianceSystem.recompute(this.getState());
+      guardSystem.maybeInterrogateOnMove(this.getState());
       this.syncStore();
     }
     return ok;
