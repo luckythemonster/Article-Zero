@@ -16,10 +16,15 @@ const ELEVATION_PX_PER_STEP = 8;
 // Character frames in the chars-art atlas carry transparent padding around the
 // body. We size characters to a fixed on-screen footprint instead of a fixed
 // scale, so swapping in art at a different frame size keeps the same world
-// size. CHAR_FOOTPRINT_TILES = 4 → a 128-px (4-tile) sprite at TILE_PX = 32,
-// i.e. 2× the 64-px native frame; the per-sprite scale is derived from each
+// size. CHAR_FOOTPRINT_TILES = 3.5 → a 112-px (3.5-tile) sprite at TILE_PX = 32,
+// i.e. 1.75× the 64-px native frame; the per-sprite scale is derived from each
 // frame's actual width (see below).
-const CHAR_FOOTPRINT_TILES = 4;
+const CHAR_FOOTPRINT_TILES = 3.5;
+// Character sprites are anchored at their tile centre, but the body's feet sit
+// below that midpoint. Nudge ground characters down ~half a tile so they read
+// as standing on the tile rather than floating above it. Drones hover and
+// cameras are ceiling-mounted, so they keep a zero offset.
+const CHAR_Y_OFFSET_PX = TILE_PX / 2;
 // Non-character props get their own footprints: drones keep the old baseline,
 // fixed security cameras read as small ceiling fixtures.
 const DRONE_FOOTPRINT_TILES = 1.5;
@@ -31,6 +36,13 @@ function footprintTilesForSlug(slug: string): number {
   if (slug === "securitycamera") return CAMERA_FOOTPRINT_TILES;
   if (slug === "securitydrone") return DRONE_FOOTPRINT_TILES;
   return CHAR_FOOTPRINT_TILES;
+}
+
+// Vertical pixel offset for a sprite-driven entity slug. Only ground characters
+// drop; hovering drones and ceiling cameras stay centred on their tile.
+function yOffsetForSlug(slug: string): number {
+  if (slug === "securitycamera" || slug === "securitydrone") return 0;
+  return CHAR_Y_OFFSET_PX;
 }
 // Pull the camera in so the world fills more of the 960×640 viewport.
 const CAMERA_ZOOM = 1.5;
@@ -447,7 +459,8 @@ export class RoomScene extends Phaser.Scene {
     const here = room.tiles[state.player.pos.y * room.width + state.player.pos.x];
     const elev = here?.elevation ?? 0;
     const playerCx = state.player.pos.x * TILE_PX + TILE_PX / 2;
-    const playerCy = state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP;
+    const playerCy =
+      state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP + CHAR_Y_OFFSET_PX;
     this.playerSprite.setPosition(playerCx, playerCy);
     this.playerSprite.setVisible(!state.player.hidingTileKey);
     if (state.player.hidingTileKey) {
@@ -656,7 +669,7 @@ export class RoomScene extends Phaser.Scene {
         sprite.setDepth(4);
         this.entitySprites.set(entity.id, sprite);
       }
-      sprite.setPosition(px, py);
+      sprite.setPosition(px, py + yOffsetForSlug(slug));
       sprite.setVisible(visible);
       // The directional sprite conveys facing on its own — hide the rect/triangle.
       this.entityRects.get(entity.id)?.setVisible(false);
