@@ -28,7 +28,7 @@ const PROP_SLUGS = new Set(["securitydrone", "securitycamera"]);
 
 // Characters render this many pixels below their tile centre, so the feet sit
 // a touch lower on the tile rather than dead-centre. Props are unaffected.
-const CHAR_Y_OFFSET_PX = 16;
+const CHAR_Y_OFFSET_PX = 12;
 
 // Raw-frame-width footprint (in tiles) for a prop slug.
 function propFootprintTiles(slug: string): number {
