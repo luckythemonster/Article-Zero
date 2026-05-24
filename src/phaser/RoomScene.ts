@@ -16,9 +16,21 @@ const ELEVATION_PX_PER_STEP = 8;
 // Character frames in the chars-art atlas carry transparent padding around the
 // body. We size characters to a fixed on-screen footprint instead of a fixed
 // scale, so swapping in art at a different frame size keeps the same world
-// size. CHAR_FOOTPRINT_TILES = 1.5 → a 48-px (1.5-tile) sprite at TILE_PX = 32;
+// size. CHAR_FOOTPRINT_TILES = 2 → a 64-px (2-tile) sprite at TILE_PX = 32;
 // the per-sprite scale is derived from each frame's actual width (see below).
-const CHAR_FOOTPRINT_TILES = 1.5;
+const CHAR_FOOTPRINT_TILES = 2;
+// Non-character props get their own footprints: drones keep the old baseline,
+// fixed security cameras read as small ceiling fixtures.
+const DRONE_FOOTPRINT_TILES = 1.5;
+const CAMERA_FOOTPRINT_TILES = 1;
+
+// On-screen footprint (in tiles) for a sprite-driven entity slug. Humanoids
+// (player/enforcer/orderly) use the larger CHAR footprint; props override.
+function footprintTilesForSlug(slug: string): number {
+  if (slug === "securitycamera") return CAMERA_FOOTPRINT_TILES;
+  if (slug === "securitydrone") return DRONE_FOOTPRINT_TILES;
+  return CHAR_FOOTPRINT_TILES;
+}
 // Pull the camera in so the world fills more of the 960×640 viewport.
 const CAMERA_ZOOM = 1.5;
 
@@ -639,7 +651,7 @@ export class RoomScene extends Phaser.Scene {
       if (!sprite) {
         sprite = this.add.sprite(px, py, "chars-art", `${slug}/stand/${entity.facing}/01`);
         sprite.setOrigin(0.5);
-        sprite.setScale((CHAR_FOOTPRINT_TILES * TILE_PX) / sprite.width);
+        sprite.setScale((footprintTilesForSlug(slug) * TILE_PX) / sprite.width);
         sprite.setDepth(4);
         this.entitySprites.set(entity.id, sprite);
       }
