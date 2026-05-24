@@ -22,7 +22,7 @@ import { eventBus } from "./EventBus";
 import { interrogationSession } from "./InterrogationSession";
 import { lightField } from "./LightField";
 import { roomGraph } from "./RoomGraph";
-import { computeCone, GUARD_BASE_RANGE, GUARD_CONE_HALF_ANGLE } from "./VisionCone";
+import { computeCone, GUARD_BASE_RANGE, GUARD_CONE_HALF_ANGLE, GUARD_PROXIMITY_RADIUS } from "./VisionCone";
 import type { DeliveredSound } from "./SoundField";
 import { debugFlags } from "./debugFlags";
 
@@ -168,6 +168,11 @@ class GuardSystem {
     if (state.player.hidingTileKey) return false;
     const room = state.rooms.get(guard.roomId);
     if (!room) return false;
+    // Proximity bubble: close enough that the guard notices regardless of
+    // facing direction or lighting (footsteps, peripheral movement, etc).
+    const dx = state.player.pos.x - guard.pos.x;
+    const dy = state.player.pos.y - guard.pos.y;
+    if (dx * dx + dy * dy <= GUARD_PROXIMITY_RADIUS * GUARD_PROXIMITY_RADIUS) return true;
     const visible = this.visibleTiles(state, guard);
     return visible.has(`${state.player.pos.x},${state.player.pos.y}`);
   }

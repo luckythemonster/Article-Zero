@@ -88,3 +88,6 @@ export function getEffectivePlayerRadius(
 /** Half-angle for guard cones. ~70° total cone. */
 export const GUARD_CONE_HALF_ANGLE = (70 / 2) * (Math.PI / 180);
 export const GUARD_BASE_RANGE = 6;
+/** Radius (tiles) of the omnidirectional proximity bubble. A player within
+ *  this distance is always detected regardless of cone facing or lighting. */
+export const GUARD_PROXIMITY_RADIUS = 2;
