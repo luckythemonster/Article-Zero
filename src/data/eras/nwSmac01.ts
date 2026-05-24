@@ -264,6 +264,28 @@ export function nwSmac01Era(): EraSeed {
     });
   }
 
+  // Orderlies — background NWSMAC facility staff. One per main floor placed at
+  // known interior floor cells; Lucky can later replace these with a painted
+  // "orderlies" layer in Ed (paintedCells) and drop the hardcoded block.
+  const orderlyCells: Array<[string, Vec2]> = [
+    ["main_1", { x: 12, y: 4 }],
+    ["main_2", { x: 20, y: 5 }],
+    ["main_3", { x: 21, y: 4 }],
+  ];
+  orderlyCells.forEach(([roomId, pos], i) => {
+    const orderly: Entity = {
+      id: `ORDERLY-${roomId.toUpperCase()}-${i + 1}`,
+      kind: "ORDERLY",
+      name: `NW-SMAC-01 ORDERLY ${i + 1}`,
+      roomId,
+      pos,
+      z: 0,
+      facing: "south",
+      status: "ACTIVE",
+    };
+    seed.entities.push(orderly);
+  });
+
   // Footstep surfaces: every duct crawlspace floor is sheet-metal lining;
   // mains/roof inherit the default surface.
   for (const id of ["duct_1", "duct_2", "duct_3"]) {

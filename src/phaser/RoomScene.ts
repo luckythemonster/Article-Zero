@@ -631,7 +631,8 @@ export class RoomScene extends Phaser.Scene {
       entity.kind === "GUARD" ? "enforcer" :
         entity.kind === "SURVEILLANCE_DRONE" ? "securitydrone" :
           entity.kind === "SECURITY_CAMERA" ? "securitycamera" :
-            null;
+            entity.kind === "ORDERLY" ? "nwsmac01" :
+              null;
 
     if (slug) {
       let sprite = this.entitySprites.get(entity.id);
