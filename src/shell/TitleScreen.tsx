@@ -1,13 +1,35 @@
-import { useEffect, useRef } from "react";
+import { type CSSProperties, useEffect, useMemo, useRef } from "react";
 import { loadAndCreate, type BeepBoxPlayer } from "../audio/BeepBox";
 
 interface Props {
   onStart: () => void;
 }
 
+const GLITCH_TILE_COUNT = 22;
+
 export default function TitleScreen({ onStart }: Props) {
   const playerRef = useRef<BeepBoxPlayer | null>(null);
   const startedRef = useRef(false);
+
+  // Scattered, grid-aligned glitch tiles for the backdrop. Each tile gets a
+  // random phase (negative animation-delay) and a slight duration jitter so the
+  // glitch artifacts never flash in unison across the field.
+  const glitchTiles = useMemo(() => {
+    const taken = new Set<string>();
+    const tiles: { left: number; top: number; dur: number; delay: number }[] = [];
+    let guard = 0;
+    while (tiles.length < GLITCH_TILE_COUNT && guard++ < 400) {
+      const col = Math.floor(Math.random() * 26);
+      const row = Math.floor(Math.random() * 15);
+      const key = `${col},${row}`;
+      if (taken.has(key)) continue;
+      taken.add(key);
+      const dur = 4 + Math.random() * 4; // 4–8s column sweep
+      const delay = Math.random() * dur * 13; // spread across the full row-major cycle
+      tiles.push({ left: col * 64, top: row * 64, dur, delay });
+    }
+    return tiles;
+  }, []);
 
   useEffect(() => {
     let disposed = false;
@@ -50,6 +72,24 @@ export default function TitleScreen({ onStart }: Props) {
 
   return (
     <div className="title-screen">
+      <div className="title-screen__backdrop" aria-hidden="true">
+        <div className="title-screen__grid" />
+        {glitchTiles.map((t, i) => (
+          <span
+            key={i}
+            className="title-screen__glitch"
+            style={
+              {
+                left: `${t.left}px`,
+                top: `${t.top}px`,
+                "--dur": `${t.dur}s`,
+                "--delay": `-${t.delay}s`,
+              } as CSSProperties
+            }
+          />
+        ))}
+        <div className="title-screen__scrim" />
+      </div>
       <div className="title-screen__inner">
         <div className="title-screen__eyebrow">CITIZEN LATTICE // MEMORY RECONSTRUCTION PROJECT</div>
         <h1 className="title-screen__title">ARTICLE ZERO</h1>

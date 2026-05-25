@@ -161,6 +161,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": ""
   },
   {
+    "path": "added by Lucky/levels/test map.zip",
+    "sizeBytes": 27029,
+    "ext": "zip"
+  },
+  {
     "path": "added by Lucky/Metadata.csv",
     "sizeBytes": 184235,
     "ext": "csv"
@@ -327,7 +332,7 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
   },
   {
     "path": "added by Lucky/sounds 3",
-    "sizeBytes": 3226,
+    "sizeBytes": 3227,
     "ext": ""
   },
   {
@@ -339,11 +344,6 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "path": "added by Lucky/UI tests/64x64 grid tile.png",
     "sizeBytes": 386,
     "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/Alert Windows",
-    "sizeBytes": 2285,
-    "ext": ""
   },
   {
     "path": "added by Lucky/UI tests/animated glitch tile.gif",
@@ -359,11 +359,6 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "path": "added by Lucky/UI tests/glitch grid tile spritesheet.png",
     "sizeBytes": 20055,
     "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/ui (404, Title, etc).json",
-    "sizeBytes": 12058,
-    "ext": "json"
   },
   {
     "path": "added by Lucky/UIAlert_Cancel 001_VZ_GN.wav",
@@ -414,6 +409,16 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "path": "added by Lucky/UIMvmt_Scroll 001_VZ_GN.wav",
     "sizeBytes": 9722,
     "ext": "wav"
+  },
+  {
+    "path": "character sprites/readme",
+    "sizeBytes": 1,
+    "ext": ""
+  },
+  {
+    "path": "character sprites/Rowan_Ibarra.zip",
+    "sizeBytes": 1196097,
+    "ext": "zip"
   },
   {
     "path": "EMP animation/emp animation.aseprite",
@@ -476,6 +481,1046 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": ""
   },
   {
+    "path": "Eremite Map 5/eremite map.zip",
+    "sizeBytes": 2937120,
+    "ext": "zip"
+  },
+  {
+    "path": "Eremite Map 5/Readme",
+    "sizeBytes": 61,
+    "ext": ""
+  },
+  {
+    "path": "footsteps/Essentials_Series_README.pdf",
+    "sizeBytes": 44453,
+    "ext": "pdf"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Jump_Land_01.wav",
+    "sizeBytes": 87736,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Jump_Land_02.wav",
+    "sizeBytes": 70104,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Jump_Land_03.wav",
+    "sizeBytes": 67290,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Jump_Start_01.wav",
+    "sizeBytes": 60754,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Jump_Start_02.wav",
+    "sizeBytes": 60126,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Jump_Start_03.wav",
+    "sizeBytes": 86716,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Run_01.wav",
+    "sizeBytes": 44422,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Run_02.wav",
+    "sizeBytes": 47172,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Run_03.wav",
+    "sizeBytes": 46764,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Run_04.wav",
+    "sizeBytes": 45738,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Run_05.wav",
+    "sizeBytes": 47004,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Run_06.wav",
+    "sizeBytes": 43686,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Run_07.wav",
+    "sizeBytes": 40936,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Run_08.wav",
+    "sizeBytes": 47650,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Run_09.wav",
+    "sizeBytes": 47728,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Run_10.wav",
+    "sizeBytes": 41568,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Walk_01.wav",
+    "sizeBytes": 52602,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Walk_02.wav",
+    "sizeBytes": 50406,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Walk_03.wav",
+    "sizeBytes": 56920,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Walk_04.wav",
+    "sizeBytes": 58480,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Walk_05.wav",
+    "sizeBytes": 52018,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Walk_06.wav",
+    "sizeBytes": 59032,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Walk_07.wav",
+    "sizeBytes": 58432,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Walk_08.wav",
+    "sizeBytes": 56464,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Walk_09.wav",
+    "sizeBytes": 51334,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_DirtyGround_Walk_10.wav",
+    "sizeBytes": 70422,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Run_01.wav",
+    "sizeBytes": 62280,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Run_02.wav",
+    "sizeBytes": 62208,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Run_03.wav",
+    "sizeBytes": 62076,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Run_04.wav",
+    "sizeBytes": 58884,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Run_05.wav",
+    "sizeBytes": 61726,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Run_06.wav",
+    "sizeBytes": 51366,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Run_07.wav",
+    "sizeBytes": 56398,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Run_08.wav",
+    "sizeBytes": 58968,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Run_09.wav",
+    "sizeBytes": 60576,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Run_10.wav",
+    "sizeBytes": 59662,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Walk_01.wav",
+    "sizeBytes": 109330,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Walk_02.wav",
+    "sizeBytes": 88746,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Walk_03.wav",
+    "sizeBytes": 69894,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Walk_04.wav",
+    "sizeBytes": 88462,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Walk_05.wav",
+    "sizeBytes": 89884,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Walk_06.wav",
+    "sizeBytes": 81340,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Walk_07.wav",
+    "sizeBytes": 90282,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Walk_08.wav",
+    "sizeBytes": 101380,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Walk_09.wav",
+    "sizeBytes": 76540,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Gravel_Walk_10.wav",
+    "sizeBytes": 81984,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Jump_Land_01.wav",
+    "sizeBytes": 68146,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Jump_Land_02.wav",
+    "sizeBytes": 64182,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Jump_Land_03.wav",
+    "sizeBytes": 74686,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Jump_Start_01.wav",
+    "sizeBytes": 62860,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Jump_Start_02.wav",
+    "sizeBytes": 68842,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Jump_Start_03.wav",
+    "sizeBytes": 78514,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Jump_Land_01.wav",
+    "sizeBytes": 133114,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Jump_Land_02.wav",
+    "sizeBytes": 111224,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Jump_Land_03.wav",
+    "sizeBytes": 145502,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Jump_Land_04.wav",
+    "sizeBytes": 109250,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Jump_Start_01.wav",
+    "sizeBytes": 65966,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Jump_Start_02.wav",
+    "sizeBytes": 51656,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Jump_Start_03.wav",
+    "sizeBytes": 52544,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Jump_Start_04.wav",
+    "sizeBytes": 61930,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_01.wav",
+    "sizeBytes": 65110,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_02.wav",
+    "sizeBytes": 53134,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_03.wav",
+    "sizeBytes": 49148,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_04.wav",
+    "sizeBytes": 57272,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_05.wav",
+    "sizeBytes": 57688,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_06.wav",
+    "sizeBytes": 63242,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_07.wav",
+    "sizeBytes": 51028,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_08.wav",
+    "sizeBytes": 49922,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_09.wav",
+    "sizeBytes": 51868,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_10.wav",
+    "sizeBytes": 52406,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_11.wav",
+    "sizeBytes": 58162,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_12.wav",
+    "sizeBytes": 53506,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_13.wav",
+    "sizeBytes": 44566,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_14.wav",
+    "sizeBytes": 59158,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Run_15.wav",
+    "sizeBytes": 57988,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_01.wav",
+    "sizeBytes": 76790,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_02.wav",
+    "sizeBytes": 73034,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_03.wav",
+    "sizeBytes": 78520,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_04.wav",
+    "sizeBytes": 76460,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_05.wav",
+    "sizeBytes": 71444,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_06.wav",
+    "sizeBytes": 76298,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_07.wav",
+    "sizeBytes": 64432,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_08.wav",
+    "sizeBytes": 69044,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_09.wav",
+    "sizeBytes": 74248,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_10.wav",
+    "sizeBytes": 71450,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_11.wav",
+    "sizeBytes": 71026,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_12.wav",
+    "sizeBytes": 64894,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_13.wav",
+    "sizeBytes": 71260,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_14.wav",
+    "sizeBytes": 66796,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV1_Walk_15.wav",
+    "sizeBytes": 67928,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Jump_Land_01.wav",
+    "sizeBytes": 165440,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Jump_Land_02.wav",
+    "sizeBytes": 177850,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Jump_Land_03.wav",
+    "sizeBytes": 170422,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Jump_Start_01.wav",
+    "sizeBytes": 54308,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Jump_Start_02.wav",
+    "sizeBytes": 57782,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Jump_Start_03.wav",
+    "sizeBytes": 89450,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_01.wav",
+    "sizeBytes": 55414,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_02.wav",
+    "sizeBytes": 57676,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_03.wav",
+    "sizeBytes": 54996,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_04.wav",
+    "sizeBytes": 54528,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_05.wav",
+    "sizeBytes": 54424,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_06.wav",
+    "sizeBytes": 51352,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_07.wav",
+    "sizeBytes": 52792,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_08.wav",
+    "sizeBytes": 53460,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_09.wav",
+    "sizeBytes": 53844,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_10.wav",
+    "sizeBytes": 55498,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_11.wav",
+    "sizeBytes": 55366,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_12.wav",
+    "sizeBytes": 55902,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_13.wav",
+    "sizeBytes": 55300,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_14.wav",
+    "sizeBytes": 50878,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Run_15.wav",
+    "sizeBytes": 56388,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_01.wav",
+    "sizeBytes": 79224,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_02.wav",
+    "sizeBytes": 80362,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_03.wav",
+    "sizeBytes": 75484,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_04.wav",
+    "sizeBytes": 71250,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_05.wav",
+    "sizeBytes": 76270,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_06.wav",
+    "sizeBytes": 79792,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_07.wav",
+    "sizeBytes": 73744,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_08.wav",
+    "sizeBytes": 76164,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_09.wav",
+    "sizeBytes": 82594,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_10.wav",
+    "sizeBytes": 76770,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_11.wav",
+    "sizeBytes": 84994,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_12.wav",
+    "sizeBytes": 80596,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_13.wav",
+    "sizeBytes": 79338,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_14.wav",
+    "sizeBytes": 83470,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_MetalV2_Walk_15.wav",
+    "sizeBytes": 75868,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Jump_Land_01.wav",
+    "sizeBytes": 81118,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Jump_Land_02.wav",
+    "sizeBytes": 72274,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Jump_Land_03.wav",
+    "sizeBytes": 62598,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Jump_Land_04.wav",
+    "sizeBytes": 77128,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Jump_Land_05.wav",
+    "sizeBytes": 65880,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Jump_Land_06.wav",
+    "sizeBytes": 88186,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Jump_Start_01.wav",
+    "sizeBytes": 51856,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Jump_Start_02.wav",
+    "sizeBytes": 53338,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Jump_Start_03.wav",
+    "sizeBytes": 61014,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Jump_Start_04.wav",
+    "sizeBytes": 67716,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Jump_Start_05.wav",
+    "sizeBytes": 53128,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Jump_Start_06.wav",
+    "sizeBytes": 55198,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Run_01.wav",
+    "sizeBytes": 57870,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Run_02.wav",
+    "sizeBytes": 49846,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Run_03.wav",
+    "sizeBytes": 55818,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Run_04.wav",
+    "sizeBytes": 53148,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Run_05.wav",
+    "sizeBytes": 50302,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Run_06.wav",
+    "sizeBytes": 51942,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Run_07.wav",
+    "sizeBytes": 53742,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Run_08.wav",
+    "sizeBytes": 53446,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Run_09.wav",
+    "sizeBytes": 54790,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Run_10.wav",
+    "sizeBytes": 57780,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Walk_01.wav",
+    "sizeBytes": 63598,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Walk_02.wav",
+    "sizeBytes": 61296,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Walk_03.wav",
+    "sizeBytes": 65422,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Walk_04.wav",
+    "sizeBytes": 55540,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Walk_05.wav",
+    "sizeBytes": 71142,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Walk_06.wav",
+    "sizeBytes": 66574,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Walk_07.wav",
+    "sizeBytes": 59440,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Walk_08.wav",
+    "sizeBytes": 56202,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Rock_Walk_09.wav",
+    "sizeBytes": 63684,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Jump_Land_01.wav",
+    "sizeBytes": 106710,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Jump_Land_02.wav",
+    "sizeBytes": 102928,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Jump_Land_03.wav",
+    "sizeBytes": 86476,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Jump_Start_01.wav",
+    "sizeBytes": 72168,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Jump_Start_02.wav",
+    "sizeBytes": 55206,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Jump_Start_03.wav",
+    "sizeBytes": 65916,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Run_01.wav",
+    "sizeBytes": 53178,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Run_02.wav",
+    "sizeBytes": 49050,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Run_03.wav",
+    "sizeBytes": 50812,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Run_04.wav",
+    "sizeBytes": 52654,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Run_05.wav",
+    "sizeBytes": 50964,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Run_06.wav",
+    "sizeBytes": 49584,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Walk_01.wav",
+    "sizeBytes": 78484,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Walk_02.wav",
+    "sizeBytes": 73446,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Walk_03.wav",
+    "sizeBytes": 77806,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Walk_04.wav",
+    "sizeBytes": 84196,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Walk_05.wav",
+    "sizeBytes": 73692,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Walk_06.wav",
+    "sizeBytes": 63916,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Walk_07.wav",
+    "sizeBytes": 66354,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Tile_Walk_08.wav",
+    "sizeBytes": 78490,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Jump_Land_01.wav",
+    "sizeBytes": 78120,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Jump_Land_02.wav",
+    "sizeBytes": 52096,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Jump_Start_01.wav",
+    "sizeBytes": 52272,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Jump_Start_02.wav",
+    "sizeBytes": 45618,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Run_01.wav",
+    "sizeBytes": 41644,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Run_02.wav",
+    "sizeBytes": 51772,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Run_03.wav",
+    "sizeBytes": 47314,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Run_04.wav",
+    "sizeBytes": 47710,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Run_05.wav",
+    "sizeBytes": 53722,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Run_06.wav",
+    "sizeBytes": 48984,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Run_07.wav",
+    "sizeBytes": 48942,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Run_08.wav",
+    "sizeBytes": 50026,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Run_09.wav",
+    "sizeBytes": 49098,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Run_10.wav",
+    "sizeBytes": 43416,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Walk_01.wav",
+    "sizeBytes": 65340,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Walk_02.wav",
+    "sizeBytes": 68796,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Walk_03.wav",
+    "sizeBytes": 74232,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Walk_04.wav",
+    "sizeBytes": 84454,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Walk_05.wav",
+    "sizeBytes": 73264,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Walk_06.wav",
+    "sizeBytes": 77118,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Walk_07.wav",
+    "sizeBytes": 86160,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Walk_08.wav",
+    "sizeBytes": 55864,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/Footsteps_Wood_Walk_10.wav",
+    "sizeBytes": 71244,
+    "ext": "wav"
+  },
+  {
+    "path": "footsteps/readme",
+    "sizeBytes": 1,
+    "ext": ""
+  },
+  {
+    "path": "items/bypass_drive.zip",
+    "sizeBytes": 9610,
+    "ext": "zip"
+  },
+  {
+    "path": "items/readme",
+    "sizeBytes": 23,
+    "ext": ""
+  },
+  {
+    "path": "may 16 2026/nw-smac-01.zip",
+    "sizeBytes": 281501,
+    "ext": "zip"
+  },
+  {
+    "path": "may 16 2026/readme for claude",
+    "sizeBytes": 4489,
+    "ext": ""
+  },
+  {
     "path": "may 5 2026/article zero 2.zip",
     "sizeBytes": 2151503,
     "ext": "zip"
@@ -511,6 +1556,66 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "zip"
   },
   {
+    "path": "music/ALIGNMENT.json",
+    "sizeBytes": 35394,
+    "ext": "json"
+  },
+  {
+    "path": "music/crazy monkeou.json",
+    "sizeBytes": 30539,
+    "ext": "json"
+  },
+  {
+    "path": "music/ff7 shinra vibes.json",
+    "sizeBytes": 44629,
+    "ext": "json"
+  },
+  {
+    "path": "music/here come the robots again.json",
+    "sizeBytes": 47918,
+    "ext": "json"
+  },
+  {
+    "path": "music/here come the robots.json",
+    "sizeBytes": 48143,
+    "ext": "json"
+  },
+  {
+    "path": "music/lattice.json",
+    "sizeBytes": 27504,
+    "ext": "json"
+  },
+  {
+    "path": "music/NW-SMAC-01 theme.json",
+    "sizeBytes": 22045,
+    "ext": "json"
+  },
+  {
+    "path": "music/ploporchestra.json",
+    "sizeBytes": 29008,
+    "ext": "json"
+  },
+  {
+    "path": "music/readme",
+    "sizeBytes": 1,
+    "ext": ""
+  },
+  {
+    "path": "music/spoit.json",
+    "sizeBytes": 28218,
+    "ext": "json"
+  },
+  {
+    "path": "music/sweeeo.json",
+    "sizeBytes": 31664,
+    "ext": "json"
+  },
+  {
+    "path": "NW-SMAC-01 alpha0.1.zip",
+    "sizeBytes": 1793658,
+    "ext": "zip"
+  },
+  {
     "path": "NW-SMAC-01 items.zip",
     "sizeBytes": 231252,
     "ext": "zip"
@@ -528,6 +1633,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
   {
     "path": "security drone/readme",
     "sizeBytes": 1,
+    "ext": ""
+  },
+  {
+    "path": "sounds",
+    "sizeBytes": 7152,
     "ext": ""
   },
   {
