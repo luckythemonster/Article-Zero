@@ -51,6 +51,7 @@ export function worldStateToSlices(ws: WorldState): {
     rooms: new Map(ws.rooms),
     ventLinks: new Map(ws.ventLinks),
     terminalPayloads: new Map(ws.terminalPayloads),
+    chestPayloads: new Map(ws.chestPayloads),
     playerRoomId: ws.player.roomId,
     playerPos: ws.player.pos,
     playerZ: ws.player.z,
@@ -156,6 +157,7 @@ export function slicesToWorldState(
     lockdown: subjective.lockdown ? { ...subjective.lockdown } : undefined,
     ventLinks: new Map(physical.ventLinks),
     terminalPayloads: new Map(physical.terminalPayloads),
+    chestPayloads: new Map(physical.chestPayloads),
     terminalsRead: new Set(subjective.terminalsRead),
     activeEmitters: subjective.activeEmitters.map((e) => ({ ...e })),
   };

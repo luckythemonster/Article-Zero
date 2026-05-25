@@ -17,7 +17,7 @@ import type { MooseEraMeta } from "./from-moose";
 import { mkTile } from "./tile-factory";
 import { TEST_MAP_LEVELS, TEST_MAP_REFS, TEST_MAP_COMPONENTS } from "../tilesets/test_map.levels";
 import type { MooseLevel } from "../tilesets/types";
-import type { Entity, ItemInstance, LightSwitch, PatrolNode, Vec2 } from "../../types/world.types";
+import type { ChestPayload, Entity, ItemType, LightSwitch, PatrolNode, Vec2 } from "../../types/world.types";
 import type { EraSeed } from "../../engine/WorldEngineState";
 
 const ROOM_ID = "deck";
@@ -86,6 +86,30 @@ function key(p: Vec2): string {
   return `${p.x},${p.y}`;
 }
 
+/** Map an Ed item-chest content name (e.g. "key_5", "EMP_grenade") to an engine
+ *  ItemType. Matching is fuzzy because Ed authoring is free-text; unknown names
+ *  are dropped (warned) so a typo fails soft instead of crashing the seed. */
+function resolveItemName(raw: string): ItemType | null {
+  const s = raw.trim().toLowerCase();
+  if (s.includes("emp") && s.includes("grenade")) return "EMP_GRENADE";
+  if (s === "emp") return "EMP";
+  if (s.includes("key") || s.includes("override")) return "OVERRIDE_KEY";
+  if (s.includes("baffle")) return "THERMAL_BAFFLE";
+  if (s.includes("badge") || s.includes("spoof")) return "Q0_SPOOF_BADGE";
+  if (s.includes("phantom") || s.includes("emitter")) return "PHANTOM_EMITTER";
+  if (s.includes("dump") || s.includes("fragment")) return "DUMP_FRAGMENT";
+  if (s.includes("bypass")) return "BYPASS_DRIVE";
+  if (s.includes("cube")) return "EXTRACTION_CUBE";
+  const known: ItemType[] = [
+    "EXTRACTION_CUBE", "BYPASS_DRIVE", "PHANTOM_EMITTER", "Q0_SPOOF_BADGE",
+    "DUMP_FRAGMENT", "THERMAL_BAFFLE", "OVERRIDE_KEY", "EMP", "EMP_GRENADE",
+  ];
+  const upper = raw.trim().toUpperCase() as ItemType;
+  if (known.includes(upper)) return upper;
+  console.warn(`[testMap] unknown item-chest content "${raw}" — skipped`);
+  return null;
+}
+
 /** Walkable cells = floor minus walls minus closed doors. Used to keep patrol
  *  nodes and the player spawn off of solid tiles. */
 function walkableSet(level: MooseLevel): Set<string> {
@@ -142,6 +166,7 @@ export function testMapEra(): EraSeed {
     ...paintedCells(lv, "enemies").map(key),
     ...paintedCells(lv, "NPCs").map(key),
     ...paintedCells(lv, "panels").map(key), // become solid switch tiles below
+    ...paintedCells(lv, "items").map(key),  // become solid chest tiles below
   ]);
   const spawnCandidates = [...walkable].filter((k) => !zoneCells.has(k));
   const spawnKey = spawnCandidates.length > 0
@@ -219,6 +244,24 @@ export function testMapEra(): EraSeed {
     );
     for (const s of wired) deck.tiles[idxOf(s.pos)] = mkTile("LIGHT_SWITCH");
     if (wired.length > 0) deck.lightSwitches = wired;
+
+    // --- Item chests: promote painted `items` cells into ITEM_CHEST tiles ----
+    // Each item_chest component carries its loot in `item1`, `item2`, … vars
+    // (free-text Ed names resolved via `resolveItemName`). Locked chests demand
+    // (and consume) an Override Key on open.
+    const chests: ChestPayload[] = [];
+    for (const { pos, code } of paintedCellsWithCode(lv, "items")) {
+      const comp = TEST_MAP_COMPONENTS[code];
+      if (comp?.type !== "item_chest") continue;
+      deck.tiles[idxOf(pos)] = mkTile("ITEM_CHEST");
+      const contents = Object.keys(comp.vars)
+        .filter((k) => /^item\d+$/.test(k))
+        .sort((a, b) => Number(a.slice(4)) - Number(b.slice(4)))
+        .map((k) => resolveItemName(comp.vars[k]))
+        .filter((it): it is ItemType => it !== null);
+      chests.push({ roomId: ROOM_ID, pos, contents, locked: comp.vars.locked === "true" });
+    }
+    seed.chests = chests;
   }
 
   // One patrolling enforcer for the "enforcer patrol area" blob.
@@ -292,22 +335,15 @@ export function testMapEra(): EraSeed {
     seed.entities.push(ent);
   });
 
-  // Item chests: drop a floor item on each painted `items` cell so they're
-  // pick-up-able. Alternate two item types for variety.
-  const floorItems: ItemInstance[] = paintedCells(lv, "items").map((pos, i) => ({
-    id: `floor-item-${i + 1}`,
-    itemType: i % 2 === 0 ? "OVERRIDE_KEY" : "EMP_GRENADE",
-    roomId: ROOM_ID,
-    pos,
-  }));
-  seed.items = floorItems;
-
   // Starting kit so every tactical item's mechanics are testable on this map.
+  // The Override Key lets the locked-chest path be exercised even though this
+  // map's authored chests are all unlocked.
   seed.player.inventory.push({ id: "phantom-emitter-1", itemType: "PHANTOM_EMITTER" });
   seed.player.inventory.push({ id: "spoof-badge-1", itemType: "Q0_SPOOF_BADGE" });
   seed.player.inventory.push({ id: "dump-fragment-1", itemType: "DUMP_FRAGMENT" });
   seed.player.inventory.push({ id: "thermal-baffle-1", itemType: "THERMAL_BAFFLE" });
   seed.player.inventory.push({ id: "emp-grenade-1", itemType: "EMP_GRENADE" });
+  seed.player.inventory.push({ id: "override-key-1", itemType: "OVERRIDE_KEY" });
 
   return seed;
 }

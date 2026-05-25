@@ -10,6 +10,7 @@ import { enforcerSystem } from "../engine/EnforcerSystem";
 import { debugFlags } from "../engine/debugFlags";
 import { useTargetingStore } from "../state/useTargetingStore";
 import type { Entity, Facing, Room, Tile, TileKind, Vec2 } from "../types/world.types";
+import { roomTileKey } from "../types/world.types";
 import { ITEM_METADATA } from "../data/items/itemMetadata";
 
 const TILE_PX = 32;
@@ -122,6 +123,7 @@ const TILE_COLORS: Record<TileKind, number> = {
   LIGHT_SWITCH: 0x202830,
   VENT: 0x131a1c,
   LOCKER: 0x2a3138,
+  ITEM_CHEST: 0x6b4a2f,
   CHASM: 0x05080a,
   LADDER: 0x3a2e1c,
   STAIRS: 0x2a221a,
@@ -234,6 +236,7 @@ export class RoomScene extends Phaser.Scene {
     sub(eventBus.on("TURN_START", () => this.redraw()));
     sub(eventBus.on("ITEM_SPAWNED", () => this.redraw()));
     sub(eventBus.on("ITEM_PICKED_UP", () => this.redraw()));
+    sub(eventBus.on("CHEST_OPENED", () => this.redraw()));
     sub(eventBus.on("ITEM_FILED", () => this.redraw()));
     sub(eventBus.on("COMPLIANCE_CHANGED", () => this.redraw()));
     sub(eventBus.on("PLAYER_HIDDEN", () => this.redraw()));
@@ -474,13 +477,18 @@ export class RoomScene extends Phaser.Scene {
         // the tile rectangle so WALL/FLOOR/LADDER/STAIRS cells still show
         // up under FOV.
         const cellDecorated = hasDecoration && this.decoratedCells.has(key);
+        const chestOpen =
+          tile.kind === "ITEM_CHEST"
+            ? state.chestPayloads.get(roomTileKey(room.id, { x, y }))?.opened ?? false
+            : false;
         if (!cellDecorated) {
-          this.drawTile(tile, x, y, visible);
+          this.drawTile(tile, x, y, visible, chestOpen);
         } else if (visible) {
           this.drawGlyph(
             x * TILE_PX + TILE_PX / 2,
             y * TILE_PX + TILE_PX / 2,
             tile,
+            chestOpen,
           );
         }
       }
@@ -620,7 +628,7 @@ export class RoomScene extends Phaser.Scene {
     this.drawDebugOverlays();
   }
 
-  private drawTile(tile: Tile, x: number, y: number, visible: boolean): void {
+  private drawTile(tile: Tile, x: number, y: number, visible: boolean, chestOpen = false): void {
     const px = x * TILE_PX;
     const py = y * TILE_PX;
     const colour = TILE_COLORS[tile.kind] ?? 0x222d33;
@@ -628,10 +636,10 @@ export class RoomScene extends Phaser.Scene {
     this.tileLayer.fillRect(px, py, TILE_PX - 1, TILE_PX - 1);
     this.tileLayer.lineStyle(1, 0x223035, visible ? 0.6 : 0.25);
     this.tileLayer.strokeRect(px, py, TILE_PX - 1, TILE_PX - 1);
-    if (visible) this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile);
+    if (visible) this.drawGlyph(px + TILE_PX / 2, py + TILE_PX / 2, tile, chestOpen);
   }
 
-  private drawGlyph(cx: number, cy: number, tile: Tile): void {
+  private drawGlyph(cx: number, cy: number, tile: Tile, chestOpen = false): void {
     const kind = tile.kind;
     const g = this.glyphLayer;
     g.lineStyle(2, 0xe6f0f2, 0.85);
@@ -690,6 +698,20 @@ export class RoomScene extends Phaser.Scene {
       g.fillStyle(0xebd14a, 0.85);
       g.fillCircle(cx - 3, cy, 1.4);
       g.fillCircle(cx + 3, cy, 1.4);
+    } else if (kind === "ITEM_CHEST") {
+      // Chest: a filled body with a lid above it. Closed = filled lid + clasp;
+      // open = lid hinged back (outline only) so looted chests read as empty.
+      g.fillStyle(0xc8a05a, 0.9);
+      g.fillRect(cx - 8, cy - 2, 16, 9);
+      if (chestOpen) {
+        g.lineStyle(2, 0xc8a05a, 0.9);
+        g.strokeRect(cx - 8, cy - 9, 16, 6);
+      } else {
+        g.fillStyle(0xd9b66b, 0.95);
+        g.fillRect(cx - 8, cy - 8, 16, 7);
+        g.fillStyle(0xebd14a, 0.95);
+        g.fillRect(cx - 2, cy - 2, 4, 5);
+      }
     } else if (kind === "LADDER") {
       // Twin rails + three rungs — signals "press E to climb."
       g.lineStyle(2, 0xc8a878, 0.95);

@@ -919,6 +919,62 @@ export const actions = {
       return true;
     }
 
+    // Item chest — adjacent ITEM_CHEST tile. Opening empties its loot table
+    // straight into inventory in one action; a locked chest first requires
+    // (and consumes) an OVERRIDE_KEY. An already-opened chest is inert (skip,
+    // so a later interaction can still resolve).
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const p: Vec2 = { x: state.player.pos.x + dx, y: state.player.pos.y + dy };
+      const t = tileAt(state, state.player.roomId, p);
+      if (!t || t.kind !== "ITEM_CHEST") continue;
+      const chest = state.chestPayloads.get(roomTileKey(state.player.roomId, p));
+      if (!chest || chest.opened) continue;
+      let keyIdx = -1;
+      if (chest.locked) {
+        keyIdx = state.player.inventory.findIndex((i) => i.itemType === "OVERRIDE_KEY");
+        if (keyIdx < 0) {
+          eventBus.emit("INTERACT_REJECTED", { action: "chest", reason: "locked" });
+          return false;
+        }
+      }
+      const facing = facingFromDelta(dx, dy);
+      if (facing && facing !== state.player.facing) {
+        state.player.facing = facing;
+        eventBus.emit("PLAYER_FACING_CHANGED", { facing });
+      }
+      if (keyIdx >= 0) state.player.inventory.splice(keyIdx, 1);
+      const previousAp = state.player.ap;
+      state.player.ap -= INTERACT_AP_COST;
+      eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
+      let cubeHeld = state.player.inventory.some((i) => i.itemType === "EXTRACTION_CUBE");
+      chest.contents.forEach((itemType, i) => {
+        // Defensive: honour the one-cube-at-a-time carry rule even from a chest.
+        if (itemType === "EXTRACTION_CUBE") {
+          if (cubeHeld) return;
+          cubeHeld = true;
+        }
+        const held: ItemInstance = {
+          id: `chest-${state.player.roomId}-${p.x}-${p.y}-${i}`,
+          itemType,
+        };
+        state.player.inventory.push(held);
+        eventBus.emit("ITEM_PICKED_UP", { itemId: held.id, itemType });
+      });
+      chest.opened = true;
+      soundField.emit({
+        roomId: state.player.roomId,
+        pos: state.player.pos,
+        intensity: LOCKER_INTENSITY,
+        reason: "locker",
+      });
+      eventBus.emit("CHEST_OPENED", {
+        roomId: state.player.roomId,
+        pos: p,
+        contents: chest.contents,
+      });
+      return true;
+    }
+
     // Floor pickup — any ItemInstance sitting on the player's tile is picked
     // up into inventory. EXTRACTION_CUBE has a one-at-a-time carry rule
     // (mirrors compliance-RED gating); other items stack freely.

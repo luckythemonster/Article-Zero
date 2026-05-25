@@ -29,6 +29,10 @@ export function mkTile(kind: TileKind, opts: MkTileOpts = {}): Tile {
     case "LOCKER":
     case "LIGHT_SWITCH":
       return { kind, solid: true, opaque: true, elevation, ...extras };
+    case "ITEM_CHEST":
+      // Solid furniture opened from an adjacent tile (like a locker/terminal),
+      // but low enough to see over — doesn't block line-of-sight.
+      return { kind, solid: true, opaque: false, elevation, ...extras };
     case "CHASM":
       return { kind, solid: true, opaque: false, elevation, ...extras };
     case "CHAIN_LINK_FENCE":

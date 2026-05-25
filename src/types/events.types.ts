@@ -108,6 +108,7 @@ export interface EventMap {
   ITEM_THROWN: { itemType: ItemType; targetEntityId: EntityId };
   ITEM_DETONATED: { itemType: ItemType; roomId: RoomId; pos: Vec2; radius: number };
   ITEM_REJECTED: { itemType: ItemType; reason: string };
+  CHEST_OPENED: { roomId: RoomId; pos: Vec2; contents: ItemType[] };
   ITEM_EFFECT_STARTED: { effect: "spoof" | "baffle"; turnsRemaining: number };
   EFFECT_EXPIRED: { effect: "spoof" | "baffle" };
 
@@ -126,7 +127,7 @@ export interface EventMap {
   PLAYER_UNHIDDEN: { roomId: RoomId; pos: Vec2 };
   PLAYER_PEEKED: { facing: Facing | null };
   PLAYER_PRIED_DOOR: { roomId: RoomId; pos: Vec2; presses: number; required: number };
-  INTERACT_REJECTED: { action: "vent" | "door"; reason: "needs_sneak" | "needs_ap" | "no_link" | "sealed" | "locked" };
+  INTERACT_REJECTED: { action: "vent" | "door" | "chest"; reason: "needs_sneak" | "needs_ap" | "no_link" | "sealed" | "locked" };
 
   // Vertical-slice phase orchestration
   AUDIT_LOCKDOWN_TRIGGERED: { reason: string };
