@@ -41,6 +41,10 @@ export function installEventBridge(): () => void {
   );
   unsubs.push(
     eventBus.on("INTERACT_REJECTED", (p) => {
+      if (p.action === "door") {
+        if (p.reason === "locked") push("INFO", "door locked — find the switch");
+        return;
+      }
       if (p.action !== "vent") return;
       const text =
         p.reason === "needs_sneak" ? "vent: press C to SNEAK, then E to crawl"

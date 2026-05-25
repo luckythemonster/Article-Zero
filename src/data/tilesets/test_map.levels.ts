@@ -39,6 +39,203 @@ export const TEST_MAP_REFS: Record<number, string> = {
   "32": "light_source6"
 };
 
+// Ed DataComponents per code: switch wiring (_switch), locked doors, light
+// state, etc. Consumed by the era builder to wire panels ⟷ doors/lights.
+export const TEST_MAP_COMPONENTS: Record<number, { type: string; vars: Record<string, string> }> = {
+  "2": {
+    "type": "_switch",
+    "vars": {
+      "object_type": "door",
+      "designator": "6",
+      "state": "false",
+      "object_designator": "2"
+    }
+  },
+  "4": {
+    "type": "light_source",
+    "vars": {
+      "_switch": "4",
+      "designator": "4",
+      "state": "true"
+    }
+  },
+  "5": {
+    "type": "door",
+    "vars": {
+      "state": "true",
+      "designator": "2",
+      "_switch": "3"
+    }
+  },
+  "6": {
+    "type": "door",
+    "vars": {
+      "locked": "true",
+      "designator": "1",
+      "_switch": "2"
+    }
+  },
+  "7": {
+    "type": "_switch",
+    "vars": {
+      "object_type": "light_source",
+      "designator": "1",
+      "state": "true",
+      "object_designator": "1"
+    }
+  },
+  "8": {
+    "type": "_switch",
+    "vars": {
+      "object_type": "door",
+      "designator": "7",
+      "state": "false",
+      "object_designator": "3"
+    }
+  },
+  "10": {
+    "type": "door",
+    "vars": {
+      "locked": "false",
+      "designator": "0",
+      "_switch": "0"
+    }
+  },
+  "12": {
+    "type": "item_chest",
+    "vars": {
+      "locked": "false"
+    }
+  },
+  "16": {
+    "type": "door",
+    "vars": {
+      "locked": "true",
+      "designator": "3",
+      "_switch": "7"
+    }
+  },
+  "17": {
+    "type": "_switch",
+    "vars": {
+      "object_type": "light_source",
+      "designator": "3",
+      "state": "true",
+      "object_designator": "2"
+    }
+  },
+  "18": {
+    "type": "door",
+    "vars": {
+      "locked": "false",
+      "designator": "0",
+      "_switch": "0"
+    }
+  },
+  "19": {
+    "type": "item_chest",
+    "vars": {
+      "locked": "false",
+      "item1": "key_5",
+      "item2": "EMP_grenade"
+    }
+  },
+  "20": {
+    "type": "_switch",
+    "vars": {
+      "object_type": "light_source",
+      "designator": "4",
+      "state": "true",
+      "object_designator": "3"
+    }
+  },
+  "21": {
+    "type": "light_source",
+    "vars": {
+      "_switch": "5",
+      "designator": "4",
+      "state": "true"
+    }
+  },
+  "22": {
+    "type": "light_source",
+    "vars": {
+      "_switch": "9",
+      "designator": "5",
+      "state": "true"
+    }
+  },
+  "23": {
+    "type": "light_source",
+    "vars": {
+      "_switch": "1",
+      "designator": "1",
+      "state": "true"
+    }
+  },
+  "25": {
+    "type": "_switch",
+    "vars": {
+      "object_type": "door",
+      "designator": "10",
+      "state": "true",
+      "object_designator": "2"
+    }
+  },
+  "26": {
+    "type": "door",
+    "vars": {
+      "state": "false",
+      "designator": "8",
+      "_switch": "2"
+    }
+  },
+  "27": {
+    "type": "_switch",
+    "vars": {
+      "object_type": "door",
+      "designator": "2",
+      "state": "true",
+      "object_designator": "1"
+    }
+  },
+  "28": {
+    "type": "door",
+    "vars": {
+      "locked": "true",
+      "designator": "5",
+      "_switch": "6"
+    }
+  },
+  "29": {
+    "type": "_switch",
+    "vars": {
+      "object_type": "light_source",
+      "designator": "9",
+      "state": "true",
+      "object_designator": "5"
+    }
+  },
+  "30": {
+    "type": "_switch",
+    "vars": {
+      "object_type": "door",
+      "designator": "8",
+      "state": "false",
+      "object_designator": "6"
+    }
+  },
+  "31": {
+    "type": "_switch",
+    "vars": {
+      "object_type": "light_source",
+      "designator": "5",
+      "state": "true",
+      "object_designator": "2"
+    }
+  }
+};
+
 // @ts-ignore — large generated literal exceeds TS union complexity; runtime types are correct.
 export const TEST_MAP_LEVELS: MooseLevel[] = [
   {

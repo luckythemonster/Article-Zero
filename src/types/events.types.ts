@@ -126,7 +126,7 @@ export interface EventMap {
   PLAYER_UNHIDDEN: { roomId: RoomId; pos: Vec2 };
   PLAYER_PEEKED: { facing: Facing | null };
   PLAYER_PRIED_DOOR: { roomId: RoomId; pos: Vec2; presses: number; required: number };
-  INTERACT_REJECTED: { action: "vent"; reason: "needs_sneak" | "needs_ap" | "no_link" | "sealed" };
+  INTERACT_REJECTED: { action: "vent" | "door"; reason: "needs_sneak" | "needs_ap" | "no_link" | "sealed" | "locked" };
 
   // Vertical-slice phase orchestration
   AUDIT_LOCKDOWN_TRIGGERED: { reason: string };
