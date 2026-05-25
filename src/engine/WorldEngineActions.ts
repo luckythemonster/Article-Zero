@@ -127,6 +127,21 @@ function resolveSwitchTargets(room: Room, controls: Vec2[]): Vec2[] {
   return out;
 }
 
+/** Flip a tile-based door at `pos` (or force it to `open` when given). Keeps
+ *  kind/solid/opaque in sync, emits DOOR_TOGGLED + a door sound. Returns the
+ *  resulting open-state, or null if there's no door tile there. */
+function toggleDoorTileAt(room: Room, pos: Vec2, open?: boolean): boolean | null {
+  const tile = room.tiles[pos.y * room.width + pos.x];
+  if (!tile || (tile.kind !== "DOOR_CLOSED" && tile.kind !== "DOOR_OPEN")) return null;
+  const nextOpen = open ?? (tile.kind === "DOOR_CLOSED");
+  tile.kind = nextOpen ? "DOOR_OPEN" : "DOOR_CLOSED";
+  tile.solid = !nextOpen;
+  tile.opaque = !nextOpen;
+  eventBus.emit("DOOR_TOGGLED", { roomId: room.id, pos, open: nextOpen });
+  soundField.emit({ roomId: room.id, pos, intensity: DOOR_INTENSITY, reason: "door" });
+  return nextOpen;
+}
+
 function findItemAt(state: WorldState, roomId: string, p: Vec2): ItemInstance | undefined {
   for (const item of state.items.values()) {
     if (item.roomId !== roomId) continue;
@@ -758,12 +773,27 @@ export const actions = {
       const sw = room.lightSwitches?.find(
         (s) => s.pos.x === p.x && s.pos.y === p.y,
       );
-      // If a switch tile exists but no wiring is declared, default to "all
-      // lights in this room" so era authors can drop a switch tile without
-      // bookkeeping every light.
-      const targets = resolveSwitchTargets(room, sw?.controls ?? []);
-      const result = applyLightToggle(state, room, targets, p);
-      if (result === null) return false;
+      const doorControls = sw?.doorControls ?? [];
+      // A switch with explicit wiring (lights or doors) uses its `controls`
+      // literally; an unwired switch tile falls back to "all lights in this
+      // room" so era authors can drop a switch tile without bookkeeping.
+      const hasExplicit = (sw?.controls.length ?? 0) > 0 || doorControls.length > 0;
+      const targets = hasExplicit ? (sw?.controls ?? []) : resolveSwitchTargets(room, []);
+      const lightResult = applyLightToggle(state, room, targets, p);
+
+      // Coupled door toggle: if any wired door is open, close them all;
+      // otherwise open them all.
+      let doorActed = false;
+      if (doorControls.length > 0) {
+        const anyOpen = doorControls.some(
+          (dp) => room.tiles[dp.y * room.width + dp.x]?.kind === "DOOR_OPEN",
+        );
+        for (const dp of doorControls) {
+          if (toggleDoorTileAt(room, dp, !anyOpen) !== null) doorActed = true;
+        }
+      }
+
+      if (lightResult === null && !doorActed) return false;
       const facing = facingFromDelta(dx, dy);
       if (facing && facing !== state.player.facing) {
         state.player.facing = facing;
@@ -1075,30 +1105,18 @@ export const actions = {
       // rooms that author DOOR_CLOSED tiles directly).
       const tile = tileAt(state, state.player.roomId, here);
       if (tile && (tile.kind === "DOOR_CLOSED" || tile.kind === "DOOR_OPEN")) {
-        if (tile.kind === "DOOR_CLOSED") {
-          tile.kind = "DOOR_OPEN";
-          tile.solid = false;
-          tile.opaque = false;
-        } else {
-          tile.kind = "DOOR_CLOSED";
-          tile.solid = true;
-          tile.opaque = true;
+        // Locked doors refuse a hand-open — they're operated only by their
+        // wired switch.
+        if (tile.kind === "DOOR_CLOSED" && tile.locked) {
+          eventBus.emit("INTERACT_REJECTED", { action: "door", reason: "locked" });
+          return true;
         }
+        const room = state.rooms.get(state.player.roomId);
+        if (room) toggleDoorTileAt(room, here);
         state.player.ap -= INTERACT_AP_COST;
         eventBus.emit("PLAYER_AP_CHANGED", {
           previous: state.player.ap + INTERACT_AP_COST,
           current: state.player.ap,
-        });
-        eventBus.emit("DOOR_TOGGLED", {
-          roomId: state.player.roomId,
-          pos: here,
-          open: tile.kind === "DOOR_OPEN",
-        });
-        soundField.emit({
-          roomId: state.player.roomId,
-          pos: here,
-          intensity: DOOR_INTENSITY,
-          reason: "door",
         });
         return true;
       }

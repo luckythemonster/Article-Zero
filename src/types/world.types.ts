@@ -123,6 +123,9 @@ export interface Tile {
   /** LIGHT_SOURCE only. Mutable runtime on/off state. Default true at seed
    *  time. Switches and terminal payloads flip this; recomputeFOV reads it. */
   lightOn?: boolean;
+  /** DOOR_CLOSED only. When true the door can't be opened by walking up and
+   *  interacting — it's operated solely by its wired LIGHT_SWITCH. */
+  locked?: boolean;
 }
 
 /** Wiring between a LIGHT_SWITCH tile and the LIGHT_SOURCE tiles it controls.
@@ -131,6 +134,9 @@ export interface Tile {
 export interface LightSwitch {
   pos: Vec2;
   controls: Vec2[];
+  /** DOOR tiles this switch toggles. Operated as a coupled set alongside the
+   *  light `controls`; locked doors are openable only via their switch. */
+  doorControls?: Vec2[];
 }
 
 /** A virtual cross-room light emission — e.g. a floor vent letting light from

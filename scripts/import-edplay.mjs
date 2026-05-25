@@ -70,12 +70,25 @@ function buildLevels(ed) {
   // Global Ref table: each TileDef Handle → stable 1-based code; code → Ref.
   const codeByHandle = new Map();
   const refByCode = {};
+  // code → { type, vars } from the TileDef's first DataComponent (Ed gameplay
+  // metadata: switch wiring, locked doors, light state, …). Flattened so each
+  // variable resolves to its single string value.
+  const componentsByCode = {};
   let nextCode = 1;
   for (const td of ed.TileDefs ?? []) {
     if (td.Handle == null) continue;
     const code = nextCode++;
     codeByHandle.set(td.Handle, code);
     refByCode[code] = td.Ref ?? `tiledef-${td.Handle}`;
+    const comp = (td.DataComponents ?? [])[0];
+    if (comp) {
+      const vars = {};
+      for (const v of comp.Variables ?? []) {
+        const val = (v.Values ?? [])[0];
+        if (val != null) vars[v.Name] = String(val);
+      }
+      componentsByCode[code] = { type: comp.DataType ?? "", vars };
+    }
   }
 
   const rawLevels = ed.Levels ?? [];
@@ -134,7 +147,7 @@ function buildLevels(ed) {
       layers,
     });
   }
-  return { levels, refByCode };
+  return { levels, refByCode, componentsByCode };
 }
 
 async function main() {
@@ -149,7 +162,7 @@ async function main() {
 
   const { ed, tmp } = await readEdplay(input);
   try {
-    const { levels, refByCode } = buildLevels(ed);
+    const { levels, refByCode, componentsByCode } = buildLevels(ed);
     if (levels.length === 0) die("no levels with painted boards found");
 
     const body =
@@ -160,6 +173,10 @@ async function main() {
       'import type { MooseLevel } from "./types";\n' +
       "\n" +
       `export const ${ident}_REFS: Record<number, string> = ${tsLiteral(refByCode)};\n` +
+      "\n" +
+      `// Ed DataComponents per code: switch wiring (_switch), locked doors, light\n` +
+      `// state, etc. Consumed by the era builder to wire panels ⟷ doors/lights.\n` +
+      `export const ${ident}_COMPONENTS: Record<number, { type: string; vars: Record<string, string> }> = ${tsLiteral(componentsByCode)};\n` +
       "\n" +
       `// @ts-ignore — large generated literal exceeds TS union complexity; runtime types are correct.\n` +
       `export const ${ident}_LEVELS: MooseLevel[] = ${tsLiteral(levels)};\n`;

@@ -14,9 +14,10 @@
 
 import { mooseToEraSeed } from "./from-moose";
 import type { MooseEraMeta } from "./from-moose";
-import { TEST_MAP_LEVELS, TEST_MAP_REFS } from "../tilesets/test_map.levels";
+import { mkTile } from "./tile-factory";
+import { TEST_MAP_LEVELS, TEST_MAP_REFS, TEST_MAP_COMPONENTS } from "../tilesets/test_map.levels";
 import type { MooseLevel } from "../tilesets/types";
-import type { Entity, ItemInstance, PatrolNode, Vec2 } from "../../types/world.types";
+import type { Entity, ItemInstance, LightSwitch, PatrolNode, Vec2 } from "../../types/world.types";
 import type { EraSeed } from "../../engine/WorldEngineState";
 
 const ROOM_ID = "deck";
@@ -56,6 +57,25 @@ function cellsWithRef(level: MooseLevel, baseName: string, refSubstr: string): V
         if (code === 0) continue;
         const ref = (TEST_MAP_REFS[code] ?? "").toLowerCase();
         if (ref.includes(needle)) out.push({ x, y });
+      }
+    }
+  }
+  return out;
+}
+
+/** Like `paintedCells`, but keeps each cell's per-Ref code so the caller can
+ *  look the cell up in TEST_MAP_COMPONENTS (switch wiring, locked doors, …). */
+function paintedCellsWithCode(level: MooseLevel, baseName: string): { pos: Vec2; code: number }[] {
+  const target = baseName.toLowerCase();
+  const out: { pos: Vec2; code: number }[] = [];
+  for (const layer of level.layers) {
+    const base = layer.name.trim().toLowerCase().replace(/\s+\d+$/, "");
+    if (base !== target) continue;
+    for (let y = 0; y < layer.data.length; y++) {
+      const row = layer.data[y];
+      for (let x = 0; x < row.length; x++) {
+        const code = row[x] ?? 0;
+        if (code !== 0) out.push({ pos: { x, y }, code });
       }
     }
   }
@@ -121,6 +141,7 @@ export function testMapEra(): EraSeed {
   const zoneCells = new Set<string>([
     ...paintedCells(lv, "enemies").map(key),
     ...paintedCells(lv, "NPCs").map(key),
+    ...paintedCells(lv, "panels").map(key), // become solid switch tiles below
   ]);
   const spawnCandidates = [...walkable].filter((k) => !zoneCells.has(k));
   const spawnKey = spawnCandidates.length > 0
@@ -153,6 +174,52 @@ export function testMapEra(): EraSeed {
   // This map has no usable tile atlas (glyph/colour mode) — drop the moose
   // decoration so RoomScene falls back to its built-in TileKind renderer.
   for (const room of seed.rooms) delete room.decoration;
+
+  // --- Switch wiring: wall panels operate locked doors / light sources ------
+  // Linking is object→switch: each door/light names its controlling panel via
+  // its `_switch` field == that panel's `designator` (the reverse
+  // `object_designator` is hand-entered and inconsistent, so it's ignored).
+  const deck = seed.rooms.find((r) => r.id === ROOM_ID);
+  if (deck) {
+    const idxOf = (p: Vec2) => p.y * deck.width + p.x;
+    const varsOf = (code: number) => TEST_MAP_COMPONENTS[code]?.vars ?? {};
+
+    // Record each panel by its designator (tiles are promoted below, once we
+    // know which panels actually control something).
+    const switchByDesignator = new Map<number, LightSwitch>();
+    for (const { pos, code } of paintedCellsWithCode(lv, "panels")) {
+      const desig = Number(varsOf(code).designator);
+      if (Number.isFinite(desig) && !switchByDesignator.has(desig)) {
+        switchByDesignator.set(desig, { pos, controls: [], doorControls: [] });
+      }
+    }
+
+    // Light sources: honour the painted on/off state; wire to controlling panel.
+    for (const { pos, code } of paintedCellsWithCode(lv, "light_sources")) {
+      const vars = varsOf(code);
+      const tile = deck.tiles[idxOf(pos)];
+      if (tile.kind === "LIGHT_SOURCE") tile.lightOn = vars.state !== "false";
+      switchByDesignator.get(Number(vars._switch))?.controls.push(pos);
+    }
+
+    // Doors wired to an existing panel become locked (switch-only).
+    for (const { pos, code } of paintedCellsWithCode(lv, "doors")) {
+      const sw = switchByDesignator.get(Number(varsOf(code)._switch));
+      if (!sw) continue;
+      const tile = deck.tiles[idxOf(pos)];
+      if (tile.kind === "DOOR_CLOSED") tile.locked = true;
+      (sw.doorControls ??= []).push(pos);
+    }
+
+    // Only panels that actually control something become functional switches.
+    // Leaving inert panels as plain tiles avoids the engine's "empty controls =
+    // toggle every light in the room" fallback firing on a dead panel.
+    const wired = [...switchByDesignator.values()].filter(
+      (s) => s.controls.length > 0 || (s.doorControls?.length ?? 0) > 0,
+    );
+    for (const s of wired) deck.tiles[idxOf(s.pos)] = mkTile("LIGHT_SWITCH");
+    if (wired.length > 0) deck.lightSwitches = wired;
+  }
 
   // One patrolling enforcer for the "enforcer patrol area" blob.
   const enforcerCells = cellsWithRef(lv, "enemies", "enforcer");
