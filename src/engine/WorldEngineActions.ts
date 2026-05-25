@@ -2,7 +2,7 @@
 // the EventBus. One function per verb. Sound emission is centralised here so
 // AlertFSM consumers see a consistent picture of "what the player did".
 
-import type { Entity, EntityKind, Facing, ItemInstance, ItemType, Room, Tile, Vec2, WorldState } from "../types/world.types";
+import type { Entity, EntityKind, Facing, ItemInstance, ItemType, Room, RoomId, Tile, Vec2, WorldState } from "../types/world.types";
 import { facingFromDelta, roomTileKey } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import { roomGraph } from "./RoomGraph";
@@ -277,6 +277,9 @@ const BAFFLE_TURNS = 4;
 const DUMP_FRAGMENT_RADIUS = 5;
 const DUMP_FRAGMENT_STUN_TURNS = 1;
 const EMP_RADIUS = 5;
+const EMP_DISABLE_TURNS = 4;
+const EMP_GRENADE_RADIUS = 3;
+const EMP_GRENADE_MAX_THROW = 6;
 
 let emitterCounter = 0;
 
@@ -381,45 +384,56 @@ function throwDumpFragment(state: WorldState, _item: ItemInstance): boolean {
   return true;
 }
 
-/** Detonate an EMP burst centered on the player, permanently disabling every
- *  surveillance drone and security camera within EMP_RADIUS in the player's
- *  room (status → DORMANT, so EnforcerSystem stops ticking them). Omnidirectional
- *  — facing doesn't matter. The EMP only stops pursuit/watch; it does NOT clear
- *  an active lockdown. */
-function useEmp(state: WorldState, _item: ItemInstance): boolean {
-  const r2 = EMP_RADIUS * EMP_RADIUS;
+/** Shared EMP detonation: temporarily disables all silicate-kind entities within
+ *  `radius` of `center` in `roomId`. Sets disabledTurnsRemaining and forces
+ *  status to DORMANT; advanceTurn() restores them to ACTIVE when the timer hits 0.
+ *  Returns true if at least one entity was hit (caller may reject if zero). */
+function detonateEmp(state: WorldState, center: Vec2, radius: number, roomId: RoomId): Entity[] {
+  const r2 = radius * radius;
   const targets: Entity[] = [];
   for (const entity of state.entities.values()) {
     if (entity.status !== "ACTIVE") continue;
-    if (entity.kind !== "SURVEILLANCE_DRONE" && entity.kind !== "SECURITY_CAMERA") continue;
-    if (entity.roomId !== state.player.roomId) continue;
-    const dx = entity.pos.x - state.player.pos.x;
-    const dy = entity.pos.y - state.player.pos.y;
+    if (
+      entity.kind !== "SURVEILLANCE_DRONE" &&
+      entity.kind !== "SECURITY_CAMERA" &&
+      entity.kind !== "ENFORCER" &&
+      entity.kind !== "SILICATE"
+    ) continue;
+    if (entity.roomId !== roomId) continue;
+    const dx = entity.pos.x - center.x;
+    const dy = entity.pos.y - center.y;
     if (dx * dx + dy * dy > r2) continue;
     targets.push(entity);
   }
-  if (targets.length === 0) {
-    eventBus.emit("ITEM_REJECTED", { itemType: "EMP", reason: "no-target" });
-    return false;
-  }
-  // Single burst at the player's tile — neighbours hear one pulse, not one per
-  // disabled unit.
-  soundField.emit({
-    roomId: state.player.roomId,
-    pos: state.player.pos,
-    intensity: 1,
-    reason: "emp",
-  });
+  // Single burst at the center — neighbours hear one pulse, not one per unit.
+  soundField.emit({ roomId, pos: center, intensity: 1, reason: "emp" });
   for (const target of targets) {
     const previous = target.status;
+    target.disabledTurnsRemaining = EMP_DISABLE_TURNS;
     target.status = "DORMANT";
     eventBus.emit("ENTITY_STATUS_CHANGED", {
       entityId: target.id,
       previous,
-      current: target.status,
+      current: "DORMANT",
     });
-    eventBus.emit("ITEM_THROWN", { itemType: "EMP", targetEntityId: target.id });
   }
+  return targets;
+}
+
+/** Detonate an EMP burst centered on the player (radius EMP_RADIUS, current room
+ *  only). Omnidirectional — facing doesn't matter. Does NOT clear lockdowns. */
+function useEmp(state: WorldState, _item: ItemInstance): boolean {
+  const targets = detonateEmp(state, state.player.pos, EMP_RADIUS, state.player.roomId);
+  if (targets.length === 0) {
+    eventBus.emit("ITEM_REJECTED", { itemType: "EMP", reason: "no-target" });
+    return false;
+  }
+  eventBus.emit("ITEM_DETONATED", {
+    itemType: "EMP",
+    roomId: state.player.roomId,
+    pos: { ...state.player.pos },
+    radius: EMP_RADIUS,
+  });
   return true;
 }
 
@@ -1226,6 +1240,11 @@ export const actions = {
       case "EMP":
         ok = useEmp(state, item);
         break;
+      case "EMP_GRENADE":
+        // EMP_GRENADE requires a target tile — use throwAt, not useItem.
+        // This case is a safety fallback; InventoryOverlay routes to throwAt.
+        eventBus.emit("ITEM_REJECTED", { itemType, reason: "needs-target" });
+        return false;
       default:
         return false;
     }
@@ -1235,6 +1254,48 @@ export const actions = {
     state.player.ap -= INTERACT_AP_COST;
     eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
     eventBus.emit("ITEM_USED", { itemId: item.id, itemType });
+    return true;
+  },
+
+  /** Throw an EMP Grenade to a target tile. Validates visibility, range, and
+   *  tile passability; on success detonates at the target and consumes the item. */
+  throwAt(state: WorldState, itemType: ItemType, pos: Vec2): boolean {
+    if (state.detained || state.player.ap < INTERACT_AP_COST) return false;
+    if (state.player.hidingTileKey) return false;
+    const idx = state.player.inventory.findIndex((i) => i.itemType === itemType);
+    if (idx < 0) return false;
+    const item = state.player.inventory[idx];
+
+    // Validate target tile.
+    const tile = tileAt(state, state.player.roomId, pos);
+    if (!tile || tile.solid) {
+      eventBus.emit("ITEM_REJECTED", { itemType, reason: "invalid-tile" });
+      return false;
+    }
+    if (!state.visibleTiles.has(`${pos.x},${pos.y}`)) {
+      eventBus.emit("ITEM_REJECTED", { itemType, reason: "not-visible" });
+      return false;
+    }
+    const dx = pos.x - state.player.pos.x;
+    const dy = pos.y - state.player.pos.y;
+    if (dx * dx + dy * dy > EMP_GRENADE_MAX_THROW * EMP_GRENADE_MAX_THROW) {
+      eventBus.emit("ITEM_REJECTED", { itemType, reason: "out-of-range" });
+      return false;
+    }
+
+    // Detonate — grenade is consumed even on a dud (no entities in range).
+    detonateEmp(state, pos, EMP_GRENADE_RADIUS, state.player.roomId);
+    state.player.inventory.splice(idx, 1);
+    const previousAp = state.player.ap;
+    state.player.ap -= INTERACT_AP_COST;
+    eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
+    eventBus.emit("ITEM_USED", { itemId: item.id, itemType });
+    eventBus.emit("ITEM_DETONATED", {
+      itemType,
+      roomId: state.player.roomId,
+      pos: { ...pos },
+      radius: EMP_GRENADE_RADIUS,
+    });
     return true;
   },
 

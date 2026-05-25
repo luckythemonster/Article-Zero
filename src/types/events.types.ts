@@ -106,6 +106,7 @@ export interface EventMap {
   ITEM_USED: { itemId: string; itemType: ItemType };
   ITEM_DEPLOYED: { itemType: ItemType; roomId: RoomId; pos: Vec2; turnsRemaining: number };
   ITEM_THROWN: { itemType: ItemType; targetEntityId: EntityId };
+  ITEM_DETONATED: { itemType: ItemType; roomId: RoomId; pos: Vec2; radius: number };
   ITEM_REJECTED: { itemType: ItemType; reason: string };
   ITEM_EFFECT_STARTED: { effect: "spoof" | "baffle"; turnsRemaining: number };
   EFFECT_EXPIRED: { effect: "spoof" | "baffle" };

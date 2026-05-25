@@ -307,7 +307,10 @@ export function commonwealthEra(): EraSeed {
     stance: "WALK",
     name: "TECH-2 ROWAN-IBARRA",
     qScore: 0,
-    inventory: [],
+    inventory: [
+      { id: "emp-cw", itemType: "EMP" },
+      { id: "emp-grenade-cw", itemType: "EMP_GRENADE" },
+    ],
     compliance: "GREEN",
   };
 

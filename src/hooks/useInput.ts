@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { worldEngine } from "../engine/WorldEngine";
 import { useTerminalStore } from "../state/useTerminalStore";
 import { useDebugStore } from "../state/useDebugStore";
+import { useTargetingStore } from "../state/useTargetingStore";
 
 interface Options {
   enabled: boolean;
@@ -45,6 +46,32 @@ export function useInput({ enabled }: Options): void {
       const term = useTerminalStore.getState();
       if (term.phase !== "FLOOR" && term.phase !== "CLIMAX") return;
       if (term.phase === "CLIMAX" && term.runFlags.vent4Choice === null) return;
+
+      // Targeting mode — intercept all movement/confirm/cancel keys while
+      // aiming a thrown item. Inventory must be closed before this can activate.
+      const tgt = useTargetingStore.getState();
+      if (tgt.active) {
+        switch (e.key.toLowerCase()) {
+          case "arrowup": case "w": tgt.moveCursor(0, -1); e.preventDefault(); return;
+          case "arrowdown": case "s": tgt.moveCursor(0, 1); e.preventDefault(); return;
+          case "arrowleft": case "a": tgt.moveCursor(-1, 0); e.preventDefault(); return;
+          case "arrowright": case "d": tgt.moveCursor(1, 0); e.preventDefault(); return;
+          case " ": case "e": case "enter":
+            if (tgt.cursor && tgt.itemType) {
+              worldEngine.throwAt(tgt.itemType, tgt.cursor);
+            }
+            tgt.cancel();
+            e.preventDefault();
+            return;
+          case "escape":
+            tgt.cancel();
+            e.preventDefault();
+            return;
+        }
+        // Swallow everything else while aiming.
+        e.preventDefault();
+        return;
+      }
 
       // U toggles the inventory overlay. Works whether it's already open or
       // not; Esc while open is handled inside the overlay component itself.

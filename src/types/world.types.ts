@@ -59,7 +59,8 @@ export type ItemType =
   | "DUMP_FRAGMENT"
   | "THERMAL_BAFFLE"
   | "OVERRIDE_KEY"
-  | "EMP";
+  | "EMP"
+  | "EMP_GRENADE";
 
 /** Ephemeral world-state for a deployed Phantom Manifest Emitter. Tracked on
  *  WorldState.activeEmitters; consumed at the top of advanceTurn() to push a
@@ -280,6 +281,10 @@ export interface Entity {
   lastMoveTurn?: number;
   /** ENFORCER only — alert FSM state. Initialised by EnforcerSystem. */
   alert?: AlertState;
+  /** When > 0 this entity is temporarily EMP-disabled: status is forced to
+   *  DORMANT while down; decremented once per turn in advanceTurn, which
+   *  restores status to ACTIVE at 0. Applies uniformly to all silicate kinds. */
+  disabledTurnsRemaining?: number;
   /** SILICATE only — mask integrity 0..10, restored by alignment. */
   maskIntegrity?: number;
   /** SILICATE only — narrative side logs revealed in rapport tier. */

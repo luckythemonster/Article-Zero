@@ -8,7 +8,8 @@ import { eventBus } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
 import { enforcerSystem } from "../engine/EnforcerSystem";
 import { debugFlags } from "../engine/debugFlags";
-import type { Entity, Facing, Room, Tile, TileKind } from "../types/world.types";
+import { useTargetingStore } from "../state/useTargetingStore";
+import type { Entity, Facing, Room, Tile, TileKind, Vec2 } from "../types/world.types";
 import { ITEM_METADATA } from "../data/items/itemMetadata";
 
 const TILE_PX = 32;
@@ -159,6 +160,8 @@ export class RoomScene extends Phaser.Scene {
   private decorRoomId: string | null = null;
   private floorLabel!: Phaser.GameObjects.Text;
   private debugLayer!: Phaser.GameObjects.Graphics;
+  private targetingLayer!: Phaser.GameObjects.Graphics;
+  private unsubTargeting: (() => void) | null = null;
   private elevationTextPool: Phaser.GameObjects.Text[] = [];
   private subscriptions: Array<() => void> = [];
   private onResize = () => this.layout();
@@ -201,6 +204,8 @@ export class RoomScene extends Phaser.Scene {
     this.heldItemSprite.setVisible(false);
     this.debugLayer = this.add.graphics();
     this.debugLayer.setDepth(25);
+    this.targetingLayer = this.add.graphics();
+    this.targetingLayer.setDepth(15);
 
     this.cameras.main.startFollow(this.playerSprite, true, 0.18, 0.18);
 
@@ -251,11 +256,19 @@ export class RoomScene extends Phaser.Scene {
       this.oxygenDarken = 0;
       this.redraw();
     }));
+    sub(eventBus.on("ENTITY_STATUS_CHANGED", () => this.redraw()));
+    sub(eventBus.on("ITEM_DETONATED", (p) => this.playDetonation(p)));
+
+    // Subscribe to targeting store so cursor/AoE preview updates on every
+    // cursor move (zustand subscribe returns an unsubscribe function).
+    this.unsubTargeting = useTargetingStore.subscribe(() => this.redraw());
 
     this.redraw();
   }
 
   shutdown(): void {
+    this.unsubTargeting?.();
+    this.unsubTargeting = null;
     for (const off of this.subscriptions) off();
     this.subscriptions = [];
     this.scale.off("resize", this.onResize);
@@ -487,10 +500,18 @@ export class RoomScene extends Phaser.Scene {
       sprite.setVisible(false);
     }
     for (const entity of state.entities.values()) {
-      if (entity.status !== "ACTIVE") continue;
+      const isEmpDisabled = entity.status === "DORMANT" && (entity.disabledTurnsRemaining ?? 0) > 0;
+      if (entity.status !== "ACTIVE" && !isEmpDisabled) continue;
       if (entity.roomId !== room.id) continue;
       this.drawEntity(state, entity);
+      // Grey tint signals the entity is temporarily disabled (recovering soon).
+      if (isEmpDisabled) {
+        this.entitySprites.get(entity.id)?.setTint(0x6a6a6a);
+        this.entityRects.get(entity.id)?.setFillStyle(0x3a3a3a);
+      }
     }
+
+    this.drawTargetingOverlay(state, room);
 
     // Floor items — draw a colored placeholder square for every item type.
     // When real sprites ship, replace the fillRect with a sprite draw here.
@@ -787,9 +808,10 @@ export class RoomScene extends Phaser.Scene {
     }
 
     if (
-      entity.kind === "ENFORCER" ||
-      entity.kind === "SURVEILLANCE_DRONE" ||
-      entity.kind === "SECURITY_CAMERA"
+      entity.status === "ACTIVE" &&
+      (entity.kind === "ENFORCER" ||
+        entity.kind === "SURVEILLANCE_DRONE" ||
+        entity.kind === "SECURITY_CAMERA")
     ) {
       this.drawEnforcerCone(entity);
     }
@@ -871,5 +893,61 @@ export class RoomScene extends Phaser.Scene {
         mark!.setAlpha(1);
       },
     });
+  }
+
+  private drawTargetingOverlay(
+    state: ReturnType<typeof worldEngine.getState>,
+    room: Room,
+  ): void {
+    this.targetingLayer.clear();
+    const tgt = useTargetingStore.getState();
+    if (!tgt.active || !tgt.cursor) return;
+
+    const cursor = tgt.cursor;
+    const playerPos = state.player.pos;
+    const dx = cursor.x - playerPos.x;
+    const dy = cursor.y - playerPos.y;
+    const EMP_GRENADE_MAX_THROW = 6;
+    const EMP_GRENADE_RADIUS = 3;
+    const inRange = dx * dx + dy * dy <= EMP_GRENADE_MAX_THROW * EMP_GRENADE_MAX_THROW;
+    const cursorTile = room.tiles[cursor.y * room.width + cursor.x];
+    const isVisible = state.visibleTiles.has(`${cursor.x},${cursor.y}`);
+    const isValid = inRange && !!cursorTile && !cursorTile.solid && isVisible;
+
+    // AoE preview — shade tiles within the burst radius of the cursor.
+    const r2 = EMP_GRENADE_RADIUS * EMP_GRENADE_RADIUS;
+    this.targetingLayer.fillStyle(0x9050e0, 0.2);
+    for (let y = 0; y < room.height; y++) {
+      for (let x = 0; x < room.width; x++) {
+        if (!state.visibleTiles.has(`${x},${y}`)) continue;
+        const adx = x - cursor.x;
+        const ady = y - cursor.y;
+        if (adx * adx + ady * ady > r2) continue;
+        this.targetingLayer.fillRect(x * TILE_PX + 1, y * TILE_PX + 1, TILE_PX - 2, TILE_PX - 2);
+      }
+    }
+
+    // Cursor highlight — green when valid, red when not.
+    const cursorColor = isValid ? 0x6ad0a4 : 0xff5050;
+    this.targetingLayer.lineStyle(2, cursorColor, 0.95);
+    this.targetingLayer.strokeRect(
+      cursor.x * TILE_PX + 1,
+      cursor.y * TILE_PX + 1,
+      TILE_PX - 2,
+      TILE_PX - 2,
+    );
+  }
+
+  private playDetonation(p: { itemType: string; roomId: string; pos: Vec2; radius: number }): void {
+    const room = worldEngine.getCurrentRoom();
+    if (!room || room.id !== p.roomId) return;
+    const cx = p.pos.x * TILE_PX + TILE_PX / 2;
+    const cy = p.pos.y * TILE_PX + TILE_PX / 2;
+    const fx = this.add.sprite(cx, cy, "emp_frame_1");
+    fx.setDepth(12);
+    const targetPx = (2 * p.radius + 1) * TILE_PX;
+    fx.setScale(targetPx / 256);
+    fx.play("emp_detonation");
+    fx.once("animationcomplete", () => fx.destroy());
   }
 }
