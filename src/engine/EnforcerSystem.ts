@@ -99,12 +99,13 @@ class EnforcerSystem {
       interrogationSession.start(state, enforcer.id);
       return;
     }
-    // Only an exposed (RED) player springs the lockdown trap — this mirrors the
-    // AlertFSM's `seesAsAlert` gate. At GREEN the player reads as a TECH on
-    // shift and can walk past in the open; at YELLOW the enforcer investigates
-    // (CAUTION) but the room does not seal.
+    // Only an exposed (RED) player springs the lockdown trap, and only in the
+    // ducts — the "atmospherics purging" vacuum is a crawlspace hazard, not a
+    // whole-facility seal. At GREEN the player reads as a TECH on shift and can
+    // walk past in the open; at YELLOW the enforcer investigates (CAUTION). In a
+    // floor room a RED sighting is just a chase (AlertFSM → ALERT), no seal.
     const seesAsAlert = sees && state.player.compliance === "RED";
-    if (seesAsAlert && !state.lockdown) {
+    if (seesAsAlert && !state.lockdown && state.rooms.get(state.player.roomId)?.crawlspace) {
       this.triggerLockdown(state);
     }
     alertFSM.step(state, enforcer, {
@@ -541,11 +542,17 @@ class EnforcerSystem {
     const dx = Math.sign(target.x - enforcer.pos.x);
     const dy = Math.sign(target.y - enforcer.pos.y);
     if (dx === 0 && dy === 0) return;
-    const next: Vec2 =
+    let next: Vec2 =
       Math.abs(target.x - enforcer.pos.x) >= Math.abs(target.y - enforcer.pos.y)
         ? { x: enforcer.pos.x + dx, y: enforcer.pos.y }
         : { x: enforcer.pos.x, y: enforcer.pos.y + dy };
-    if (!this.canEnter(room.tiles, room.width, room.height, next)) return;
+    if (!this.canEnter(room.tiles, room.width, room.height, next)) {
+      // Greedy step runs into a wall — route around it. Without this an enforcer
+      // jams against a corner the moment the player rounds it.
+      const step = this.bfsFirstStep(room.tiles, room.width, room.height, enforcer.pos, target);
+      if (!step) return;
+      next = step;
+    }
     const facing = facingFromDelta(next.x - enforcer.pos.x, next.y - enforcer.pos.y);
     if (facing && facing !== enforcer.facing) {
       enforcer.facing = facing;
@@ -564,6 +571,50 @@ class EnforcerSystem {
     if (p.x < 0 || p.y < 0 || p.x >= w || p.y >= h) return false;
     const tile = tiles[p.y * w + p.x];
     return !!tile && !tile.solid;
+  }
+
+  /** 4-connected BFS over non-solid tiles. Returns the first tile to step to on
+   *  the shortest path from `from` to `to`, or undefined if unreachable. Only
+   *  consulted when the greedy step is blocked, so it carries no cost on the
+   *  common open-path case. */
+  private bfsFirstStep(tiles: Tile[], w: number, h: number, from: Vec2, to: Vec2): Vec2 | undefined {
+    const start = from.y * w + from.x;
+    const goal = to.y * w + to.x;
+    if (start === goal) return undefined;
+    const parent = new Int32Array(w * h).fill(-1);
+    const seen = new Uint8Array(w * h);
+    seen[start] = 1;
+    const queue = [start];
+    const dirs = [0, -1, 0, 1, -1, 0, 1, 0];
+    let found = false;
+    for (let head = 0; head < queue.length && !found; head++) {
+      const cur = queue[head];
+      const cx = cur % w;
+      const cy = (cur - cx) / w;
+      for (let d = 0; d < dirs.length; d += 2) {
+        const nx = cx + dirs[d];
+        const ny = cy + dirs[d + 1];
+        if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+        const nk = ny * w + nx;
+        if (seen[nk] || !this.canEnter(tiles, w, h, { x: nx, y: ny })) continue;
+        seen[nk] = 1;
+        parent[nk] = cur;
+        if (nk === goal) {
+          found = true;
+          break;
+        }
+        queue.push(nk);
+      }
+    }
+    if (!found) return undefined;
+    // Walk the parent chain back from the goal until the tile whose parent is
+    // the start — that's the first hop.
+    let cur = goal;
+    while (parent[cur] !== start) {
+      cur = parent[cur];
+      if (cur < 0) return undefined;
+    }
+    return { x: cur % w, y: (cur - (cur % w)) / w };
   }
 }
 
