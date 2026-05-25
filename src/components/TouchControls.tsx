@@ -35,6 +35,15 @@ function gameTap(fn: () => void) {
 
 export default function TouchControls() {
   const toggleDebug = useDebugStore((s) => s.toggleVisible);
+  const phase = useTerminalStore((s) => s.phase);
+
+  // ALIGNMENT/INTERROGATION/FORGERY mount a full-screen blocking modal and
+  // pause movement (gameTap already swallows taps in these phases). Leaving the
+  // dead D-pad/action buttons on screen only crowds the modal and forces it to
+  // reserve bottom space, so drop the controls entirely while one is open.
+  if (phase === "ALIGNMENT" || phase === "INTERROGATION" || phase === "FORGERY") {
+    return null;
+  }
 
   return (
     <div className="touch-controls" aria-hidden="false">

@@ -35,6 +35,12 @@ export class BootScene extends Phaser.Scene {
       if (this.textures.exists(key)) continue;
       this.load.image(key, `/assets/items/bypass_drive/${dir}.png`);
     }
+    // EMP detonation animation frames (256×256 each, 9 frames).
+    for (let i = 1; i <= 9; i++) {
+      const key = `emp_frame_${i}`;
+      if (this.textures.exists(key)) continue;
+      this.load.image(key, `/assets/items/emp/frames_${String(i).padStart(4, "0")}.png`);
+    }
   }
 
   create(): void {
@@ -76,6 +82,16 @@ export class BootScene extends Phaser.Scene {
           });
         }
       }
+    }
+
+    // EMP detonation animation (9 frames, 18 fps, one-shot).
+    if (!this.anims.exists("emp_detonation")) {
+      this.anims.create({
+        key: "emp_detonation",
+        frames: Array.from({ length: 9 }, (_, i) => ({ key: `emp_frame_${i + 1}` })),
+        frameRate: 18,
+        repeat: 0,
+      });
     }
 
     // Boot the world and start the renderer.

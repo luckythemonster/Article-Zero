@@ -34,6 +34,7 @@ export function worldStateToSlices(ws: WorldState): {
       patrolPauseRemaining: e.patrolPauseRemaining,
       stepsPerTurn: e.stepsPerTurn,
       lastMoveTurn: e.lastMoveTurn,
+      disabledTurnsRemaining: e.disabledTurnsRemaining,
     });
     entityKinds.set(id, { kind: e.kind, name: e.name });
     entityMinds.set(id, {
@@ -114,6 +115,7 @@ export function slicesToWorldState(
       patrolPauseRemaining: phys.patrolPauseRemaining,
       stepsPerTurn: phys.stepsPerTurn,
       lastMoveTurn: phys.lastMoveTurn,
+      disabledTurnsRemaining: phys.disabledTurnsRemaining,
       alert: mind?.alert,
       maskIntegrity: mind?.maskIntegrity,
       sideLogs: mind?.sideLogs,

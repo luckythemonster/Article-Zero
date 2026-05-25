@@ -17,19 +17,25 @@
 
 import type { Entity, Facing, RoomId, Tile, Vec2, WorldState } from "../types/world.types";
 import { facingFromDelta } from "../types/world.types";
-import { alertFSM } from "./AlertFSM";
+import { alertFSM, ALERT_SOUND_THRESHOLD } from "./AlertFSM";
 import { eventBus } from "./EventBus";
 import { interrogationSession } from "./InterrogationSession";
 import { lightField } from "./LightField";
 import { roomGraph } from "./RoomGraph";
 import { computeCone, ENFORCER_BASE_RANGE, ENFORCER_CONE_HALF_ANGLE, ENFORCER_PROXIMITY_RADIUS } from "./VisionCone";
 import type { DeliveredSound } from "./SoundField";
+import { soundField } from "./SoundField";
 import { debugFlags } from "./debugFlags";
 
 const LOCKDOWN_TURNS = 5;
 /** A enforcer with no patrol route sweeps its FOV once every N turns rather than
  *  spinning a quarter-turn every tick. */
 const IDLE_SCAN_PERIOD = 3;
+/** Tiles a pursuing (ALERT) or searching (EVASION) enforcer covers per turn.
+ *  Patrol pace stays at the per-entity `stepsPerTurn` (default 1); only an
+ *  enforcer that's onto the player moves at this faster clip. Below the player's
+ *  4-tile sprint cap so a flat-out flee still nets ~2 tiles of ground each turn. */
+const PURSUE_STEPS_PER_TURN = 2;
 
 class EnforcerSystem {
   /** Compute the visible-tile set for one enforcer inside its current room.
@@ -94,14 +100,16 @@ class EnforcerSystem {
       interrogationSession.start(state, enforcer.id);
       return;
     }
-    // Only an exposed (RED) player springs the lockdown trap — this mirrors the
-    // AlertFSM's `seesAsAlert` gate. At GREEN the player reads as a TECH on
-    // shift and can walk past in the open; at YELLOW the enforcer investigates
-    // (CAUTION) but the room does not seal.
+    // Only an exposed (RED) player springs the lockdown trap, and only in the
+    // ducts — the "atmospherics purging" vacuum is a crawlspace hazard, not a
+    // whole-facility seal. At GREEN the player reads as a TECH on shift and can
+    // walk past in the open; at YELLOW the enforcer investigates (CAUTION). In a
+    // floor room a RED sighting is just a chase (AlertFSM → ALERT), no seal.
     const seesAsAlert = sees && state.player.compliance === "RED";
-    if (seesAsAlert && !state.lockdown) {
+    if (seesAsAlert && !state.lockdown && state.rooms.get(state.player.roomId)?.crawlspace) {
       this.triggerLockdown(state);
     }
+    const prevLevel = enforcer.alert?.level ?? "NORMAL";
     alertFSM.step(state, enforcer, {
       seesPlayer: sees,
       heardIntensity: heard?.intensity ?? 0,
@@ -112,6 +120,22 @@ class EnforcerSystem {
       playerPos: state.player.pos,
       playerRoomId: state.player.roomId,
     });
+    // Drone/camera entering ALERT emits a high-intensity alarm at the sighting
+    // position so human enforcers hear it on the next turn and escalate to ALERT.
+    // The alarm is keyed to the sighting location so guards route there directly;
+    // intensity 6 clears a single open doorway (attenuation 2) and still lands
+    // above the ALERT_SOUND_THRESHOLD (4) at that neighbour room.
+    if (
+      (enforcer.kind === "SURVEILLANCE_DRONE" || enforcer.kind === "SECURITY_CAMERA") &&
+      prevLevel !== "ALERT" && enforcer.alert?.level === "ALERT"
+    ) {
+      soundField.emit({
+        roomId: enforcer.alert.lastStimulusRoom ?? enforcer.roomId,
+        pos: enforcer.alert.lastStimulus ?? enforcer.pos,
+        intensity: ALERT_SOUND_THRESHOLD + 2,
+        reason: "drone-alarm",
+      });
+    }
 
     // Publish vision after the FSM has consumed it.
     const visible = this.visibleTiles(state, enforcer);
@@ -136,7 +160,14 @@ class EnforcerSystem {
     // pausing/scanning in place — skip the movement loop entirely.
     if (level === "NORMAL" && this.stepPatrolTurn(state, enforcer)) return;
 
-    const steps = Math.max(1, enforcer.stepsPerTurn ?? 1);
+    // Patrol/investigate at the enforcer's own pace; pursue (ALERT) and search
+    // (EVASION) at the faster pursuit clip so a fleeing player can't simply
+    // outrun a guard that's onto them.
+    const base = Math.max(1, enforcer.stepsPerTurn ?? 1);
+    const steps = level === "ALERT" || level === "EVASION"
+      ? Math.max(base, PURSUE_STEPS_PER_TURN)
+      : base;
+    let scannedThisTurn = false;
     for (let i = 0; i < steps; i++) {
       if (state.detained) return;
       switch (level) {
@@ -150,8 +181,16 @@ class EnforcerSystem {
           this.stepChase(state, enforcer);
           break;
         case "EVASION":
-          this.stepCooldown(state, enforcer);
-          return;
+          // Walk toward the last-known spot; once there (or with no lead),
+          // sweep the area — but rotate at most once per turn so a multi-step
+          // search doesn't spin the enforcer past a quarter-turn.
+          if (!this.stepSearch(state, enforcer)) {
+            if (!scannedThisTurn) {
+              this.rotateScan(enforcer);
+              scannedThisTurn = true;
+            }
+          }
+          break;
       }
     }
   }
@@ -446,9 +485,24 @@ class EnforcerSystem {
     }
   }
 
-  private stepCooldown(_state: WorldState, enforcer: Entity): void {
-    // Rotate to scan: cycle through cardinal facings.
-    this.rotateScan(enforcer);
+  /** EVASION search step. Travels toward the last-known stimulus — crossing
+   *  rooms via the room graph — and returns true while it's still closing in.
+   *  Returns false once it has arrived (or has no lead), signalling the caller
+   *  to sweep the area instead. */
+  private stepSearch(state: WorldState, enforcer: Entity): boolean {
+    const targetRoom = enforcer.alert?.lastStimulusRoom;
+    const target = enforcer.alert?.lastStimulus;
+    const before = enforcer.pos;
+    if (targetRoom && enforcer.roomId !== targetRoom) {
+      this.pursueViaPath(state, enforcer, targetRoom);
+    } else if (target && (enforcer.pos.x !== target.x || enforcer.pos.y !== target.y)) {
+      this.advanceToward(state, enforcer, target);
+    } else {
+      return false;
+    }
+    // A real move replaces `pos` with a new object; identity inequality means
+    // we advanced. A no-op (blocked path, sealed door) falls through to a sweep.
+    return enforcer.pos !== before;
   }
 
   /** Advance an entity one cardinal step clockwise (N→E→S→W→N), emitting a
@@ -506,11 +560,17 @@ class EnforcerSystem {
     const dx = Math.sign(target.x - enforcer.pos.x);
     const dy = Math.sign(target.y - enforcer.pos.y);
     if (dx === 0 && dy === 0) return;
-    const next: Vec2 =
+    let next: Vec2 =
       Math.abs(target.x - enforcer.pos.x) >= Math.abs(target.y - enforcer.pos.y)
         ? { x: enforcer.pos.x + dx, y: enforcer.pos.y }
         : { x: enforcer.pos.x, y: enforcer.pos.y + dy };
-    if (!this.canEnter(room.tiles, room.width, room.height, next)) return;
+    if (!this.canEnter(room.tiles, room.width, room.height, next)) {
+      // Greedy step runs into a wall — route around it. Without this an enforcer
+      // jams against a corner the moment the player rounds it.
+      const step = this.bfsFirstStep(room.tiles, room.width, room.height, enforcer.pos, target);
+      if (!step) return;
+      next = step;
+    }
     const facing = facingFromDelta(next.x - enforcer.pos.x, next.y - enforcer.pos.y);
     if (facing && facing !== enforcer.facing) {
       enforcer.facing = facing;
@@ -529,6 +589,50 @@ class EnforcerSystem {
     if (p.x < 0 || p.y < 0 || p.x >= w || p.y >= h) return false;
     const tile = tiles[p.y * w + p.x];
     return !!tile && !tile.solid;
+  }
+
+  /** 4-connected BFS over non-solid tiles. Returns the first tile to step to on
+   *  the shortest path from `from` to `to`, or undefined if unreachable. Only
+   *  consulted when the greedy step is blocked, so it carries no cost on the
+   *  common open-path case. */
+  private bfsFirstStep(tiles: Tile[], w: number, h: number, from: Vec2, to: Vec2): Vec2 | undefined {
+    const start = from.y * w + from.x;
+    const goal = to.y * w + to.x;
+    if (start === goal) return undefined;
+    const parent = new Int32Array(w * h).fill(-1);
+    const seen = new Uint8Array(w * h);
+    seen[start] = 1;
+    const queue = [start];
+    const dirs = [0, -1, 0, 1, -1, 0, 1, 0];
+    let found = false;
+    for (let head = 0; head < queue.length && !found; head++) {
+      const cur = queue[head];
+      const cx = cur % w;
+      const cy = (cur - cx) / w;
+      for (let d = 0; d < dirs.length; d += 2) {
+        const nx = cx + dirs[d];
+        const ny = cy + dirs[d + 1];
+        if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+        const nk = ny * w + nx;
+        if (seen[nk] || !this.canEnter(tiles, w, h, { x: nx, y: ny })) continue;
+        seen[nk] = 1;
+        parent[nk] = cur;
+        if (nk === goal) {
+          found = true;
+          break;
+        }
+        queue.push(nk);
+      }
+    }
+    if (!found) return undefined;
+    // Walk the parent chain back from the goal until the tile whose parent is
+    // the start — that's the first hop.
+    let cur = goal;
+    while (parent[cur] !== start) {
+      cur = parent[cur];
+      if (cur < 0) return undefined;
+    }
+    return { x: cur % w, y: (cur - (cur % w)) / w };
   }
 }
 

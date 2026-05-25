@@ -51,6 +51,11 @@ export default function TerminalShell() {
     const lattice = phase === "FRAME" || phase === "EPILOGUE";
     document.body.classList.toggle("theme-lattice", lattice);
     document.body.classList.toggle("theme-commonwealth", !lattice);
+    // Full-screen blocking modals (no touch controls on screen) get to use the
+    // whole canvas area instead of reserving the bottom band for the D-pad.
+    const fullscreenModal =
+      phase === "ALIGNMENT" || phase === "INTERROGATION" || phase === "FORGERY";
+    document.body.classList.toggle("phase-fullscreen-modal", fullscreenModal);
   }, [phase]);
 
   if (!started) {

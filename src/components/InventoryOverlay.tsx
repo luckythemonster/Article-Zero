@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import { useTerminalStore } from "../state/useTerminalStore";
 import { useSimStore } from "../state/useSimStore";
 import { useGameActions } from "../hooks/useGameActions";
+import { useTargetingStore } from "../state/useTargetingStore";
+import { worldEngine } from "../engine/WorldEngine";
 import { ITEM_METADATA } from "../data/items/itemMetadata";
 import type { ItemType } from "../types/world.types";
 
@@ -20,7 +22,12 @@ const USABLE: ItemType[] = [
   "THERMAL_BAFFLE",
   "OVERRIDE_KEY",
   "EMP",
+  "EMP_GRENADE",
 ];
+
+// Items that need a target tile — selecting these enters targeting mode
+// instead of activating immediately.
+const TARGETED: ItemType[] = ["EMP_GRENADE"];
 
 export default function InventoryOverlay() {
   const open = useTerminalStore((s) => s.inventoryOpen);
@@ -42,6 +49,20 @@ export default function InventoryOverlay() {
   if (!open) return null;
 
   function handleUse(itemType: ItemType) {
+    if (TARGETED.includes(itemType)) {
+      // Targeted items: enter aiming mode rather than activating immediately.
+      const state = worldEngine.getState();
+      const room = state.rooms.get(state.player.roomId);
+      if (!room) return;
+      useTargetingStore.getState().begin(
+        itemType,
+        state.player.pos,
+        { w: room.width, h: room.height },
+      );
+      setInventoryOpen(false);
+      setFeedback(null);
+      return;
+    }
     const ok = useItem(itemType);
     if (ok) {
       setInventoryOpen(false);
@@ -83,6 +104,9 @@ export default function InventoryOverlay() {
                   <span className="inventory__item-name">{meta.displayName}</span>
                   {meta.usesFacing && held && (
                     <span className="inventory__item-tag">uses facing</span>
+                  )}
+                  {TARGETED.includes(type) && held && (
+                    <span className="inventory__item-tag">targeted</span>
                   )}
                 </div>
                 <p className="inventory__item-blurb">{meta.blurb}</p>

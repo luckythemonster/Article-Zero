@@ -164,6 +164,16 @@ class WorldEngine {
     return ok;
   };
 
+  throwAt = (itemType: ItemType, pos: { x: number; y: number }) => {
+    const ok = actions.throwAt(this.getState(), itemType, pos);
+    if (ok) {
+      this.recomputeFOV();
+      complianceSystem.recompute(this.getState());
+      this.syncStore();
+    }
+    return ok;
+  };
+
   endTurn = () => this.advanceTurn();
 
   canStartAlignment = (entityId: string) =>
@@ -392,6 +402,27 @@ class WorldEngine {
 
     const heard = soundField.propagate(s);
     soundField.reset();
+
+    // Recover entities disabled by EMP. Decrement first, then check for zero
+    // so the last protected turn is still live (matches spoof/baffle convention).
+    // Runs before enforcerSystem.tick so a recovered enforcer resumes patrol
+    // the same turn it comes back. Only entities with the EMP field are touched —
+    // authored-DORMANT or EXTRACTED entities without it are never auto-woken.
+    for (const e of s.entities.values()) {
+      if ((e.disabledTurnsRemaining ?? 0) > 0) {
+        e.disabledTurnsRemaining! -= 1;
+        if (e.disabledTurnsRemaining === 0) {
+          e.disabledTurnsRemaining = undefined;
+          const previous = e.status;
+          e.status = "ACTIVE";
+          eventBus.emit("ENTITY_STATUS_CHANGED", {
+            entityId: e.id,
+            previous,
+            current: "ACTIVE",
+          });
+        }
+      }
+    }
 
     const wasDetected = s.detected;
     s.detected = false;

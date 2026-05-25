@@ -570,9 +570,9 @@ body.theme-lattice {
   .overlay-panel,
   .overlay-panel--records,
   .overlay-panel--dilemma {
-    width: min(560px, calc(100vw - 24px));
+    width: min(720px, calc(100vw - 24px));
     max-height: calc(100% - 252px);
-    padding: 1rem 1.1rem;
+    padding: 1.25rem 1.4rem;
   }
 }
 
@@ -1009,6 +1009,63 @@ body.theme-lattice {
 
 @keyframes stamp-in {
   to { transform: translateY(-50%) scale(1); }
+}
+
+/* ── Touch: enlarge overlay-modal text for legibility (desktop unchanged) ──── */
+@media (pointer: coarse) {
+  .overlay-panel__title { font-size: 1.1rem; }
+
+  .interrogation__line { font-size: 1.1rem; }
+  .interrogation__line.is-system { font-size: 0.95rem; }
+  .interrogation__plea { font-size: 1.15rem; }
+  .interrogation__prompt { font-size: 0.95rem; }
+  .interrogation__choice { font-size: 1.05rem; }
+
+  .dilemma__choice { font-size: 1.05rem; }
+  .dilemma__choice span { font-size: 0.95rem; }
+
+  .records__transcript { font-size: 1.05rem; }
+  .records__chip { font-size: 0.9rem; }
+  .records__hint { font-size: 0.9rem; }
+  .records__cipher-bar { font-size: 0.9rem; }
+  .records__countdown { font-size: 1.05rem; }
+
+  .inventory__section-label { font-size: 0.85rem; }
+  .inventory__item-name { font-size: 1rem; }
+  .inventory__item-tag { font-size: 0.85rem; }
+  .inventory__item-blurb { font-size: 0.9rem; }
+  .inventory__use-btn { font-size: 0.9rem; }
+  .inventory__feedback { font-size: 0.9rem; }
+
+  .reset-modal__body { font-size: 1.05rem; }
+  .overlay-panel .btn { font-size: 0.95rem; }
+}
+
+/* ── Touch: full-screen modal phases own the whole canvas ────────────────────
+   During ALIGNMENT/INTERROGATION/FORGERY the touch controls unmount, so the
+   modal no longer needs to dodge the bottom D-pad band — center it and give it
+   nearly the full height instead of the cramped top strip. */
+@media (pointer: coarse) {
+  body.phase-fullscreen-modal .overlay-root {
+    align-items: center;
+    padding: 16px;
+  }
+
+  body.phase-fullscreen-modal .overlay-panel,
+  body.phase-fullscreen-modal .overlay-panel--records,
+  body.phase-fullscreen-modal .overlay-panel--dilemma {
+    max-height: calc(100% - 32px);
+  }
+
+  /* Pin the answer buttons to the panel's bottom edge so a growing transcript
+     scrolls behind them — the player never scrolls past the dialogue to choose. */
+  .interrogation__choices {
+    position: sticky;
+    bottom: 0;
+    background: var(--surface);
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+  }
 }
 
 /* ── Fullscreen flash stings ─────────────────────────────────────────────── */

@@ -43,6 +43,7 @@ export interface EntityPhysical {
   patrolPauseRemaining?: number;
   stepsPerTurn?: number;
   lastMoveTurn?: number;
+  disabledTurnsRemaining?: number;
 }
 
 export interface EntityKindInfo {

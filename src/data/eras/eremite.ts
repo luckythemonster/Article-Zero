@@ -140,6 +140,7 @@ const VENT_LANDING: Vec2 = { x: 42, y: 21 };
 function seedDuctHazard(seed: EraSeed): void {
   // Give the player the drone's hard counter regardless of crawlspace layout.
   seed.player.inventory.push({ id: "emp-1", itemType: "EMP" });
+  seed.player.inventory.push({ id: "emp-grenade-1", itemType: "EMP_GRENADE" });
 
   const crawl = seed.rooms.find((r) => r.id === "crawlspace");
   if (!crawl) return;

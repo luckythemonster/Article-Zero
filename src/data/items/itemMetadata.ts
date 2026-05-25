@@ -68,9 +68,17 @@ export const ITEM_METADATA: Record<ItemType, ItemMeta> = {
   EMP: {
     displayName: "EMP Charge",
     blurb:
-      "Fries a surveillance drone in the facing cone (radius 5), disabling it " +
-      "for good. Stops pursuit only — it won't reopen sealed vents.",
+      "Omnidirectional burst centered on you (radius 5). Temporarily disables " +
+      "every drone, camera, enforcer, and silicate unit in range for 4 turns — " +
+      "they recover automatically. Does not clear active lockdowns.",
     placeholderColor: 0xb070ff,
-    usesFacing: true,
+  },
+  EMP_GRENADE: {
+    displayName: "EMP Grenade",
+    blurb:
+      "Thrown to a chosen visible tile (max 6 tiles). Burst (radius 3) " +
+      "temporarily disables all silicate units in range for 4 turns. " +
+      "Aim with WASD, confirm with Space/Enter, cancel with Esc.",
+    placeholderColor: 0x9050e0,
   },
 };
