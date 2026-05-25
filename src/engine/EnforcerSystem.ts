@@ -32,8 +32,9 @@ const LOCKDOWN_TURNS = 5;
 const IDLE_SCAN_PERIOD = 3;
 /** Tiles a pursuing (ALERT) or searching (EVASION) enforcer covers per turn.
  *  Patrol pace stays at the per-entity `stepsPerTurn` (default 1); only an
- *  enforcer that's onto the player moves at this faster clip. */
-const PURSUE_STEPS_PER_TURN = 3;
+ *  enforcer that's onto the player moves at this faster clip. Below the player's
+ *  4-tile sprint cap so a flat-out flee still nets ~2 tiles of ground each turn. */
+const PURSUE_STEPS_PER_TURN = 2;
 
 class EnforcerSystem {
   /** Compute the visible-tile set for one enforcer inside its current room.
