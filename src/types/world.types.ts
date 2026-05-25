@@ -6,7 +6,7 @@
 
 export type EntityId = string;
 
-export type Era = "EREMITE" | "MIRADOR" | "COMMONWEALTH" | "NW_SMAC_01";
+export type Era = "EREMITE" | "MIRADOR" | "COMMONWEALTH" | "NW_SMAC_01" | "TEST_MAP";
 export type Module = Era;
 
 export type Facing = "north" | "south" | "east" | "west";

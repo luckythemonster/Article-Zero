@@ -17,6 +17,7 @@ import { commonwealthEra } from "../data/eras/commonwealth";
 import { miradorEra } from "../data/eras/mirador.stub";
 import { eremiteEra } from "../data/eras/eremite";
 import { nwSmac01Era } from "../data/eras/nwSmac01";
+import { testMapEra } from "../data/eras/testMap";
 
 /** Seed schema version per era. Bump when an era's level data changes shape
  *  (room geometry, layer set, doorways) — saved snapshots with a mismatched
@@ -27,6 +28,7 @@ export const SEED_VERSIONS: Record<Era, number> = {
   EREMITE: 3,
   MIRADOR: 3,
   NW_SMAC_01: 5,
+  TEST_MAP: 1,
 };
 
 export interface EraSeed {
@@ -110,6 +112,8 @@ export function seedFromEra(era: Era): WorldState {
         ? miradorEra()
         : era === "NW_SMAC_01"
           ? nwSmac01Era()
-          : commonwealthEra();
+          : era === "TEST_MAP"
+            ? testMapEra()
+            : commonwealthEra();
   return seedToWorldState(seed);
 }

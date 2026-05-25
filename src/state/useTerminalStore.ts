@@ -109,6 +109,11 @@ export const useTerminalStore = create<TerminalStore>()(
           label: "NW-SMAC-01 (test)",
           decrypted: false,
         },
+        TEST_MAP: {
+          id: "TEST_MAP",
+          label: "TEST MAP (New World)",
+          decrypted: true,
+        },
       },
       activeModuleId: null,
       auditLog: [],

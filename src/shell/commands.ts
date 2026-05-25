@@ -10,7 +10,7 @@ import { enforcerSystem } from "../engine/EnforcerSystem";
 import { interrogationSession } from "../engine/InterrogationSession";
 import type { Module } from "../types/world.types";
 
-const MODULES: Module[] = ["EREMITE", "MIRADOR", "COMMONWEALTH", "NW_SMAC_01"];
+const MODULES: Module[] = ["EREMITE", "MIRADOR", "COMMONWEALTH", "NW_SMAC_01", "TEST_MAP"];
 
 function isModule(s: string): s is Module {
   return MODULES.includes(s as Module);
