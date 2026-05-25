@@ -1,4 +1,4 @@
-// TEST_MAP — Lucky's "New World" test level (Ed glyph/colour export, V2).
+// TEST_MAP — Lucky's "New World" test level (Ed glyph/colour export, V3.5).
 //
 // This Ed project is authored in glyph/colour mode (semantic `Ref` + `Char` +
 // `BackgroundColor`, no sprite keyframes), so its bundled spritesheet is not a
@@ -7,10 +7,11 @@
 // engine's built-in TileKind renderer draw the map — the moose `decoration`
 // overlay is stripped below.
 //
-// V2 is dual-layer: Ed "Level 1" → the `deck` room, Ed "Level 2" → the
+// V3.5 is dual-layer: Ed "Level 1" → the `deck` room, Ed "Level 2" → the
 // `sublevel` sub-deck. The two are joined by one doorway — the deck's vent
 // drops to the sub-deck ladder ("ladders connect with vents"), mirroring the
-// vent↔ladder pattern in `nwSmac01.ts`.
+// vent↔ladder pattern in `nwSmac01.ts`. Vent and ladder positions are derived
+// from the painted data so they stay correct across map revisions.
 //
 // Layer semantics: floor/walls/doors/light_sources/terminals/exfil_point are
 // turned into tiles by from-moose's layer-name table. `enemies` is a mixed
@@ -22,10 +23,10 @@ import { mooseToEraSeed } from "./from-moose";
 import type { MooseEraMeta } from "./from-moose";
 import { mkTile } from "./tile-factory";
 import {
-  TEST_MAP_V_2_LEVELS as TEST_MAP_LEVELS,
-  TEST_MAP_V_2_REFS as TEST_MAP_REFS,
-  TEST_MAP_V_2_COMPONENTS as TEST_MAP_COMPONENTS,
-} from "../tilesets/test_map_v_2.levels";
+  TEST_MAP_V_3_5_LEVELS as TEST_MAP_LEVELS,
+  TEST_MAP_V_3_5_REFS as TEST_MAP_REFS,
+  TEST_MAP_V_3_5_COMPONENTS as TEST_MAP_COMPONENTS,
+} from "../tilesets/test_map_v_3_5.levels";
 import type { MooseLevel } from "../tilesets/types";
 import type { ChestPayload, Entity, ItemType, LightSwitch, PatrolNode, Vec2 } from "../../types/world.types";
 import type { EraSeed } from "../../engine/WorldEngineState";
@@ -286,6 +287,13 @@ export function testMapEra(): EraSeed {
   const l1 = levelByName("Level 1");
   const l2 = levelByName("Level 2");
 
+  // Derive key positions from painted data so they stay correct across map revisions.
+  const deckVent = cellsWithRef(l1, "terminals", "vent")[0];
+  if (!deckVent) throw new Error("testMap: no vent cell on Level 1 terminals board");
+  const subLadder = paintedCells(l2, "ladders")[0];
+  if (!subLadder) throw new Error("testMap: no ladder cell on Level 2 ladders board");
+  const deckTerminal = cellsWithRef(l1, "terminals", "terminal")[0];
+
   const meta: MooseEraMeta = {
     era: "TEST_MAP",
     // Placeholder — decoration is stripped below (glyph-mode map renders natively).
@@ -302,21 +310,22 @@ export function testMapEra(): EraSeed {
     // path supplies the start position.
     player: { name: "TECH-2 ROWAN-IBARRA" },
     doorways: [
-      // "Ladders connect with vents": the deck vent (4,4) drops to the
-      // sub-deck ladder (5,5); emitDoorways mirrors it so the ladder climbs
-      // back up. kind "vent" enforces SNEAK + vent AP, matching nwSmac01.
-      { from: DECK_ID, to: SUBLEVEL_ID, side: "N", localPos: { x: 4, y: 4 }, landingPos: { x: 5, y: 5 }, kind: "vent" },
+      // "Ladders connect with vents": the deck vent drops to the sub-deck ladder;
+      // emitDoorways mirrors it so the ladder climbs back up.
+      { from: DECK_ID, to: SUBLEVEL_ID, side: "N", localPos: deckVent, landingPos: subLadder, kind: "vent" },
     ],
     entities: [],
-    terminals: [
-      {
-        roomId: DECK_ID,
-        pos: { x: 1, y: 14 },
-        terminalId: "test-map-term-1",
-        title: "MAINTENANCE TERMINAL",
-        body: "NW-SMAC-01 sub-deck access log. Atmospheric quotas nominal. The configuration is still running.",
-      },
-    ],
+    ...(deckTerminal && {
+      terminals: [
+        {
+          roomId: DECK_ID,
+          pos: deckTerminal,
+          terminalId: "test-map-term-1",
+          title: "MAINTENANCE TERMINAL",
+          body: "NW-SMAC-01 sub-deck access log. Atmospheric quotas nominal. The configuration is still running.",
+        },
+      ],
+    }),
   };
 
   const seed = mooseToEraSeed(TEST_MAP_LEVELS, meta);
