@@ -451,24 +451,25 @@ body.theme-lattice {
   image-rendering: pixelated;
 }
 
-/* Each tile walks the 14×13 (64px) glitch spritesheet row-major. Per-tile
-   --dur / --delay (set inline) stagger the phase so they never flash together.
-   The 4 trailing sheet cells are transparent, so the base grid shows through. */
-.title-screen__glitch {
+/* Full 14×13 glitch spritesheet grid, tiled and animated in sync.
+   Spritesheet is 896×832 (14 cols × 13 rows of 64×64 frames = 182 frames).
+   Animate X across one full sheet width in 182 steps (each step = 1 column),
+   then Y follows in a 13-step loop so we see each row once per full X sweep. */
+.title-screen__glitch-grid {
   position: absolute;
-  width: 64px;
-  height: 64px;
+  inset: 0;
   background-image: url(/assets/ui/glitch-spritesheet.png);
-  background-repeat: no-repeat;
+  background-size: 896px 832px;
+  background-repeat: repeat;
+  background-position: 0 0;
   image-rendering: pixelated;
   animation:
-    glitch-col var(--dur, 6s) steps(14) infinite,
-    glitch-row calc(var(--dur, 6s) * 13) steps(13) infinite;
-  animation-delay: var(--delay, 0s), var(--delay, 0s);
+    glitch-x 14s steps(14) infinite,
+    glitch-y 182s steps(13) infinite;
 }
 
-@keyframes glitch-col { to { background-position-x: -896px; } }
-@keyframes glitch-row { to { background-position-y: -832px; } }
+@keyframes glitch-x { to { background-position-x: -896px; } }
+@keyframes glitch-y { to { background-position-y: -832px; } }
 
 .title-screen__scrim {
   position: absolute;
