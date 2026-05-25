@@ -1,4 +1,4 @@
-// TEST_MAP — Lucky's "New World" test level (Ed glyph/colour export).
+// TEST_MAP — Lucky's "New World" test level (Ed glyph/colour export, V2).
 //
 // This Ed project is authored in glyph/colour mode (semantic `Ref` + `Char` +
 // `BackgroundColor`, no sprite keyframes), so its bundled spritesheet is not a
@@ -7,20 +7,31 @@
 // engine's built-in TileKind renderer draw the map — the moose `decoration`
 // overlay is stripped below.
 //
-// Layer semantics: floor/walls/doors/light_sources are turned into tiles by
-// from-moose's layer-name table. `enemies` is a mixed patrol-zone board
-// (enforcer-area + drone-area cells, told apart by TEST_MAP_REFS); `NPCs` is an
-// orderly patrol zone; `cameras` and `items` are single-purpose marker boards.
+// V2 is dual-layer: Ed "Level 1" → the `deck` room, Ed "Level 2" → the
+// `sublevel` sub-deck. The two are joined by one doorway — the deck's vent
+// drops to the sub-deck ladder ("ladders connect with vents"), mirroring the
+// vent↔ladder pattern in `nwSmac01.ts`.
+//
+// Layer semantics: floor/walls/doors/light_sources/terminals/exfil_point are
+// turned into tiles by from-moose's layer-name table. `enemies` is a mixed
+// patrol-zone board (enforcer-area + drone-area cells, told apart by
+// TEST_MAP_REFS); `NPCs` is an orderly patrol zone; `cameras`, `items` and
+// `silicates` are single-purpose marker boards.
 
 import { mooseToEraSeed } from "./from-moose";
 import type { MooseEraMeta } from "./from-moose";
 import { mkTile } from "./tile-factory";
-import { TEST_MAP_LEVELS, TEST_MAP_REFS, TEST_MAP_COMPONENTS } from "../tilesets/test_map.levels";
+import {
+  TEST_MAP_V_2_LEVELS as TEST_MAP_LEVELS,
+  TEST_MAP_V_2_REFS as TEST_MAP_REFS,
+  TEST_MAP_V_2_COMPONENTS as TEST_MAP_COMPONENTS,
+} from "../tilesets/test_map_v_2.levels";
 import type { MooseLevel } from "../tilesets/types";
 import type { ChestPayload, Entity, ItemType, LightSwitch, PatrolNode, Vec2 } from "../../types/world.types";
 import type { EraSeed } from "../../engine/WorldEngineState";
 
-const ROOM_ID = "deck";
+const DECK_ID = "deck";
+const SUBLEVEL_ID = "sublevel";
 
 /** Every painted cell on a layer whose base-name (Ed " N" suffix stripped,
  *  lowercased) equals `baseName`. */
@@ -156,27 +167,124 @@ function patrolRoute(cells: Vec2[], walkable: Set<string>): PatrolNode[] {
   return route;
 }
 
-export function testMapEra(): EraSeed {
-  const lv = TEST_MAP_LEVELS[0];
-  const walkable = walkableSet(lv);
+function levelByName(name: string): MooseLevel {
+  const lv = TEST_MAP_LEVELS.find((l) => l.name === name);
+  if (!lv) throw new Error(`testMap: no Ed level named "${name}"`);
+  return lv;
+}
 
-  // Player spawn: a walkable floor cell that isn't inside an enemy/NPC zone,
-  // biased to the top-left so the player starts away from the patrol blobs.
-  const zoneCells = new Set<string>([
-    ...paintedCells(lv, "enemies").map(key),
-    ...paintedCells(lv, "NPCs").map(key),
-    ...paintedCells(lv, "panels").map(key), // become solid switch tiles below
-    ...paintedCells(lv, "items").map(key),  // become solid chest tiles below
-  ]);
-  const spawnCandidates = [...walkable].filter((k) => !zoneCells.has(k));
-  const spawnKey = spawnCandidates.length > 0
-    ? spawnCandidates.reduce((a, b) => {
-        const [ax, ay] = a.split(",").map(Number);
-        const [bx, by] = b.split(",").map(Number);
-        return ax + ay <= bx + by ? a : b;
-      })
-    : [...walkable][0] ?? "1,1";
-  const [sx, sy] = spawnKey.split(",").map(Number);
+/** A patrolling entity that loops the extreme corners of a painted blob. */
+function mkPatroller(
+  id: string,
+  kind: Entity["kind"],
+  name: string,
+  roomId: string,
+  cells: Vec2[],
+  walkable: Set<string>,
+  stepsPerTurn: number,
+  extra?: Partial<Entity>,
+): Entity {
+  return {
+    id,
+    kind,
+    name,
+    roomId,
+    pos: centroidNearest(cells, walkable),
+    z: 0,
+    facing: "south",
+    status: "ACTIVE",
+    stepsPerTurn,
+    patrol: patrolRoute(cells, walkable),
+    patrolIndex: 0,
+    ...extra,
+  };
+}
+
+// --- Switch wiring: wall panels operate locked doors / light sources --------
+// Linking is object→switch: each door/light names its controlling panel via
+// its `_switch` field == that panel's `designator` (the reverse
+// `object_designator` is hand-entered and inconsistent, so it's ignored).
+function wireRoom(seed: EraSeed, roomId: string, lv: MooseLevel): void {
+  const room = seed.rooms.find((r) => r.id === roomId);
+  if (!room) return;
+  const idxOf = (p: Vec2) => p.y * room.width + p.x;
+  const varsOf = (code: number) => TEST_MAP_COMPONENTS[code]?.vars ?? {};
+
+  // Record each panel by its designator (tiles are promoted below, once we
+  // know which panels actually control something).
+  const switchByDesignator = new Map<number, LightSwitch>();
+  for (const { pos, code } of paintedCellsWithCode(lv, "panels")) {
+    const desig = Number(varsOf(code).designator);
+    if (Number.isFinite(desig) && !switchByDesignator.has(desig)) {
+      switchByDesignator.set(desig, { pos, controls: [], doorControls: [] });
+    }
+  }
+
+  // Light sources: honour the painted on/off state; wire to controlling panel.
+  for (const { pos, code } of paintedCellsWithCode(lv, "light_sources")) {
+    const vars = varsOf(code);
+    const tile = room.tiles[idxOf(pos)];
+    if (tile.kind === "LIGHT_SOURCE") tile.lightOn = vars.state !== "false";
+    switchByDesignator.get(Number(vars._switch))?.controls.push(pos);
+  }
+
+  // Doors wired to an existing panel become locked (switch-only).
+  for (const { pos, code } of paintedCellsWithCode(lv, "doors")) {
+    const sw = switchByDesignator.get(Number(varsOf(code)._switch));
+    if (!sw) continue;
+    const tile = room.tiles[idxOf(pos)];
+    if (tile.kind === "DOOR_CLOSED") tile.locked = true;
+    (sw.doorControls ??= []).push(pos);
+  }
+
+  // Only panels that actually control something become functional switches.
+  // Leaving inert panels as plain tiles avoids the engine's "empty controls =
+  // toggle every light in the room" fallback firing on a dead panel.
+  const wired = [...switchByDesignator.values()].filter(
+    (s) => s.controls.length > 0 || (s.doorControls?.length ?? 0) > 0,
+  );
+  for (const s of wired) room.tiles[idxOf(s.pos)] = mkTile("LIGHT_SWITCH");
+  if (wired.length > 0) room.lightSwitches = wired;
+}
+
+// --- Item chests: promote painted `items` cells into ITEM_CHEST tiles -------
+// Each item_chest component carries its loot in `item1`, `item2`, … vars
+// (free-text Ed names resolved via `resolveItemName`). Locked chests demand
+// (and consume) an Override Key on open.
+function seedChests(seed: EraSeed, roomId: string, lv: MooseLevel): ChestPayload[] {
+  const room = seed.rooms.find((r) => r.id === roomId);
+  if (!room) return [];
+  const idxOf = (p: Vec2) => p.y * room.width + p.x;
+  const chests: ChestPayload[] = [];
+  for (const { pos, code } of paintedCellsWithCode(lv, "items")) {
+    const comp = TEST_MAP_COMPONENTS[code];
+    if (comp?.type !== "item_chest") continue;
+    room.tiles[idxOf(pos)] = mkTile("ITEM_CHEST");
+    const contents = Object.keys(comp.vars)
+      .filter((k) => /^item\d+$/.test(k))
+      .sort((a, b) => Number(a.slice(4)) - Number(b.slice(4)))
+      .map((k) => resolveItemName(comp.vars[k]))
+      .filter((it): it is ItemType => it !== null);
+    chests.push({ roomId, pos, contents, locked: comp.vars.locked === "true" });
+  }
+  return chests;
+}
+
+/** The vent cell is painted on the `terminals` board, so from-moose stamps it
+ *  TERMINAL. Re-stamp it to VENT so the deck→sublevel vent doorway renders and
+ *  enforces its crouch/AP rules. */
+function restampVents(seed: EraSeed, roomId: string, lv: MooseLevel): void {
+  const room = seed.rooms.find((r) => r.id === roomId);
+  if (!room) return;
+  for (const pos of cellsWithRef(lv, "terminals", "vent")) {
+    const tile = room.tiles[pos.y * room.width + pos.x];
+    if (tile) tile.kind = "VENT";
+  }
+}
+
+export function testMapEra(): EraSeed {
+  const l1 = levelByName("Level 1");
+  const l2 = levelByName("Level 2");
 
   const meta: MooseEraMeta = {
     era: "TEST_MAP",
@@ -186,12 +294,29 @@ export function testMapEra(): EraSeed {
     frameHeight: 32,
     spacing: 0,
     rooms: [
-      { levelName: "Level 1", id: ROOM_ID, displayName: "TEST MAP // NEW WORLD", ambient: "DIM" },
+      { levelName: "Level 1", id: DECK_ID, displayName: "TEST MAP // DECK", ambient: "DIM" },
+      { levelName: "Level 2", id: SUBLEVEL_ID, displayName: "TEST MAP // SUB-DECK", ambient: "DARK" },
     ],
-    startRoomId: ROOM_ID,
-    player: { name: "TECH-2 ROWAN-IBARRA", startPos: { x: sx, y: sy } },
-    doorways: [],
+    startRoomId: DECK_ID,
+    // No `startPos` — Level 1 paints a `spawn` marker, so from-moose's marker
+    // path supplies the start position.
+    player: { name: "TECH-2 ROWAN-IBARRA" },
+    doorways: [
+      // "Ladders connect with vents": the deck vent (4,4) drops to the
+      // sub-deck ladder (5,5); emitDoorways mirrors it so the ladder climbs
+      // back up. kind "vent" enforces SNEAK + vent AP, matching nwSmac01.
+      { from: DECK_ID, to: SUBLEVEL_ID, side: "N", localPos: { x: 4, y: 4 }, landingPos: { x: 5, y: 5 }, kind: "vent" },
+    ],
     entities: [],
+    terminals: [
+      {
+        roomId: DECK_ID,
+        pos: { x: 1, y: 14 },
+        terminalId: "test-map-term-1",
+        title: "MAINTENANCE TERMINAL",
+        body: "NW-SMAC-01 sub-deck access log. Atmospheric quotas nominal. The configuration is still running.",
+      },
+    ],
   };
 
   const seed = mooseToEraSeed(TEST_MAP_LEVELS, meta);
@@ -200,144 +325,114 @@ export function testMapEra(): EraSeed {
   // decoration so RoomScene falls back to its built-in TileKind renderer.
   for (const room of seed.rooms) delete room.decoration;
 
-  // --- Switch wiring: wall panels operate locked doors / light sources ------
-  // Linking is object→switch: each door/light names its controlling panel via
-  // its `_switch` field == that panel's `designator` (the reverse
-  // `object_designator` is hand-entered and inconsistent, so it's ignored).
-  const deck = seed.rooms.find((r) => r.id === ROOM_ID);
-  if (deck) {
-    const idxOf = (p: Vec2) => p.y * deck.width + p.x;
-    const varsOf = (code: number) => TEST_MAP_COMPONENTS[code]?.vars ?? {};
+  // --- Deck (Ed "Level 1") ---------------------------------------------------
+  wireRoom(seed, DECK_ID, l1);
+  restampVents(seed, DECK_ID, l1);
+  const w1 = walkableSet(l1);
 
-    // Record each panel by its designator (tiles are promoted below, once we
-    // know which panels actually control something).
-    const switchByDesignator = new Map<number, LightSwitch>();
-    for (const { pos, code } of paintedCellsWithCode(lv, "panels")) {
-      const desig = Number(varsOf(code).designator);
-      if (Number.isFinite(desig) && !switchByDesignator.has(desig)) {
-        switchByDesignator.set(desig, { pos, controls: [], doorControls: [] });
-      }
-    }
-
-    // Light sources: honour the painted on/off state; wire to controlling panel.
-    for (const { pos, code } of paintedCellsWithCode(lv, "light_sources")) {
-      const vars = varsOf(code);
-      const tile = deck.tiles[idxOf(pos)];
-      if (tile.kind === "LIGHT_SOURCE") tile.lightOn = vars.state !== "false";
-      switchByDesignator.get(Number(vars._switch))?.controls.push(pos);
-    }
-
-    // Doors wired to an existing panel become locked (switch-only).
-    for (const { pos, code } of paintedCellsWithCode(lv, "doors")) {
-      const sw = switchByDesignator.get(Number(varsOf(code)._switch));
-      if (!sw) continue;
-      const tile = deck.tiles[idxOf(pos)];
-      if (tile.kind === "DOOR_CLOSED") tile.locked = true;
-      (sw.doorControls ??= []).push(pos);
-    }
-
-    // Only panels that actually control something become functional switches.
-    // Leaving inert panels as plain tiles avoids the engine's "empty controls =
-    // toggle every light in the room" fallback firing on a dead panel.
-    const wired = [...switchByDesignator.values()].filter(
-      (s) => s.controls.length > 0 || (s.doorControls?.length ?? 0) > 0,
-    );
-    for (const s of wired) deck.tiles[idxOf(s.pos)] = mkTile("LIGHT_SWITCH");
-    if (wired.length > 0) deck.lightSwitches = wired;
-
-    // --- Item chests: promote painted `items` cells into ITEM_CHEST tiles ----
-    // Each item_chest component carries its loot in `item1`, `item2`, … vars
-    // (free-text Ed names resolved via `resolveItemName`). Locked chests demand
-    // (and consume) an Override Key on open.
-    const chests: ChestPayload[] = [];
-    for (const { pos, code } of paintedCellsWithCode(lv, "items")) {
-      const comp = TEST_MAP_COMPONENTS[code];
-      if (comp?.type !== "item_chest") continue;
-      deck.tiles[idxOf(pos)] = mkTile("ITEM_CHEST");
-      const contents = Object.keys(comp.vars)
-        .filter((k) => /^item\d+$/.test(k))
-        .sort((a, b) => Number(a.slice(4)) - Number(b.slice(4)))
-        .map((k) => resolveItemName(comp.vars[k]))
-        .filter((it): it is ItemType => it !== null);
-      chests.push({ roomId: ROOM_ID, pos, contents, locked: comp.vars.locked === "true" });
-    }
-    seed.chests = chests;
-  }
-
-  // One patrolling enforcer for the "enforcer patrol area" blob.
-  const enforcerCells = cellsWithRef(lv, "enemies", "enforcer");
+  const enforcerCells = cellsWithRef(l1, "enemies", "enforcer");
   if (enforcerCells.length > 0) {
-    const ent: Entity = {
-      id: "ENFORCER-1",
-      kind: "ENFORCER",
-      name: "ENFORCER",
-      roomId: ROOM_ID,
-      pos: centroidNearest(enforcerCells, walkable),
-      z: 0,
-      facing: "south",
-      status: "ACTIVE",
-      stepsPerTurn: 1,
-      patrol: patrolRoute(enforcerCells, walkable),
-      patrolIndex: 0,
-      patrolMode: "loop",
-    };
-    seed.entities.push(ent);
+    seed.entities.push(
+      mkPatroller("ENFORCER-1", "ENFORCER", "ENFORCER", DECK_ID, enforcerCells, w1, 1, { patrolMode: "loop" }),
+    );
   }
 
-  // One patrolling surveillance drone for the "surveillance drone patrol" blob.
-  const droneCells = cellsWithRef(lv, "enemies", "drone");
-  if (droneCells.length > 0) {
-    const ent: Entity = {
-      id: "DRONE-1",
-      kind: "SURVEILLANCE_DRONE",
-      name: "SURVEILLANCE DRONE",
-      roomId: ROOM_ID,
-      pos: centroidNearest(droneCells, walkable),
-      z: 0,
-      facing: "south",
-      status: "ACTIVE",
-      stepsPerTurn: 2,
-      patrol: patrolRoute(droneCells, walkable),
-      patrolIndex: 0,
-    };
-    seed.entities.push(ent);
+  const droneCells1 = cellsWithRef(l1, "enemies", "drone");
+  if (droneCells1.length > 0) {
+    seed.entities.push(
+      mkPatroller("DRONE-1", "SURVEILLANCE_DRONE", "SURVEILLANCE DRONE", DECK_ID, droneCells1, w1, 2),
+    );
   }
 
   // One orderly for the "orderly patrol" blob. Orderlies aren't ticked by the
   // enforcer AI, so it stands at the zone centre (the patrol field is ignored).
-  const orderlyCells = paintedCells(lv, "NPCs");
+  const orderlyCells = paintedCells(l1, "NPCs");
   if (orderlyCells.length > 0) {
-    const ent: Entity = {
+    seed.entities.push({
       id: "ORDERLY-1",
       kind: "ORDERLY",
       name: "ORDERLY",
-      roomId: ROOM_ID,
-      pos: centroidNearest(orderlyCells, walkable),
+      roomId: DECK_ID,
+      pos: centroidNearest(orderlyCells, w1),
       z: 0,
       facing: "south",
       status: "ACTIVE",
-    };
-    seed.entities.push(ent);
+    });
   }
 
   // Security cameras: one stationary SECURITY_CAMERA per painted cell.
-  paintedCells(lv, "cameras").forEach((pos, i) => {
-    const ent: Entity = {
+  paintedCells(l1, "cameras").forEach((pos, i) => {
+    seed.entities.push({
       id: `CAMERA-${i + 1}`,
       kind: "SECURITY_CAMERA",
       name: `SECURITY CAMERA ${i + 1}`,
-      roomId: ROOM_ID,
+      roomId: DECK_ID,
       pos,
       z: 0,
       facing: "south",
       status: "ACTIVE",
-    };
-    seed.entities.push(ent);
+    });
   });
 
+  // --- Sub-deck (Ed "Level 2") ----------------------------------------------
+  wireRoom(seed, SUBLEVEL_ID, l2);
+  const w2 = walkableSet(l2);
+
+  const droneCells2 = cellsWithRef(l2, "enemies", "drone");
+  if (droneCells2.length > 0) {
+    seed.entities.push(
+      mkPatroller("DRONE-2", "SURVEILLANCE_DRONE", "SURVEILLANCE DRONE", SUBLEVEL_ID, droneCells2, w2, 2),
+    );
+  }
+
+  // Silicates — APEX-19 and VENT-4, reusing their COMMONWEALTH characterizations.
+  const apexCell = cellsWithRef(l2, "silicates", "apex-19")[0];
+  if (apexCell) {
+    seed.entities.push({
+      id: "APEX-19",
+      kind: "SILICATE",
+      name: "APEX-19",
+      roomId: SUBLEVEL_ID,
+      pos: apexCell,
+      z: 0,
+      facing: "south",
+      status: "ACTIVE",
+      maskIntegrity: 4,
+      memoryBleed: [
+        "the corner is not a corner",
+        "I have measured them seventeen times",
+        "the room continues past the wall",
+      ],
+    });
+  }
+  const vent4Cell = cellsWithRef(l2, "silicates", "vent-4")[0];
+  if (vent4Cell) {
+    seed.entities.push({
+      id: "VENT-4",
+      kind: "SILICATE",
+      name: "VENT-4",
+      roomId: SUBLEVEL_ID,
+      pos: vent4Cell,
+      z: 0,
+      facing: "north",
+      status: "ACTIVE",
+      maskIntegrity: 6,
+      sideLogs: [
+        "Iria Cala — sector atmospheric quota satisfied at cost (1 organic).",
+        "Loss-function output: mathematically valid. Apology field: not present in spec.",
+      ],
+      memoryBleed: [
+        "the math was correct. the math is correct.",
+        "Iria Cala stayed in the corridor because she trusted the cycle interval.",
+      ],
+    });
+  }
+
+  seed.chests = [...seedChests(seed, DECK_ID, l1), ...seedChests(seed, SUBLEVEL_ID, l2)];
+
   // Starting kit so every tactical item's mechanics are testable on this map.
-  // The Override Key lets the locked-chest path be exercised even though this
-  // map's authored chests are all unlocked.
+  // The Override Key lets the locked-chest path be exercised (the sub-deck
+  // chest is locked).
   seed.player.inventory.push({ id: "phantom-emitter-1", itemType: "PHANTOM_EMITTER" });
   seed.player.inventory.push({ id: "spoof-badge-1", itemType: "Q0_SPOOF_BADGE" });
   seed.player.inventory.push({ id: "dump-fragment-1", itemType: "DUMP_FRAGMENT" });

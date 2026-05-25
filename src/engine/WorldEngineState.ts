@@ -29,7 +29,7 @@ export const SEED_VERSIONS: Record<Era, number> = {
   EREMITE: 3,
   MIRADOR: 3,
   NW_SMAC_01: 5,
-  TEST_MAP: 2,
+  TEST_MAP: 3,
 };
 
 export interface EraSeed {

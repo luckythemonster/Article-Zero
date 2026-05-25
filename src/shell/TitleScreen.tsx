@@ -12,7 +12,7 @@ export default function TitleScreen({ onStart }: Props) {
   useEffect(() => {
     let disposed = false;
 
-    void loadAndCreate("/audio/music/menu.json").then((p) => {
+    void loadAndCreate("/audio/music/title-theme.json").then((p) => {
       if (disposed || !p) return;
       playerRef.current = p;
       // Try immediately in case the AudioContext is already running.
