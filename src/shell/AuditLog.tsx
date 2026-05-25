@@ -3,14 +3,15 @@ import { useTerminalStore } from "../state/useTerminalStore";
 
 export default function AuditLog() {
   const auditLog = useTerminalStore((s) => s.auditLog);
-  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const logRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "instant" });
+    const el = logRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [auditLog.length]);
 
   return (
-    <div className="audit-log" aria-label="audit log" aria-live="polite">
+    <div ref={logRef} className="audit-log" aria-label="audit log" aria-live="polite">
       {auditLog.map((entry) => (
         <div key={entry.id} className={`audit-log__entry is-${entry.level.toLowerCase()}`}>
           <span className="audit-log__turn">T{entry.turn.toString().padStart(4, "0")}</span>
@@ -20,7 +21,6 @@ export default function AuditLog() {
           <span className="audit-log__text">{entry.text}</span>
         </div>
       ))}
-      <div ref={bottomRef} />
     </div>
   );
 }
