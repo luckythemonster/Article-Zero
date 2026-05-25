@@ -17,13 +17,14 @@
 
 import type { Entity, Facing, RoomId, Tile, Vec2, WorldState } from "../types/world.types";
 import { facingFromDelta } from "../types/world.types";
-import { alertFSM } from "./AlertFSM";
+import { alertFSM, ALERT_SOUND_THRESHOLD } from "./AlertFSM";
 import { eventBus } from "./EventBus";
 import { interrogationSession } from "./InterrogationSession";
 import { lightField } from "./LightField";
 import { roomGraph } from "./RoomGraph";
 import { computeCone, ENFORCER_BASE_RANGE, ENFORCER_CONE_HALF_ANGLE, ENFORCER_PROXIMITY_RADIUS } from "./VisionCone";
 import type { DeliveredSound } from "./SoundField";
+import { soundField } from "./SoundField";
 import { debugFlags } from "./debugFlags";
 
 const LOCKDOWN_TURNS = 5;
@@ -108,6 +109,7 @@ class EnforcerSystem {
     if (seesAsAlert && !state.lockdown && state.rooms.get(state.player.roomId)?.crawlspace) {
       this.triggerLockdown(state);
     }
+    const prevLevel = enforcer.alert?.level ?? "NORMAL";
     alertFSM.step(state, enforcer, {
       seesPlayer: sees,
       heardIntensity: heard?.intensity ?? 0,
@@ -118,6 +120,22 @@ class EnforcerSystem {
       playerPos: state.player.pos,
       playerRoomId: state.player.roomId,
     });
+    // Drone/camera entering ALERT emits a high-intensity alarm at the sighting
+    // position so human enforcers hear it on the next turn and escalate to ALERT.
+    // The alarm is keyed to the sighting location so guards route there directly;
+    // intensity 6 clears a single open doorway (attenuation 2) and still lands
+    // above the ALERT_SOUND_THRESHOLD (4) at that neighbour room.
+    if (
+      (enforcer.kind === "SURVEILLANCE_DRONE" || enforcer.kind === "SECURITY_CAMERA") &&
+      prevLevel !== "ALERT" && enforcer.alert?.level === "ALERT"
+    ) {
+      soundField.emit({
+        roomId: enforcer.alert.lastStimulusRoom ?? enforcer.roomId,
+        pos: enforcer.alert.lastStimulus ?? enforcer.pos,
+        intensity: ALERT_SOUND_THRESHOLD + 2,
+        reason: "drone-alarm",
+      });
+    }
 
     // Publish vision after the FSM has consumed it.
     const visible = this.visibleTiles(state, enforcer);
