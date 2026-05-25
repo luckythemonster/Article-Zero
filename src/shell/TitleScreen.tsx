@@ -52,7 +52,6 @@ export default function TitleScreen({ onStart }: Props) {
     <div className="title-screen">
       <div className="title-screen__backdrop" aria-hidden="true">
         <div className="title-screen__grid" />
-        <div className="title-screen__glitch-grid" />
         <div className="title-screen__scrim" />
       </div>
       <div className="title-screen__inner">
