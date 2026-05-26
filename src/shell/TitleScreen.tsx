@@ -12,7 +12,7 @@ export default function TitleScreen({ onStart }: Props) {
   useEffect(() => {
     let disposed = false;
 
-    void loadAndCreate("/audio/music/menu.json").then((p) => {
+    void loadAndCreate("/audio/music/title-theme.json").then((p) => {
       if (disposed || !p) return;
       playerRef.current = p;
       // Try immediately in case the AudioContext is already running.
@@ -50,6 +50,10 @@ export default function TitleScreen({ onStart }: Props) {
 
   return (
     <div className="title-screen">
+      <div className="title-screen__backdrop" aria-hidden="true">
+        <div className="title-screen__grid" />
+        <div className="title-screen__scrim" />
+      </div>
       <div className="title-screen__inner">
         <div className="title-screen__eyebrow">CITIZEN LATTICE // MEMORY RECONSTRUCTION PROJECT</div>
         <h1 className="title-screen__title">ARTICLE ZERO</h1>

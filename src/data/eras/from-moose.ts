@@ -234,6 +234,9 @@ const TILE_KIND_PRECEDENCE: Record<TileKind, number> = {
   EXTRACTION_TERMINAL: 1,
   VENT: 1,
   LOCKER: 2,
+  // Item chests are floor furniture; no moose layer maps to them (TEST_MAP
+  // stamps them in its era seed), but the union demands an entry here.
+  ITEM_CHEST: 2,
   DOOR_OPEN: 3,
   DOOR_CLOSED: 3,
   // Switches read as wall-mounted fixtures; rank with walls.

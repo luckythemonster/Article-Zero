@@ -27,6 +27,7 @@ export default function StatusBar() {
         <>
           <span className="status-bar__sep">|</span>
           <span className={`status-bar__compliance is-${compliance.toLowerCase()}`}>
+            <span className={`status-bar__pip is-${compliance.toLowerCase()}`} />
             {compliance}
           </span>
         </>

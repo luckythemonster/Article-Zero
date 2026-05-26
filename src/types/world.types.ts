@@ -44,6 +44,7 @@ export type TileKind =
   | "LIGHT_SWITCH"
   | "VENT"
   | "LOCKER"
+  | "ITEM_CHEST"
   | "CHASM"
   | "LADDER"
   | "STAIRS"
@@ -250,6 +251,11 @@ export interface AlertState {
    *  again. Set when an interrogation is passed so the same enforcer doesn't
    *  immediately re-trigger; decremented once per turn in EnforcerSystem. */
   interrogateCooldown?: number;
+  /** ENFORCER only — light tiles this enforcer has seen lit, keyed
+   *  "roomId:x,y". Rebuilt each tick from the enforcer's vision; runtime-only
+   *  (not serialized). Lets a light going *off* register when the enforcer
+   *  knew it was on, even if it's now facing away — gated to the same room. */
+  seenLights?: Set<string>;
 }
 
 export interface Entity {
@@ -287,6 +293,13 @@ export interface Entity {
   lastMoveTurn?: number;
   /** ENFORCER only — alert FSM state. Initialised by EnforcerSystem. */
   alert?: AlertState;
+  /** ORDERLY only — current meander destination (a walkable tile, usually
+   *  beside a point of interest). Runtime-only; cleared on arrival or when the
+   *  path is blocked so a new target is chosen. */
+  wanderTarget?: Vec2;
+  /** ORDERLY only — turns left dwelling at a point of interest, glancing around
+   *  to look busy. Decremented once per turn. Runtime-only. */
+  idlePauseRemaining?: number;
   /** When > 0 this entity is temporarily EMP-disabled: status is forced to
    *  DORMANT while down; decremented once per turn in advanceTurn, which
    *  restores status to ACTIVE at 0. Applies uniformly to all silicate kinds. */
@@ -385,6 +398,24 @@ export interface TerminalPayload {
   clearsLockdown?: boolean;
 }
 
+// Item chests -----------------------------------------------------------
+
+/** Per-ITEM_CHEST-tile loot table the player empties on "interact". Modeled on
+ *  TerminalPayload: position-keyed, seeded from the era, mutated in place when
+ *  looted. Opening grants every `contents` item to inventory in one action. */
+export interface ChestPayload {
+  /** Where the ITEM_CHEST tile lives. */
+  roomId: RoomId;
+  pos: Vec2;
+  /** Item types granted to the player on open, in order. */
+  contents: ItemType[];
+  /** When true, opening requires (and consumes) an OVERRIDE_KEY from inventory. */
+  locked?: boolean;
+  /** Mutable: flipped true once looted. Renderer reads it for the open glyph;
+   *  the interact handler treats an opened chest as inert. */
+  opened?: boolean;
+}
+
 // World ------------------------------------------------------------------
 
 export interface WorldState {
@@ -408,6 +439,8 @@ export interface WorldState {
   ventLinks: Map<string, VentEndpoint>;
   /** TERMINAL-tile payloads keyed by `roomId:x,y`. */
   terminalPayloads: Map<string, TerminalPayload>;
+  /** ITEM_CHEST-tile loot tables keyed by `roomId:x,y`. */
+  chestPayloads: Map<string, ChestPayload>;
   /** TerminalIds that have already been read once. Reading again is a no-op. */
   terminalsRead: Set<string>;
   /** Number of times the player has pried at the current blast door this run.

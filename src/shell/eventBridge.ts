@@ -69,6 +69,11 @@ export function installEventBridge(): () => void {
     ),
   );
   unsubs.push(
+    eventBus.on("CHEST_OPENED", (p) =>
+      push("INFO", `chest opened @ ${p.roomId}:${p.pos.x},${p.pos.y} — ${p.contents.join(", ") || "empty"}`),
+    ),
+  );
+  unsubs.push(
     eventBus.on("ENFORCER_ALERT_CHANGED", (p) =>
       push(p.to === "ALERT" ? "WARN" : "INFO", `${p.enforcerId} alert ${p.from} → ${p.to}`),
     ),

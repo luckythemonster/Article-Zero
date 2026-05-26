@@ -15,9 +15,9 @@
 // Only the spotter pursues. Other enforcers continue to escalate to CAUTION via
 // SoundField and orient toward doorways (`stepInvestigate`) without crossing.
 
-import type { Entity, Facing, RoomId, Tile, Vec2, WorldState } from "../types/world.types";
+import type { Entity, Facing, Room, RoomId, Tile, TileKind, Vec2, WorldState } from "../types/world.types";
 import { facingFromDelta } from "../types/world.types";
-import { alertFSM, ALERT_SOUND_THRESHOLD } from "./AlertFSM";
+import { alertFSM, ALERT_SOUND_THRESHOLD, CAUTION_SOUND_THRESHOLD } from "./AlertFSM";
 import { eventBus } from "./EventBus";
 import { interrogationSession } from "./InterrogationSession";
 import { lightField } from "./LightField";
@@ -62,12 +62,84 @@ class EnforcerSystem {
     return out;
   }
 
+  /** A light (or set of coupled lights) in `room` was just switched OFF.
+   *  Each ACTIVE enforcer in that room reacts — synthetically nudged to CAUTION
+   *  toward the darkened spot — but only if it either witnesses the toggle (the
+   *  light tile is in its current geometric vision cone, regardless of the now
+   *  lost illumination) or it remembers the light being on while in this room.
+   *  Deliberately does NOT emit a SoundField click, so the toggle stays local:
+   *  enforcers in other rooms never hear it. */
+  reactToLightToggleOff(state: WorldState, room: Room, lightPositions: Vec2[]): void {
+    if (debugFlags.disableEnforcerAI) return;
+    const keys = lightPositions.map((p) => `${p.x},${p.y}`);
+    for (const enforcer of state.entities.values()) {
+      if (enforcer.kind !== "ENFORCER" || enforcer.status !== "ACTIVE") continue;
+      if (enforcer.roomId !== room.id) continue;
+      // Witness: the geometric cone (LOS + range + facing) — NOT the lit-masked
+      // visible set, since the tile is dark by the time we check here.
+      const cone = computeCone({
+        tiles: room.tiles,
+        width: room.width,
+        height: room.height,
+        ox: enforcer.pos.x,
+        oy: enforcer.pos.y,
+        radius: this.coneRange(room.ambientLight),
+        facing: enforcer.facing,
+        halfAngle: ENFORCER_CONE_HALF_ANGLE,
+      });
+      let matched = keys.findIndex((k) => cone.has(k));
+      if (matched < 0 && enforcer.alert?.seenLights) {
+        const seen = enforcer.alert.seenLights;
+        matched = keys.findIndex((k) => seen.has(`${room.id}:${k}`));
+      }
+      if (matched >= 0) {
+        alertFSM.step(state, enforcer, {
+          seesPlayer: false,
+          heardIntensity: CAUTION_SOUND_THRESHOLD,
+          heardSrc: { roomId: room.id, pos: lightPositions[matched] },
+          playerPos: undefined,
+          playerRoomId: state.player.roomId,
+        });
+      }
+    }
+    // The lights are off now — forget them everywhere so a later re-toggle
+    // can't fire on a stale "seen on" record.
+    for (const enforcer of state.entities.values()) {
+      const seen = enforcer.alert?.seenLights;
+      if (!seen) continue;
+      for (const k of keys) seen.delete(`${room.id}:${k}`);
+    }
+  }
+
+  /** Record the lights this enforcer currently sees lit (keyed "roomId:x,y").
+   *  Bounded by the cone size — only iterates the already-computed visible set. */
+  private rememberLitLights(state: WorldState, enforcer: Entity, visible: Set<string>): void {
+    const room = state.rooms.get(enforcer.roomId);
+    if (!room) return;
+    const alert = alertFSM.ensure(state, enforcer);
+    for (const key of visible) {
+      const comma = key.indexOf(",");
+      const x = +key.slice(0, comma);
+      const y = +key.slice(comma + 1);
+      const t = room.tiles[y * room.width + x];
+      if (t && t.kind === "LIGHT_SOURCE" && t.lightOn !== false) {
+        (alert.seenLights ??= new Set()).add(`${room.id}:${key}`);
+      }
+    }
+  }
+
   /** Per-tick step: integrate sound + sight into AlertFSM, then act. */
   tick(state: WorldState, sounds: Map<string, DeliveredSound>): void {
     if (state.detained) return;
     if (debugFlags.disableEnforcerAI) return;
     for (const entity of state.entities.values()) {
       if (entity.status !== "ACTIVE") continue;
+      if (entity.kind === "ORDERLY") {
+        // Background staff — meander and visit points of interest. No vision,
+        // alert FSM, lockdown, or sound processing.
+        this.tickOrderly(state, entity);
+        continue;
+      }
       if (
         entity.kind !== "ENFORCER" &&
         entity.kind !== "SURVEILLANCE_DRONE" &&
@@ -143,6 +215,10 @@ class EnforcerSystem {
       enforcerId: enforcer.id,
       visibleTiles: Array.from(visible),
     });
+
+    // Remember which lights this enforcer currently sees lit, so it can react
+    // if one of them is later switched off while it's still in the room.
+    if (enforcer.kind === "ENFORCER") this.rememberLitLights(state, enforcer, visible);
 
     const level = enforcer.alert?.level ?? "NORMAL";
 
@@ -582,7 +658,131 @@ class EnforcerSystem {
     eventBus.emit("ENTITY_MOVED", { entityId: enforcer.id, roomId: enforcer.roomId, from, to: next });
     // Audio-only signal — does NOT route through SoundField (would let the
     // player exploit enforcer noise as a sonar ping into the alert FSM).
-    eventBus.emit("ENFORCER_FOOTSTEP", { enforcerId: enforcer.id, roomId: enforcer.roomId, pos: next });
+    // Orderlies are civilians, not enforcers — they don't emit the enforcer
+    // footstep cue.
+    if (enforcer.kind !== "ORDERLY") {
+      eventBus.emit("ENFORCER_FOOTSTEP", { enforcerId: enforcer.id, roomId: enforcer.roomId, pos: next });
+    }
+  }
+
+  // ── Orderlies (background staff) ────────────────────────────────────────
+
+  /** Tile kinds an orderly treats as a "point of interest" to walk up to and
+   *  busy itself at. */
+  private isPoiKind(kind: TileKind): boolean {
+    return (
+      kind === "TERMINAL" ||
+      kind === "EXTRACTION_TERMINAL" ||
+      kind === "ITEM_CHEST" ||
+      kind === "LOCKER" ||
+      kind === "LIGHT_SWITCH"
+    );
+  }
+
+  /** Drive one orderly: dwell at a point of interest, pick a new destination,
+   *  or step toward the current one. Stays within its own room. */
+  private tickOrderly(state: WorldState, orderly: Entity): void {
+    if ((orderly.idlePauseRemaining ?? 0) > 0) {
+      orderly.idlePauseRemaining = (orderly.idlePauseRemaining ?? 0) - 1;
+      // Glance around every other turn to read as "doing stuff".
+      if (state.turn % 2 === 0) this.rotateScan(orderly);
+      return;
+    }
+    const room = state.rooms.get(orderly.roomId);
+    if (!room) return;
+    const target = orderly.wanderTarget;
+    if (target && orderly.pos.x === target.x && orderly.pos.y === target.y) {
+      // Arrived — face a neighbouring point of interest (if any) and dwell.
+      this.faceNearbyPoi(orderly, room);
+      orderly.idlePauseRemaining = 2 + (this.orderlyRand(state, orderly, 3) % 3); // 2..4
+      orderly.wanderTarget = undefined;
+      return;
+    }
+    if (!target) {
+      orderly.wanderTarget = this.pickWanderTarget(state, orderly, room);
+      return;
+    }
+    const before = orderly.pos;
+    this.advanceToward(state, orderly, target);
+    // No progress (blocked / unreachable) — drop the target so we re-pick next
+    // turn rather than jamming against a wall forever.
+    if (orderly.pos === before) orderly.wanderTarget = undefined;
+  }
+
+  /** Choose a new meander destination: a walkable tile beside a random point of
+   *  interest, falling back to a random floor tile when the room has none. */
+  private pickWanderTarget(state: WorldState, orderly: Entity, room: Room): Vec2 | undefined {
+    const pois: Vec2[] = [];
+    for (let y = 0; y < room.height; y++) {
+      for (let x = 0; x < room.width; x++) {
+        if (this.isPoiKind(room.tiles[y * room.width + x].kind)) pois.push({ x, y });
+      }
+    }
+    if (pois.length > 0) {
+      const poi = pois[this.orderlyRand(state, orderly, 1) % pois.length];
+      const spot = this.walkableAdjacent(room, poi, orderly.pos);
+      if (spot) return spot;
+    }
+    return this.randomWalkable(state, orderly, room);
+  }
+
+  /** First walkable 4-neighbour of `poi`, preferring the one nearest `from`. */
+  private walkableAdjacent(room: Room, poi: Vec2, from: Vec2): Vec2 | undefined {
+    const cands = [
+      { x: poi.x, y: poi.y - 1 },
+      { x: poi.x + 1, y: poi.y },
+      { x: poi.x, y: poi.y + 1 },
+      { x: poi.x - 1, y: poi.y },
+    ].filter((p) => this.canEnter(room.tiles, room.width, room.height, p));
+    if (cands.length === 0) return undefined;
+    cands.sort(
+      (a, b) =>
+        Math.abs(a.x - from.x) + Math.abs(a.y - from.y) -
+        (Math.abs(b.x - from.x) + Math.abs(b.y - from.y)),
+    );
+    return cands[0];
+  }
+
+  /** A pseudo-randomly chosen walkable FLOOR tile in the room. */
+  private randomWalkable(state: WorldState, orderly: Entity, room: Room): Vec2 | undefined {
+    const floor: Vec2[] = [];
+    for (let y = 0; y < room.height; y++) {
+      for (let x = 0; x < room.width; x++) {
+        const t = room.tiles[y * room.width + x];
+        if (t.kind === "FLOOR" && !t.solid) floor.push({ x, y });
+      }
+    }
+    if (floor.length === 0) return undefined;
+    return floor[this.orderlyRand(state, orderly, 7) % floor.length];
+  }
+
+  /** Turn an arrived orderly to face an adjacent point of interest, if any. */
+  private faceNearbyPoi(orderly: Entity, room: Room): void {
+    const dirs = [{ x: 0, y: -1 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }];
+    for (const d of dirs) {
+      const nx = orderly.pos.x + d.x;
+      const ny = orderly.pos.y + d.y;
+      if (nx < 0 || ny < 0 || nx >= room.width || ny >= room.height) continue;
+      if (this.isPoiKind(room.tiles[ny * room.width + nx].kind)) {
+        this.faceToward(orderly, { x: nx, y: ny });
+        return;
+      }
+    }
+  }
+
+  /** Deterministic per-(turn, entity, salt) pseudo-random uint. Keeps orderly
+   *  wandering stable across save/reload and replays — no global Math.random. */
+  private orderlyRand(state: WorldState, orderly: Entity, salt = 0): number {
+    let h = 2166136261;
+    for (let i = 0; i < orderly.id.length; i++) {
+      h ^= orderly.id.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    let x = (h ^ Math.imul(state.turn + 1, 2654435761) ^ Math.imul(salt + 1, 40503)) >>> 0;
+    x ^= x << 13; x >>>= 0;
+    x ^= x >>> 17;
+    x ^= x << 5; x >>>= 0;
+    return x >>> 0;
   }
 
   private canEnter(tiles: Tile[], w: number, h: number, p: Vec2): boolean {

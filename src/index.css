@@ -59,10 +59,24 @@ html, body, #root {
 .status-bar__module { color: var(--dim); }
 .status-bar__srp  { color: var(--dim); }
 .status-bar__desync { color: var(--red); animation: blink 1s step-end infinite; }
-.status-bar__compliance { font-weight: bold; padding: 0 .35rem; border: 1px solid currentColor; }
+.status-bar__compliance { display: inline-flex; align-items: center; gap: .3rem; font-weight: bold; padding: 0 .35rem; border: 1px solid currentColor; }
 .status-bar__compliance.is-green  { color: var(--cyan); }
 .status-bar__compliance.is-yellow { color: var(--red); }
 .status-bar__compliance.is-red    { color: var(--red); animation: blink 1s step-end infinite; }
+
+/* Compliance pip sprite — compliance-pips.png is 3 frames (green|yellow|red) of 32px. */
+.status-bar__pip {
+  width: 0.85em;
+  height: 0.85em;
+  flex-shrink: 0;
+  background-image: url(/assets/ui/compliance-pips.png);
+  background-repeat: no-repeat;
+  background-size: 300% 100%;
+  image-rendering: pixelated;
+}
+.status-bar__pip.is-green  { background-position: 0 0; }
+.status-bar__pip.is-yellow { background-position: 50% 0; }
+.status-bar__pip.is-red    { background-position: 100% 0; }
 .status-bar__effect { color: var(--cyan); font-variant-numeric: tabular-nums; }
 .status-bar__lockdown { color: var(--red); font-weight: bold; font-variant-numeric: tabular-nums; animation: blink 1s step-end infinite; }
 .status-bar__reset-btn {
@@ -409,6 +423,8 @@ body.theme-lattice {
 /* ── Title / main menu screen ────────────────────────────────────────────── */
 
 .title-screen {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -418,7 +434,37 @@ body.theme-lattice {
   background: var(--bg);
 }
 
+/* ── Title backdrop: static grid base + scrim ──────────────────────────────── */
+
+.title-screen__backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.title-screen__grid {
+  position: absolute;
+  inset: 0;
+  background: url(/assets/ui/grid-tile.png) repeat;
+  image-rendering: pixelated;
+}
+
+.title-screen__scrim {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(5, 8, 9, 0.55) 0%,
+    rgba(5, 8, 9, 0.82) 62%,
+    rgba(5, 8, 9, 0.96) 100%
+  );
+}
+
 .title-screen__inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;

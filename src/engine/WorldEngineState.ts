@@ -2,6 +2,7 @@
 // that returns an `EraSeed`, and `seedToWorldState` materialises it.
 
 import type {
+  ChestPayload,
   Entity,
   Era,
   ItemInstance,
@@ -28,7 +29,7 @@ export const SEED_VERSIONS: Record<Era, number> = {
   EREMITE: 3,
   MIRADOR: 3,
   NW_SMAC_01: 5,
-  TEST_MAP: 1,
+  TEST_MAP: 4,
 };
 
 export interface EraSeed {
@@ -42,6 +43,8 @@ export interface EraSeed {
   ventLinks?: VentLink[];
   /** Optional payload table for TERMINAL tiles. */
   terminals?: TerminalPayload[];
+  /** Optional loot tables for ITEM_CHEST tiles. */
+  chests?: ChestPayload[];
   /** Optional floor-item instances placed in rooms at seed time. */
   items?: ItemInstance[];
 }
@@ -74,6 +77,7 @@ export function emptyState(era: Era): WorldState {
     detained: false,
     ventLinks: new Map(),
     terminalPayloads: new Map(),
+    chestPayloads: new Map(),
     terminalsRead: new Set(),
     activeEmitters: [],
   };
@@ -97,6 +101,9 @@ export function seedToWorldState(seed: EraSeed): WorldState {
   }
   for (const t of seed.terminals ?? []) {
     state.terminalPayloads.set(roomTileKey(t.roomId, t.pos), t);
+  }
+  for (const c of seed.chests ?? []) {
+    state.chestPayloads.set(roomTileKey(c.roomId, c.pos), c);
   }
   for (const item of seed.items ?? []) {
     state.items.set(item.id, item);

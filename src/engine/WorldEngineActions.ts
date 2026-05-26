@@ -9,6 +9,7 @@ import { roomGraph } from "./RoomGraph";
 import { soundField } from "./SoundField";
 import { alignmentSession } from "./AlignmentSession";
 import { alertFSM } from "./AlertFSM";
+import { enforcerSystem } from "./EnforcerSystem";
 import { documentArchive } from "./DocumentArchive";
 import { lightField } from "./LightField";
 import { useTerminalStore } from "../state/useTerminalStore";
@@ -53,12 +54,12 @@ function entityAt(state: WorldState, roomId: string, p: Vec2) {
 }
 
 /** Flip the on/off state of a set of LIGHT_SOURCE tiles. Coupled toggle: if
- *  any is on, all go off; if all are off, all go on. Emits LIGHT_TOGGLED,
- *  invalidates the room's lit cache, propagates an intensity-2 click via
- *  SoundField, and — when darkening — immediately CAUTIONs enforcers in the
- *  affected room (synthetic AlertFSM sound input so they don't wait for the
- *  per-turn tick to react). Returns the new on/off state, or null if no
- *  valid targets. */
+ *  any is on, all go off; if all are off, all go on. Emits LIGHT_TOGGLED and
+ *  invalidates the room's lit cache. When darkening, asks EnforcerSystem to
+ *  react — but only enforcers that witness the toggle (the light is in their
+ *  vision cone) or remember the light being on while still in the room respond.
+ *  No SoundField click is emitted, so the toggle never alerts enforcers
+ *  elsewhere. Returns the new on/off state, or null if no valid targets. */
 function applyLightToggle(
   state: WorldState,
   room: Room,
@@ -87,28 +88,13 @@ function applyLightToggle(
     lightPositions: valid,
     on: next,
   });
-  soundField.emit({
-    roomId: room.id,
-    pos: originPos,
-    intensity: 2,
-    reason: "light_toggle",
-  });
-  // Immediate-CAUTION for enforcers in the darkening room — they perceive the
-  // lights dropping right away, not at end-of-turn. Re-lighting is silent
-  // toward enforcers (asymmetric by design — turning lights back on shouldn't
-  // un-CAUTION an already-suspicious enforcer).
+  // Perception-gated reaction for the darkening case — enforcers respond right
+  // away (not at end-of-turn) but only if they witness the toggle or remember
+  // the light being on in this room. Re-lighting is silent toward enforcers
+  // (asymmetric by design — turning lights back on shouldn't un-CAUTION an
+  // already-suspicious enforcer).
   if (!next) {
-    for (const entity of state.entities.values()) {
-      if (entity.kind !== "ENFORCER" || entity.status !== "ACTIVE") continue;
-      if (entity.roomId !== room.id) continue;
-      alertFSM.step(state, entity, {
-        seesPlayer: false,
-        heardIntensity: 2,
-        heardSrc: { roomId: room.id, pos: originPos },
-        playerPos: undefined,
-        playerRoomId: state.player.roomId,
-      });
-    }
+    enforcerSystem.reactToLightToggleOff(state, room, valid);
   }
   return next;
 }
@@ -915,6 +901,62 @@ export const actions = {
         roomId: state.player.roomId,
         pos: p,
         caseId,
+      });
+      return true;
+    }
+
+    // Item chest — adjacent ITEM_CHEST tile. Opening empties its loot table
+    // straight into inventory in one action; a locked chest first requires
+    // (and consumes) an OVERRIDE_KEY. An already-opened chest is inert (skip,
+    // so a later interaction can still resolve).
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const p: Vec2 = { x: state.player.pos.x + dx, y: state.player.pos.y + dy };
+      const t = tileAt(state, state.player.roomId, p);
+      if (!t || t.kind !== "ITEM_CHEST") continue;
+      const chest = state.chestPayloads.get(roomTileKey(state.player.roomId, p));
+      if (!chest || chest.opened) continue;
+      let keyIdx = -1;
+      if (chest.locked) {
+        keyIdx = state.player.inventory.findIndex((i) => i.itemType === "OVERRIDE_KEY");
+        if (keyIdx < 0) {
+          eventBus.emit("INTERACT_REJECTED", { action: "chest", reason: "locked" });
+          return false;
+        }
+      }
+      const facing = facingFromDelta(dx, dy);
+      if (facing && facing !== state.player.facing) {
+        state.player.facing = facing;
+        eventBus.emit("PLAYER_FACING_CHANGED", { facing });
+      }
+      if (keyIdx >= 0) state.player.inventory.splice(keyIdx, 1);
+      const previousAp = state.player.ap;
+      state.player.ap -= INTERACT_AP_COST;
+      eventBus.emit("PLAYER_AP_CHANGED", { previous: previousAp, current: state.player.ap });
+      let cubeHeld = state.player.inventory.some((i) => i.itemType === "EXTRACTION_CUBE");
+      chest.contents.forEach((itemType, i) => {
+        // Defensive: honour the one-cube-at-a-time carry rule even from a chest.
+        if (itemType === "EXTRACTION_CUBE") {
+          if (cubeHeld) return;
+          cubeHeld = true;
+        }
+        const held: ItemInstance = {
+          id: `chest-${state.player.roomId}-${p.x}-${p.y}-${i}`,
+          itemType,
+        };
+        state.player.inventory.push(held);
+        eventBus.emit("ITEM_PICKED_UP", { itemId: held.id, itemType });
+      });
+      chest.opened = true;
+      soundField.emit({
+        roomId: state.player.roomId,
+        pos: state.player.pos,
+        intensity: LOCKER_INTENSITY,
+        reason: "locker",
+      });
+      eventBus.emit("CHEST_OPENED", {
+        roomId: state.player.roomId,
+        pos: p,
+        contents: chest.contents,
       });
       return true;
     }

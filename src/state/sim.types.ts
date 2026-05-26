@@ -5,6 +5,7 @@
 import type {
   ActiveEmitter,
   AlertState,
+  ChestPayload,
   ComplianceTier,
   EntityId,
   EntityKind,
@@ -57,6 +58,7 @@ export interface PhysicalState {
   rooms: Map<RoomId, Room>;
   ventLinks: Map<string, VentEndpoint>;
   terminalPayloads: Map<string, TerminalPayload>;
+  chestPayloads: Map<string, ChestPayload>;
   playerRoomId: RoomId;
   playerPos: Vec2;
   /** Player Z-elevation slice. Optional for backwards compat. */
@@ -112,6 +114,7 @@ export interface SerializedPhysical {
   rooms: [string, Room][];
   ventLinks: [string, VentEndpoint][];
   terminalPayloads: [string, TerminalPayload][];
+  chestPayloads: [string, ChestPayload][];
   playerRoomId: RoomId;
   playerPos: Vec2;
   playerZ?: number;
