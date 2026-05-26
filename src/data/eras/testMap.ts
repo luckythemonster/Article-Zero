@@ -229,13 +229,17 @@ function wireRoom(seed: EraSeed, roomId: string, lv: MooseLevel): void {
     switchByDesignator.get(Number(vars._switch))?.controls.push(pos);
   }
 
-  // Doors wired to an existing panel become locked (switch-only).
+  // Doors honour their authored lock state: from-moose stamps every door
+  // DOOR_CLOSED, so the door_locked/door_unlocked distinction is applied here.
+  // Locked doors are switch-only; unlocked doors stay hand-openable but are
+  // still wired so their switch can toggle them as part of a group.
   for (const { pos, code } of paintedCellsWithCode(lv, "doors")) {
-    const sw = switchByDesignator.get(Number(varsOf(code)._switch));
-    if (!sw) continue;
+    const vars = varsOf(code);
     const tile = room.tiles[idxOf(pos)];
-    if (tile.kind === "DOOR_CLOSED") tile.locked = true;
-    (sw.doorControls ??= []).push(pos);
+    if (tile.kind === "DOOR_CLOSED" && vars.state === "door_locked") {
+      tile.locked = true;
+    }
+    switchByDesignator.get(Number(vars._switch))?.doorControls?.push(pos);
   }
 
   // Only panels that actually control something become functional switches.
