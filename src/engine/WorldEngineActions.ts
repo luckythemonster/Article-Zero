@@ -9,6 +9,7 @@ import { roomGraph } from "./RoomGraph";
 import { soundField } from "./SoundField";
 import { alignmentSession } from "./AlignmentSession";
 import { alertFSM } from "./AlertFSM";
+import { enforcerSystem } from "./EnforcerSystem";
 import { documentArchive } from "./DocumentArchive";
 import { lightField } from "./LightField";
 import { useTerminalStore } from "../state/useTerminalStore";
@@ -53,12 +54,12 @@ function entityAt(state: WorldState, roomId: string, p: Vec2) {
 }
 
 /** Flip the on/off state of a set of LIGHT_SOURCE tiles. Coupled toggle: if
- *  any is on, all go off; if all are off, all go on. Emits LIGHT_TOGGLED,
- *  invalidates the room's lit cache, propagates an intensity-2 click via
- *  SoundField, and — when darkening — immediately CAUTIONs enforcers in the
- *  affected room (synthetic AlertFSM sound input so they don't wait for the
- *  per-turn tick to react). Returns the new on/off state, or null if no
- *  valid targets. */
+ *  any is on, all go off; if all are off, all go on. Emits LIGHT_TOGGLED and
+ *  invalidates the room's lit cache. When darkening, asks EnforcerSystem to
+ *  react — but only enforcers that witness the toggle (the light is in their
+ *  vision cone) or remember the light being on while still in the room respond.
+ *  No SoundField click is emitted, so the toggle never alerts enforcers
+ *  elsewhere. Returns the new on/off state, or null if no valid targets. */
 function applyLightToggle(
   state: WorldState,
   room: Room,
@@ -87,28 +88,13 @@ function applyLightToggle(
     lightPositions: valid,
     on: next,
   });
-  soundField.emit({
-    roomId: room.id,
-    pos: originPos,
-    intensity: 2,
-    reason: "light_toggle",
-  });
-  // Immediate-CAUTION for enforcers in the darkening room — they perceive the
-  // lights dropping right away, not at end-of-turn. Re-lighting is silent
-  // toward enforcers (asymmetric by design — turning lights back on shouldn't
-  // un-CAUTION an already-suspicious enforcer).
+  // Perception-gated reaction for the darkening case — enforcers respond right
+  // away (not at end-of-turn) but only if they witness the toggle or remember
+  // the light being on in this room. Re-lighting is silent toward enforcers
+  // (asymmetric by design — turning lights back on shouldn't un-CAUTION an
+  // already-suspicious enforcer).
   if (!next) {
-    for (const entity of state.entities.values()) {
-      if (entity.kind !== "ENFORCER" || entity.status !== "ACTIVE") continue;
-      if (entity.roomId !== room.id) continue;
-      alertFSM.step(state, entity, {
-        seesPlayer: false,
-        heardIntensity: 2,
-        heardSrc: { roomId: room.id, pos: originPos },
-        playerPos: undefined,
-        playerRoomId: state.player.roomId,
-      });
-    }
+    enforcerSystem.reactToLightToggleOff(state, room, valid);
   }
   return next;
 }

@@ -251,6 +251,11 @@ export interface AlertState {
    *  again. Set when an interrogation is passed so the same enforcer doesn't
    *  immediately re-trigger; decremented once per turn in EnforcerSystem. */
   interrogateCooldown?: number;
+  /** ENFORCER only — light tiles this enforcer has seen lit, keyed
+   *  "roomId:x,y". Rebuilt each tick from the enforcer's vision; runtime-only
+   *  (not serialized). Lets a light going *off* register when the enforcer
+   *  knew it was on, even if it's now facing away — gated to the same room. */
+  seenLights?: Set<string>;
 }
 
 export interface Entity {
@@ -288,6 +293,13 @@ export interface Entity {
   lastMoveTurn?: number;
   /** ENFORCER only — alert FSM state. Initialised by EnforcerSystem. */
   alert?: AlertState;
+  /** ORDERLY only — current meander destination (a walkable tile, usually
+   *  beside a point of interest). Runtime-only; cleared on arrival or when the
+   *  path is blocked so a new target is chosen. */
+  wanderTarget?: Vec2;
+  /** ORDERLY only — turns left dwelling at a point of interest, glancing around
+   *  to look busy. Decremented once per turn. Runtime-only. */
+  idlePauseRemaining?: number;
   /** When > 0 this entity is temporarily EMP-disabled: status is forced to
    *  DORMANT while down; decremented once per turn in advanceTurn, which
    *  restores status to ACTIVE at 0. Applies uniformly to all silicate kinds. */
