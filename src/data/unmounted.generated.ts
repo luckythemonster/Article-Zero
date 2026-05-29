@@ -21,6 +21,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "wav"
   },
   {
+    "path": "added by Lucky/apex-19 theme.json",
+    "sizeBytes": 17991,
+    "ext": "json"
+  },
+  {
     "path": "added by Lucky/baffle theme.json",
     "sizeBytes": 17496,
     "ext": "json"
@@ -136,9 +141,29 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "wav"
   },
   {
+    "path": "added by Lucky/EIRA-7 final.zip",
+    "sizeBytes": 223605,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/emp grenade 3.aseprite",
+    "sizeBytes": 9437,
+    "ext": "aseprite"
+  },
+  {
+    "path": "added by Lucky/epic banananana.json",
+    "sizeBytes": 26546,
+    "ext": "json"
+  },
+  {
     "path": "added by Lucky/flashlight.png",
     "sizeBytes": 2052,
     "ext": "png"
+  },
+  {
+    "path": "added by Lucky/grenade explosion.aseprite",
+    "sizeBytes": 9418,
+    "ext": "aseprite"
   },
   {
     "path": "added by Lucky/John Sponky.json",
@@ -276,6 +301,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": ""
   },
   {
+    "path": "added by Lucky/reggae thing.json",
+    "sizeBytes": 28609,
+    "ext": "json"
+  },
+  {
     "path": "added by Lucky/SCIAlrm_Biohazard (Dry)_VZ_GN.wav",
     "sizeBytes": 1441058,
     "ext": "wav"
@@ -304,6 +334,16 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "path": "added by Lucky/security camera/Security_Camera.zip",
     "sizeBytes": 231999,
     "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/Security_Camera.zip",
+    "sizeBytes": 315706,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/sols theme.json",
+    "sizeBytes": 20713,
+    "ext": "json"
   },
   {
     "path": "added by Lucky/sound metadata/Essentials_Series_README.pdf",
@@ -346,6 +386,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": ""
   },
   {
+    "path": "added by Lucky/the ribs.json",
+    "sizeBytes": 58255,
+    "ext": "json"
+  },
+  {
     "path": "added by Lucky/UI tests/64x64 grid tile.png",
     "sizeBytes": 386,
     "ext": "png"
@@ -354,6 +399,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "path": "added by Lucky/UI tests/animated glitch tile.gif",
     "sizeBytes": 53867,
     "ext": "gif"
+  },
+  {
+    "path": "added by Lucky/UI tests/Article Zero UI.psd",
+    "sizeBytes": 3633623,
+    "ext": "psd"
   },
   {
     "path": "added by Lucky/UI tests/compliance pips.png",
@@ -444,6 +494,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "path": "added by Lucky/UIMvmt_Scroll 001_VZ_GN.wav",
     "sizeBytes": 9722,
     "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/vent-4 theme.json",
+    "sizeBytes": 11972,
+    "ext": "json"
   },
   {
     "path": "added by Lucky/VFX sprites _lasers_explosions_energy.zip",
