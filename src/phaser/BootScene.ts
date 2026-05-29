@@ -6,6 +6,7 @@ import { Phaser } from "../engine/EngineAdapter";
 import { CHAR_ANIMS } from "../data/char-anims";
 import { MOOSE_TILESETS } from "../data/tilesets/registry.generated";
 import { mooseAnimKey } from "../data/tilesets/anim-keys";
+import { VFX_EFFECTS } from "../data/vfx/registry";
 import { worldEngine } from "../engine/WorldEngine";
 import type { Era } from "../types/world.types";
 
@@ -35,11 +36,13 @@ export class BootScene extends Phaser.Scene {
       if (this.textures.exists(key)) continue;
       this.load.image(key, `/assets/items/bypass_drive/${dir}.png`);
     }
-    // EMP detonation animation frames (256×256 each, 9 frames).
-    for (let i = 1; i <= 9; i++) {
-      const key = `emp_frame_${i}`;
-      if (this.textures.exists(key)) continue;
-      this.load.image(key, `/assets/items/emp/frames_${String(i).padStart(4, "0")}.png`);
+    // Detonation / energy VFX sprite-strips (see src/data/vfx/registry.ts).
+    for (const e of VFX_EFFECTS) {
+      if (this.textures.exists(e.key)) continue;
+      this.load.spritesheet(e.key, e.path, {
+        frameWidth: e.frameSize,
+        frameHeight: e.frameSize,
+      });
     }
   }
 
@@ -84,12 +87,13 @@ export class BootScene extends Phaser.Scene {
       }
     }
 
-    // EMP detonation animation (9 frames, 18 fps, one-shot).
-    if (!this.anims.exists("emp_detonation")) {
+    // Detonation / energy VFX one-shot animations.
+    for (const e of VFX_EFFECTS) {
+      if (this.anims.exists(e.key)) continue;
       this.anims.create({
-        key: "emp_detonation",
-        frames: Array.from({ length: 9 }, (_, i) => ({ key: `emp_frame_${i + 1}` })),
-        frameRate: 18,
+        key: e.key,
+        frames: this.anims.generateFrameNumbers(e.key, { start: 0, end: e.frameCount - 1 }),
+        frameRate: e.frameRate,
         repeat: 0,
       });
     }

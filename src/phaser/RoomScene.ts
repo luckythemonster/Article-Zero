@@ -9,9 +9,14 @@ import { worldEngine } from "../engine/WorldEngine";
 import { enforcerSystem } from "../engine/EnforcerSystem";
 import { debugFlags } from "../engine/debugFlags";
 import { useTargetingStore } from "../state/useTargetingStore";
-import type { Entity, Facing, Room, Tile, TileKind, Vec2 } from "../types/world.types";
+import type { Entity, Facing, ItemType, Room, Tile, TileKind, Vec2 } from "../types/world.types";
 import { roomTileKey } from "../types/world.types";
 import { ITEM_METADATA } from "../data/items/itemMetadata";
+import {
+  DEFAULT_DETONATION_FX,
+  getVfxEffect,
+  ITEM_DETONATION_FX,
+} from "../data/vfx/registry";
 
 const TILE_PX = 32;
 const ELEVATION_PX_PER_STEP = 8;
@@ -963,13 +968,16 @@ export class RoomScene extends Phaser.Scene {
   private playDetonation(p: { itemType: string; roomId: string; pos: Vec2; radius: number }): void {
     const room = worldEngine.getCurrentRoom();
     if (!room || room.id !== p.roomId) return;
+    const key = ITEM_DETONATION_FX[p.itemType as ItemType] ?? DEFAULT_DETONATION_FX;
+    const effect = getVfxEffect(key);
+    if (!effect) return;
     const cx = p.pos.x * TILE_PX + TILE_PX / 2;
     const cy = p.pos.y * TILE_PX + TILE_PX / 2;
-    const fx = this.add.sprite(cx, cy, "emp_frame_1");
+    const fx = this.add.sprite(cx, cy, effect.key, 0);
     fx.setDepth(12);
     const targetPx = (2 * p.radius + 1) * TILE_PX;
-    fx.setScale(targetPx / 256);
-    fx.play("emp_detonation");
+    fx.setScale(targetPx / effect.frameSize);
+    fx.play(effect.key);
     fx.once("animationcomplete", () => fx.destroy());
   }
 }
