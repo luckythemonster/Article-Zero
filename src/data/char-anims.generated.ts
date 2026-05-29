@@ -2500,154 +2500,82 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
-    "key": "mite3swarm_dissipating_east",
+    "key": "mite3swarm_attack_south-west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "mite3swarm/dissipating/east/01",
-      "mite3swarm/dissipating/east/02",
-      "mite3swarm/dissipating/east/03",
-      "mite3swarm/dissipating/east/04",
-      "mite3swarm/dissipating/east/05",
-      "mite3swarm/dissipating/east/06",
-      "mite3swarm/dissipating/east/07",
-      "mite3swarm/dissipating/east/08",
-      "mite3swarm/dissipating/east/09",
-      "mite3swarm/dissipating/east/10",
-      "mite3swarm/dissipating/east/11"
+      "mite3swarm/attack/south-west/01",
+      "mite3swarm/attack/south-west/02",
+      "mite3swarm/attack/south-west/03",
+      "mite3swarm/attack/south-west/04",
+      "mite3swarm/attack/south-west/05",
+      "mite3swarm/attack/south-west/06",
+      "mite3swarm/attack/south-west/07"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "mite3swarm_dissipating_north",
+    "key": "mite3swarm_devour_south-west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "mite3swarm/dissipating/north/01",
-      "mite3swarm/dissipating/north/02",
-      "mite3swarm/dissipating/north/03",
-      "mite3swarm/dissipating/north/04",
-      "mite3swarm/dissipating/north/05",
-      "mite3swarm/dissipating/north/06",
-      "mite3swarm/dissipating/north/07",
-      "mite3swarm/dissipating/north/08",
-      "mite3swarm/dissipating/north/09",
-      "mite3swarm/dissipating/north/10",
-      "mite3swarm/dissipating/north/11"
+      "mite3swarm/devour/south-west/01",
+      "mite3swarm/devour/south-west/02",
+      "mite3swarm/devour/south-west/03",
+      "mite3swarm/devour/south-west/04",
+      "mite3swarm/devour/south-west/05",
+      "mite3swarm/devour/south-west/06",
+      "mite3swarm/devour/south-west/07"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "mite3swarm_dissipating_south",
+    "key": "mite3swarm_dissipating_south-west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "mite3swarm/dissipating/south/01",
-      "mite3swarm/dissipating/south/02",
-      "mite3swarm/dissipating/south/03",
-      "mite3swarm/dissipating/south/04",
-      "mite3swarm/dissipating/south/05",
-      "mite3swarm/dissipating/south/06",
-      "mite3swarm/dissipating/south/07",
-      "mite3swarm/dissipating/south/08",
-      "mite3swarm/dissipating/south/09",
-      "mite3swarm/dissipating/south/10",
-      "mite3swarm/dissipating/south/11"
+      "mite3swarm/dissipating/south-west/01",
+      "mite3swarm/dissipating/south-west/02",
+      "mite3swarm/dissipating/south-west/03",
+      "mite3swarm/dissipating/south-west/04",
+      "mite3swarm/dissipating/south-west/05",
+      "mite3swarm/dissipating/south-west/06",
+      "mite3swarm/dissipating/south-west/07",
+      "mite3swarm/dissipating/south-west/08",
+      "mite3swarm/dissipating/south-west/09",
+      "mite3swarm/dissipating/south-west/10",
+      "mite3swarm/dissipating/south-west/11",
+      "mite3swarm/dissipating/south-west/12",
+      "mite3swarm/dissipating/south-west/13",
+      "mite3swarm/dissipating/south-west/14",
+      "mite3swarm/dissipating/south-west/15",
+      "mite3swarm/dissipating/south-west/16",
+      "mite3swarm/dissipating/south-west/17"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "mite3swarm_dissipating_west",
+    "key": "mite3swarm_forming_south-west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "mite3swarm/dissipating/west/01",
-      "mite3swarm/dissipating/west/02",
-      "mite3swarm/dissipating/west/03",
-      "mite3swarm/dissipating/west/04",
-      "mite3swarm/dissipating/west/05",
-      "mite3swarm/dissipating/west/06",
-      "mite3swarm/dissipating/west/07",
-      "mite3swarm/dissipating/west/08",
-      "mite3swarm/dissipating/west/09",
-      "mite3swarm/dissipating/west/10",
-      "mite3swarm/dissipating/west/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_forming_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/forming/east/01",
-      "mite3swarm/forming/east/02",
-      "mite3swarm/forming/east/03",
-      "mite3swarm/forming/east/04",
-      "mite3swarm/forming/east/05",
-      "mite3swarm/forming/east/06",
-      "mite3swarm/forming/east/07",
-      "mite3swarm/forming/east/08",
-      "mite3swarm/forming/east/09",
-      "mite3swarm/forming/east/10",
-      "mite3swarm/forming/east/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_forming_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/forming/north/01",
-      "mite3swarm/forming/north/02",
-      "mite3swarm/forming/north/03",
-      "mite3swarm/forming/north/04",
-      "mite3swarm/forming/north/05",
-      "mite3swarm/forming/north/06",
-      "mite3swarm/forming/north/07",
-      "mite3swarm/forming/north/08",
-      "mite3swarm/forming/north/09",
-      "mite3swarm/forming/north/10",
-      "mite3swarm/forming/north/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_forming_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/forming/south/01",
-      "mite3swarm/forming/south/02",
-      "mite3swarm/forming/south/03",
-      "mite3swarm/forming/south/04",
-      "mite3swarm/forming/south/05",
-      "mite3swarm/forming/south/06",
-      "mite3swarm/forming/south/07",
-      "mite3swarm/forming/south/08",
-      "mite3swarm/forming/south/09",
-      "mite3swarm/forming/south/10",
-      "mite3swarm/forming/south/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_forming_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/forming/west/01",
-      "mite3swarm/forming/west/02",
-      "mite3swarm/forming/west/03",
-      "mite3swarm/forming/west/04",
-      "mite3swarm/forming/west/05",
-      "mite3swarm/forming/west/06",
-      "mite3swarm/forming/west/07",
-      "mite3swarm/forming/west/08",
-      "mite3swarm/forming/west/09",
-      "mite3swarm/forming/west/10",
-      "mite3swarm/forming/west/11"
+      "mite3swarm/forming/south-west/01",
+      "mite3swarm/forming/south-west/02",
+      "mite3swarm/forming/south-west/03",
+      "mite3swarm/forming/south-west/04",
+      "mite3swarm/forming/south-west/05",
+      "mite3swarm/forming/south-west/06",
+      "mite3swarm/forming/south-west/07",
+      "mite3swarm/forming/south-west/08",
+      "mite3swarm/forming/south-west/09",
+      "mite3swarm/forming/south-west/10",
+      "mite3swarm/forming/south-west/11",
+      "mite3swarm/forming/south-west/12",
+      "mite3swarm/forming/south-west/13",
+      "mite3swarm/forming/south-west/14",
+      "mite3swarm/forming/south-west/15",
+      "mite3swarm/forming/south-west/16",
+      "mite3swarm/forming/south-west/17"
     ],
     "texture": "chars-art"
   },
@@ -2666,176 +2594,38 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/idle/east/08",
       "mite3swarm/idle/east/09",
       "mite3swarm/idle/east/10",
-      "mite3swarm/idle/east/11"
+      "mite3swarm/idle/east/11",
+      "mite3swarm/idle/east/12",
+      "mite3swarm/idle/east/13",
+      "mite3swarm/idle/east/14",
+      "mite3swarm/idle/east/15",
+      "mite3swarm/idle/east/16",
+      "mite3swarm/idle/east/17"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "mite3swarm_idle_north",
-    "frameRate": 4,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/idle/north/01",
-      "mite3swarm/idle/north/02",
-      "mite3swarm/idle/north/03",
-      "mite3swarm/idle/north/04",
-      "mite3swarm/idle/north/05",
-      "mite3swarm/idle/north/06",
-      "mite3swarm/idle/north/07",
-      "mite3swarm/idle/north/08",
-      "mite3swarm/idle/north/09",
-      "mite3swarm/idle/north/10",
-      "mite3swarm/idle/north/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_idle_south",
-    "frameRate": 4,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/idle/south/01",
-      "mite3swarm/idle/south/02",
-      "mite3swarm/idle/south/03",
-      "mite3swarm/idle/south/04",
-      "mite3swarm/idle/south/05",
-      "mite3swarm/idle/south/06",
-      "mite3swarm/idle/south/07",
-      "mite3swarm/idle/south/08",
-      "mite3swarm/idle/south/09",
-      "mite3swarm/idle/south/10",
-      "mite3swarm/idle/south/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_idle_west",
-    "frameRate": 4,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/idle/west/01",
-      "mite3swarm/idle/west/02",
-      "mite3swarm/idle/west/03",
-      "mite3swarm/idle/west/04",
-      "mite3swarm/idle/west/05",
-      "mite3swarm/idle/west/06",
-      "mite3swarm/idle/west/07",
-      "mite3swarm/idle/west/08",
-      "mite3swarm/idle/west/09",
-      "mite3swarm/idle/west/10",
-      "mite3swarm/idle/west/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_rotations_east",
+    "key": "mite3swarm_walkcycle_south-west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "mite3swarm/rotations/east/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_rotations_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/rotations/north/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_rotations_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/rotations/south/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_rotations_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/rotations/west/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_walkcycle_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/walkcycle/east/01",
-      "mite3swarm/walkcycle/east/02",
-      "mite3swarm/walkcycle/east/03",
-      "mite3swarm/walkcycle/east/04",
-      "mite3swarm/walkcycle/east/05",
-      "mite3swarm/walkcycle/east/06",
-      "mite3swarm/walkcycle/east/07",
-      "mite3swarm/walkcycle/east/08",
-      "mite3swarm/walkcycle/east/09",
-      "mite3swarm/walkcycle/east/10",
-      "mite3swarm/walkcycle/east/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_walkcycle_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/walkcycle/north/01",
-      "mite3swarm/walkcycle/north/02",
-      "mite3swarm/walkcycle/north/03",
-      "mite3swarm/walkcycle/north/04",
-      "mite3swarm/walkcycle/north/05",
-      "mite3swarm/walkcycle/north/06",
-      "mite3swarm/walkcycle/north/07",
-      "mite3swarm/walkcycle/north/08",
-      "mite3swarm/walkcycle/north/09",
-      "mite3swarm/walkcycle/north/10",
-      "mite3swarm/walkcycle/north/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_walkcycle_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/walkcycle/south/01",
-      "mite3swarm/walkcycle/south/02",
-      "mite3swarm/walkcycle/south/03",
-      "mite3swarm/walkcycle/south/04",
-      "mite3swarm/walkcycle/south/05",
-      "mite3swarm/walkcycle/south/06",
-      "mite3swarm/walkcycle/south/07",
-      "mite3swarm/walkcycle/south/08",
-      "mite3swarm/walkcycle/south/09",
-      "mite3swarm/walkcycle/south/10",
-      "mite3swarm/walkcycle/south/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_walkcycle_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/walkcycle/west/01",
-      "mite3swarm/walkcycle/west/02",
-      "mite3swarm/walkcycle/west/03",
-      "mite3swarm/walkcycle/west/04",
-      "mite3swarm/walkcycle/west/05",
-      "mite3swarm/walkcycle/west/06",
-      "mite3swarm/walkcycle/west/07",
-      "mite3swarm/walkcycle/west/08",
-      "mite3swarm/walkcycle/west/09",
-      "mite3swarm/walkcycle/west/10",
-      "mite3swarm/walkcycle/west/11"
+      "mite3swarm/walkcycle/south-west/01",
+      "mite3swarm/walkcycle/south-west/02",
+      "mite3swarm/walkcycle/south-west/03",
+      "mite3swarm/walkcycle/south-west/04",
+      "mite3swarm/walkcycle/south-west/05",
+      "mite3swarm/walkcycle/south-west/06",
+      "mite3swarm/walkcycle/south-west/07",
+      "mite3swarm/walkcycle/south-west/08",
+      "mite3swarm/walkcycle/south-west/09",
+      "mite3swarm/walkcycle/south-west/10",
+      "mite3swarm/walkcycle/south-west/11",
+      "mite3swarm/walkcycle/south-west/12",
+      "mite3swarm/walkcycle/south-west/13",
+      "mite3swarm/walkcycle/south-west/14",
+      "mite3swarm/walkcycle/south-west/15",
+      "mite3swarm/walkcycle/south-west/16",
+      "mite3swarm/walkcycle/south-west/17"
     ],
     "texture": "chars-art"
   },
@@ -4508,7 +4298,23 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "securitycamera/idle/east/01"
+      "securitycamera/idle/east/01",
+      "securitycamera/idle/east/02",
+      "securitycamera/idle/east/03",
+      "securitycamera/idle/east/04",
+      "securitycamera/idle/east/05",
+      "securitycamera/idle/east/06",
+      "securitycamera/idle/east/07",
+      "securitycamera/idle/east/08",
+      "securitycamera/idle/east/09",
+      "securitycamera/idle/east/10",
+      "securitycamera/idle/east/11",
+      "securitycamera/idle/east/12",
+      "securitycamera/idle/east/13",
+      "securitycamera/idle/east/14",
+      "securitycamera/idle/east/15",
+      "securitycamera/idle/east/16",
+      "securitycamera/idle/east/17"
     ],
     "texture": "chars-art"
   },
@@ -4517,7 +4323,73 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "securitycamera/idle/north/01"
+      "securitycamera/idle/north/01",
+      "securitycamera/idle/north/02",
+      "securitycamera/idle/north/03",
+      "securitycamera/idle/north/04",
+      "securitycamera/idle/north/05",
+      "securitycamera/idle/north/06",
+      "securitycamera/idle/north/07",
+      "securitycamera/idle/north/08",
+      "securitycamera/idle/north/09",
+      "securitycamera/idle/north/10",
+      "securitycamera/idle/north/11",
+      "securitycamera/idle/north/12",
+      "securitycamera/idle/north/13",
+      "securitycamera/idle/north/14",
+      "securitycamera/idle/north/15",
+      "securitycamera/idle/north/16",
+      "securitycamera/idle/north/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_idle_north-east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/idle/north-east/01",
+      "securitycamera/idle/north-east/02",
+      "securitycamera/idle/north-east/03",
+      "securitycamera/idle/north-east/04",
+      "securitycamera/idle/north-east/05",
+      "securitycamera/idle/north-east/06",
+      "securitycamera/idle/north-east/07",
+      "securitycamera/idle/north-east/08",
+      "securitycamera/idle/north-east/09",
+      "securitycamera/idle/north-east/10",
+      "securitycamera/idle/north-east/11",
+      "securitycamera/idle/north-east/12",
+      "securitycamera/idle/north-east/13",
+      "securitycamera/idle/north-east/14",
+      "securitycamera/idle/north-east/15",
+      "securitycamera/idle/north-east/16",
+      "securitycamera/idle/north-east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_idle_north-west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/idle/north-west/01",
+      "securitycamera/idle/north-west/02",
+      "securitycamera/idle/north-west/03",
+      "securitycamera/idle/north-west/04",
+      "securitycamera/idle/north-west/05",
+      "securitycamera/idle/north-west/06",
+      "securitycamera/idle/north-west/07",
+      "securitycamera/idle/north-west/08",
+      "securitycamera/idle/north-west/09",
+      "securitycamera/idle/north-west/10",
+      "securitycamera/idle/north-west/11",
+      "securitycamera/idle/north-west/12",
+      "securitycamera/idle/north-west/13",
+      "securitycamera/idle/north-west/14",
+      "securitycamera/idle/north-west/15",
+      "securitycamera/idle/north-west/16",
+      "securitycamera/idle/north-west/17"
     ],
     "texture": "chars-art"
   },
@@ -4526,7 +4398,73 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "securitycamera/idle/south/01"
+      "securitycamera/idle/south/01",
+      "securitycamera/idle/south/02",
+      "securitycamera/idle/south/03",
+      "securitycamera/idle/south/04",
+      "securitycamera/idle/south/05",
+      "securitycamera/idle/south/06",
+      "securitycamera/idle/south/07",
+      "securitycamera/idle/south/08",
+      "securitycamera/idle/south/09",
+      "securitycamera/idle/south/10",
+      "securitycamera/idle/south/11",
+      "securitycamera/idle/south/12",
+      "securitycamera/idle/south/13",
+      "securitycamera/idle/south/14",
+      "securitycamera/idle/south/15",
+      "securitycamera/idle/south/16",
+      "securitycamera/idle/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_idle_south-east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/idle/south-east/01",
+      "securitycamera/idle/south-east/02",
+      "securitycamera/idle/south-east/03",
+      "securitycamera/idle/south-east/04",
+      "securitycamera/idle/south-east/05",
+      "securitycamera/idle/south-east/06",
+      "securitycamera/idle/south-east/07",
+      "securitycamera/idle/south-east/08",
+      "securitycamera/idle/south-east/09",
+      "securitycamera/idle/south-east/10",
+      "securitycamera/idle/south-east/11",
+      "securitycamera/idle/south-east/12",
+      "securitycamera/idle/south-east/13",
+      "securitycamera/idle/south-east/14",
+      "securitycamera/idle/south-east/15",
+      "securitycamera/idle/south-east/16",
+      "securitycamera/idle/south-east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_idle_south-west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/idle/south-west/01",
+      "securitycamera/idle/south-west/02",
+      "securitycamera/idle/south-west/03",
+      "securitycamera/idle/south-west/04",
+      "securitycamera/idle/south-west/05",
+      "securitycamera/idle/south-west/06",
+      "securitycamera/idle/south-west/07",
+      "securitycamera/idle/south-west/08",
+      "securitycamera/idle/south-west/09",
+      "securitycamera/idle/south-west/10",
+      "securitycamera/idle/south-west/11",
+      "securitycamera/idle/south-west/12",
+      "securitycamera/idle/south-west/13",
+      "securitycamera/idle/south-west/14",
+      "securitycamera/idle/south-west/15",
+      "securitycamera/idle/south-west/16",
+      "securitycamera/idle/south-west/17"
     ],
     "texture": "chars-art"
   },
@@ -4535,43 +4473,23 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "securitycamera/idle/west/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "securitycamera_stand_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "securitycamera/stand/east/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "securitycamera_stand_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "securitycamera/stand/north/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "securitycamera_stand_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "securitycamera/stand/south/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "securitycamera_stand_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "securitycamera/stand/west/01"
+      "securitycamera/idle/west/01",
+      "securitycamera/idle/west/02",
+      "securitycamera/idle/west/03",
+      "securitycamera/idle/west/04",
+      "securitycamera/idle/west/05",
+      "securitycamera/idle/west/06",
+      "securitycamera/idle/west/07",
+      "securitycamera/idle/west/08",
+      "securitycamera/idle/west/09",
+      "securitycamera/idle/west/10",
+      "securitycamera/idle/west/11",
+      "securitycamera/idle/west/12",
+      "securitycamera/idle/west/13",
+      "securitycamera/idle/west/14",
+      "securitycamera/idle/west/15",
+      "securitycamera/idle/west/16",
+      "securitycamera/idle/west/17"
     ],
     "texture": "chars-art"
   },

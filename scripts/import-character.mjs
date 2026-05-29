@@ -22,6 +22,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const ART_DIR = path.join(ROOT, "art");
 const CARDINAL = new Set(["north", "south", "east", "west"]);
+const ALL_DIRECTIONS = new Set(["north", "south", "east", "west", "north-east", "north-west", "south-east", "south-west"]);
 
 // mode: "replace" wipes art/<slug> first; "merge" overwrites only the mapped
 // anim folders (keeps other existing anims).
@@ -73,18 +74,27 @@ const SLUG_MAPS = {
       walk_cycle: "walkcycle",
     },
   },
-  // Security camera: rotation sequences (17 frames each). Keep rotations only;
-  // idle and stand have single directions and would create sparse grids.
+  // Security camera: 8 directions for smooth full-rotation animation.
+  // All direction blocks (animation/animation_2-8) feed the same "idle" key.
   securitycamera: {
     mode: "replace",
+    allDirections: true,
     anims: {
-      "rotates_counter-clock": "rotations",
+      animation: "idle",
+      animation_2: "idle",
+      animation_3: "idle",
+      animation_4: "idle",
+      animation_5: "idle",
+      animation_6: "idle",
+      animation_7: "idle",
+      animation_8: "idle",
     },
   },
   // MITE-3: swarm coalesces and dissolves. Sparse directional coverage
-  // (only south-west for most anims); import what survives NSEW filter.
+  // (east for idle, south-west for others). Include diagonals for available frames.
   mite3swarm: {
     mode: "replace",
+    allDirections: true,
     anims: {
       coalesce: "forming",
       dissolve: "dissipating",
@@ -110,6 +120,8 @@ async function main() {
   if (!map) {
     die(`no anim map for slug "${slug}" (known: ${Object.keys(SLUG_MAPS).join(", ")})`);
   }
+  const useAllDirections = map.allDirections || false;
+  const directionFilter = useAllDirections ? ALL_DIRECTIONS : CARDINAL;
   const zipPath = path.resolve(input);
   if (!existsSync(zipPath)) die(`not found: ${zipPath}`);
 
@@ -138,7 +150,7 @@ async function main() {
     // Group by (target anim, cardinal dir).
     const groups = new Map();
     for (const f of frames) {
-      if (!CARDINAL.has(f.dir)) continue;
+      if (!directionFilter.has(f.dir)) continue;
       const targets = map.anims[f.anim];
       if (!targets) continue;
       for (const t of Array.isArray(targets) ? targets : [targets]) {
