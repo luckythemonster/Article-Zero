@@ -87,6 +87,7 @@ export function serializeSubjective(s: SubjectiveState): SerializedSubjective {
     worldItems: Array.from(s.worldItems.entries()),
     documentCases: Array.from(s.documentCases.entries()),
     activeEmitters: s.activeEmitters.map((e) => ({ ...e })),
+    activeMines: s.activeMines.map((m) => ({ ...m })),
   };
 }
 
@@ -121,5 +122,6 @@ export function deserializeSubjective(s: SerializedSubjective): SubjectiveState 
     worldItems: new Map(s.worldItems),
     documentCases: new Map(s.documentCases),
     activeEmitters: (s.activeEmitters ?? []).map((e) => ({ ...e })),
+    activeMines: (s.activeMines ?? []).map((m) => ({ ...m })),
   };
 }

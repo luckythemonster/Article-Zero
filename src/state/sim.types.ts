@@ -4,6 +4,7 @@
 
 import type {
   ActiveEmitter,
+  ActiveMine,
   AlertState,
   ChestPayload,
   ComplianceTier,
@@ -104,6 +105,7 @@ export interface SubjectiveState {
   worldItems: Map<string, ItemInstance>;
   documentCases: Map<string, DocumentCase>;
   activeEmitters: ActiveEmitter[];
+  activeMines: ActiveMine[];
 }
 
 // ── Serialised forms (JSON-safe: Map → array-of-pairs, Set → array) ───────────
@@ -147,6 +149,7 @@ export interface SerializedSubjective {
   worldItems: [string, ItemInstance][];
   documentCases: [string, DocumentCase][];
   activeEmitters?: ActiveEmitter[];
+  activeMines?: ActiveMine[];
 }
 
 export interface SimSnapshot {

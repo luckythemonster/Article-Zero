@@ -80,6 +80,7 @@ export function emptyState(era: Era): WorldState {
     chestPayloads: new Map(),
     terminalsRead: new Set(),
     activeEmitters: [],
+    activeMines: [],
   };
 }
 

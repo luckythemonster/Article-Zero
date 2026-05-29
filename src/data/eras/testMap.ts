@@ -105,6 +105,7 @@ function resolveItemName(raw: string): ItemType | null {
   const s = raw.trim().toLowerCase();
   if (s.includes("emp") && s.includes("grenade")) return "EMP_GRENADE";
   if (s === "emp") return "EMP";
+  if (s.includes("mine")) return "Q_MINE";
   if (s.includes("key") || s.includes("override")) return "OVERRIDE_KEY";
   if (s.includes("baffle")) return "THERMAL_BAFFLE";
   if (s.includes("badge") || s.includes("spoof")) return "Q0_SPOOF_BADGE";
@@ -115,6 +116,7 @@ function resolveItemName(raw: string): ItemType | null {
   const known: ItemType[] = [
     "EXTRACTION_CUBE", "BYPASS_DRIVE", "PHANTOM_EMITTER", "Q0_SPOOF_BADGE",
     "DUMP_FRAGMENT", "THERMAL_BAFFLE", "OVERRIDE_KEY", "EMP", "EMP_GRENADE",
+    "Q_MINE",
   ];
   const upper = raw.trim().toUpperCase() as ItemType;
   if (known.includes(upper)) return upper;
@@ -501,6 +503,7 @@ export function testMapEra(): EraSeed {
   seed.player.inventory.push({ id: "thermal-baffle-1", itemType: "THERMAL_BAFFLE" });
   seed.player.inventory.push({ id: "emp-grenade-1", itemType: "EMP_GRENADE" });
   seed.player.inventory.push({ id: "override-key-1", itemType: "OVERRIDE_KEY" });
+  seed.player.inventory.push({ id: "q-mine-1", itemType: "Q_MINE" });
 
   return seed;
 }

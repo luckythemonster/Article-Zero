@@ -236,6 +236,7 @@ class WorldEngine {
     s.player.spoofTurnsRemaining = undefined;
     s.player.baffleTurnsRemaining = undefined;
     s.activeEmitters = [];
+    s.activeMines = [];
     documentArchive.reset();
     alignmentSession.reset();
     interrogationSession.reset();
@@ -326,6 +327,7 @@ class WorldEngine {
       worldItems: new Map(),
       documentCases: new Map(),
       activeEmitters: [],
+      activeMines: [],
     };
   }
 
@@ -433,6 +435,10 @@ class WorldEngine {
     const wasDetected = s.detected;
     s.detected = false;
     enforcerSystem.tick(s, heard);
+    // Detonate placed Q-mines an enforcer just stepped within range of (positions
+    // are now current for this turn). A triggered enforcer starts fleeing to exfil
+    // on its next tick.
+    enforcerSystem.scanMines(s);
     if (wasDetected && !s.detected) {
       eventBus.emit("PLAYER_DETECTION_CLEARED", {});
     }

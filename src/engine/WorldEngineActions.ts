@@ -281,8 +281,10 @@ const EMP_RADIUS = 5;
 const EMP_DISABLE_TURNS = 4;
 const EMP_GRENADE_RADIUS = 3;
 const EMP_GRENADE_MAX_THROW = 6;
+const Q_MINE_RADIUS = 3;
 
 let emitterCounter = 0;
+let mineCounter = 0;
 
 function useEmitter(state: WorldState, _item: ItemInstance): boolean {
   // Deploy on the tile in front of the player; if that tile is blocked or
@@ -313,6 +315,36 @@ function useEmitter(state: WorldState, _item: ItemInstance): boolean {
     roomId: state.player.roomId,
     pos,
     turnsRemaining: PHANTOM_EMITTER_TURNS,
+  });
+  return true;
+}
+
+function useQMine(state: WorldState, _item: ItemInstance): boolean {
+  // Place on the tile in front of the player; if that tile is blocked or
+  // out-of-bounds, fall back to the player's own tile (mirrors useEmitter).
+  const f = state.player.facing;
+  const fx = f === "east" ? 1 : f === "west" ? -1 : 0;
+  const fy = f === "south" ? 1 : f === "north" ? -1 : 0;
+  let pos: Vec2 = {
+    x: state.player.pos.x + fx,
+    y: state.player.pos.y + fy,
+  };
+  const front = tileAt(state, state.player.roomId, pos);
+  if (!front || front.solid) {
+    pos = { ...state.player.pos };
+  }
+  mineCounter += 1;
+  state.activeMines.push({
+    id: `qmine-${state.turn}-${mineCounter}`,
+    roomId: state.player.roomId,
+    pos,
+    radius: Q_MINE_RADIUS,
+  });
+  eventBus.emit("ITEM_DEPLOYED", {
+    itemType: "Q_MINE",
+    roomId: state.player.roomId,
+    pos,
+    turnsRemaining: 0,
   });
   return true;
 }
@@ -1284,6 +1316,9 @@ export const actions = {
     switch (itemType) {
       case "PHANTOM_EMITTER":
         ok = useEmitter(state, item);
+        break;
+      case "Q_MINE":
+        ok = useQMine(state, item);
         break;
       case "Q0_SPOOF_BADGE":
         ok = useSpoofBadge(state);

@@ -89,6 +89,7 @@ export function worldStateToSlices(ws: WorldState): {
     // persist through the physical/subjective save format.
     documentCases: new Map(documentArchive.list().map((c) => [c.id, c])),
     activeEmitters: ws.activeEmitters.map((e) => ({ ...e })),
+    activeMines: ws.activeMines.map((m) => ({ ...m })),
   };
 
   return { physical, subjective };
@@ -164,5 +165,6 @@ export function slicesToWorldState(
     chestPayloads: new Map(physical.chestPayloads),
     terminalsRead: new Set(subjective.terminalsRead),
     activeEmitters: subjective.activeEmitters.map((e) => ({ ...e })),
+    activeMines: subjective.activeMines.map((m) => ({ ...m })),
   };
 }

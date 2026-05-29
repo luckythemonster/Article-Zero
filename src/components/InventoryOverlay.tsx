@@ -23,6 +23,7 @@ const USABLE: ItemType[] = [
   "OVERRIDE_KEY",
   "EMP",
   "EMP_GRENADE",
+  "Q_MINE",
 ];
 
 // Items that need a target tile — selecting these enters targeting mode

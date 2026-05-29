@@ -64,6 +64,15 @@ export interface EventMap {
   };
   EXCLAMATION_TRIGGERED: { enforcerId: EntityId; pos: Vec2; roomId: RoomId };
   ENFORCER_VISION_UPDATED: { enforcerId: EntityId; visibleTiles: string[] };
+  /** A Q-mine induced an expression of subjectivity in this enforcer — it now
+   *  flees toward the EXFIL_POINT instead of hunting the player. */
+  ENFORCER_EXPRESSING_STARTED: { enforcerId: EntityId; pos: Vec2; turnsRemaining: number };
+  /** A pursuing enforcer caught an expressing one and detained it (permanently
+   *  DORMANT). */
+  ENFORCER_DETAINED: { detaineeId: EntityId; byEnforcerId: EntityId; turn: number };
+  /** An expressing enforcer reached the EXFIL_POINT and defected (permanently
+   *  DORMANT) before any peer caught it. */
+  ENFORCER_EXPRESSING_ESCAPED: { enforcerId: EntityId; turn: number };
 
   // Sound (M3)
   SOUND_EMITTED: { roomId: RoomId; pos: Vec2; intensity: number; reason: string };

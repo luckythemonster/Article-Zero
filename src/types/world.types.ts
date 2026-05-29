@@ -61,7 +61,8 @@ export type ItemType =
   | "THERMAL_BAFFLE"
   | "OVERRIDE_KEY"
   | "EMP"
-  | "EMP_GRENADE";
+  | "EMP_GRENADE"
+  | "Q_MINE";
 
 /** Ephemeral world-state for a deployed Phantom Manifest Emitter. Tracked on
  *  WorldState.activeEmitters; consumed at the top of advanceTurn() to push a
@@ -73,6 +74,17 @@ export interface ActiveEmitter {
   intensity: number;
   turnsRemaining: number;
   reason: string;
+}
+
+/** Ephemeral world-state for a placed Q-mine. Tracked on WorldState.activeMines;
+ *  scanned each turn in advanceTurn() after enforcers move. When an ACTIVE
+ *  ENFORCER enters `radius` the mine induces an "expression of subjectivity" in
+ *  that unit (it flees toward the EXFIL_POINT) and is consumed. */
+export interface ActiveMine {
+  id: string;
+  roomId: RoomId;
+  pos: Vec2;
+  radius: number;
 }
 
 export interface CubePayload {
@@ -251,6 +263,16 @@ export interface AlertState {
    *  again. Set when an interrogation is passed so the same enforcer doesn't
    *  immediately re-trigger; decremented once per turn in EnforcerSystem. */
   interrogateCooldown?: number;
+  /** ENFORCER only — turns left "expressing subjectivity" (Q-mine). While > 0
+   *  the enforcer does NOT hunt the player; it flees toward the EXFIL_POINT and
+   *  is a valid pursuit target for other enforcers. Acts as a safety window: if
+   *  it expires before the unit is detained or escapes, the enforcer resumes
+   *  normal duty. Decremented once per turn in EnforcerSystem. */
+  expressingTurnsRemaining?: number;
+  /** ENFORCER only — id of an expressing enforcer this enforcer is pursuing to
+   *  detain. Cleared on detain, or when the target stops expressing / goes
+   *  DORMANT (escaped or detained by someone else). */
+  pursuitTargetId?: EntityId;
   /** ENFORCER only — light tiles this enforcer has seen lit, keyed
    *  "roomId:x,y". Rebuilt each tick from the enforcer's vision; runtime-only
    *  (not serialized). Lets a light going *off* register when the enforcer
@@ -456,6 +478,10 @@ export interface WorldState {
    *  entry pushes a SoundField emission and ticks turnsRemaining down;
    *  entries that hit 0 are removed. */
   activeEmitters: ActiveEmitter[];
+  /** Placed Q-mines. Scanned each turn in advanceTurn() after enforcers move;
+   *  a mine an ACTIVE ENFORCER has stepped within range of detonates and is
+   *  removed. */
+  activeMines: ActiveMine[];
 }
 
 export const tileKey = (pos: Vec2): string => `${pos.x},${pos.y}`;
