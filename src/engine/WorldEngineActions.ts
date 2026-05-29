@@ -632,6 +632,23 @@ export const actions = {
     eventBus.emit("PLAYER_PEEKED", { facing: null });
   },
 
+  /** Re-orient to face `facing` without moving. Costs 0 AP. Refused while
+   *  detained or hidden. A deliberate re-orient cancels an active peek. */
+  turn(state: WorldState, facing: Facing): boolean {
+    if (state.detained) return false;
+    if (state.player.hidingTileKey) return false;
+    if (state.player.facing === facing && !state.player.peeking) return false;
+    if (state.player.peeking) {
+      state.player.peeking = undefined;
+      eventBus.emit("PLAYER_PEEKED", { facing: null });
+    }
+    if (state.player.facing !== facing) {
+      state.player.facing = facing;
+      eventBus.emit("PLAYER_FACING_CHANGED", { facing });
+    }
+    return true;
+  },
+
   interact(state: WorldState): boolean {
     if (state.detained || state.player.ap < INTERACT_AP_COST) return false;
 

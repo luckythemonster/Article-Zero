@@ -154,6 +154,15 @@ class WorldEngine {
     return ok;
   };
 
+  turn = (facing: Facing) => {
+    const ok = actions.turn(this.getState(), facing);
+    if (ok) {
+      this.recomputeFOV();
+      this.syncStore();
+    }
+    return ok;
+  };
+
   useItem = (itemType: ItemType) => {
     const ok = actions.useItem(this.getState(), itemType);
     if (ok) {
