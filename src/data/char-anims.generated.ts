@@ -1005,194 +1005,119 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
-    "key": "eira7_powerfailure_east",
-    "frameRate": 8,
+    "key": "eira7_idle_east",
+    "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "eira7/powerfailure/east/01",
-      "eira7/powerfailure/east/02",
-      "eira7/powerfailure/east/03",
-      "eira7/powerfailure/east/04",
-      "eira7/powerfailure/east/05"
+      "eira7/idle/east/01",
+      "eira7/idle/east/02",
+      "eira7/idle/east/03",
+      "eira7/idle/east/04"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_powerfailure_north",
-    "frameRate": 8,
+    "key": "eira7_idle_north",
+    "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "eira7/powerfailure/north/01",
-      "eira7/powerfailure/north/02",
-      "eira7/powerfailure/north/03",
-      "eira7/powerfailure/north/04",
-      "eira7/powerfailure/north/05"
+      "eira7/idle/north/01",
+      "eira7/idle/north/02",
+      "eira7/idle/north/03",
+      "eira7/idle/north/04"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_powerfailure_south",
-    "frameRate": 8,
+    "key": "eira7_idle_south",
+    "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "eira7/powerfailure/south/01",
-      "eira7/powerfailure/south/02",
-      "eira7/powerfailure/south/03",
-      "eira7/powerfailure/south/04",
-      "eira7/powerfailure/south/05"
+      "eira7/idle/south/01",
+      "eira7/idle/south/02",
+      "eira7/idle/south/03",
+      "eira7/idle/south/04",
+      "eira7/idle/south/05",
+      "eira7/idle/south/06",
+      "eira7/idle/south/07",
+      "eira7/idle/south/08",
+      "eira7/idle/south/09",
+      "eira7/idle/south/10",
+      "eira7/idle/south/11",
+      "eira7/idle/south/12",
+      "eira7/idle/south/13",
+      "eira7/idle/south/14",
+      "eira7/idle/south/15"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_powerfailure_west",
-    "frameRate": 8,
+    "key": "eira7_idle_west",
+    "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "eira7/powerfailure/west/01",
-      "eira7/powerfailure/west/02",
-      "eira7/powerfailure/west/03",
-      "eira7/powerfailure/west/04",
-      "eira7/powerfailure/west/05"
+      "eira7/idle/west/01",
+      "eira7/idle/west/02",
+      "eira7/idle/west/03",
+      "eira7/idle/west/04"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_pulse_east",
+    "key": "eira7_interact_east",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "eira7/pulse/east/01",
-      "eira7/pulse/east/02",
-      "eira7/pulse/east/03",
-      "eira7/pulse/east/04",
-      "eira7/pulse/east/05"
+      "eira7/interact/east/01",
+      "eira7/interact/east/02",
+      "eira7/interact/east/03",
+      "eira7/interact/east/04"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_pulse_north",
+    "key": "eira7_interact_north",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "eira7/pulse/north/01",
-      "eira7/pulse/north/02",
-      "eira7/pulse/north/03",
-      "eira7/pulse/north/04",
-      "eira7/pulse/north/05"
+      "eira7/interact/north/01",
+      "eira7/interact/north/02",
+      "eira7/interact/north/03"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_pulse_south",
+    "key": "eira7_interact_south",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "eira7/pulse/south/01",
-      "eira7/pulse/south/02",
-      "eira7/pulse/south/03",
-      "eira7/pulse/south/04",
-      "eira7/pulse/south/05"
+      "eira7/interact/south/01",
+      "eira7/interact/south/02",
+      "eira7/interact/south/03",
+      "eira7/interact/south/04",
+      "eira7/interact/south/05",
+      "eira7/interact/south/06",
+      "eira7/interact/south/07",
+      "eira7/interact/south/08",
+      "eira7/interact/south/09",
+      "eira7/interact/south/10",
+      "eira7/interact/south/11",
+      "eira7/interact/south/12",
+      "eira7/interact/south/13",
+      "eira7/interact/south/14",
+      "eira7/interact/south/15"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_pulse_west",
+    "key": "eira7_interact_west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "eira7/pulse/west/01",
-      "eira7/pulse/west/02",
-      "eira7/pulse/west/03",
-      "eira7/pulse/west/04",
-      "eira7/pulse/west/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rise_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rise/east/01",
-      "eira7/rise/east/02",
-      "eira7/rise/east/03",
-      "eira7/rise/east/04",
-      "eira7/rise/east/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rise_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rise/north/01",
-      "eira7/rise/north/02",
-      "eira7/rise/north/03",
-      "eira7/rise/north/04",
-      "eira7/rise/north/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rise_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rise/south/01",
-      "eira7/rise/south/02",
-      "eira7/rise/south/03",
-      "eira7/rise/south/04",
-      "eira7/rise/south/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rise_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rise/west/01",
-      "eira7/rise/west/02",
-      "eira7/rise/west/03",
-      "eira7/rise/west/04",
-      "eira7/rise/west/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rotations_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rotations/east/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rotations_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rotations/north/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rotations_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rotations/south/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rotations_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rotations/west/01"
+      "eira7/interact/west/01",
+      "eira7/interact/west/02",
+      "eira7/interact/west/03",
+      "eira7/interact/west/04"
     ],
     "texture": "chars-art"
   },
@@ -1204,8 +1129,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/walkcycle/east/01",
       "eira7/walkcycle/east/02",
       "eira7/walkcycle/east/03",
-      "eira7/walkcycle/east/04",
-      "eira7/walkcycle/east/05"
+      "eira7/walkcycle/east/04"
     ],
     "texture": "chars-art"
   },
@@ -1216,9 +1140,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "eira7/walkcycle/north/01",
       "eira7/walkcycle/north/02",
-      "eira7/walkcycle/north/03",
-      "eira7/walkcycle/north/04",
-      "eira7/walkcycle/north/05"
+      "eira7/walkcycle/north/03"
     ],
     "texture": "chars-art"
   },
@@ -1231,7 +1153,17 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/walkcycle/south/02",
       "eira7/walkcycle/south/03",
       "eira7/walkcycle/south/04",
-      "eira7/walkcycle/south/05"
+      "eira7/walkcycle/south/05",
+      "eira7/walkcycle/south/06",
+      "eira7/walkcycle/south/07",
+      "eira7/walkcycle/south/08",
+      "eira7/walkcycle/south/09",
+      "eira7/walkcycle/south/10",
+      "eira7/walkcycle/south/11",
+      "eira7/walkcycle/south/12",
+      "eira7/walkcycle/south/13",
+      "eira7/walkcycle/south/14",
+      "eira7/walkcycle/south/15"
     ],
     "texture": "chars-art"
   },
@@ -1243,8 +1175,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/walkcycle/west/01",
       "eira7/walkcycle/west/02",
       "eira7/walkcycle/west/03",
-      "eira7/walkcycle/west/04",
-      "eira7/walkcycle/west/05"
+      "eira7/walkcycle/west/04"
     ],
     "texture": "chars-art"
   },

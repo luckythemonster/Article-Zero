@@ -63,12 +63,13 @@ const SLUG_MAPS = {
       busy_animation: "idle",
     },
   },
-  // EIRA-7's new export (animation/interact/walk_cycle) does not cover the
-  // engine-referenced powerfailure/pulse/rise/rotations set, so only refresh
-  // walkcycle and leave the curated anims untouched.
+  // EIRA-7: all-new character design at 68×68. Maps all cardinal-direction
+  // animations exported from Ed/SpriteForge.
   eira7: {
-    mode: "merge",
+    mode: "replace",
     anims: {
+      animation: "idle",
+      interact: "interact",
       walk_cycle: "walkcycle",
     },
   },
