@@ -72,6 +72,27 @@ const SLUG_MAPS = {
       walk_cycle: "walkcycle",
     },
   },
+  // Security camera: rotation sequences (17 frames each). Keep rotations only;
+  // idle and stand have single directions and would create sparse grids.
+  securitycamera: {
+    mode: "replace",
+    anims: {
+      "rotates_counter-clock": "rotations",
+    },
+  },
+  // MITE-3: swarm coalesces and dissolves. Sparse directional coverage
+  // (only south-west for most anims); import what survives NSEW filter.
+  mite3swarm: {
+    mode: "replace",
+    anims: {
+      coalesce: "forming",
+      dissolve: "dissipating",
+      animation: "idle",
+      animation_2: "walkcycle",
+      attack: "attack",
+      devour_opponent: "devour",
+    },
+  },
 };
 
 function die(msg) {
