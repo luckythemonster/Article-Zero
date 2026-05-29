@@ -8,6 +8,7 @@
 import type { Doorway, RoomId, Vec2, WorldState } from "../types/world.types";
 import { roomGraph } from "./RoomGraph";
 import { eventBus } from "./EventBus";
+import { atmosphericsField } from "./AtmosphericsField";
 
 export const OPEN_DOOR_ATTEN = 2;
 export const CLOSED_DOOR_ATTEN = 6;
@@ -114,7 +115,11 @@ class SoundField {
         const next = edge.doorway.to;
         if (seen.has(next)) continue;
         const atten = edge.closed ? CLOSED_DOOR_ATTEN : OPEN_DOOR_ATTEN;
-        const nextIntensity = cur.intensity - atten;
+        // Airflow in the destination room masks footsteps with vent rush;
+        // attenuates pull-style so SoundField doesn't have to know about
+        // atmospheric state.
+        const airflowAtten = atmosphericsField.airflowDampFor(state, next);
+        const nextIntensity = cur.intensity - atten - airflowAtten;
         if (nextIntensity <= 0) continue;
         seen.add(next);
         reach.set(next, nextIntensity);

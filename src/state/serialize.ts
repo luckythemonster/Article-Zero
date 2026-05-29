@@ -29,6 +29,8 @@ export function serializePhysical(p: PhysicalState): SerializedPhysical {
     playerFacing: p.playerFacing,
     entityPositions: Array.from(p.entityPositions.entries()),
     entityKinds: Array.from(p.entityKinds.entries()),
+    atmosphere: p.atmosphere ? Array.from(p.atmosphere.entries()) : undefined,
+    hvacZones: p.hvacZones ? Array.from(p.hvacZones.entries()) : undefined,
   };
 }
 
@@ -59,6 +61,8 @@ export function deserializePhysical(s: SerializedPhysical): PhysicalState {
     playerFacing: s.playerFacing,
     entityPositions,
     entityKinds: new Map(s.entityKinds),
+    atmosphere: s.atmosphere ? new Map(s.atmosphere) : new Map(),
+    hvacZones: s.hvacZones ? new Map(s.hvacZones) : new Map(),
   };
 }
 

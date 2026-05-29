@@ -7,6 +7,7 @@ import type {
   EntityId,
   Era,
   Facing,
+  HvacMode,
   ItemType,
   RoomId,
   Stance,
@@ -146,6 +147,34 @@ export interface EventMap {
   PHASE_RESTART_REQUESTED: { reason: string };
   OXYGEN_TICK: { remainingSeconds: number; totalSeconds: number };
   CLIMAX_ESCAPED: Record<string, never>;
+
+  // Atmospherics
+  HVAC_CONSOLE_OPENED: {
+    terminalId: string;
+    roomId: RoomId;
+    pos: Vec2;
+    zoneIds: string[];
+  };
+  WALL_THERMOSTAT_OPENED: {
+    terminalId: string;
+    roomId: RoomId;
+    pos: Vec2;
+    zoneId: string;
+  };
+  ATMOSPHERICS_DISMISSED: Record<string, never>;
+  HVAC_ZONE_SET: { zoneId: string; mode: HvacMode; setpoint: number };
+  ROOM_ATMOSPHERE_CHANGED: {
+    roomId: RoomId;
+    temperature: number;
+    airflow: number;
+    oxygen: number;
+    mode: HvacMode;
+  };
+  ENTITY_INCAPACITATED_BY_OXYGEN: {
+    entityId: EntityId;
+    roomId: RoomId;
+    turnsRemaining: number;
+  };
 }
 
 export type EventName = keyof EventMap;

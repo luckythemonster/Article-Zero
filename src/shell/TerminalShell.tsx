@@ -9,6 +9,8 @@ import ArchivistIntro from "./ArchivistIntro";
 import { PhaserCanvas } from "./PhaserCanvas";
 import InterrogationTerminal from "../components/InterrogationTerminal";
 import EnforcerInterrogationModal from "../components/EnforcerInterrogationModal";
+import HvacConsole from "../components/HvacConsole";
+import WallThermostat from "../components/WallThermostat";
 import DisputedRecordsUI from "../components/DisputedRecordsUI";
 import Vent4DilemmaModal from "../components/Vent4DilemmaModal";
 import ClimaxOverlay from "../components/ClimaxOverlay";
@@ -55,7 +57,11 @@ export default function TerminalShell() {
     // Full-screen blocking modals (no touch controls on screen) get to use the
     // whole canvas area instead of reserving the bottom band for the D-pad.
     const fullscreenModal =
-      phase === "ALIGNMENT" || phase === "INTERROGATION" || phase === "FORGERY";
+      phase === "ALIGNMENT" ||
+      phase === "INTERROGATION" ||
+      phase === "FORGERY" ||
+      phase === "HVAC_CONTROL" ||
+      phase === "WALL_THERMOSTAT";
     document.body.classList.toggle("phase-fullscreen-modal", fullscreenModal);
   }, [phase]);
 
@@ -76,14 +82,22 @@ export default function TerminalShell() {
             {phase === "ALIGNMENT" && <InterrogationTerminal />}
             {phase === "INTERROGATION" && <EnforcerInterrogationModal />}
             {phase === "FORGERY" && <DisputedRecordsUI />}
+            {phase === "HVAC_CONTROL" && <HvacConsole />}
+            {phase === "WALL_THERMOSTAT" && <WallThermostat />}
             {phase === "CLIMAX" && (
               <>
                 <Vent4DilemmaModal />
                 <ClimaxOverlay />
               </>
             )}
-            {(phase === "FLOOR" || phase === "CLIMAX") && <InventoryOverlay />}
-            {(phase === "FLOOR" || phase === "CLIMAX") && <APMeter />}
+            {(phase === "FLOOR" ||
+              phase === "CLIMAX" ||
+              phase === "HVAC_CONTROL" ||
+              phase === "WALL_THERMOSTAT") && <InventoryOverlay />}
+            {(phase === "FLOOR" ||
+              phase === "CLIMAX" ||
+              phase === "HVAC_CONTROL" ||
+              phase === "WALL_THERMOSTAT") && <APMeter />}
             <ExecuteResetModal />
             <AuditLockdown />
           </PhaserCanvas>

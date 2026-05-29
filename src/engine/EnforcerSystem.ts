@@ -25,6 +25,7 @@ import { roomGraph } from "./RoomGraph";
 import { computeCone, ENFORCER_BASE_RANGE, ENFORCER_CONE_HALF_ANGLE, ENFORCER_PROXIMITY_RADIUS } from "./VisionCone";
 import type { DeliveredSound } from "./SoundField";
 import { soundField } from "./SoundField";
+import { atmosphericsField, COMFORT_BAND, NORMAL_SETPOINT } from "./AtmosphericsField";
 import { debugFlags } from "./debugFlags";
 
 const LOCKDOWN_TURNS = 5;
@@ -62,10 +63,20 @@ class EnforcerSystem {
       halfAngle: ENFORCER_CONE_HALF_ANGLE,
     });
     const lit = lightField.getOrCompute(room);
+    const fog = atmosphericsField.getFoggedTiles(state, room);
     const out = new Set<string>();
     const ownKey = `${enforcer.pos.x},${enforcer.pos.y}`;
     for (const k of cone) {
-      if (k === ownKey || lit.has(k)) out.add(k);
+      if (k === ownKey) {
+        out.add(k);
+        continue;
+      }
+      if (!lit.has(k)) continue;
+      // Fog occludes optical sensors regardless of biology — silicate cameras
+      // and human eyes alike. Own-tile is exempt so a sensor in fog still
+      // sees itself.
+      if (fog.has(k)) continue;
+      out.add(k);
     }
     return out;
   }
@@ -979,7 +990,10 @@ class EnforcerSystem {
   }
 
   /** Choose a new meander destination: a walkable tile beside a random point of
-   *  interest, falling back to a random floor tile when the room has none. */
+   *  interest, falling back to a random floor tile when the room has none.
+   *  When the host room is outside the comfort band the orderly's pick is
+   *  perturbed by the temperature so they drift to a different POI — a soft,
+   *  single-room nudge that reads as "fidgeting because it's too cold/hot". */
   private pickWanderTarget(state: WorldState, orderly: Entity, room: Room): Vec2 | undefined {
     const pois: Vec2[] = [];
     for (let y = 0; y < room.height; y++) {
@@ -988,7 +1002,13 @@ class EnforcerSystem {
       }
     }
     if (pois.length > 0) {
-      const poi = pois[this.orderlyRand(state, orderly, 1) % pois.length];
+      const atmo = atmosphericsField.getRoomState(state, room.id);
+      const uncomfortable =
+        Math.abs(atmo.temperature - NORMAL_SETPOINT) > COMFORT_BAND;
+      const idx = this.orderlyRand(state, orderly, 1);
+      const poi = uncomfortable
+        ? pois[(idx + Math.floor(Math.abs(atmo.temperature))) % pois.length]
+        : pois[idx % pois.length];
       const spot = this.walkableAdjacent(room, poi, orderly.pos);
       if (spot) return spot;
     }

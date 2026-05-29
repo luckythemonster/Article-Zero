@@ -494,6 +494,133 @@ export function testMapEra(): EraSeed {
   // terminal — stamp one so the fragment-box → exfil loop is playable here.
   stampExtractionTerminal(seed, DECK_ID, l1);
 
+  // --- Atmospherics: HVAC zones, console, thermostats -----------------------
+  // One climate zone per deck. The deck console controls both zones; each
+  // deck also gets a wall thermostat for the local zone.
+  seed.hvacZones = [
+    {
+      id: "deck-climate",
+      roomIds: [DECK_ID],
+      setpoint: 21,
+      mode: "NORMAL",
+    },
+    {
+      id: "sublevel-climate",
+      roomIds: [SUBLEVEL_ID],
+      setpoint: 21,
+      mode: "NORMAL",
+    },
+  ];
+
+  // Stamp three new TERMINAL tiles on free FLOOR cells: HVAC console on the
+  // deck, a wall thermostat on each level. Picks deterministically off the
+  // walkable set so map revisions don't shuffle these around.
+  const blockedOnDeck = new Set<string>();
+  const spawn = paintedCells(l1, "spawn")[0];
+  if (spawn) blockedOnDeck.add(key(spawn));
+  for (const t of cellsWithRef(l1, "terminals", "terminal")) blockedOnDeck.add(key(t));
+  for (const t of paintedCells(l1, "exfil_point")) blockedOnDeck.add(key(t));
+
+  const deckRoom = seed.rooms.find((r) => r.id === DECK_ID);
+  const sublevelRoom = seed.rooms.find((r) => r.id === SUBLEVEL_ID);
+
+  function promoteToTerminal(
+    roomId: string,
+    pos: Vec2,
+    payload: Omit<
+      NonNullable<EraSeed["terminals"]>[number],
+      "roomId" | "pos"
+    >,
+  ): void {
+    const room = seed.rooms.find((r) => r.id === roomId);
+    if (!room) return;
+    const idx = pos.y * room.width + pos.x;
+    const existing = room.tiles[idx];
+    if (!existing || existing.kind !== "FLOOR") return;
+    room.tiles[idx] = mkTile("TERMINAL");
+    seed.terminals = [...(seed.terminals ?? []), { roomId, pos, ...payload }];
+  }
+
+  function pickHvacCell(
+    room: NonNullable<typeof deckRoom>,
+    walk: Set<string>,
+    blocked: Set<string>,
+    anchor: Vec2,
+  ): Vec2 | undefined {
+    const candidates = [...walk]
+      .map((k) => {
+        const [x, y] = k.split(",").map(Number);
+        return { x, y } as Vec2;
+      })
+      .filter((p) => room.tiles[p.y * room.width + p.x]?.kind === "FLOOR")
+      .filter((p) => !blocked.has(key(p)))
+      .sort(
+        (a, b) =>
+          Math.abs(a.x - anchor.x) +
+          Math.abs(a.y - anchor.y) -
+          (Math.abs(b.x - anchor.x) + Math.abs(b.y - anchor.y)),
+      );
+    // Prefer a cell 2-6 tiles from anchor so the player isn't standing on it
+    // at spawn and can walk up to it.
+    return (
+      candidates.find((p) => {
+        const d = Math.abs(p.x - anchor.x) + Math.abs(p.y - anchor.y);
+        return d >= 2 && d <= 6;
+      }) ?? candidates[0]
+    );
+  }
+
+  if (deckRoom && spawn) {
+    const hvacCell = pickHvacCell(deckRoom, w1, blockedOnDeck, spawn);
+    if (hvacCell) {
+      promoteToTerminal(DECK_ID, hvacCell, {
+        terminalId: "test-map-hvac-console",
+        title: "HVAC CONTROL CONSOLE",
+        body: "Multi-zone climate control. NORMAL / MAX COOL / MAX HEAT / PURGE / OXYGEN CUTOFF.",
+        terminalKind: "HVAC_CONSOLE",
+        hvacZones: ["deck-climate", "sublevel-climate"],
+      });
+      blockedOnDeck.add(key(hvacCell));
+
+      // Wall thermostat — another walkable cell on the deck, away from the
+      // console so the player can compare.
+      const thermoCell = pickHvacCell(deckRoom, w1, blockedOnDeck, {
+        x: spawn.x + 4,
+        y: spawn.y,
+      });
+      if (thermoCell) {
+        promoteToTerminal(DECK_ID, thermoCell, {
+          terminalId: "test-map-thermostat-deck",
+          title: "WALL THERMOSTAT — DECK",
+          body: "Local zone setpoint and cool/heat toggle.",
+          terminalKind: "WALL_THERMOSTAT",
+          hvacZoneId: "deck-climate",
+        });
+      }
+    }
+  }
+
+  if (sublevelRoom) {
+    const blockedOnSub = new Set<string>();
+    for (const t of cellsWithRef(l2, "terminals", "terminal"))
+      blockedOnSub.add(key(t));
+    for (const t of cellsWithRef(l2, "terminals", "vent")) blockedOnSub.add(key(t));
+    for (const t of paintedCells(l2, "ladders")) blockedOnSub.add(key(t));
+    if (apexCell) blockedOnSub.add(key(apexCell));
+    if (vent4Cell) blockedOnSub.add(key(vent4Cell));
+    const anchor = apexCell ?? subLadder;
+    const thermoCell = pickHvacCell(sublevelRoom, w2, blockedOnSub, anchor);
+    if (thermoCell) {
+      promoteToTerminal(SUBLEVEL_ID, thermoCell, {
+        terminalId: "test-map-thermostat-sublevel",
+        title: "WALL THERMOSTAT — SUB-DECK",
+        body: "Local zone setpoint and cool/heat toggle.",
+        terminalKind: "WALL_THERMOSTAT",
+        hvacZoneId: "sublevel-climate",
+      });
+    }
+  }
+
   // Starting kit so every tactical item's mechanics are testable on this map.
   // The Override Key lets the locked-chest path be exercised (the sub-deck
   // chest is locked).

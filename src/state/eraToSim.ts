@@ -59,6 +59,15 @@ export function worldStateToSlices(ws: WorldState): {
     playerFacing: ws.player.facing,
     entityPositions,
     entityKinds,
+    atmosphere: new Map(
+      [...ws.atmosphere].map(([id, a]) => [id, { ...a }]),
+    ),
+    hvacZones: new Map(
+      [...ws.hvacZones].map(([id, z]) => [
+        id,
+        { ...z, roomIds: [...z.roomIds] },
+      ]),
+    ),
   };
 
   const subjective: SubjectiveState = {
@@ -166,5 +175,14 @@ export function slicesToWorldState(
     terminalsRead: new Set(subjective.terminalsRead),
     activeEmitters: subjective.activeEmitters.map((e) => ({ ...e })),
     activeMines: subjective.activeMines.map((m) => ({ ...m })),
+    atmosphere: new Map(
+      [...(physical.atmosphere ?? new Map())].map(([id, a]) => [id, { ...a }]),
+    ),
+    hvacZones: new Map(
+      [...(physical.hvacZones ?? new Map())].map(([id, z]) => [
+        id,
+        { ...z, roomIds: [...z.roomIds] },
+      ]),
+    ),
   };
 }

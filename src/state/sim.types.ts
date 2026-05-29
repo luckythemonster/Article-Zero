@@ -13,9 +13,11 @@ import type {
   EntityStatus,
   Era,
   Facing,
+  HvacZone,
   ItemInstance,
   PatrolNode,
   Room,
+  RoomAtmosphere,
   RoomId,
   Stance,
   TerminalPayload,
@@ -67,6 +69,11 @@ export interface PhysicalState {
   playerFacing: Facing;
   entityPositions: Map<EntityId, EntityPhysical>;
   entityKinds: Map<EntityId, EntityKindInfo>;
+  /** Per-room atmosphere snapshot (temperature/airflow/oxygen). Optional for
+   *  back-compat with snapshots saved before atmospherics landed. */
+  atmosphere?: Map<RoomId, RoomAtmosphere>;
+  /** HVAC climate zones keyed by zone id. Optional for back-compat. */
+  hvacZones?: Map<string, HvacZone>;
 }
 
 // ── Subjective ────────────────────────────────────────────────────────────────
@@ -123,6 +130,8 @@ export interface SerializedPhysical {
   playerFacing: Facing;
   entityPositions: [EntityId, EntityPhysical][];
   entityKinds: [EntityId, EntityKindInfo][];
+  atmosphere?: [RoomId, RoomAtmosphere][];
+  hvacZones?: [string, HvacZone][];
 }
 
 export interface SerializedSubjective {

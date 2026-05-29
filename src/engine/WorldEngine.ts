@@ -28,6 +28,7 @@ import { documentArchive } from "./DocumentArchive";
 import { alignmentSession } from "./AlignmentSession";
 import { interrogationSession } from "./InterrogationSession";
 import { soundField } from "./SoundField";
+import { atmosphericsField } from "./AtmosphericsField";
 import { enforcerSystem } from "./EnforcerSystem";
 import { extractionTerminal } from "./ExtractionTerminal";
 import { complianceSystem } from "./ComplianceSystem";
@@ -79,6 +80,7 @@ class WorldEngine {
     alignmentSession.reset();
     interrogationSession.reset();
     soundField.reset();
+    atmosphericsField.hardReset();
   }
 
   private syncStore(): void {
@@ -134,6 +136,23 @@ class WorldEngine {
     actions.toggleFlashlight(this.getState());
     this.recomputeFOV();
     this.syncStore();
+  };
+
+  /** Mutate an HVAC zone from the React modal. Re-propagates atmospherics so
+   *  the snapshot the store sees reflects the new mode immediately (otherwise
+   *  the player would have to wait a full turn for the UI to catch up). */
+  setHvacZone = (
+    zoneId: string,
+    patch: { mode?: import("../types/world.types").HvacMode; setpoint?: number },
+  ) => {
+    const s = this.getState();
+    const ok = actions.setHvacZone(s, zoneId, patch);
+    if (ok) {
+      atmosphericsField.propagate(s);
+      atmosphericsField.tick(s);
+      this.syncStore();
+    }
+    return ok;
   };
 
   pryDoor = (required = 5) => {
@@ -419,6 +438,15 @@ class WorldEngine {
 
     const heard = soundField.propagate(s);
     soundField.reset();
+
+    // Atmospherics — drift each room toward its zone's setpoint, bleed across
+    // doorways, refresh fog cache, then apply oxygen incapacitation. Must run
+    // after sound (sound pulls airflow damp from the just-propagated state)
+    // and before enforcerSystem.tick (so a freshly-suffocated orderly is
+    // already DORMANT when behavior selection runs).
+    atmosphericsField.propagate(s);
+    atmosphericsField.tick(s);
+    atmosphericsField.reset();
 
     // Recover entities disabled by EMP. Decrement first, then check for zero
     // so the last protected turn is still live (matches spoof/baffle convention).

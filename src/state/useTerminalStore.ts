@@ -32,7 +32,21 @@ export type NarrativePhase =
   | "INTERROGATION"
   | "FORGERY"
   | "CLIMAX"
-  | "EPILOGUE";
+  | "EPILOGUE"
+  | "HVAC_CONTROL"
+  | "WALL_THERMOSTAT";
+
+export interface ActiveHvacConsole {
+  terminalId: string;
+  roomId: string;
+  zoneIds: string[];
+}
+
+export interface ActiveWallThermostat {
+  terminalId: string;
+  roomId: string;
+  zoneId: string;
+}
 
 export type Vent4Choice = "FORMAT" | "UPLOAD" | null;
 
@@ -77,6 +91,15 @@ interface TerminalStore {
 
   inventoryOpen: boolean;
   executeResetOpen: boolean;
+
+  /** When phase is HVAC_CONTROL, the modal reads this for which zones to
+   *  render. Cleared on dismiss. Persisted only for resume safety; the shell's
+   *  FRAME-resume guard wipes it on reload. */
+  activeHvacConsole: ActiveHvacConsole | null;
+  /** When phase is WALL_THERMOSTAT, the modal reads this for the local zone. */
+  activeWallThermostat: ActiveWallThermostat | null;
+  setActiveHvacConsole: (v: ActiveHvacConsole | null) => void;
+  setActiveWallThermostat: (v: ActiveWallThermostat | null) => void;
 
   log: (entry: Omit<AuditEntry, "id">) => void;
   pushCommand: (cmd: string) => void;
@@ -123,6 +146,10 @@ export const useTerminalStore = create<TerminalStore>()(
       runFlags: { ...DEFAULT_RUN_FLAGS },
       inventoryOpen: false,
       executeResetOpen: false,
+      activeHvacConsole: null,
+      activeWallThermostat: null,
+      setActiveHvacConsole: (v) => set({ activeHvacConsole: v }),
+      setActiveWallThermostat: (v) => set({ activeWallThermostat: v }),
 
       log: (entry) =>
         set((s) => ({
