@@ -904,7 +904,11 @@ body.theme-lattice {
 
 .overlay-panel--inventory {
   width: min(540px, 92%);
-  max-height: 80vh;
+  /* Inherit max-height from .overlay-panel (92% on desktop, and the
+     touch-control clearance calc(100% - 252px) on coarse pointers). The
+     overlay only covers the shell-main region, not the full viewport, so a
+     viewport-relative cap like 80vh overflows the region and gets clipped by
+     .shell-main { overflow: hidden } — leaving the top/bottom items unreachable. */
 }
 
 .inventory__section-label {
