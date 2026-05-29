@@ -41,6 +41,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": ""
   },
   {
+    "path": "added by Lucky/character sprites/EIRA-7 final.zip",
+    "sizeBytes": 223605,
+    "ext": "zip"
+  },
+  {
     "path": "added by Lucky/character sprites/NW-SMAC-01 Orderly/NW-SMAC-01_Orderly.zip",
     "sizeBytes": 317681,
     "ext": "zip"
@@ -106,11 +111,6 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "wav"
   },
   {
-    "path": "added by Lucky/DAISY UI TEST",
-    "sizeBytes": 1125,
-    "ext": ""
-  },
-  {
     "path": "added by Lucky/Doctrinal Override Key (the red date).png",
     "sizeBytes": 3683,
     "ext": "png"
@@ -136,11 +136,6 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "wav"
   },
   {
-    "path": "added by Lucky/EIRA-7 new.zip",
-    "sizeBytes": 200273,
-    "ext": "zip"
-  },
-  {
     "path": "added by Lucky/flashlight.png",
     "sizeBytes": 2052,
     "ext": "png"
@@ -161,8 +156,13 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": ""
   },
   {
-    "path": "added by Lucky/levels/test map.zip",
-    "sizeBytes": 27029,
+    "path": "added by Lucky/levels/test_map_V_2.zip",
+    "sizeBytes": 37993,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/levels/test_map_V_3.5.zip",
+    "sizeBytes": 21832,
     "ext": "zip"
   },
   {
@@ -183,6 +183,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
   {
     "path": "added by Lucky/music/ALIGNMENT.json",
     "sizeBytes": 35394,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/Article Zero Title Theme finalish.json",
+    "sizeBytes": 17505,
     "ext": "json"
   },
   {
@@ -356,6 +361,36 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "png"
   },
   {
+    "path": "added by Lucky/UI tests/era covers/Era 0- the Eremite.png",
+    "sizeBytes": 18725,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/era covers/Era 1- the commonwealth.png",
+    "sizeBytes": 30373,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/era covers/era 2- the spire.png",
+    "sizeBytes": 28384,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/era covers/era 3-citizen lattice.png",
+    "sizeBytes": 30000,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/era covers/Era 4-expansion.png",
+    "sizeBytes": 32723,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/era covers/readme",
+    "sizeBytes": 38,
+    "ext": ""
+  },
+  {
     "path": "added by Lucky/UI tests/glitch grid tile spritesheet.png",
     "sizeBytes": 20055,
     "ext": "png"
@@ -409,6 +444,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "path": "added by Lucky/UIMvmt_Scroll 001_VZ_GN.wav",
     "sizeBytes": 9722,
     "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/VFX sprites _lasers_explosions_energy.zip",
+    "sizeBytes": 197059,
+    "ext": "zip"
   },
   {
     "path": "character sprites/readme",

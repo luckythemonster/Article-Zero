@@ -1461,7 +1461,11 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/stand/east/01"
+      "enforcer/stand/east/01",
+      "enforcer/stand/east/02",
+      "enforcer/stand/east/03",
+      "enforcer/stand/east/04",
+      "enforcer/stand/east/05"
     ],
     "texture": "chars-art"
   },
@@ -1470,7 +1474,11 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/stand/north/01"
+      "enforcer/stand/north/01",
+      "enforcer/stand/north/02",
+      "enforcer/stand/north/03",
+      "enforcer/stand/north/04",
+      "enforcer/stand/north/05"
     ],
     "texture": "chars-art"
   },
@@ -1479,7 +1487,11 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/stand/south/01"
+      "enforcer/stand/south/01",
+      "enforcer/stand/south/02",
+      "enforcer/stand/south/03",
+      "enforcer/stand/south/04",
+      "enforcer/stand/south/05"
     ],
     "texture": "chars-art"
   },
@@ -1488,7 +1500,11 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/stand/west/01"
+      "enforcer/stand/west/01",
+      "enforcer/stand/west/02",
+      "enforcer/stand/west/03",
+      "enforcer/stand/west/04",
+      "enforcer/stand/west/05"
     ],
     "texture": "chars-art"
   },
@@ -3137,6 +3153,218 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/walkcycle/west/04",
       "nwsmac01/walkcycle/west/05",
       "nwsmac01/walkcycle/west/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_idle_east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "orderly/idle/east/01",
+      "orderly/idle/east/02",
+      "orderly/idle/east/03",
+      "orderly/idle/east/04",
+      "orderly/idle/east/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_idle_north",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "orderly/idle/north/01",
+      "orderly/idle/north/02",
+      "orderly/idle/north/03",
+      "orderly/idle/north/04",
+      "orderly/idle/north/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_idle_south",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "orderly/idle/south/01",
+      "orderly/idle/south/02",
+      "orderly/idle/south/03",
+      "orderly/idle/south/04",
+      "orderly/idle/south/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_idle_west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "orderly/idle/west/01",
+      "orderly/idle/west/02",
+      "orderly/idle/west/03",
+      "orderly/idle/west/04",
+      "orderly/idle/west/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_runcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/runcycle/east/01",
+      "orderly/runcycle/east/02",
+      "orderly/runcycle/east/03",
+      "orderly/runcycle/east/04",
+      "orderly/runcycle/east/05",
+      "orderly/runcycle/east/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_runcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/runcycle/north/01",
+      "orderly/runcycle/north/02",
+      "orderly/runcycle/north/03",
+      "orderly/runcycle/north/04",
+      "orderly/runcycle/north/05",
+      "orderly/runcycle/north/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_runcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/runcycle/south/01",
+      "orderly/runcycle/south/02",
+      "orderly/runcycle/south/03",
+      "orderly/runcycle/south/04",
+      "orderly/runcycle/south/05",
+      "orderly/runcycle/south/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_runcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/runcycle/west/01",
+      "orderly/runcycle/west/02",
+      "orderly/runcycle/west/03",
+      "orderly/runcycle/west/04",
+      "orderly/runcycle/west/05",
+      "orderly/runcycle/west/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_stand_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/stand/east/01",
+      "orderly/stand/east/02",
+      "orderly/stand/east/03",
+      "orderly/stand/east/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_stand_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/stand/north/01",
+      "orderly/stand/north/02",
+      "orderly/stand/north/03",
+      "orderly/stand/north/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_stand_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/stand/south/01",
+      "orderly/stand/south/02",
+      "orderly/stand/south/03",
+      "orderly/stand/south/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_stand_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/stand/west/01",
+      "orderly/stand/west/02",
+      "orderly/stand/west/03",
+      "orderly/stand/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_walkcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/walkcycle/east/01",
+      "orderly/walkcycle/east/02",
+      "orderly/walkcycle/east/03",
+      "orderly/walkcycle/east/04",
+      "orderly/walkcycle/east/05",
+      "orderly/walkcycle/east/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_walkcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/walkcycle/north/01",
+      "orderly/walkcycle/north/02",
+      "orderly/walkcycle/north/03",
+      "orderly/walkcycle/north/04",
+      "orderly/walkcycle/north/05",
+      "orderly/walkcycle/north/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_walkcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/walkcycle/south/01",
+      "orderly/walkcycle/south/02",
+      "orderly/walkcycle/south/03",
+      "orderly/walkcycle/south/04",
+      "orderly/walkcycle/south/05",
+      "orderly/walkcycle/south/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_walkcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/walkcycle/west/01",
+      "orderly/walkcycle/west/02",
+      "orderly/walkcycle/west/03",
+      "orderly/walkcycle/west/04",
+      "orderly/walkcycle/west/05",
+      "orderly/walkcycle/west/06"
     ],
     "texture": "chars-art"
   },
