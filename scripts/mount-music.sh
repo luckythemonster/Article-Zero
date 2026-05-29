@@ -25,9 +25,12 @@ slugify() {
 }
 
 shopt -s nullglob
-extras=( "$SRC_DIR/baffle theme.json" "$SRC_DIR/John Sponky.json" "$SRC_DIR"/music/*.json )
+# Copy all top-level .json files and contents of music/ subfolder
+extras=( "$SRC_DIR"/*.json "$SRC_DIR"/music/*.json )
 for src in "${extras[@]}"; do
   base="$(basename "$src")"
+  # Skip NW-SMAC-01 files — they're handled separately below
+  [[ "$base" == NW-SMAC-01* ]] && continue
   # Byte-identical to the already-live title-theme.json — skip the duplicate.
   [ "$base" = "Article Zero Title Theme finalish.json" ] && continue
   cp "$src" "$DEST/$(slugify "$base").json"
