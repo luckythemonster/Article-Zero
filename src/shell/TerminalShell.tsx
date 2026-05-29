@@ -17,6 +17,7 @@ import ArchiveEpilogue from "../components/ArchiveEpilogue";
 import DebugOverlay from "../components/DebugOverlay";
 import SpriteGallery from "../components/SpriteGallery";
 import InventoryOverlay from "../components/InventoryOverlay";
+import APMeter from "../components/APMeter";
 import ExecuteResetModal from "../components/ExecuteResetModal";
 import FullscreenFlash from "./FullscreenFlash";
 import TitleScreen from "./TitleScreen";
@@ -82,6 +83,7 @@ export default function TerminalShell() {
               </>
             )}
             {(phase === "FLOOR" || phase === "CLIMAX") && <InventoryOverlay />}
+            {(phase === "FLOOR" || phase === "CLIMAX") && <APMeter />}
             <ExecuteResetModal />
             <AuditLockdown />
           </PhaserCanvas>

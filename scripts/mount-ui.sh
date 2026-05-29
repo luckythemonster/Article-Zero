@@ -18,5 +18,9 @@ cp "$SRC/glitch grid tile spritesheet.png"  "$DEST/glitch-spritesheet.png"
 cp "$SRC/animated glitch tile.gif"          "$DEST/glitch-tile.gif"
 cp "$SRC/compliance pips.png"               "$DEST/compliance-pips.png"
 
+for n in 0 1 2 3 4; do
+  cp "$SRC/ap dial $n.png"                  "$DEST/ap-dial-$n.png"
+done
+
 echo "Mounted UI art to $DEST"
 ls "$DEST"
