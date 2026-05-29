@@ -270,8 +270,10 @@ class WorldEngine {
     }
     const physical = deserializePhysical(snap.physical);
 
+    let restoredCases: SubjectiveState["documentCases"] | null = null;
     if (snap.subjective) {
       const subjective = deserializeSubjective(snap.subjective);
+      restoredCases = subjective.documentCases;
       this.state = slicesToWorldState(physical, subjective);
       useSimStore.getState().setActiveModule(physical.era);
     } else {
@@ -287,6 +289,10 @@ class WorldEngine {
     }
 
     this.resetSubsystems();
+    // resetSubsystems wipes documentArchive; restore the saved cases after it so
+    // exfiltrated/filed documents survive a load. The husk path leaves the
+    // archive empty — a wiped subjective has no records.
+    if (restoredCases) documentArchive.restore(restoredCases);
     extractionTerminal.reset(this.state);
     this.applyCrossRoomLightBleed();
     this.recomputeFOV();

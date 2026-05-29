@@ -287,6 +287,51 @@ function restampVents(seed: EraSeed, roomId: string, lv: MooseLevel): void {
   }
 }
 
+/** This export paints an EXFIL_POINT but no extraction terminal, so the
+ *  fragment-box loop has no source. Stamp an EXTRACTION_TERMINAL onto a FLOOR
+ *  cell in the same room, a few tiles from the exfil (and off the spawn / read
+ *  terminal), so the player can extract a Fragment Box and carry it to the
+ *  exfil. Derived from painted data so it survives map revisions. Call after
+ *  the other tile promotions (chests/switches/vents) so it only lands on a
+ *  still-plain FLOOR cell. */
+function stampExtractionTerminal(seed: EraSeed, roomId: string, lv: MooseLevel): void {
+  const room = seed.rooms.find((r) => r.id === roomId);
+  if (!room) return;
+  const exfil = paintedCells(lv, "exfil_point")[0];
+  if (!exfil) return;
+  const walk = walkableSet(lv);
+  const idxOf = (p: Vec2) => p.y * room.width + p.x;
+  const dist = (p: Vec2) => Math.abs(p.x - exfil.x) + Math.abs(p.y - exfil.y);
+  const neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
+  const standable = (p: Vec2) =>
+    neighbours.some(([dx, dy]) => walk.has(key({ x: p.x + dx, y: p.y + dy })));
+
+  const blocked = new Set<string>();
+  const spawn = paintedCells(lv, "spawn")[0];
+  if (spawn) blocked.add(key(spawn));
+  for (const t of cellsWithRef(lv, "terminals", "terminal")) blocked.add(key(t));
+
+  // Plain FLOOR cells with a neighbour to stand on, off the spawn/read terminal.
+  const candidates = [...walk]
+    .map((k) => {
+      const [x, y] = k.split(",").map(Number);
+      return { x, y } as Vec2;
+    })
+    .filter((p) => room.tiles[idxOf(p)]?.kind === "FLOOR")
+    .filter((p) => !blocked.has(key(p)))
+    .filter(standable);
+
+  // Prefer a short carry (>= 3 tiles); fall back to the nearest valid cell.
+  const byDistance = [...candidates].sort((a, b) => dist(a) - dist(b));
+  const target =
+    byDistance.find((p) => dist(p) >= 3) ?? byDistance[0] ?? null;
+  if (!target) {
+    console.warn("[testMap] no spot for EXTRACTION_TERMINAL — fragment-box loop unsourced");
+    return;
+  }
+  room.tiles[idxOf(target)] = mkTile("EXTRACTION_TERMINAL");
+}
+
 export function testMapEra(): EraSeed {
   const l1 = levelByName("Level 1");
   const l2 = levelByName("Level 2");
@@ -442,6 +487,10 @@ export function testMapEra(): EraSeed {
   }
 
   seed.chests = [...seedChests(seed, DECK_ID, l1), ...seedChests(seed, SUBLEVEL_ID, l2)];
+
+  // The exfil point is painted on the deck but the map ships no extraction
+  // terminal — stamp one so the fragment-box → exfil loop is playable here.
+  stampExtractionTerminal(seed, DECK_ID, l1);
 
   // Starting kit so every tactical item's mechanics are testable on this map.
   // The Override Key lets the locked-chest path be exercised (the sub-deck

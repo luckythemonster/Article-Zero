@@ -21,6 +21,12 @@ class DocumentArchive {
     this.cases.clear();
   }
 
+  /** Rehydrate the archive from a saved subjective slice. Replaces all cases
+   *  with the snapshot's; emits no events (this is a load, not a fresh filing). */
+  restore(cases: Map<string, DocumentCase>): void {
+    this.cases = new Map(cases);
+  }
+
   list(): DocumentCase[] {
     return Array.from(this.cases.values()).sort((a, b) => a.turn - b.turn);
   }
