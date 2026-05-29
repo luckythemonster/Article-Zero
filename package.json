@@ -13,6 +13,8 @@
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint . --ext .ts,.tsx",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "art": "node scripts/build-atlas.mjs && node scripts/build-unmounted-manifest.mjs",
     "unmounted": "node scripts/build-unmounted-manifest.mjs",
     "moose": "node scripts/import-moose.mjs",
@@ -40,6 +42,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "jimp": "^1.6.1",
     "typescript": "~5.7.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "vitest": "^4.1.7"
   }
 }
