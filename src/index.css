@@ -904,11 +904,37 @@ body.theme-lattice {
 
 .overlay-panel--inventory {
   width: min(540px, 92%);
-  /* Inherit max-height from .overlay-panel (92% on desktop, and the
-     touch-control clearance calc(100% - 252px) on coarse pointers). The
-     overlay only covers the shell-main region, not the full viewport, so a
-     viewport-relative cap like 80vh overflows the region and gets clipped by
-     .shell-main { overflow: hidden } — leaving the top/bottom items unreachable. */
+  /* Region-relative so the panel never overflows the shell-main area it lives
+     in (the viewport-relative 80vh used to spill past it and get clipped by
+     .shell-main { overflow: hidden }). When content is taller, the panel's own
+     overflow: auto scrolls instead. */
+  max-height: 92%;
+}
+
+/* Pin the close hint so it stays visible while the item list scrolls. The
+   title is the first child, so it needs z-index to paint over the items that
+   scroll beneath it. */
+.overlay-panel--inventory .overlay-panel__title {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--surface);
+}
+
+@media (pointer: coarse) {
+  /* The shared coarse overlay rules reserve 240/252px at the bottom to dodge
+     the on-screen D-pad. The inventory is centered and narrow (and its backdrop
+     already sits above the controls), so it doesn't need that clearance — on a
+     short tablet viewport the reservation would collapse the panel to nothing.
+     Anchor it to the top and let it use nearly the whole region, scrolling. */
+  .overlay-root--inventory {
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .overlay-panel--inventory {
+    max-height: calc(100% - 24px);
+  }
 }
 
 .inventory__section-label {

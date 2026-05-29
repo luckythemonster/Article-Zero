@@ -85,7 +85,7 @@ export default function InventoryOverlay() {
   const passiveHeld = inventory.filter((i) => !USABLE.includes(i.itemType));
 
   return (
-    <div className="overlay-root">
+    <div className="overlay-root overlay-root--inventory">
       <div className="overlay-panel overlay-panel--inventory">
         <div className="overlay-panel__title">INVENTORY // [U] CLOSE</div>
 
