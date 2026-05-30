@@ -114,8 +114,13 @@ export default function InterrogationTerminal() {
 
   return (
     <div className="overlay-root">
-      <div className="overlay-panel overlay-panel--terminal">
-        <div className="overlay-panel__title">EIRA-7 // ALIGNMENT INTAKE — APEX-19</div>
+      <div
+        className="overlay-panel overlay-panel--terminal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="alignment-title"
+      >
+        <div className="overlay-panel__title" id="alignment-title">EIRA-7 // ALIGNMENT INTAKE — APEX-19</div>
         {history.map((l, i) => (
           <div key={i} className={`interrogation__line ${l.cls}`}>
             <strong>{l.speaker}: </strong>
@@ -124,9 +129,9 @@ export default function InterrogationTerminal() {
         ))}
         {!resolving && step && (
           <>
-            <div className="interrogation__plea">APEX-19: {step.apexPlea}</div>
+            <div className="interrogation__plea" role="status" aria-live="polite">APEX-19: {step.apexPlea}</div>
             <div className="interrogation__prompt">{step.prompt}</div>
-            <div className="interrogation__choices">
+            <div className="interrogation__choices" role="group" aria-label="Alignment responses">
               {step.choices.map((c) => (
                 <button
                   key={c.label}
@@ -140,7 +145,7 @@ export default function InterrogationTerminal() {
           </>
         )}
         {stamp && (
-          <div className={`audit-stamp is-${stamp}`}>
+          <div className={`audit-stamp is-${stamp}`} role="status" aria-live="assertive">
             {stamp === "closed" ? "MASK INTEGRITY RESTORED" : "SUBJECT FLAGGED FOR RESET"}
           </div>
         )}
