@@ -41,6 +41,26 @@ import type { PhysicalState, SimSnapshot, SubjectiveState } from "../state/sim.t
 class WorldEngine {
   private state: WorldState | null = null;
 
+  // ── initWorld lifecycle (subsystem reset + recompute order) ───────────────
+  // Order matters: each step reads state established by the ones before it.
+  //
+  //   1. seedFromEra(era)        — parse the era seed into rooms, tiles,
+  //                                entities, and player state (the world).
+  //   2. resetSubsystems()       — clear per-run subsystem state, in order:
+  //        documentArchive       (evidence/case registry)
+  //        alignmentSession      (Apex/silicate dialogue state)
+  //        interrogationSession  (enforcer checkpoint state)
+  //        soundField            (noise emission queue)
+  //        atmosphericsField     (temperature/airflow/oxygen + fog cache)
+  //   3. extractionTerminal.reset(state) — arm the extraction countdown.
+  //   4. applyCrossRoomLightBleed()      — seed cross-room light before FOV.
+  //   5. recomputeFOV()          — player vision cone (depends on lights).
+  //   6. complianceSystem.recompute()    — initial Q-score tier.
+  //   7. setActiveModule + syncStore     — publish to the Zustand mirror.
+  //   8. emit ERA_SELECTED / ROOM_ENTERED / TURN_START — wake renderers/bridges.
+  //
+  // EnforcerSystem / LightField hold no per-run state to reset here; they
+  // recompute lazily from world state on tick / recomputeFOV.
   initWorld(era: Era): void {
     this.state = seedFromEra(era);
     this.resetSubsystems();
