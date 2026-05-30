@@ -48,19 +48,29 @@ export function PhaserCanvas({ moduleId, children }: Props) {
     // canvas lifecycle. Detach on unmount before the next clear. A
     // TerminalShell-level subscription would be wiped by the clear on every
     // PhaserCanvas mount — so the audit-log/phase eventBridge lives here too,
-    // alongside the debug tap and audio bridges.
-    const offEventBridge = installEventBridge();
-    const offTap = installDebugEventTap();
-    const offFootsteps = installFootstepBridge();
-    const offMusic = installMusicBridge();
-    const offSfx = installSfxBridge();
+    // alongside the debug tap and audio bridges. Each installer returns its own
+    // teardown fn; a single scope owns them all so cleanup is one dispose() call.
+    const bridges = eventBus.createScope();
+    bridges.add(installEventBridge());
+    bridges.add(installDebugEventTap());
+    bridges.add(installFootstepBridge());
+    bridges.add(installMusicBridge());
+    bridges.add(installSfxBridge());
 
+    // ── Teardown order (ownership lives here, not spread across subsystems) ──
+    // The sequence below is deliberate; reordering risks handler leaks or
+    // use-after-destroy:
+    //   1. bridges.dispose()  — detach React/audio/debug bus listeners FIRST,
+    //      so nothing reacts to events emitted while the game tears down.
+    //   2. game.destroy(true) — destroying the game runs RoomScene.shutdown(),
+    //      which disposes the scene's own EventBus scope and frees its sprites.
+    //      (Listeners are gone before any destroy event fires.)
+    //   3. eventBus.clear()   — defensive global wipe; scopes already removed
+    //      everything, this just guarantees a clean bus for the next mount.
+    //   4. setActiveModule(null) — reset the Zustand store LAST, after all
+    //      Phaser cleanup, so no late handler reads a half-reset store.
     return () => {
-      offSfx();
-      offMusic();
-      offFootsteps();
-      offTap();
-      offEventBridge();
+      bridges.dispose();
       gameRef.current?.destroy(true);
       gameRef.current = null;
       eventBus.clear();

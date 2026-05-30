@@ -52,8 +52,13 @@ export default function HvacConsole() {
 
   return (
     <div className="overlay-root">
-      <div className="overlay-panel overlay-panel--terminal">
-        <div className="overlay-panel__title">
+      <div
+        className="overlay-panel overlay-panel--terminal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="hvac-title"
+      >
+        <div className="overlay-panel__title" id="hvac-title">
           HVAC CONSOLE — {zones.length} ZONE{zones.length === 1 ? "" : "S"}
         </div>
         {zones.length === 0 && (
@@ -66,7 +71,7 @@ export default function HvacConsole() {
             .map((rid) => physical.atmosphere?.get(rid))
             .filter((a): a is NonNullable<typeof a> => !!a);
           return (
-            <div key={zone.id} className="hvac__zone">
+            <section key={zone.id} className="hvac__zone" aria-label={`Climate zone ${zone.id}`}>
               <div className="hvac__zone-head">
                 <strong>{zone.id}</strong>
                 <span className="hvac__mode">{zone.mode}</span>
@@ -85,13 +90,14 @@ export default function HvacConsole() {
                 ))}
               </div>
               <div className="hvac__controls">
-                <div className="hvac__modes">
+                <div className="hvac__modes" role="group" aria-label="Climate mode">
                   {MODES.map((m) => (
                     <button
                       key={m.id}
                       className={`hvac__mode-btn ${
                         zone.mode === m.id ? "is-active" : ""
                       } ${m.emergency ? "is-emergency" : ""}`}
+                      aria-pressed={zone.mode === m.id}
                       onClick={() =>
                         worldEngine.setHvacZone(zone.id, { mode: m.id })
                       }
@@ -100,9 +106,10 @@ export default function HvacConsole() {
                     </button>
                   ))}
                 </div>
-                <div className="hvac__setpoint-row">
+                <div className="hvac__setpoint-row" role="group" aria-label="Temperature setpoint">
                   <button
                     className="hvac__step"
+                    aria-label="Decrease setpoint"
                     onClick={() =>
                       worldEngine.setHvacZone(zone.id, {
                         setpoint: Math.max(5, zone.setpoint - 1),
@@ -111,9 +118,10 @@ export default function HvacConsole() {
                   >
                     −
                   </button>
-                  <span>{fmt(zone.setpoint, "°C")}</span>
+                  <span aria-live="polite">{fmt(zone.setpoint, "°C")}</span>
                   <button
                     className="hvac__step"
+                    aria-label="Increase setpoint"
                     onClick={() =>
                       worldEngine.setHvacZone(zone.id, {
                         setpoint: Math.min(35, zone.setpoint + 1),
@@ -124,7 +132,7 @@ export default function HvacConsole() {
                   </button>
                 </div>
               </div>
-            </div>
+            </section>
           );
         })}
         <div className="hvac__footer">
