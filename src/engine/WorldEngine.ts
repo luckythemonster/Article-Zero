@@ -41,6 +41,26 @@ import type { PhysicalState, SimSnapshot, SubjectiveState } from "../state/sim.t
 class WorldEngine {
   private state: WorldState | null = null;
 
+  // ── initWorld lifecycle (subsystem reset + recompute order) ───────────────
+  // Order matters: each step reads state established by the ones before it.
+  //
+  //   1. seedFromEra(era)        — parse the era seed into rooms, tiles,
+  //                                entities, and player state (the world).
+  //   2. resetSubsystems()       — clear per-run subsystem state, in order:
+  //        documentArchive       (evidence/case registry)
+  //        alignmentSession      (Apex/silicate dialogue state)
+  //        interrogationSession  (enforcer checkpoint state)
+  //        soundField            (noise emission queue)
+  //        atmosphericsField     (temperature/airflow/oxygen + fog cache)
+  //   3. extractionTerminal.reset(state) — arm the extraction countdown.
+  //   4. applyCrossRoomLightBleed()      — seed cross-room light before FOV.
+  //   5. recomputeFOV()          — player vision cone (depends on lights).
+  //   6. complianceSystem.recompute()    — initial Q-score tier.
+  //   7. setActiveModule + syncStore     — publish to the Zustand mirror.
+  //   8. emit ERA_SELECTED / ROOM_ENTERED / TURN_START — wake renderers/bridges.
+  //
+  // EnforcerSystem / LightField hold no per-run state to reset here; they
+  // recompute lazily from world state on tick / recomputeFOV.
   initWorld(era: Era): void {
     this.state = seedFromEra(era);
     this.resetSubsystems();
@@ -83,8 +103,33 @@ class WorldEngine {
     atmosphericsField.hardReset();
   }
 
+  // ── Store-sync strategy ───────────────────────────────────────────────────
+  // syncStore() publishes WorldState to the Zustand mirror so React re-renders.
+  // Single player actions call it once at their boundary → one render per action.
+  // A turn tick (advanceTurn) mutates state across many subsystems (enforcers,
+  // sound, atmospherics, item/effect timers, …) and emits events throughout.
+  // advanceTurn runs inside a batch: while `batching` is set, syncStore() only
+  // marks the mirror dirty, and a single flush() at the end performs the one
+  // real push — guaranteeing one render per turn no matter how many places sync.
+  // Mid-turn events are emitted before that flush (unchanged), so audit-log
+  // consumers read the prior snapshot until the turn settles.
+  private storeDirty = false;
+  private batching = false;
+
   private syncStore(): void {
+    if (this.batching) {
+      this.storeDirty = true;
+      return;
+    }
     if (this.state) useSimStore.getState().syncFromWorldState(this.state);
+  }
+
+  /** Push any pending batched sync to the store as a single React update. */
+  private flush(): void {
+    if (this.storeDirty && this.state) {
+      useSimStore.getState().syncFromWorldState(this.state);
+      this.storeDirty = false;
+    }
   }
 
   // Public action surface -----------------------------------------------
@@ -368,6 +413,9 @@ class WorldEngine {
 
   private advanceTurn(): void {
     const s = this.getState();
+    // Batch the whole turn: defer the store push to the single flush() below so
+    // the many subsystem mutations coalesce into one React render.
+    this.batching = true;
     actions.clearPeek(s);
     s.turn += 1;
     const previousAp = s.player.ap;
@@ -494,6 +542,8 @@ class WorldEngine {
 
     this.recomputeFOV();
     this.syncStore();
+    this.batching = false;
+    this.flush();
   }
 
   /** Recompute the `bleedLights` array on every room based on the current

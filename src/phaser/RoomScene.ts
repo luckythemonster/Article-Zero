@@ -4,7 +4,7 @@
 // follows the AlertFSM level (NORMAL / CAUTION / ALERT / EVASION).
 
 import { Phaser } from "../engine/EngineAdapter";
-import { eventBus } from "../engine/EventBus";
+import { eventBus, type EventScope } from "../engine/EventBus";
 import { worldEngine } from "../engine/WorldEngine";
 import { enforcerSystem } from "../engine/EnforcerSystem";
 import { debugFlags } from "../engine/debugFlags";
@@ -170,9 +170,11 @@ export class RoomScene extends Phaser.Scene {
   private floorLabel!: Phaser.GameObjects.Text;
   private debugLayer!: Phaser.GameObjects.Graphics;
   private targetingLayer!: Phaser.GameObjects.Graphics;
-  private unsubTargeting: (() => void) | null = null;
+  // All EventBus + store subscriptions for this scene's lifetime live in one
+  // scope, created in create() and torn down wholesale in shutdown(). No manual
+  // per-handler unsubscribe bookkeeping — see EventBus.createScope().
+  private scope: EventScope | null = null;
   private elevationTextPool: Phaser.GameObjects.Text[] = [];
-  private subscriptions: Array<() => void> = [];
   private onResize = () => this.layout();
   /** 0..1 darkening factor driven by OXYGEN_TICK during the climax. */
   private oxygenDarken = 0;
@@ -231,61 +233,67 @@ export class RoomScene extends Phaser.Scene {
     this.layout();
     this.scale.on("resize", this.onResize);
 
-    const sub = (off: () => void) => { this.subscriptions.push(off); };
-    sub(eventBus.on("ROOM_ENTERED", () => this.fadeAndRedraw()));
-    sub(eventBus.on("FOV_UPDATED", () => this.redraw()));
-    sub(eventBus.on("PLAYER_MOVED", () => this.redraw()));
-    sub(eventBus.on("PLAYER_FACING_CHANGED", () => this.redraw()));
-    sub(eventBus.on("DOOR_TOGGLED", () => this.redraw()));
-    sub(eventBus.on("LIGHT_TOGGLED", () => this.redraw()));
-    sub(eventBus.on("ENTITY_MOVED", () => this.redraw()));
-    sub(eventBus.on("ENTITY_FACING_CHANGED", () => this.redraw()));
-    sub(eventBus.on("ENFORCER_ALERT_CHANGED", () => this.redraw()));
-    sub(eventBus.on("EXCLAMATION_TRIGGERED", (p) => this.flashExclamation(p.enforcerId)));
-    sub(eventBus.on("TURN_START", () => this.redraw()));
-    sub(eventBus.on("ITEM_SPAWNED", () => this.redraw()));
-    sub(eventBus.on("ITEM_PICKED_UP", () => this.redraw()));
-    sub(eventBus.on("CHEST_OPENED", () => this.redraw()));
-    sub(eventBus.on("ITEM_FILED", () => this.redraw()));
-    sub(eventBus.on("COMPLIANCE_CHANGED", () => this.redraw()));
-    sub(eventBus.on("PLAYER_HIDDEN", () => this.redraw()));
-    sub(eventBus.on("PLAYER_UNHIDDEN", () => this.redraw()));
-    sub(eventBus.on("PLAYER_PEEKED", () => this.redraw()));
-    sub(eventBus.on("PLAYER_VENTED", () => this.redraw()));
-    sub(eventBus.on("PLAYER_STANCE_CHANGED", () => this.redraw()));
-    sub(eventBus.on("TERMINAL_USED", () => this.redraw()));
-    sub(eventBus.on("OXYGEN_TICK", (p) => {
+    // Scoped subscriptions — every on()/add() here is auto-removed by the
+    // single scope.dispose() in shutdown(), so there's no per-handler cleanup
+    // to keep in sync when this list grows.
+    const scope = eventBus.createScope();
+    this.scope = scope;
+    scope.on("ROOM_ENTERED", () => this.fadeAndRedraw());
+    scope.on("FOV_UPDATED", () => this.redraw());
+    scope.on("PLAYER_MOVED", () => this.redraw());
+    scope.on("PLAYER_FACING_CHANGED", () => this.redraw());
+    scope.on("DOOR_TOGGLED", () => this.redraw());
+    scope.on("LIGHT_TOGGLED", () => this.redraw());
+    scope.on("ENTITY_MOVED", () => this.redraw());
+    scope.on("ENTITY_FACING_CHANGED", () => this.redraw());
+    scope.on("ENFORCER_ALERT_CHANGED", () => this.redraw());
+    scope.on("EXCLAMATION_TRIGGERED", (p) => this.flashExclamation(p.enforcerId));
+    scope.on("TURN_START", () => this.redraw());
+    scope.on("ITEM_SPAWNED", () => this.redraw());
+    scope.on("ITEM_PICKED_UP", () => this.redraw());
+    scope.on("CHEST_OPENED", () => this.redraw());
+    scope.on("ITEM_FILED", () => this.redraw());
+    scope.on("COMPLIANCE_CHANGED", () => this.redraw());
+    scope.on("PLAYER_HIDDEN", () => this.redraw());
+    scope.on("PLAYER_UNHIDDEN", () => this.redraw());
+    scope.on("PLAYER_PEEKED", () => this.redraw());
+    scope.on("PLAYER_VENTED", () => this.redraw());
+    scope.on("PLAYER_STANCE_CHANGED", () => this.redraw());
+    scope.on("TERMINAL_USED", () => this.redraw());
+    scope.on("OXYGEN_TICK", (p) => {
       const total = Math.max(1, p.totalSeconds);
       const elapsed = total - p.remainingSeconds;
       this.oxygenDarken = Math.max(0, Math.min(0.85, elapsed / total));
       this.redraw();
-    }));
-    sub(eventBus.on("CLIMAX_ESCAPED", () => {
+    });
+    scope.on("CLIMAX_ESCAPED", () => {
       this.oxygenDarken = 0;
       this.redraw();
-    }));
-    sub(eventBus.on("PHASE_RESTART_REQUESTED", () => {
+    });
+    scope.on("PHASE_RESTART_REQUESTED", () => {
       this.oxygenDarken = 0;
       this.redraw();
-    }));
-    sub(eventBus.on("ENTITY_STATUS_CHANGED", () => this.redraw()));
-    sub(eventBus.on("ITEM_DETONATED", (p) => this.playDetonation(p)));
-    sub(eventBus.on("ROOM_ATMOSPHERE_CHANGED", () => this.redraw()));
-    sub(eventBus.on("HVAC_ZONE_SET", () => this.redraw()));
+    });
+    scope.on("ENTITY_STATUS_CHANGED", () => this.redraw());
+    scope.on("ITEM_DETONATED", (p) => this.playDetonation(p));
+    scope.on("ROOM_ATMOSPHERE_CHANGED", () => this.redraw());
+    scope.on("HVAC_ZONE_SET", () => this.redraw());
 
-    // Subscribe to targeting store so cursor/AoE preview updates on every
-    // cursor move (zustand subscribe returns an unsubscribe function).
-    this.unsubTargeting = useTargetingStore.subscribe(() => this.redraw());
+    // Targeting store drives cursor/AoE preview redraws. Zustand's subscribe
+    // returns an unsubscribe fn; hand it to the scope so it's disposed too.
+    scope.add(useTargetingStore.subscribe(() => this.redraw()));
 
     this.redraw();
   }
 
   shutdown(): void {
-    this.unsubTargeting?.();
-    this.unsubTargeting = null;
-    for (const off of this.subscriptions) off();
-    this.subscriptions = [];
+    // Called by Phaser when game.destroy(true) runs (see PhaserCanvas teardown,
+    // which owns the overall order: listeners → game.destroy → store reset).
+    // 1. Detach every bus + store subscription this scene registered (one call).
+    this.scope?.dispose();
+    this.scope = null;
     this.scale.off("resize", this.onResize);
+    // 2. Destroy all owned graphics/sprites so Phaser releases their GPU handles.
     for (const r of this.entityRects.values()) r.destroy();
     for (const s of this.entitySprites.values()) s.destroy();
     for (const m of this.entityFacingMarks.values()) m.destroy();

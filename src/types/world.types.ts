@@ -3,6 +3,13 @@
 // The world is a graph of single-screen Rooms connected by Doorways.
 // The player lives in exactly one room at a time; crossing an edge fires
 // ROOM_ENTERED / ROOM_EXITED and swaps the renderer's active room.
+//
+// Organization note (2026-05): evaluated splitting this into entities/tiles/
+// spatial/world type files. At ~550 LOC it's only marginally over the 500-LOC
+// threshold we'd use to justify a split, and the types are tightly
+// interdependent (Tile↔Room↔WorldState↔Entity), so a split would mostly add
+// cross-imports without real separation. Decision: keep it monolithic for now;
+// revisit if it grows past ~700 LOC or a clear sub-domain emerges.
 
 export type EntityId = string;
 

@@ -15,7 +15,7 @@ export default function StatusBar() {
   const lockdownTurns = subjective?.lockdown?.turnsRemaining ?? 0;
 
   return (
-    <header className="status-bar">
+    <header className="status-bar" aria-label="Run status">
       <span className="status-bar__id">{archivistId}</span>
       <span className="status-bar__sep">|</span>
       <span className="status-bar__module">
@@ -26,8 +26,13 @@ export default function StatusBar() {
       {compliance && (
         <>
           <span className="status-bar__sep">|</span>
-          <span className={`status-bar__compliance is-${compliance.toLowerCase()}`}>
-            <span className={`status-bar__pip is-${compliance.toLowerCase()}`} />
+          <span
+            className={`status-bar__compliance is-${compliance.toLowerCase()}`}
+            role="status"
+            aria-live="polite"
+            aria-label={`Compliance ${compliance}`}
+          >
+            <span className={`status-bar__pip is-${compliance.toLowerCase()}`} aria-hidden="true" />
             {compliance}
           </span>
         </>
@@ -35,13 +40,13 @@ export default function StatusBar() {
       {spoof > 0 && (
         <>
           <span className="status-bar__sep">|</span>
-          <span className="status-bar__effect">SPOOF: {spoof}</span>
+          <span className="status-bar__effect" aria-live="polite">SPOOF: {spoof}</span>
         </>
       )}
       {baffle > 0 && (
         <>
           <span className="status-bar__sep">|</span>
-          <span className="status-bar__effect">BAFFLE: {baffle}</span>
+          <span className="status-bar__effect" aria-live="polite">BAFFLE: {baffle}</span>
         </>
       )}
       {lockdownTurns > 0 && (

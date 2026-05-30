@@ -34,7 +34,10 @@ export default function InventoryOverlay() {
   const open = useTerminalStore((s) => s.inventoryOpen);
   const setInventoryOpen = useTerminalStore((s) => s.setInventoryOpen);
   const inventory = useSimStore((s) => s.subjective?.inventory ?? []);
-  const { useItem } = useGameActions();
+  // Aliased: `useItem` is a game action from useGameActions(), not a React hook.
+  // Renaming the binding keeps react-hooks/rules-of-hooks from flagging the
+  // call inside handleUse() below.
+  const { useItem: applyItem } = useGameActions();
   const [feedback, setFeedback] = useState<string | null>(null);
 
   // Close on Escape; let U be handled by useInput (which already toggles).
@@ -64,7 +67,7 @@ export default function InventoryOverlay() {
       setFeedback(null);
       return;
     }
-    const ok = useItem(itemType);
+    const ok = applyItem(itemType);
     if (ok) {
       setInventoryOpen(false);
       setFeedback(null);
