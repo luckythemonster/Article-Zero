@@ -57,6 +57,18 @@ export function PhaserCanvas({ moduleId, children }: Props) {
     bridges.add(installMusicBridge());
     bridges.add(installSfxBridge());
 
+    // ── Teardown order (ownership lives here, not spread across subsystems) ──
+    // The sequence below is deliberate; reordering risks handler leaks or
+    // use-after-destroy:
+    //   1. bridges.dispose()  — detach React/audio/debug bus listeners FIRST,
+    //      so nothing reacts to events emitted while the game tears down.
+    //   2. game.destroy(true) — destroying the game runs RoomScene.shutdown(),
+    //      which disposes the scene's own EventBus scope and frees its sprites.
+    //      (Listeners are gone before any destroy event fires.)
+    //   3. eventBus.clear()   — defensive global wipe; scopes already removed
+    //      everything, this just guarantees a clean bus for the next mount.
+    //   4. setActiveModule(null) — reset the Zustand store LAST, after all
+    //      Phaser cleanup, so no late handler reads a half-reset store.
     return () => {
       bridges.dispose();
       gameRef.current?.destroy(true);

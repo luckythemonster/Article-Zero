@@ -285,6 +285,8 @@ export class RoomScene extends Phaser.Scene {
   }
 
   shutdown(): void {
+    // Called by Phaser when game.destroy(true) runs (see PhaserCanvas teardown,
+    // which owns the overall order: listeners → game.destroy → store reset).
     // 1. Detach every bus + store subscription this scene registered (one call).
     this.scope?.dispose();
     this.scope = null;
