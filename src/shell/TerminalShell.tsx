@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTerminalStore } from "../state/useTerminalStore";
+import { useDebugStore } from "../state/useDebugStore";
 import { applySettings, loadSettings } from "./settings";
 import StatusBar from "./StatusBar";
 import AuditLog from "./AuditLog";
@@ -18,6 +19,7 @@ import AuditLockdown from "../components/AuditLockdown";
 import ArchiveEpilogue from "../components/ArchiveEpilogue";
 import DebugOverlay from "../components/DebugOverlay";
 import SpriteGallery from "../components/SpriteGallery";
+import Apex19TreeTerminal from "../components/Apex19TreeTerminal";
 import InventoryOverlay from "../components/InventoryOverlay";
 import APMeter from "../components/APMeter";
 import ExecuteResetModal from "../components/ExecuteResetModal";
@@ -28,6 +30,7 @@ export default function TerminalShell() {
   const [started, setStarted] = useState(false);
   const activeModule = useTerminalStore((s) => s.activeModuleId);
   const phase = useTerminalStore((s) => s.phase);
+  const dialogueTree = useDebugStore((s) => s.dialogueTree);
 
   useEffect(() => {
     applySettings(loadSettings());
@@ -111,6 +114,7 @@ export default function TerminalShell() {
       </footer>
       <DebugOverlay />
       <SpriteGallery />
+      {dialogueTree && <Apex19TreeTerminal />}
       <FullscreenFlash />
     </div>
   );

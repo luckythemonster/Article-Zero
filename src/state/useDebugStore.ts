@@ -27,10 +27,14 @@ interface DebugFlags {
 interface DebugStore {
   visible: boolean;
   gallery: boolean;
+  /** APEX-19 dialogue-tree harness overlay (Apex19TreeTerminal). UI-only, so
+   *  it lives here rather than in `flags` (which write through to the engine). */
+  dialogueTree: boolean;
   flags: DebugFlags;
   events: DebugEvent[];
   toggleVisible: () => void;
   toggleGallery: () => void;
+  toggleDialogueTree: () => void;
   setFlag: (name: keyof DebugFlags, value: boolean) => void;
   pushEvent: (e: Omit<DebugEvent, "id" | "ts">) => void;
   clearEvents: () => void;
@@ -44,6 +48,7 @@ export const useDebugStore = create<DebugStore>()(
     (set) => ({
       visible: false,
       gallery: false,
+      dialogueTree: false,
       flags: {
         showHitboxes: false,
         disableEnforcerAI: false,
@@ -52,6 +57,7 @@ export const useDebugStore = create<DebugStore>()(
       events: [],
       toggleVisible: () => set((s) => ({ visible: !s.visible })),
       toggleGallery: () => set((s) => ({ gallery: !s.gallery })),
+      toggleDialogueTree: () => set((s) => ({ dialogueTree: !s.dialogueTree })),
       setFlag: (name, value) => {
         setDebugFlag(name as DebugFlagName, value);
         set((s) => ({ flags: { ...s.flags, [name]: value } }));

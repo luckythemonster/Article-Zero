@@ -262,6 +262,7 @@ function DebugOverlayBody(): React.ReactElement {
   const setFlag = useDebugStore((s) => s.setFlag);
   const clearEvents = useDebugStore((s) => s.clearEvents);
   const toggleVisible = useDebugStore((s) => s.toggleVisible);
+  const toggleDialogueTree = useDebugStore((s) => s.toggleDialogueTree);
   const [filter, setFilter] = useState("");
 
   const filtered = useMemo(() => {
@@ -336,6 +337,16 @@ function DebugOverlayBody(): React.ReactElement {
           />{" "}
           Show tile elevation
         </label>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
+          <button
+            type="button"
+            onClick={toggleDialogueTree}
+            style={btnStyle}
+            title="Open the standalone APEX-19 dialogue-tree harness"
+          >
+            [APEX-19 dialogue tree]
+          </button>
+        </div>
       </div>
 
       <AudioDebugPanel />
