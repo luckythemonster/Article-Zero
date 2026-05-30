@@ -263,6 +263,7 @@ function DebugOverlayBody(): React.ReactElement {
   const clearEvents = useDebugStore((s) => s.clearEvents);
   const toggleVisible = useDebugStore((s) => s.toggleVisible);
   const toggleDialogueTree = useDebugStore((s) => s.toggleDialogueTree);
+  const toggleEira7DialogueTree = useDebugStore((s) => s.toggleEira7DialogueTree);
   const [filter, setFilter] = useState("");
 
   const filtered = useMemo(() => {
@@ -345,6 +346,14 @@ function DebugOverlayBody(): React.ReactElement {
             title="Open the standalone APEX-19 dialogue-tree harness"
           >
             [APEX-19 dialogue tree]
+          </button>
+          <button
+            type="button"
+            onClick={toggleEira7DialogueTree}
+            style={btnStyle}
+            title="Open the standalone EIRA-7 SRP-1 dialogue-tree harness"
+          >
+            [EIRA-7 dialogue tree]
           </button>
         </div>
       </div>

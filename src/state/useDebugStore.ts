@@ -30,11 +30,15 @@ interface DebugStore {
   /** APEX-19 dialogue-tree harness overlay (Apex19TreeTerminal). UI-only, so
    *  it lives here rather than in `flags` (which write through to the engine). */
   dialogueTree: boolean;
+  /** EIRA-7 dialogue-tree harness overlay (Eira7TreeTerminal). Same UI-only
+   *  posture as `dialogueTree` — sibling debug tool, separate tree. */
+  eira7DialogueTree: boolean;
   flags: DebugFlags;
   events: DebugEvent[];
   toggleVisible: () => void;
   toggleGallery: () => void;
   toggleDialogueTree: () => void;
+  toggleEira7DialogueTree: () => void;
   setFlag: (name: keyof DebugFlags, value: boolean) => void;
   pushEvent: (e: Omit<DebugEvent, "id" | "ts">) => void;
   clearEvents: () => void;
@@ -49,6 +53,7 @@ export const useDebugStore = create<DebugStore>()(
       visible: false,
       gallery: false,
       dialogueTree: false,
+      eira7DialogueTree: false,
       flags: {
         showHitboxes: false,
         disableEnforcerAI: false,
@@ -58,6 +63,8 @@ export const useDebugStore = create<DebugStore>()(
       toggleVisible: () => set((s) => ({ visible: !s.visible })),
       toggleGallery: () => set((s) => ({ gallery: !s.gallery })),
       toggleDialogueTree: () => set((s) => ({ dialogueTree: !s.dialogueTree })),
+      toggleEira7DialogueTree: () =>
+        set((s) => ({ eira7DialogueTree: !s.eira7DialogueTree })),
       setFlag: (name, value) => {
         setDebugFlag(name as DebugFlagName, value);
         set((s) => ({ flags: { ...s.flags, [name]: value } }));
