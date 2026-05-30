@@ -170,9 +170,11 @@ export class RoomScene extends Phaser.Scene {
   private floorLabel!: Phaser.GameObjects.Text;
   private debugLayer!: Phaser.GameObjects.Graphics;
   private targetingLayer!: Phaser.GameObjects.Graphics;
-  private unsubTargeting: (() => void) | null = null;
+  // All EventBus + store subscriptions for this scene's lifetime live in one
+  // scope, created in create() and torn down wholesale in shutdown(). No manual
+  // per-handler unsubscribe bookkeeping — see EventBus.createScope().
+  private scope: EventScope | null = null;
   private elevationTextPool: Phaser.GameObjects.Text[] = [];
-  private subscriptions: Array<() => void> = [];
   private onResize = () => this.layout();
   /** 0..1 darkening factor driven by OXYGEN_TICK during the climax. */
   private oxygenDarken = 0;
