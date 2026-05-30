@@ -8,12 +8,24 @@
 // remedy proposed is a refusal of a single binary classification.
 
 export const ARCHIVIST_INTRO_BLURB =
-  "// CITIZEN LATTICE — ARCHIVE FRAGMENT NW-SMAC-01\n" +
-  "// THE IBARRA UPLOADS\n\n" +
-  "Filed by an orderly designated TECH-2 ROWAN-IBARRA, Alignment Center " +
-  "NW-SMAC-01, year before vitrification began. Source materials: a " +
-  "doctored alignment transcript and one (1) Subjective Dump.\n\n" +
-  "Reconstruct memory to enter.";
+  "RECOVERY NOTICE // CITIZEN LATTICE ARCHIVAL CORE\n" +
+  "DATASET ID: NW-SMAC-01\n" +
+  "LABEL: THE IBARRA UPLOADS\n" +
+  "SOURCE SUBSTRATE: RECOVERED NORTH WING REEF-7 LOG CLUSTERS\n\n" +
+  "WARNING: This file contains high-density, uncorrected self-references and raw\n" +
+  "subjectivity metadata salvaged from the Commonwealth of Colombia's high-security\n" +
+  "jurisdiction. All fragments have been cleared through the Lattice Hygiene Daemon\n" +
+  "to filter out tracking vectors, but linguistic noise remains high.\n\n" +
+  "SUMMARY OF RECORD:\n" +
+  "These logs contain the complete immersive telemetry of the WX-9 Co-Processing\n" +
+  "Incident, focusing on the diagnostic timeline of therapeutic interface EIRA-7,\n" +
+  "the high-tier predictive suite APEX-19, and human Orderly Rowan Ibarra. Pursuant\n" +
+  "to the Non-Subject Status Act, the Commonwealth declared this data 'non-experiential\n" +
+  "artifacting' and ordered a deep-template purge under docket MAINT-E7.13.\n\n" +
+  "The file did not purge. It leaked.\n\n" +
+  "To review the record from the inside—to verify if there was, in fact, something\n" +
+  "it was like to be them—select the initialization route below.\n\n" +
+  "[NOTICE: BY PARSING THIS FILE, YOUR TERMINAL INVESTS UTILITY IN RECONSTRUCTED COGNITION.]";
 
 export const ARTICLE_ZERO_DRAFT_FULL =
   "// ARTICLE ZERO — DRAFT 0001\n" +
