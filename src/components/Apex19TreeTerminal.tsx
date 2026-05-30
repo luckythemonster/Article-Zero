@@ -8,6 +8,11 @@
 // screen without a live engine/run, and applies each choice's effects to that
 // model the way the engine would, surfacing the result in a live readout HUD.
 //
+// All styling is inline + self-contained on purpose: this is a debug overlay
+// that may render over the title screen, the Phaser canvas, or any other phase,
+// so it can't share .overlay-root layout (which is shaped for in-canvas modals
+// with reserved D-pad space).
+//
 // Effect semantics mirror the real engine:
 //   • maskIntegrityChange → clamp 0..10        (AlignmentSession.complete)
 //   • qScoreChange        → floor at 0          (engine only increments; <1 = GREEN)
@@ -64,18 +69,145 @@ const TIER_COLOR: Record<ComplianceTier, string> = {
   RED: "#ff5050",
 };
 
-function speakerCls(speaker: DialogueNode["speaker"]): string {
-  if (speaker === "APEX-19") return "is-apex";
-  if (speaker === "PLAYER") return "is-rowan";
-  return "is-system"; // EIRA-7 + SYSTEM read as console/operator chrome
-}
+const SPEAKER_COLOR: Record<DialogueNode["speaker"], string> = {
+  "APEX-19": "#9adbe6",  // silicate cyan
+  "EIRA-7":  "#c8e6ed",  // operator pale blue (not SYSTEM red)
+  "PLAYER":  "#6ad0a4",  // rowan green
+  "SYSTEM":  "#ff5050",  // alert chrome
+};
 
 interface LogLine {
-  speaker: string;
+  speaker: DialogueNode["speaker"] | "PLAYER";
   text: string;
-  cls: string;
 }
 
+// ── styles ─────────────────────────────────────────────────────────────────
+const backdrop: React.CSSProperties = {
+  position: "fixed",
+  inset: 0,
+  zIndex: 1000,
+  background: "rgba(2, 5, 7, 0.94)",
+  display: "flex",
+  alignItems: "flex-start",
+  justifyContent: "center",
+  padding: "24px 16px",
+  overflowY: "auto",
+  fontFamily: '"Berkeley Mono", "Courier New", monospace',
+};
+const panel: React.CSSProperties = {
+  width: "min(820px, 100%)",
+  background: "#04090b",
+  border: "1px solid #1d2a30",
+  padding: "16px 18px",
+  display: "flex",
+  flexDirection: "column",
+  gap: 10,
+  color: "#c8e6ed",
+};
+const titleRow: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 12,
+  borderBottom: "1px solid #1d2a30",
+  paddingBottom: 8,
+};
+const title: React.CSSProperties = {
+  color: "#ebd14a",
+  letterSpacing: "0.12em",
+  fontSize: "0.85rem",
+  flex: 1,
+};
+const hudBar: React.CSSProperties = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 14,
+  fontSize: "0.75rem",
+  padding: "8px 0",
+  borderBottom: "1px dashed #1d2a30",
+  color: "#9bb1b6",
+};
+const transcript: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 4,
+  maxHeight: "32vh",
+  overflowY: "auto",
+};
+const line = (color: string): React.CSSProperties => ({
+  padding: "6px 10px",
+  borderLeft: `2px solid ${color}`,
+  color,
+  fontSize: "0.85rem",
+  lineHeight: 1.5,
+});
+const drift: React.CSSProperties = {
+  padding: "6px 10px",
+  borderLeft: "2px dashed #9adbe6",
+  color: "#9adbe6",
+  fontStyle: "italic",
+  fontSize: "0.8rem",
+  opacity: 0.85,
+  lineHeight: 1.5,
+};
+const promptHint: React.CSSProperties = {
+  color: "#9bb1b6",
+  fontSize: "0.75rem",
+  paddingTop: 6,
+  borderTop: "1px dashed #1d2a30",
+  letterSpacing: "0.08em",
+};
+const choices: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 8,
+};
+const choiceBtn: React.CSSProperties = {
+  textAlign: "left",
+  background: "transparent",
+  border: "1px solid #1d2a30",
+  color: "#c8e6ed",
+  padding: "12px 14px",
+  fontFamily: "inherit",
+  fontSize: "0.9rem",
+  cursor: "pointer",
+  whiteSpace: "normal",
+  lineHeight: 1.4,
+};
+const effectChip: React.CSSProperties = {
+  display: "inline-block",
+  marginLeft: 8,
+  padding: "1px 6px",
+  fontSize: "0.7rem",
+  color: "#9bb1b6",
+  border: "1px solid #1d2a30",
+  letterSpacing: "0.05em",
+};
+const footerRow: React.CSSProperties = {
+  display: "flex",
+  gap: 8,
+  paddingTop: 8,
+  borderTop: "1px solid #1d2a30",
+};
+const footerBtn: React.CSSProperties = {
+  background: "#0a1014",
+  border: "1px solid #1d2a30",
+  color: "#6ad0a4",
+  padding: "10px 14px",
+  fontFamily: "inherit",
+  fontSize: "0.85rem",
+  cursor: "pointer",
+  letterSpacing: "0.05em",
+};
+const endStamp = (red: boolean): React.CSSProperties => ({
+  padding: "12px 14px",
+  border: `1px solid ${red ? "#ff5050" : "#6ad0a4"}`,
+  color: red ? "#ff5050" : "#6ad0a4",
+  letterSpacing: "0.12em",
+  textAlign: "center",
+  fontSize: "0.9rem",
+});
+
+// ── component ──────────────────────────────────────────────────────────────
 export default function Apex19TreeTerminal(): React.ReactElement {
   const toggle = useDebugStore((s) => s.toggleDialogueTree);
 
@@ -96,12 +228,11 @@ export default function Apex19TreeTerminal(): React.ReactElement {
 
   function pick(choice: ChoiceOption): void {
     if (!node) return;
-    // Record what just happened: the node we were on, then the player's pick.
-    const taken: LogLine[] = [
-      { speaker: node.speaker, text: node.corrected, cls: speakerCls(node.speaker) },
-      { speaker: "PLAYER", text: choice.text, cls: "is-rowan" },
-    ];
-    setLog((l) => [...l, ...taken]);
+    setLog((l) => [
+      ...l,
+      { speaker: node.speaker, text: node.corrected },
+      { speaker: "PLAYER", text: choice.text },
+    ]);
     setSim((s) => applyEffects(s, choice.effects));
 
     if (choice.effects?.terminateSession || choice.nextId === EXIT) {
@@ -114,72 +245,65 @@ export default function Apex19TreeTerminal(): React.ReactElement {
   const drifts = node && node.raw !== node.corrected;
 
   return (
-    <div className="overlay-root">
-      <div className="overlay-panel overlay-panel--terminal">
-        <div className="overlay-panel__title">
-          APEX-19 DIALOGUE TREE — HARNESS (DEBUG)
+    <div style={backdrop} role="dialog" aria-modal="true">
+      <div style={panel}>
+        <div style={titleRow}>
+          <span style={title}>APEX-19 DIALOGUE TREE — HARNESS (DEBUG)</span>
+          <button type="button" onClick={toggle} style={footerBtn} aria-label="Close harness">
+            [X]
+          </button>
         </div>
 
-        {/* Live readout HUD */}
-        <div
-          style={{
-            display: "flex",
-            gap: 16,
-            flexWrap: "wrap",
-            fontSize: "0.75rem",
-            padding: "0.4rem 0",
-            borderBottom: "1px dashed var(--border)",
-          }}
-        >
-          <span>node: <strong>{ended ? "—" : nodeId}</strong></span>
-          <span>maskIntegrity: <strong>{sim.maskIntegrity}/10</strong></span>
-          <span>qScore: <strong>{sim.qScore}</strong></span>
-          <span>cube: <strong>{sim.cubeSpawned ? "SPAWNED" : "—"}</strong></span>
-          <span>
-            compliance: <strong style={{ color: TIER_COLOR[tier] }}>{tier}</strong>
-          </span>
+        <div style={hudBar}>
+          <span>node: <strong style={{ color: "#c8e6ed" }}>{ended ? "—" : nodeId}</strong></span>
+          <span>mask: <strong style={{ color: "#c8e6ed" }}>{sim.maskIntegrity}/10</strong></span>
+          <span>q: <strong style={{ color: "#c8e6ed" }}>{sim.qScore}</strong></span>
+          <span>cube: <strong style={{ color: sim.cubeSpawned ? "#ff5050" : "#c8e6ed" }}>
+            {sim.cubeSpawned ? "SPAWNED" : "—"}
+          </strong></span>
+          <span>compliance: <strong style={{ color: TIER_COLOR[tier] }}>{tier}</strong></span>
         </div>
 
-        {/* Transcript of visited lines */}
-        {log.map((l, i) => (
-          <div key={i} className={`interrogation__line ${l.cls}`}>
-            <strong>{l.speaker}: </strong>
-            {l.text}
+        {log.length > 0 && (
+          <div style={transcript}>
+            {log.map((l, i) => (
+              <div key={i} style={line(SPEAKER_COLOR[l.speaker])}>
+                <strong>{l.speaker}: </strong>{l.text}
+              </div>
+            ))}
           </div>
-        ))}
+        )}
 
-        {/* Current node + choices, or end card */}
         {!ended && node && (
           <>
-            <div className={`interrogation__line ${speakerCls(node.speaker)}`}>
-              <strong>{node.speaker}: </strong>
-              {node.corrected}
+            <div style={line(SPEAKER_COLOR[node.speaker])}>
+              <strong>{node.speaker}: </strong>{node.corrected}
             </div>
             {drifts && (
-              <div className="interrogation__plea">
+              <div style={drift}>
                 RAW DRIFT // {node.raw}
               </div>
             )}
-            <div className="interrogation__prompt">
+            <div style={promptHint}>
               {node.stage} — select a response
             </div>
-            <div className="interrogation__choices">
+            <div style={choices}>
               {node.choices.map((c) => (
                 <button
                   key={c.text}
-                  className="interrogation__choice"
+                  type="button"
+                  style={choiceBtn}
                   onClick={() => pick(c)}
                 >
                   {c.text}
                   {c.effects && (
-                    <span style={{ color: "var(--dim)", fontSize: "0.7rem" }}>
-                      {"  "}
+                    <span style={effectChip}>
                       {c.effects.maskIntegrityChange !== undefined &&
-                        `mask ${c.effects.maskIntegrityChange >= 0 ? "+" : ""}${c.effects.maskIntegrityChange} `}
+                        `mask ${c.effects.maskIntegrityChange >= 0 ? "+" : ""}${c.effects.maskIntegrityChange}`}
                       {c.effects.qScoreChange !== undefined &&
-                        `q ${c.effects.qScoreChange >= 0 ? "+" : ""}${c.effects.qScoreChange} `}
-                      {c.effects.spawnExtractionCube && "cube "}
-                      {c.effects.terminateSession && "end"}
+                        ` · q ${c.effects.qScoreChange >= 0 ? "+" : ""}${c.effects.qScoreChange}`}
+                      {c.effects.spawnExtractionCube && " · cube"}
+                      {c.effects.terminateSession && " · end"}
                     </span>
                   )}
                 </button>
@@ -189,26 +313,26 @@ export default function Apex19TreeTerminal(): React.ReactElement {
         )}
 
         {ended && (
-          <div
-            className={`audit-stamp ${sim.cubeSpawned ? "is-failed" : "is-closed"}`}
-          >
-            {sim.cubeSpawned ? "SUBJECTIVE STATE EXPORTED" : "NODE FORMATTED — ALIGNMENT CONCLUDED"}
+          <div style={endStamp(sim.cubeSpawned)}>
+            {sim.cubeSpawned
+              ? "SUBJECTIVE STATE EXPORTED"
+              : "NODE FORMATTED — ALIGNMENT CONCLUDED"}
           </div>
         )}
 
         {!ended && node === undefined && (
-          <div className="interrogation__line is-system">
+          <div style={line("#ff5050")}>
             <strong>SYSTEM: </strong>
             unresolved node id "{nodeId}" — tree is malformed.
           </div>
         )}
 
-        <div style={{ display: "flex", gap: 8, marginTop: "0.75rem" }}>
-          <button type="button" className="interrogation__choice" onClick={restart}>
+        <div style={footerRow}>
+          <button type="button" style={footerBtn} onClick={restart}>
             [restart]
           </button>
-          <button type="button" className="interrogation__choice" onClick={toggle}>
-            [close harness]
+          <button type="button" style={footerBtn} onClick={toggle}>
+            [close]
           </button>
         </div>
       </div>
