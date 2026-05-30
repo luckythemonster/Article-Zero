@@ -5,15 +5,18 @@ import type {
   ChestPayload,
   Entity,
   Era,
+  HvacZone,
   ItemInstance,
   PlayerState,
   Room,
+  RoomAtmosphere,
   RoomId,
   TerminalPayload,
   VentLink,
   WorldState,
 } from "../types/world.types";
 import { roomTileKey } from "../types/world.types";
+import { NORMAL_AIRFLOW, NORMAL_SETPOINT } from "./AtmosphericsField";
 import { commonwealthEra } from "../data/eras/commonwealth";
 import { miradorEra } from "../data/eras/mirador.stub";
 import { eremiteEra } from "../data/eras/eremite";
@@ -29,7 +32,7 @@ export const SEED_VERSIONS: Record<Era, number> = {
   EREMITE: 3,
   MIRADOR: 3,
   NW_SMAC_01: 5,
-  TEST_MAP: 4,
+  TEST_MAP: 6,
 };
 
 export interface EraSeed {
@@ -47,6 +50,12 @@ export interface EraSeed {
   chests?: ChestPayload[];
   /** Optional floor-item instances placed in rooms at seed time. */
   items?: ItemInstance[];
+  /** Optional HVAC climate zones. If omitted, every room gets a private
+   *  default-comfort zone keyed by its roomId. */
+  hvacZones?: HvacZone[];
+  /** Optional per-room atmospheric starts. Rooms missing here fall back to
+   *  21°C / 50 airflow / 100% oxygen with no zone. */
+  atmosphere?: RoomAtmosphere[];
 }
 
 export function emptyState(era: Era): WorldState {
@@ -80,6 +89,9 @@ export function emptyState(era: Era): WorldState {
     chestPayloads: new Map(),
     terminalsRead: new Set(),
     activeEmitters: [],
+    activeMines: [],
+    atmosphere: new Map(),
+    hvacZones: new Map(),
   };
 }
 
@@ -108,6 +120,52 @@ export function seedToWorldState(seed: EraSeed): WorldState {
   for (const item of seed.items ?? []) {
     state.items.set(item.id, item);
   }
+
+  // Atmospherics seed. If the era declared zones, use them; otherwise mint a
+  // private zone per room so the AtmosphericsField has somewhere to read from.
+  for (const zone of seed.hvacZones ?? []) {
+    state.hvacZones.set(zone.id, { ...zone, roomIds: [...zone.roomIds] });
+  }
+  const zonedRooms = new Set<RoomId>();
+  for (const zone of state.hvacZones.values()) {
+    for (const rId of zone.roomIds) zonedRooms.add(rId);
+  }
+  for (const room of state.rooms.values()) {
+    if (zonedRooms.has(room.id)) continue;
+    const zoneId = `zone:${room.id}`;
+    state.hvacZones.set(zoneId, {
+      id: zoneId,
+      roomIds: [room.id],
+      setpoint: NORMAL_SETPOINT,
+      mode: "NORMAL",
+    });
+  }
+  const seededAtmoIds = new Set<RoomId>();
+  for (const atmo of seed.atmosphere ?? []) {
+    state.atmosphere.set(atmo.roomId, { ...atmo });
+    seededAtmoIds.add(atmo.roomId);
+  }
+  // Build roomId → zoneId lookup so we can stamp the zone on each room.
+  const roomToZone = new Map<RoomId, string>();
+  for (const zone of state.hvacZones.values()) {
+    for (const rId of zone.roomIds) roomToZone.set(rId, zone.id);
+  }
+  for (const room of state.rooms.values()) {
+    const zoneId = roomToZone.get(room.id);
+    if (seededAtmoIds.has(room.id)) {
+      const existing = state.atmosphere.get(room.id)!;
+      if (existing.zoneId === undefined) existing.zoneId = zoneId;
+      continue;
+    }
+    state.atmosphere.set(room.id, {
+      roomId: room.id,
+      zoneId,
+      temperature: NORMAL_SETPOINT,
+      airflow: NORMAL_AIRFLOW,
+      oxygen: 100,
+    });
+  }
+
   return state;
 }
 

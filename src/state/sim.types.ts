@@ -4,6 +4,7 @@
 
 import type {
   ActiveEmitter,
+  ActiveMine,
   AlertState,
   ChestPayload,
   ComplianceTier,
@@ -12,9 +13,11 @@ import type {
   EntityStatus,
   Era,
   Facing,
+  HvacZone,
   ItemInstance,
   PatrolNode,
   Room,
+  RoomAtmosphere,
   RoomId,
   Stance,
   TerminalPayload,
@@ -66,6 +69,11 @@ export interface PhysicalState {
   playerFacing: Facing;
   entityPositions: Map<EntityId, EntityPhysical>;
   entityKinds: Map<EntityId, EntityKindInfo>;
+  /** Per-room atmosphere snapshot (temperature/airflow/oxygen). Optional for
+   *  back-compat with snapshots saved before atmospherics landed. */
+  atmosphere?: Map<RoomId, RoomAtmosphere>;
+  /** HVAC climate zones keyed by zone id. Optional for back-compat. */
+  hvacZones?: Map<string, HvacZone>;
 }
 
 // ── Subjective ────────────────────────────────────────────────────────────────
@@ -104,6 +112,7 @@ export interface SubjectiveState {
   worldItems: Map<string, ItemInstance>;
   documentCases: Map<string, DocumentCase>;
   activeEmitters: ActiveEmitter[];
+  activeMines: ActiveMine[];
 }
 
 // ── Serialised forms (JSON-safe: Map → array-of-pairs, Set → array) ───────────
@@ -121,6 +130,8 @@ export interface SerializedPhysical {
   playerFacing: Facing;
   entityPositions: [EntityId, EntityPhysical][];
   entityKinds: [EntityId, EntityKindInfo][];
+  atmosphere?: [RoomId, RoomAtmosphere][];
+  hvacZones?: [string, HvacZone][];
 }
 
 export interface SerializedSubjective {
@@ -147,6 +158,7 @@ export interface SerializedSubjective {
   worldItems: [string, ItemInstance][];
   documentCases: [string, DocumentCase][];
   activeEmitters?: ActiveEmitter[];
+  activeMines?: ActiveMine[];
 }
 
 export interface SimSnapshot {

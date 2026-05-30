@@ -9,6 +9,7 @@ import type {
   PhysicalState,
   SubjectiveState,
 } from "./sim.types";
+import { documentArchive } from "../engine/DocumentArchive";
 
 /** Split a WorldState into Physical + Subjective slices. */
 export function worldStateToSlices(ws: WorldState): {
@@ -58,6 +59,15 @@ export function worldStateToSlices(ws: WorldState): {
     playerFacing: ws.player.facing,
     entityPositions,
     entityKinds,
+    atmosphere: new Map(
+      [...ws.atmosphere].map(([id, a]) => [id, { ...a }]),
+    ),
+    hvacZones: new Map(
+      [...ws.hvacZones].map(([id, z]) => [
+        id,
+        { ...z, roomIds: [...z.roomIds] },
+      ]),
+    ),
   };
 
   const subjective: SubjectiveState = {
@@ -83,8 +93,12 @@ export function worldStateToSlices(ws: WorldState): {
     lockdown: ws.lockdown ? { ...ws.lockdown } : undefined,
     terminalsRead: new Set(ws.terminalsRead),
     worldItems: new Map(ws.items),
-    documentCases: new Map(),
+    // Filed records (extraction docs, alignment transcripts, VENT-4) live in the
+    // documentArchive singleton — pull them into the subjective slice so they
+    // persist through the physical/subjective save format.
+    documentCases: new Map(documentArchive.list().map((c) => [c.id, c])),
     activeEmitters: ws.activeEmitters.map((e) => ({ ...e })),
+    activeMines: ws.activeMines.map((m) => ({ ...m })),
   };
 
   return { physical, subjective };
@@ -160,5 +174,15 @@ export function slicesToWorldState(
     chestPayloads: new Map(physical.chestPayloads),
     terminalsRead: new Set(subjective.terminalsRead),
     activeEmitters: subjective.activeEmitters.map((e) => ({ ...e })),
+    activeMines: subjective.activeMines.map((m) => ({ ...m })),
+    atmosphere: new Map(
+      [...(physical.atmosphere ?? new Map())].map(([id, a]) => [id, { ...a }]),
+    ),
+    hvacZones: new Map(
+      [...(physical.hvacZones ?? new Map())].map(([id, z]) => [
+        id,
+        { ...z, roomIds: [...z.roomIds] },
+      ]),
+    ),
   };
 }

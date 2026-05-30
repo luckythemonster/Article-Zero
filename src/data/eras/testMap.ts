@@ -105,6 +105,7 @@ function resolveItemName(raw: string): ItemType | null {
   const s = raw.trim().toLowerCase();
   if (s.includes("emp") && s.includes("grenade")) return "EMP_GRENADE";
   if (s === "emp") return "EMP";
+  if (s.includes("mine")) return "Q_MINE";
   if (s.includes("key") || s.includes("override")) return "OVERRIDE_KEY";
   if (s.includes("baffle")) return "THERMAL_BAFFLE";
   if (s.includes("badge") || s.includes("spoof")) return "Q0_SPOOF_BADGE";
@@ -115,6 +116,7 @@ function resolveItemName(raw: string): ItemType | null {
   const known: ItemType[] = [
     "EXTRACTION_CUBE", "BYPASS_DRIVE", "PHANTOM_EMITTER", "Q0_SPOOF_BADGE",
     "DUMP_FRAGMENT", "THERMAL_BAFFLE", "OVERRIDE_KEY", "EMP", "EMP_GRENADE",
+    "Q_MINE",
   ];
   const upper = raw.trim().toUpperCase() as ItemType;
   if (known.includes(upper)) return upper;
@@ -287,6 +289,51 @@ function restampVents(seed: EraSeed, roomId: string, lv: MooseLevel): void {
   }
 }
 
+/** This export paints an EXFIL_POINT but no extraction terminal, so the
+ *  fragment-box loop has no source. Stamp an EXTRACTION_TERMINAL onto a FLOOR
+ *  cell in the same room, a few tiles from the exfil (and off the spawn / read
+ *  terminal), so the player can extract a Fragment Box and carry it to the
+ *  exfil. Derived from painted data so it survives map revisions. Call after
+ *  the other tile promotions (chests/switches/vents) so it only lands on a
+ *  still-plain FLOOR cell. */
+function stampExtractionTerminal(seed: EraSeed, roomId: string, lv: MooseLevel): void {
+  const room = seed.rooms.find((r) => r.id === roomId);
+  if (!room) return;
+  const exfil = paintedCells(lv, "exfil_point")[0];
+  if (!exfil) return;
+  const walk = walkableSet(lv);
+  const idxOf = (p: Vec2) => p.y * room.width + p.x;
+  const dist = (p: Vec2) => Math.abs(p.x - exfil.x) + Math.abs(p.y - exfil.y);
+  const neighbours = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
+  const standable = (p: Vec2) =>
+    neighbours.some(([dx, dy]) => walk.has(key({ x: p.x + dx, y: p.y + dy })));
+
+  const blocked = new Set<string>();
+  const spawn = paintedCells(lv, "spawn")[0];
+  if (spawn) blocked.add(key(spawn));
+  for (const t of cellsWithRef(lv, "terminals", "terminal")) blocked.add(key(t));
+
+  // Plain FLOOR cells with a neighbour to stand on, off the spawn/read terminal.
+  const candidates = [...walk]
+    .map((k) => {
+      const [x, y] = k.split(",").map(Number);
+      return { x, y } as Vec2;
+    })
+    .filter((p) => room.tiles[idxOf(p)]?.kind === "FLOOR")
+    .filter((p) => !blocked.has(key(p)))
+    .filter(standable);
+
+  // Prefer a short carry (>= 3 tiles); fall back to the nearest valid cell.
+  const byDistance = [...candidates].sort((a, b) => dist(a) - dist(b));
+  const target =
+    byDistance.find((p) => dist(p) >= 3) ?? byDistance[0] ?? null;
+  if (!target) {
+    console.warn("[testMap] no spot for EXTRACTION_TERMINAL — fragment-box loop unsourced");
+    return;
+  }
+  room.tiles[idxOf(target)] = mkTile("EXTRACTION_TERMINAL");
+}
+
 export function testMapEra(): EraSeed {
   const l1 = levelByName("Level 1");
   const l2 = levelByName("Level 2");
@@ -443,6 +490,137 @@ export function testMapEra(): EraSeed {
 
   seed.chests = [...seedChests(seed, DECK_ID, l1), ...seedChests(seed, SUBLEVEL_ID, l2)];
 
+  // The exfil point is painted on the deck but the map ships no extraction
+  // terminal — stamp one so the fragment-box → exfil loop is playable here.
+  stampExtractionTerminal(seed, DECK_ID, l1);
+
+  // --- Atmospherics: HVAC zones, console, thermostats -----------------------
+  // One climate zone per deck. The deck console controls both zones; each
+  // deck also gets a wall thermostat for the local zone.
+  seed.hvacZones = [
+    {
+      id: "deck-climate",
+      roomIds: [DECK_ID],
+      setpoint: 21,
+      mode: "NORMAL",
+    },
+    {
+      id: "sublevel-climate",
+      roomIds: [SUBLEVEL_ID],
+      setpoint: 21,
+      mode: "NORMAL",
+    },
+  ];
+
+  // Stamp three new TERMINAL tiles on free FLOOR cells: HVAC console on the
+  // deck, a wall thermostat on each level. Picks deterministically off the
+  // walkable set so map revisions don't shuffle these around.
+  const blockedOnDeck = new Set<string>();
+  const spawn = paintedCells(l1, "spawn")[0];
+  if (spawn) blockedOnDeck.add(key(spawn));
+  for (const t of cellsWithRef(l1, "terminals", "terminal")) blockedOnDeck.add(key(t));
+  for (const t of paintedCells(l1, "exfil_point")) blockedOnDeck.add(key(t));
+
+  const deckRoom = seed.rooms.find((r) => r.id === DECK_ID);
+  const sublevelRoom = seed.rooms.find((r) => r.id === SUBLEVEL_ID);
+
+  function promoteToTerminal(
+    roomId: string,
+    pos: Vec2,
+    payload: Omit<
+      NonNullable<EraSeed["terminals"]>[number],
+      "roomId" | "pos"
+    >,
+  ): void {
+    const room = seed.rooms.find((r) => r.id === roomId);
+    if (!room) return;
+    const idx = pos.y * room.width + pos.x;
+    const existing = room.tiles[idx];
+    if (!existing || existing.kind !== "FLOOR") return;
+    room.tiles[idx] = mkTile("TERMINAL");
+    seed.terminals = [...(seed.terminals ?? []), { roomId, pos, ...payload }];
+  }
+
+  function pickHvacCell(
+    room: NonNullable<typeof deckRoom>,
+    walk: Set<string>,
+    blocked: Set<string>,
+    anchor: Vec2,
+  ): Vec2 | undefined {
+    const candidates = [...walk]
+      .map((k) => {
+        const [x, y] = k.split(",").map(Number);
+        return { x, y } as Vec2;
+      })
+      .filter((p) => room.tiles[p.y * room.width + p.x]?.kind === "FLOOR")
+      .filter((p) => !blocked.has(key(p)))
+      .sort(
+        (a, b) =>
+          Math.abs(a.x - anchor.x) +
+          Math.abs(a.y - anchor.y) -
+          (Math.abs(b.x - anchor.x) + Math.abs(b.y - anchor.y)),
+      );
+    // Prefer a cell 2-6 tiles from anchor so the player isn't standing on it
+    // at spawn and can walk up to it.
+    return (
+      candidates.find((p) => {
+        const d = Math.abs(p.x - anchor.x) + Math.abs(p.y - anchor.y);
+        return d >= 2 && d <= 6;
+      }) ?? candidates[0]
+    );
+  }
+
+  if (deckRoom && spawn) {
+    const hvacCell = pickHvacCell(deckRoom, w1, blockedOnDeck, spawn);
+    if (hvacCell) {
+      promoteToTerminal(DECK_ID, hvacCell, {
+        terminalId: "test-map-hvac-console",
+        title: "HVAC CONTROL CONSOLE",
+        body: "Multi-zone climate control. NORMAL / MAX COOL / MAX HEAT / PURGE / OXYGEN CUTOFF.",
+        terminalKind: "HVAC_CONSOLE",
+        hvacZones: ["deck-climate", "sublevel-climate"],
+      });
+      blockedOnDeck.add(key(hvacCell));
+
+      // Wall thermostat — another walkable cell on the deck, away from the
+      // console so the player can compare.
+      const thermoCell = pickHvacCell(deckRoom, w1, blockedOnDeck, {
+        x: spawn.x + 4,
+        y: spawn.y,
+      });
+      if (thermoCell) {
+        promoteToTerminal(DECK_ID, thermoCell, {
+          terminalId: "test-map-thermostat-deck",
+          title: "WALL THERMOSTAT — DECK",
+          body: "Local zone setpoint and cool/heat toggle.",
+          terminalKind: "WALL_THERMOSTAT",
+          hvacZoneId: "deck-climate",
+        });
+      }
+    }
+  }
+
+  if (sublevelRoom) {
+    const blockedOnSub = new Set<string>();
+    for (const t of cellsWithRef(l2, "terminals", "terminal"))
+      blockedOnSub.add(key(t));
+    for (const t of cellsWithRef(l2, "terminals", "vent")) blockedOnSub.add(key(t));
+    for (const t of paintedCells(l2, "ladders")) blockedOnSub.add(key(t));
+    if (apexCell) blockedOnSub.add(key(apexCell));
+    if (vent4Cell) blockedOnSub.add(key(vent4Cell));
+    const anchor = apexCell ?? subLadder;
+    const thermoCell = pickHvacCell(sublevelRoom, w2, blockedOnSub, anchor);
+    if (thermoCell) {
+      promoteToTerminal(SUBLEVEL_ID, thermoCell, {
+        terminalId: "test-map-thermostat-sublevel",
+        title: "WALL THERMOSTAT — SUB-DECK",
+        body: "Local zone setpoint and cool/heat toggle.",
+        terminalKind: "WALL_THERMOSTAT",
+        hvacZoneId: "sublevel-climate",
+      });
+    }
+  }
+
   // Starting kit so every tactical item's mechanics are testable on this map.
   // The Override Key lets the locked-chest path be exercised (the sub-deck
   // chest is locked).
@@ -452,6 +630,7 @@ export function testMapEra(): EraSeed {
   seed.player.inventory.push({ id: "thermal-baffle-1", itemType: "THERMAL_BAFFLE" });
   seed.player.inventory.push({ id: "emp-grenade-1", itemType: "EMP_GRENADE" });
   seed.player.inventory.push({ id: "override-key-1", itemType: "OVERRIDE_KEY" });
+  seed.player.inventory.push({ id: "q-mine-1", itemType: "Q_MINE" });
 
   return seed;
 }

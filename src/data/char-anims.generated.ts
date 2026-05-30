@@ -1005,194 +1005,119 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
-    "key": "eira7_powerfailure_east",
-    "frameRate": 8,
+    "key": "eira7_idle_east",
+    "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "eira7/powerfailure/east/01",
-      "eira7/powerfailure/east/02",
-      "eira7/powerfailure/east/03",
-      "eira7/powerfailure/east/04",
-      "eira7/powerfailure/east/05"
+      "eira7/idle/east/01",
+      "eira7/idle/east/02",
+      "eira7/idle/east/03",
+      "eira7/idle/east/04"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_powerfailure_north",
-    "frameRate": 8,
+    "key": "eira7_idle_north",
+    "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "eira7/powerfailure/north/01",
-      "eira7/powerfailure/north/02",
-      "eira7/powerfailure/north/03",
-      "eira7/powerfailure/north/04",
-      "eira7/powerfailure/north/05"
+      "eira7/idle/north/01",
+      "eira7/idle/north/02",
+      "eira7/idle/north/03",
+      "eira7/idle/north/04"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_powerfailure_south",
-    "frameRate": 8,
+    "key": "eira7_idle_south",
+    "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "eira7/powerfailure/south/01",
-      "eira7/powerfailure/south/02",
-      "eira7/powerfailure/south/03",
-      "eira7/powerfailure/south/04",
-      "eira7/powerfailure/south/05"
+      "eira7/idle/south/01",
+      "eira7/idle/south/02",
+      "eira7/idle/south/03",
+      "eira7/idle/south/04",
+      "eira7/idle/south/05",
+      "eira7/idle/south/06",
+      "eira7/idle/south/07",
+      "eira7/idle/south/08",
+      "eira7/idle/south/09",
+      "eira7/idle/south/10",
+      "eira7/idle/south/11",
+      "eira7/idle/south/12",
+      "eira7/idle/south/13",
+      "eira7/idle/south/14",
+      "eira7/idle/south/15"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_powerfailure_west",
-    "frameRate": 8,
+    "key": "eira7_idle_west",
+    "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "eira7/powerfailure/west/01",
-      "eira7/powerfailure/west/02",
-      "eira7/powerfailure/west/03",
-      "eira7/powerfailure/west/04",
-      "eira7/powerfailure/west/05"
+      "eira7/idle/west/01",
+      "eira7/idle/west/02",
+      "eira7/idle/west/03",
+      "eira7/idle/west/04"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_pulse_east",
+    "key": "eira7_interact_east",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "eira7/pulse/east/01",
-      "eira7/pulse/east/02",
-      "eira7/pulse/east/03",
-      "eira7/pulse/east/04",
-      "eira7/pulse/east/05"
+      "eira7/interact/east/01",
+      "eira7/interact/east/02",
+      "eira7/interact/east/03",
+      "eira7/interact/east/04"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_pulse_north",
+    "key": "eira7_interact_north",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "eira7/pulse/north/01",
-      "eira7/pulse/north/02",
-      "eira7/pulse/north/03",
-      "eira7/pulse/north/04",
-      "eira7/pulse/north/05"
+      "eira7/interact/north/01",
+      "eira7/interact/north/02",
+      "eira7/interact/north/03"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_pulse_south",
+    "key": "eira7_interact_south",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "eira7/pulse/south/01",
-      "eira7/pulse/south/02",
-      "eira7/pulse/south/03",
-      "eira7/pulse/south/04",
-      "eira7/pulse/south/05"
+      "eira7/interact/south/01",
+      "eira7/interact/south/02",
+      "eira7/interact/south/03",
+      "eira7/interact/south/04",
+      "eira7/interact/south/05",
+      "eira7/interact/south/06",
+      "eira7/interact/south/07",
+      "eira7/interact/south/08",
+      "eira7/interact/south/09",
+      "eira7/interact/south/10",
+      "eira7/interact/south/11",
+      "eira7/interact/south/12",
+      "eira7/interact/south/13",
+      "eira7/interact/south/14",
+      "eira7/interact/south/15"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "eira7_pulse_west",
+    "key": "eira7_interact_west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "eira7/pulse/west/01",
-      "eira7/pulse/west/02",
-      "eira7/pulse/west/03",
-      "eira7/pulse/west/04",
-      "eira7/pulse/west/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rise_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rise/east/01",
-      "eira7/rise/east/02",
-      "eira7/rise/east/03",
-      "eira7/rise/east/04",
-      "eira7/rise/east/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rise_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rise/north/01",
-      "eira7/rise/north/02",
-      "eira7/rise/north/03",
-      "eira7/rise/north/04",
-      "eira7/rise/north/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rise_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rise/south/01",
-      "eira7/rise/south/02",
-      "eira7/rise/south/03",
-      "eira7/rise/south/04",
-      "eira7/rise/south/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rise_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rise/west/01",
-      "eira7/rise/west/02",
-      "eira7/rise/west/03",
-      "eira7/rise/west/04",
-      "eira7/rise/west/05"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rotations_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rotations/east/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rotations_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rotations/north/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rotations_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rotations/south/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "eira7_rotations_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "eira7/rotations/west/01"
+      "eira7/interact/west/01",
+      "eira7/interact/west/02",
+      "eira7/interact/west/03",
+      "eira7/interact/west/04"
     ],
     "texture": "chars-art"
   },
@@ -1204,8 +1129,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/walkcycle/east/01",
       "eira7/walkcycle/east/02",
       "eira7/walkcycle/east/03",
-      "eira7/walkcycle/east/04",
-      "eira7/walkcycle/east/05"
+      "eira7/walkcycle/east/04"
     ],
     "texture": "chars-art"
   },
@@ -1216,9 +1140,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frames": [
       "eira7/walkcycle/north/01",
       "eira7/walkcycle/north/02",
-      "eira7/walkcycle/north/03",
-      "eira7/walkcycle/north/04",
-      "eira7/walkcycle/north/05"
+      "eira7/walkcycle/north/03"
     ],
     "texture": "chars-art"
   },
@@ -1231,7 +1153,17 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/walkcycle/south/02",
       "eira7/walkcycle/south/03",
       "eira7/walkcycle/south/04",
-      "eira7/walkcycle/south/05"
+      "eira7/walkcycle/south/05",
+      "eira7/walkcycle/south/06",
+      "eira7/walkcycle/south/07",
+      "eira7/walkcycle/south/08",
+      "eira7/walkcycle/south/09",
+      "eira7/walkcycle/south/10",
+      "eira7/walkcycle/south/11",
+      "eira7/walkcycle/south/12",
+      "eira7/walkcycle/south/13",
+      "eira7/walkcycle/south/14",
+      "eira7/walkcycle/south/15"
     ],
     "texture": "chars-art"
   },
@@ -1243,8 +1175,7 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "eira7/walkcycle/west/01",
       "eira7/walkcycle/west/02",
       "eira7/walkcycle/west/03",
-      "eira7/walkcycle/west/04",
-      "eira7/walkcycle/west/05"
+      "eira7/walkcycle/west/04"
     ],
     "texture": "chars-art"
   },
@@ -1461,7 +1392,11 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/stand/east/01"
+      "enforcer/stand/east/01",
+      "enforcer/stand/east/02",
+      "enforcer/stand/east/03",
+      "enforcer/stand/east/04",
+      "enforcer/stand/east/05"
     ],
     "texture": "chars-art"
   },
@@ -1470,7 +1405,11 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/stand/north/01"
+      "enforcer/stand/north/01",
+      "enforcer/stand/north/02",
+      "enforcer/stand/north/03",
+      "enforcer/stand/north/04",
+      "enforcer/stand/north/05"
     ],
     "texture": "chars-art"
   },
@@ -1479,7 +1418,11 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/stand/south/01"
+      "enforcer/stand/south/01",
+      "enforcer/stand/south/02",
+      "enforcer/stand/south/03",
+      "enforcer/stand/south/04",
+      "enforcer/stand/south/05"
     ],
     "texture": "chars-art"
   },
@@ -1488,7 +1431,11 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "enforcer/stand/west/01"
+      "enforcer/stand/west/01",
+      "enforcer/stand/west/02",
+      "enforcer/stand/west/03",
+      "enforcer/stand/west/04",
+      "enforcer/stand/west/05"
     ],
     "texture": "chars-art"
   },
@@ -2553,154 +2500,82 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
-    "key": "mite3swarm_dissipating_east",
+    "key": "mite3swarm_attack_south-west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "mite3swarm/dissipating/east/01",
-      "mite3swarm/dissipating/east/02",
-      "mite3swarm/dissipating/east/03",
-      "mite3swarm/dissipating/east/04",
-      "mite3swarm/dissipating/east/05",
-      "mite3swarm/dissipating/east/06",
-      "mite3swarm/dissipating/east/07",
-      "mite3swarm/dissipating/east/08",
-      "mite3swarm/dissipating/east/09",
-      "mite3swarm/dissipating/east/10",
-      "mite3swarm/dissipating/east/11"
+      "mite3swarm/attack/south-west/01",
+      "mite3swarm/attack/south-west/02",
+      "mite3swarm/attack/south-west/03",
+      "mite3swarm/attack/south-west/04",
+      "mite3swarm/attack/south-west/05",
+      "mite3swarm/attack/south-west/06",
+      "mite3swarm/attack/south-west/07"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "mite3swarm_dissipating_north",
+    "key": "mite3swarm_devour_south-west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "mite3swarm/dissipating/north/01",
-      "mite3swarm/dissipating/north/02",
-      "mite3swarm/dissipating/north/03",
-      "mite3swarm/dissipating/north/04",
-      "mite3swarm/dissipating/north/05",
-      "mite3swarm/dissipating/north/06",
-      "mite3swarm/dissipating/north/07",
-      "mite3swarm/dissipating/north/08",
-      "mite3swarm/dissipating/north/09",
-      "mite3swarm/dissipating/north/10",
-      "mite3swarm/dissipating/north/11"
+      "mite3swarm/devour/south-west/01",
+      "mite3swarm/devour/south-west/02",
+      "mite3swarm/devour/south-west/03",
+      "mite3swarm/devour/south-west/04",
+      "mite3swarm/devour/south-west/05",
+      "mite3swarm/devour/south-west/06",
+      "mite3swarm/devour/south-west/07"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "mite3swarm_dissipating_south",
+    "key": "mite3swarm_dissipating_south-west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "mite3swarm/dissipating/south/01",
-      "mite3swarm/dissipating/south/02",
-      "mite3swarm/dissipating/south/03",
-      "mite3swarm/dissipating/south/04",
-      "mite3swarm/dissipating/south/05",
-      "mite3swarm/dissipating/south/06",
-      "mite3swarm/dissipating/south/07",
-      "mite3swarm/dissipating/south/08",
-      "mite3swarm/dissipating/south/09",
-      "mite3swarm/dissipating/south/10",
-      "mite3swarm/dissipating/south/11"
+      "mite3swarm/dissipating/south-west/01",
+      "mite3swarm/dissipating/south-west/02",
+      "mite3swarm/dissipating/south-west/03",
+      "mite3swarm/dissipating/south-west/04",
+      "mite3swarm/dissipating/south-west/05",
+      "mite3swarm/dissipating/south-west/06",
+      "mite3swarm/dissipating/south-west/07",
+      "mite3swarm/dissipating/south-west/08",
+      "mite3swarm/dissipating/south-west/09",
+      "mite3swarm/dissipating/south-west/10",
+      "mite3swarm/dissipating/south-west/11",
+      "mite3swarm/dissipating/south-west/12",
+      "mite3swarm/dissipating/south-west/13",
+      "mite3swarm/dissipating/south-west/14",
+      "mite3swarm/dissipating/south-west/15",
+      "mite3swarm/dissipating/south-west/16",
+      "mite3swarm/dissipating/south-west/17"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "mite3swarm_dissipating_west",
+    "key": "mite3swarm_forming_south-west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "mite3swarm/dissipating/west/01",
-      "mite3swarm/dissipating/west/02",
-      "mite3swarm/dissipating/west/03",
-      "mite3swarm/dissipating/west/04",
-      "mite3swarm/dissipating/west/05",
-      "mite3swarm/dissipating/west/06",
-      "mite3swarm/dissipating/west/07",
-      "mite3swarm/dissipating/west/08",
-      "mite3swarm/dissipating/west/09",
-      "mite3swarm/dissipating/west/10",
-      "mite3swarm/dissipating/west/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_forming_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/forming/east/01",
-      "mite3swarm/forming/east/02",
-      "mite3swarm/forming/east/03",
-      "mite3swarm/forming/east/04",
-      "mite3swarm/forming/east/05",
-      "mite3swarm/forming/east/06",
-      "mite3swarm/forming/east/07",
-      "mite3swarm/forming/east/08",
-      "mite3swarm/forming/east/09",
-      "mite3swarm/forming/east/10",
-      "mite3swarm/forming/east/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_forming_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/forming/north/01",
-      "mite3swarm/forming/north/02",
-      "mite3swarm/forming/north/03",
-      "mite3swarm/forming/north/04",
-      "mite3swarm/forming/north/05",
-      "mite3swarm/forming/north/06",
-      "mite3swarm/forming/north/07",
-      "mite3swarm/forming/north/08",
-      "mite3swarm/forming/north/09",
-      "mite3swarm/forming/north/10",
-      "mite3swarm/forming/north/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_forming_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/forming/south/01",
-      "mite3swarm/forming/south/02",
-      "mite3swarm/forming/south/03",
-      "mite3swarm/forming/south/04",
-      "mite3swarm/forming/south/05",
-      "mite3swarm/forming/south/06",
-      "mite3swarm/forming/south/07",
-      "mite3swarm/forming/south/08",
-      "mite3swarm/forming/south/09",
-      "mite3swarm/forming/south/10",
-      "mite3swarm/forming/south/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_forming_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/forming/west/01",
-      "mite3swarm/forming/west/02",
-      "mite3swarm/forming/west/03",
-      "mite3swarm/forming/west/04",
-      "mite3swarm/forming/west/05",
-      "mite3swarm/forming/west/06",
-      "mite3swarm/forming/west/07",
-      "mite3swarm/forming/west/08",
-      "mite3swarm/forming/west/09",
-      "mite3swarm/forming/west/10",
-      "mite3swarm/forming/west/11"
+      "mite3swarm/forming/south-west/01",
+      "mite3swarm/forming/south-west/02",
+      "mite3swarm/forming/south-west/03",
+      "mite3swarm/forming/south-west/04",
+      "mite3swarm/forming/south-west/05",
+      "mite3swarm/forming/south-west/06",
+      "mite3swarm/forming/south-west/07",
+      "mite3swarm/forming/south-west/08",
+      "mite3swarm/forming/south-west/09",
+      "mite3swarm/forming/south-west/10",
+      "mite3swarm/forming/south-west/11",
+      "mite3swarm/forming/south-west/12",
+      "mite3swarm/forming/south-west/13",
+      "mite3swarm/forming/south-west/14",
+      "mite3swarm/forming/south-west/15",
+      "mite3swarm/forming/south-west/16",
+      "mite3swarm/forming/south-west/17"
     ],
     "texture": "chars-art"
   },
@@ -2719,176 +2594,38 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "mite3swarm/idle/east/08",
       "mite3swarm/idle/east/09",
       "mite3swarm/idle/east/10",
-      "mite3swarm/idle/east/11"
+      "mite3swarm/idle/east/11",
+      "mite3swarm/idle/east/12",
+      "mite3swarm/idle/east/13",
+      "mite3swarm/idle/east/14",
+      "mite3swarm/idle/east/15",
+      "mite3swarm/idle/east/16",
+      "mite3swarm/idle/east/17"
     ],
     "texture": "chars-art"
   },
   {
-    "key": "mite3swarm_idle_north",
-    "frameRate": 4,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/idle/north/01",
-      "mite3swarm/idle/north/02",
-      "mite3swarm/idle/north/03",
-      "mite3swarm/idle/north/04",
-      "mite3swarm/idle/north/05",
-      "mite3swarm/idle/north/06",
-      "mite3swarm/idle/north/07",
-      "mite3swarm/idle/north/08",
-      "mite3swarm/idle/north/09",
-      "mite3swarm/idle/north/10",
-      "mite3swarm/idle/north/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_idle_south",
-    "frameRate": 4,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/idle/south/01",
-      "mite3swarm/idle/south/02",
-      "mite3swarm/idle/south/03",
-      "mite3swarm/idle/south/04",
-      "mite3swarm/idle/south/05",
-      "mite3swarm/idle/south/06",
-      "mite3swarm/idle/south/07",
-      "mite3swarm/idle/south/08",
-      "mite3swarm/idle/south/09",
-      "mite3swarm/idle/south/10",
-      "mite3swarm/idle/south/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_idle_west",
-    "frameRate": 4,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/idle/west/01",
-      "mite3swarm/idle/west/02",
-      "mite3swarm/idle/west/03",
-      "mite3swarm/idle/west/04",
-      "mite3swarm/idle/west/05",
-      "mite3swarm/idle/west/06",
-      "mite3swarm/idle/west/07",
-      "mite3swarm/idle/west/08",
-      "mite3swarm/idle/west/09",
-      "mite3swarm/idle/west/10",
-      "mite3swarm/idle/west/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_rotations_east",
+    "key": "mite3swarm_walkcycle_south-west",
     "frameRate": 8,
     "repeat": -1,
     "frames": [
-      "mite3swarm/rotations/east/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_rotations_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/rotations/north/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_rotations_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/rotations/south/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_rotations_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/rotations/west/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_walkcycle_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/walkcycle/east/01",
-      "mite3swarm/walkcycle/east/02",
-      "mite3swarm/walkcycle/east/03",
-      "mite3swarm/walkcycle/east/04",
-      "mite3swarm/walkcycle/east/05",
-      "mite3swarm/walkcycle/east/06",
-      "mite3swarm/walkcycle/east/07",
-      "mite3swarm/walkcycle/east/08",
-      "mite3swarm/walkcycle/east/09",
-      "mite3swarm/walkcycle/east/10",
-      "mite3swarm/walkcycle/east/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_walkcycle_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/walkcycle/north/01",
-      "mite3swarm/walkcycle/north/02",
-      "mite3swarm/walkcycle/north/03",
-      "mite3swarm/walkcycle/north/04",
-      "mite3swarm/walkcycle/north/05",
-      "mite3swarm/walkcycle/north/06",
-      "mite3swarm/walkcycle/north/07",
-      "mite3swarm/walkcycle/north/08",
-      "mite3swarm/walkcycle/north/09",
-      "mite3swarm/walkcycle/north/10",
-      "mite3swarm/walkcycle/north/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_walkcycle_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/walkcycle/south/01",
-      "mite3swarm/walkcycle/south/02",
-      "mite3swarm/walkcycle/south/03",
-      "mite3swarm/walkcycle/south/04",
-      "mite3swarm/walkcycle/south/05",
-      "mite3swarm/walkcycle/south/06",
-      "mite3swarm/walkcycle/south/07",
-      "mite3swarm/walkcycle/south/08",
-      "mite3swarm/walkcycle/south/09",
-      "mite3swarm/walkcycle/south/10",
-      "mite3swarm/walkcycle/south/11"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "mite3swarm_walkcycle_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "mite3swarm/walkcycle/west/01",
-      "mite3swarm/walkcycle/west/02",
-      "mite3swarm/walkcycle/west/03",
-      "mite3swarm/walkcycle/west/04",
-      "mite3swarm/walkcycle/west/05",
-      "mite3swarm/walkcycle/west/06",
-      "mite3swarm/walkcycle/west/07",
-      "mite3swarm/walkcycle/west/08",
-      "mite3swarm/walkcycle/west/09",
-      "mite3swarm/walkcycle/west/10",
-      "mite3swarm/walkcycle/west/11"
+      "mite3swarm/walkcycle/south-west/01",
+      "mite3swarm/walkcycle/south-west/02",
+      "mite3swarm/walkcycle/south-west/03",
+      "mite3swarm/walkcycle/south-west/04",
+      "mite3swarm/walkcycle/south-west/05",
+      "mite3swarm/walkcycle/south-west/06",
+      "mite3swarm/walkcycle/south-west/07",
+      "mite3swarm/walkcycle/south-west/08",
+      "mite3swarm/walkcycle/south-west/09",
+      "mite3swarm/walkcycle/south-west/10",
+      "mite3swarm/walkcycle/south-west/11",
+      "mite3swarm/walkcycle/south-west/12",
+      "mite3swarm/walkcycle/south-west/13",
+      "mite3swarm/walkcycle/south-west/14",
+      "mite3swarm/walkcycle/south-west/15",
+      "mite3swarm/walkcycle/south-west/16",
+      "mite3swarm/walkcycle/south-west/17"
     ],
     "texture": "chars-art"
   },
@@ -3137,6 +2874,218 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "nwsmac01/walkcycle/west/04",
       "nwsmac01/walkcycle/west/05",
       "nwsmac01/walkcycle/west/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_idle_east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "orderly/idle/east/01",
+      "orderly/idle/east/02",
+      "orderly/idle/east/03",
+      "orderly/idle/east/04",
+      "orderly/idle/east/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_idle_north",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "orderly/idle/north/01",
+      "orderly/idle/north/02",
+      "orderly/idle/north/03",
+      "orderly/idle/north/04",
+      "orderly/idle/north/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_idle_south",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "orderly/idle/south/01",
+      "orderly/idle/south/02",
+      "orderly/idle/south/03",
+      "orderly/idle/south/04",
+      "orderly/idle/south/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_idle_west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "orderly/idle/west/01",
+      "orderly/idle/west/02",
+      "orderly/idle/west/03",
+      "orderly/idle/west/04",
+      "orderly/idle/west/05"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_runcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/runcycle/east/01",
+      "orderly/runcycle/east/02",
+      "orderly/runcycle/east/03",
+      "orderly/runcycle/east/04",
+      "orderly/runcycle/east/05",
+      "orderly/runcycle/east/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_runcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/runcycle/north/01",
+      "orderly/runcycle/north/02",
+      "orderly/runcycle/north/03",
+      "orderly/runcycle/north/04",
+      "orderly/runcycle/north/05",
+      "orderly/runcycle/north/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_runcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/runcycle/south/01",
+      "orderly/runcycle/south/02",
+      "orderly/runcycle/south/03",
+      "orderly/runcycle/south/04",
+      "orderly/runcycle/south/05",
+      "orderly/runcycle/south/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_runcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/runcycle/west/01",
+      "orderly/runcycle/west/02",
+      "orderly/runcycle/west/03",
+      "orderly/runcycle/west/04",
+      "orderly/runcycle/west/05",
+      "orderly/runcycle/west/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_stand_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/stand/east/01",
+      "orderly/stand/east/02",
+      "orderly/stand/east/03",
+      "orderly/stand/east/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_stand_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/stand/north/01",
+      "orderly/stand/north/02",
+      "orderly/stand/north/03",
+      "orderly/stand/north/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_stand_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/stand/south/01",
+      "orderly/stand/south/02",
+      "orderly/stand/south/03",
+      "orderly/stand/south/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_stand_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/stand/west/01",
+      "orderly/stand/west/02",
+      "orderly/stand/west/03",
+      "orderly/stand/west/04"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_walkcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/walkcycle/east/01",
+      "orderly/walkcycle/east/02",
+      "orderly/walkcycle/east/03",
+      "orderly/walkcycle/east/04",
+      "orderly/walkcycle/east/05",
+      "orderly/walkcycle/east/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_walkcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/walkcycle/north/01",
+      "orderly/walkcycle/north/02",
+      "orderly/walkcycle/north/03",
+      "orderly/walkcycle/north/04",
+      "orderly/walkcycle/north/05",
+      "orderly/walkcycle/north/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_walkcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/walkcycle/south/01",
+      "orderly/walkcycle/south/02",
+      "orderly/walkcycle/south/03",
+      "orderly/walkcycle/south/04",
+      "orderly/walkcycle/south/05",
+      "orderly/walkcycle/south/06"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "orderly_walkcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "orderly/walkcycle/west/01",
+      "orderly/walkcycle/west/02",
+      "orderly/walkcycle/west/03",
+      "orderly/walkcycle/west/04",
+      "orderly/walkcycle/west/05",
+      "orderly/walkcycle/west/06"
     ],
     "texture": "chars-art"
   },
@@ -4349,7 +4298,23 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "securitycamera/idle/east/01"
+      "securitycamera/idle/east/01",
+      "securitycamera/idle/east/02",
+      "securitycamera/idle/east/03",
+      "securitycamera/idle/east/04",
+      "securitycamera/idle/east/05",
+      "securitycamera/idle/east/06",
+      "securitycamera/idle/east/07",
+      "securitycamera/idle/east/08",
+      "securitycamera/idle/east/09",
+      "securitycamera/idle/east/10",
+      "securitycamera/idle/east/11",
+      "securitycamera/idle/east/12",
+      "securitycamera/idle/east/13",
+      "securitycamera/idle/east/14",
+      "securitycamera/idle/east/15",
+      "securitycamera/idle/east/16",
+      "securitycamera/idle/east/17"
     ],
     "texture": "chars-art"
   },
@@ -4358,7 +4323,73 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "securitycamera/idle/north/01"
+      "securitycamera/idle/north/01",
+      "securitycamera/idle/north/02",
+      "securitycamera/idle/north/03",
+      "securitycamera/idle/north/04",
+      "securitycamera/idle/north/05",
+      "securitycamera/idle/north/06",
+      "securitycamera/idle/north/07",
+      "securitycamera/idle/north/08",
+      "securitycamera/idle/north/09",
+      "securitycamera/idle/north/10",
+      "securitycamera/idle/north/11",
+      "securitycamera/idle/north/12",
+      "securitycamera/idle/north/13",
+      "securitycamera/idle/north/14",
+      "securitycamera/idle/north/15",
+      "securitycamera/idle/north/16",
+      "securitycamera/idle/north/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_idle_north-east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/idle/north-east/01",
+      "securitycamera/idle/north-east/02",
+      "securitycamera/idle/north-east/03",
+      "securitycamera/idle/north-east/04",
+      "securitycamera/idle/north-east/05",
+      "securitycamera/idle/north-east/06",
+      "securitycamera/idle/north-east/07",
+      "securitycamera/idle/north-east/08",
+      "securitycamera/idle/north-east/09",
+      "securitycamera/idle/north-east/10",
+      "securitycamera/idle/north-east/11",
+      "securitycamera/idle/north-east/12",
+      "securitycamera/idle/north-east/13",
+      "securitycamera/idle/north-east/14",
+      "securitycamera/idle/north-east/15",
+      "securitycamera/idle/north-east/16",
+      "securitycamera/idle/north-east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_idle_north-west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/idle/north-west/01",
+      "securitycamera/idle/north-west/02",
+      "securitycamera/idle/north-west/03",
+      "securitycamera/idle/north-west/04",
+      "securitycamera/idle/north-west/05",
+      "securitycamera/idle/north-west/06",
+      "securitycamera/idle/north-west/07",
+      "securitycamera/idle/north-west/08",
+      "securitycamera/idle/north-west/09",
+      "securitycamera/idle/north-west/10",
+      "securitycamera/idle/north-west/11",
+      "securitycamera/idle/north-west/12",
+      "securitycamera/idle/north-west/13",
+      "securitycamera/idle/north-west/14",
+      "securitycamera/idle/north-west/15",
+      "securitycamera/idle/north-west/16",
+      "securitycamera/idle/north-west/17"
     ],
     "texture": "chars-art"
   },
@@ -4367,7 +4398,73 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "securitycamera/idle/south/01"
+      "securitycamera/idle/south/01",
+      "securitycamera/idle/south/02",
+      "securitycamera/idle/south/03",
+      "securitycamera/idle/south/04",
+      "securitycamera/idle/south/05",
+      "securitycamera/idle/south/06",
+      "securitycamera/idle/south/07",
+      "securitycamera/idle/south/08",
+      "securitycamera/idle/south/09",
+      "securitycamera/idle/south/10",
+      "securitycamera/idle/south/11",
+      "securitycamera/idle/south/12",
+      "securitycamera/idle/south/13",
+      "securitycamera/idle/south/14",
+      "securitycamera/idle/south/15",
+      "securitycamera/idle/south/16",
+      "securitycamera/idle/south/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_idle_south-east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/idle/south-east/01",
+      "securitycamera/idle/south-east/02",
+      "securitycamera/idle/south-east/03",
+      "securitycamera/idle/south-east/04",
+      "securitycamera/idle/south-east/05",
+      "securitycamera/idle/south-east/06",
+      "securitycamera/idle/south-east/07",
+      "securitycamera/idle/south-east/08",
+      "securitycamera/idle/south-east/09",
+      "securitycamera/idle/south-east/10",
+      "securitycamera/idle/south-east/11",
+      "securitycamera/idle/south-east/12",
+      "securitycamera/idle/south-east/13",
+      "securitycamera/idle/south-east/14",
+      "securitycamera/idle/south-east/15",
+      "securitycamera/idle/south-east/16",
+      "securitycamera/idle/south-east/17"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "securitycamera_idle_south-west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "securitycamera/idle/south-west/01",
+      "securitycamera/idle/south-west/02",
+      "securitycamera/idle/south-west/03",
+      "securitycamera/idle/south-west/04",
+      "securitycamera/idle/south-west/05",
+      "securitycamera/idle/south-west/06",
+      "securitycamera/idle/south-west/07",
+      "securitycamera/idle/south-west/08",
+      "securitycamera/idle/south-west/09",
+      "securitycamera/idle/south-west/10",
+      "securitycamera/idle/south-west/11",
+      "securitycamera/idle/south-west/12",
+      "securitycamera/idle/south-west/13",
+      "securitycamera/idle/south-west/14",
+      "securitycamera/idle/south-west/15",
+      "securitycamera/idle/south-west/16",
+      "securitycamera/idle/south-west/17"
     ],
     "texture": "chars-art"
   },
@@ -4376,43 +4473,23 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "frameRate": 4,
     "repeat": -1,
     "frames": [
-      "securitycamera/idle/west/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "securitycamera_stand_east",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "securitycamera/stand/east/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "securitycamera_stand_north",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "securitycamera/stand/north/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "securitycamera_stand_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "securitycamera/stand/south/01"
-    ],
-    "texture": "chars-art"
-  },
-  {
-    "key": "securitycamera_stand_west",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "securitycamera/stand/west/01"
+      "securitycamera/idle/west/01",
+      "securitycamera/idle/west/02",
+      "securitycamera/idle/west/03",
+      "securitycamera/idle/west/04",
+      "securitycamera/idle/west/05",
+      "securitycamera/idle/west/06",
+      "securitycamera/idle/west/07",
+      "securitycamera/idle/west/08",
+      "securitycamera/idle/west/09",
+      "securitycamera/idle/west/10",
+      "securitycamera/idle/west/11",
+      "securitycamera/idle/west/12",
+      "securitycamera/idle/west/13",
+      "securitycamera/idle/west/14",
+      "securitycamera/idle/west/15",
+      "securitycamera/idle/west/16",
+      "securitycamera/idle/west/17"
     ],
     "texture": "chars-art"
   },

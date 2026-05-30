@@ -2,7 +2,7 @@
 // the EventBus. One function per verb. Sound emission is centralised here so
 // AlertFSM consumers see a consistent picture of "what the player did".
 
-import type { Entity, EntityKind, Facing, ItemInstance, ItemType, Room, RoomId, Tile, Vec2, WorldState } from "../types/world.types";
+import type { Entity, EntityKind, Facing, HvacMode, ItemInstance, ItemType, Room, RoomId, Tile, Vec2, WorldState } from "../types/world.types";
 import { facingFromDelta, roomTileKey } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import { roomGraph } from "./RoomGraph";
@@ -10,6 +10,7 @@ import { soundField } from "./SoundField";
 import { alignmentSession } from "./AlignmentSession";
 import { alertFSM } from "./AlertFSM";
 import { enforcerSystem } from "./EnforcerSystem";
+import { atmosphericsField } from "./AtmosphericsField";
 import { documentArchive } from "./DocumentArchive";
 import { lightField } from "./LightField";
 import { useTerminalStore } from "../state/useTerminalStore";
@@ -281,8 +282,10 @@ const EMP_RADIUS = 5;
 const EMP_DISABLE_TURNS = 4;
 const EMP_GRENADE_RADIUS = 3;
 const EMP_GRENADE_MAX_THROW = 6;
+const Q_MINE_RADIUS = 3;
 
 let emitterCounter = 0;
+let mineCounter = 0;
 
 function useEmitter(state: WorldState, _item: ItemInstance): boolean {
   // Deploy on the tile in front of the player; if that tile is blocked or
@@ -313,6 +316,36 @@ function useEmitter(state: WorldState, _item: ItemInstance): boolean {
     roomId: state.player.roomId,
     pos,
     turnsRemaining: PHANTOM_EMITTER_TURNS,
+  });
+  return true;
+}
+
+function useQMine(state: WorldState, _item: ItemInstance): boolean {
+  // Place on the tile in front of the player; if that tile is blocked or
+  // out-of-bounds, fall back to the player's own tile (mirrors useEmitter).
+  const f = state.player.facing;
+  const fx = f === "east" ? 1 : f === "west" ? -1 : 0;
+  const fy = f === "south" ? 1 : f === "north" ? -1 : 0;
+  let pos: Vec2 = {
+    x: state.player.pos.x + fx,
+    y: state.player.pos.y + fy,
+  };
+  const front = tileAt(state, state.player.roomId, pos);
+  if (!front || front.solid) {
+    pos = { ...state.player.pos };
+  }
+  mineCounter += 1;
+  state.activeMines.push({
+    id: `qmine-${state.turn}-${mineCounter}`,
+    roomId: state.player.roomId,
+    pos,
+    radius: Q_MINE_RADIUS,
+  });
+  eventBus.emit("ITEM_DEPLOYED", {
+    itemType: "Q_MINE",
+    roomId: state.player.roomId,
+    pos,
+    turnsRemaining: 0,
   });
   return true;
 }
@@ -600,6 +633,23 @@ export const actions = {
     eventBus.emit("PLAYER_PEEKED", { facing: null });
   },
 
+  /** Re-orient to face `facing` without moving. Costs 0 AP. Refused while
+   *  detained or hidden. A deliberate re-orient cancels an active peek. */
+  turn(state: WorldState, facing: Facing): boolean {
+    if (state.detained) return false;
+    if (state.player.hidingTileKey) return false;
+    if (state.player.facing === facing && !state.player.peeking) return false;
+    if (state.player.peeking) {
+      state.player.peeking = undefined;
+      eventBus.emit("PLAYER_PEEKED", { facing: null });
+    }
+    if (state.player.facing !== facing) {
+      state.player.facing = facing;
+      eventBus.emit("PLAYER_FACING_CHANGED", { facing });
+    }
+    return true;
+  },
+
   interact(state: WorldState): boolean {
     if (state.detained || state.player.ap < INTERACT_AP_COST) return false;
 
@@ -799,6 +849,50 @@ export const actions = {
       if (!t || t.kind !== "TERMINAL") continue;
       const payload = state.terminalPayloads.get(roomTileKey(state.player.roomId, p));
       if (!payload) return false;
+      // HVAC console / wall thermostat — reusable atmospherics interfaces.
+      // Spending AP and emitting the open event hands off to the React modal;
+      // the player presses interact again to dismiss.
+      if (
+        payload.terminalKind === "HVAC_CONSOLE" ||
+        payload.terminalKind === "WALL_THERMOSTAT"
+      ) {
+        const facing = facingFromDelta(dx, dy);
+        if (facing && facing !== state.player.facing) {
+          state.player.facing = facing;
+          eventBus.emit("PLAYER_FACING_CHANGED", { facing });
+        }
+        const previousAp = state.player.ap;
+        state.player.ap -= INTERACT_AP_COST;
+        eventBus.emit("PLAYER_AP_CHANGED", {
+          previous: previousAp,
+          current: state.player.ap,
+        });
+        if (payload.terminalKind === "HVAC_CONSOLE") {
+          const zoneIds =
+            payload.hvacZones && payload.hvacZones.length > 0
+              ? payload.hvacZones
+              : [...state.hvacZones.keys()];
+          eventBus.emit("HVAC_CONSOLE_OPENED", {
+            terminalId: payload.terminalId,
+            roomId: state.player.roomId,
+            pos: p,
+            zoneIds,
+          });
+        } else {
+          const zoneId =
+            payload.hvacZoneId ??
+            state.atmosphere.get(state.player.roomId)?.zoneId ??
+            `zone:${state.player.roomId}`;
+          eventBus.emit("WALL_THERMOSTAT_OPENED", {
+            terminalId: payload.terminalId,
+            roomId: state.player.roomId,
+            pos: p,
+            zoneId,
+          });
+        }
+        return true;
+      }
+
       // Vent-control terminal: ends an active vacuum lockdown and reopens the
       // sealed doorways. Reusable — bypasses the one-shot `terminalsRead` gate
       // and the document-filing flow.
@@ -1285,6 +1379,9 @@ export const actions = {
       case "PHANTOM_EMITTER":
         ok = useEmitter(state, item);
         break;
+      case "Q_MINE":
+        ok = useQMine(state, item);
+        break;
       case "Q0_SPOOF_BADGE":
         ok = useSpoofBadge(state);
         break;
@@ -1371,5 +1468,16 @@ export const actions = {
       eventBus.emit("ALIGNMENT_LIGHT_TOGGLED", { active });
     }
     return true;
+  },
+
+  /** Mutate an HVAC zone's mode and/or setpoint from the React modal. Does
+   *  not consume AP — the AP cost was paid when the terminal was opened. */
+  setHvacZone(
+    state: WorldState,
+    zoneId: string,
+    patch: { mode?: HvacMode; setpoint?: number },
+  ): boolean {
+    const zone = atmosphericsField.setZone(state, zoneId, patch);
+    return !!zone;
   },
 };

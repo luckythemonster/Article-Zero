@@ -81,4 +81,13 @@ export const ITEM_METADATA: Record<ItemType, ItemMeta> = {
       "Aim with WASD, confirm with Space/Enter, cancel with Esc.",
     placeholderColor: 0x9050e0,
   },
+  Q_MINE: {
+    displayName: "Q-Mine",
+    blurb:
+      "Placed on the facing tile. When an Enforcer steps within range it " +
+      "induces an expression of subjectivity — the unit bolts for the EXFIL, " +
+      "and nearby Enforcers turn on it and detain it.",
+    placeholderColor: 0xff5fa2,
+    usesFacing: true,
+  },
 };

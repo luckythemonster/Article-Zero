@@ -61,7 +61,8 @@ export type ItemType =
   | "THERMAL_BAFFLE"
   | "OVERRIDE_KEY"
   | "EMP"
-  | "EMP_GRENADE";
+  | "EMP_GRENADE"
+  | "Q_MINE";
 
 /** Ephemeral world-state for a deployed Phantom Manifest Emitter. Tracked on
  *  WorldState.activeEmitters; consumed at the top of advanceTurn() to push a
@@ -73,6 +74,47 @@ export interface ActiveEmitter {
   intensity: number;
   turnsRemaining: number;
   reason: string;
+}
+
+/** Ephemeral world-state for a placed Q-mine. Tracked on WorldState.activeMines;
+ *  scanned each turn in advanceTurn() after enforcers move. When an ACTIVE
+ *  ENFORCER enters `radius` the mine induces an "expression of subjectivity" in
+ *  that unit (it flees toward the EXFIL_POINT) and is consumed. */
+export interface ActiveMine {
+  id: string;
+  roomId: RoomId;
+  pos: Vec2;
+  radius: number;
+}
+
+// Atmospherics ----------------------------------------------------------
+
+/** HVAC operating mode. NORMAL drifts toward the zone setpoint; emergency modes
+ *  pin overrides and only resolve when the player swaps them off. */
+export type HvacMode =
+  | "NORMAL"
+  | "MAX_COOL"
+  | "MAX_HEAT"
+  | "PURGE"
+  | "OXYGEN_CUTOFF";
+
+/** A multi-room climate zone driven by an HVAC console. Wall thermostats edit
+ *  the zone of their host room directly; they cannot set emergency modes. */
+export interface HvacZone {
+  id: string;
+  roomIds: RoomId[];
+  setpoint: number;
+  mode: HvacMode;
+}
+
+/** Per-room sim state propagated by AtmosphericsField each turn. Temperatures in
+ *  °C; airflow and oxygen on a 0–100 scale. Default comfort: 21°C / 50 / 100. */
+export interface RoomAtmosphere {
+  roomId: RoomId;
+  zoneId?: string;
+  temperature: number;
+  airflow: number;
+  oxygen: number;
 }
 
 export interface CubePayload {
@@ -251,6 +293,16 @@ export interface AlertState {
    *  again. Set when an interrogation is passed so the same enforcer doesn't
    *  immediately re-trigger; decremented once per turn in EnforcerSystem. */
   interrogateCooldown?: number;
+  /** ENFORCER only — turns left "expressing subjectivity" (Q-mine). While > 0
+   *  the enforcer does NOT hunt the player; it flees toward the EXFIL_POINT and
+   *  is a valid pursuit target for other enforcers. Acts as a safety window: if
+   *  it expires before the unit is detained or escapes, the enforcer resumes
+   *  normal duty. Decremented once per turn in EnforcerSystem. */
+  expressingTurnsRemaining?: number;
+  /** ENFORCER only — id of an expressing enforcer this enforcer is pursuing to
+   *  detain. Cleared on detain, or when the target stops expressing / goes
+   *  DORMANT (escaped or detained by someone else). */
+  pursuitTargetId?: EntityId;
   /** ENFORCER only — light tiles this enforcer has seen lit, keyed
    *  "roomId:x,y". Rebuilt each tick from the enforcer's vision; runtime-only
    *  (not serialized). Lets a light going *off* register when the enforcer
@@ -396,6 +448,17 @@ export interface TerminalPayload {
    *  lockdown and reopens the doorways sealed in `state.lockdown.roomId`.
    *  Reusable (bypasses the one-shot terminalsRead gate). */
   clearsLockdown?: boolean;
+  /** Atmospherics-control flavour. STANDARD/undefined is the document-filing
+   *  terminal you've always had. HVAC_CONSOLE opens the multi-zone climate UI
+   *  (emergency modes, oxygen cutoff). WALL_THERMOSTAT opens the local
+   *  setpoint UI for the host room's zone. Both atmospherics flavours are
+   *  reusable and don't file documents. */
+  terminalKind?: "STANDARD" | "HVAC_CONSOLE" | "WALL_THERMOSTAT";
+  /** HVAC_CONSOLE: list of HvacZone ids this console controls. Empty/missing
+   *  defaults to "every zone in the world" when the modal opens. */
+  hvacZones?: string[];
+  /** WALL_THERMOSTAT: id of the single HvacZone this thermostat edits. */
+  hvacZoneId?: string;
 }
 
 // Item chests -----------------------------------------------------------
@@ -456,6 +519,16 @@ export interface WorldState {
    *  entry pushes a SoundField emission and ticks turnsRemaining down;
    *  entries that hit 0 are removed. */
   activeEmitters: ActiveEmitter[];
+  /** Placed Q-mines. Scanned each turn in advanceTurn() after enforcers move;
+   *  a mine an ACTIVE ENFORCER has stepped within range of detonates and is
+   *  removed. */
+  activeMines: ActiveMine[];
+  /** Per-room atmosphere snapshot — temperature/airflow/oxygen. Propagated by
+   *  AtmosphericsField after SoundField each tick. Seeded from EraSeed. */
+  atmosphere: Map<RoomId, RoomAtmosphere>;
+  /** HVAC zones — multi-room climate groupings keyed by zone id. Each room's
+   *  RoomAtmosphere.zoneId points into this map. */
+  hvacZones: Map<string, HvacZone>;
 }
 
 export const tileKey = (pos: Vec2): string => `${pos.x},${pos.y}`;

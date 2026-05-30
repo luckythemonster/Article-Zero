@@ -15,7 +15,7 @@
 // Only the spotter pursues. Other enforcers continue to escalate to CAUTION via
 // SoundField and orient toward doorways (`stepInvestigate`) without crossing.
 
-import type { Entity, Facing, Room, RoomId, Tile, TileKind, Vec2, WorldState } from "../types/world.types";
+import type { ActiveMine, Entity, Facing, Room, RoomId, Tile, TileKind, Vec2, WorldState } from "../types/world.types";
 import { facingFromDelta } from "../types/world.types";
 import { alertFSM, ALERT_SOUND_THRESHOLD, CAUTION_SOUND_THRESHOLD } from "./AlertFSM";
 import { eventBus } from "./EventBus";
@@ -25,6 +25,7 @@ import { roomGraph } from "./RoomGraph";
 import { computeCone, ENFORCER_BASE_RANGE, ENFORCER_CONE_HALF_ANGLE, ENFORCER_PROXIMITY_RADIUS } from "./VisionCone";
 import type { DeliveredSound } from "./SoundField";
 import { soundField } from "./SoundField";
+import { atmosphericsField, COMFORT_BAND, NORMAL_SETPOINT } from "./AtmosphericsField";
 import { debugFlags } from "./debugFlags";
 
 const LOCKDOWN_TURNS = 5;
@@ -36,6 +37,14 @@ const IDLE_SCAN_PERIOD = 3;
  *  enforcer that's onto the player moves at this faster clip. Below the player's
  *  4-tile sprint cap so a flat-out flee still nets ~2 tiles of ground each turn. */
 const PURSUE_STEPS_PER_TURN = 2;
+/** Turns an Enforcer spends fleeing to the EXFIL_POINT after a Q-mine triggers.
+ *  A safety window — generous enough that a defector with a navigable path
+ *  reaches the exfil; if it neither escapes nor is detained within this, it
+ *  comes to its senses and resumes normal duty. */
+const Q_MINE_EXPRESS_TURNS = 10;
+/** How close (same room, Euclidean) a peer must be to lock onto an expressing
+ *  Enforcer and start pursuing it to detain. */
+const EXPRESSING_ACQUIRE_RADIUS = 8;
 
 class EnforcerSystem {
   /** Compute the visible-tile set for one enforcer inside its current room.
@@ -54,10 +63,20 @@ class EnforcerSystem {
       halfAngle: ENFORCER_CONE_HALF_ANGLE,
     });
     const lit = lightField.getOrCompute(room);
+    const fog = atmosphericsField.getFoggedTiles(state, room);
     const out = new Set<string>();
     const ownKey = `${enforcer.pos.x},${enforcer.pos.y}`;
     for (const k of cone) {
-      if (k === ownKey || lit.has(k)) out.add(k);
+      if (k === ownKey) {
+        out.add(k);
+        continue;
+      }
+      if (!lit.has(k)) continue;
+      // Fog occludes optical sensors regardless of biology — silicate cameras
+      // and human eyes alike. Own-tile is exempt so a sensor in fog still
+      // sees itself.
+      if (fog.has(k)) continue;
+      out.add(k);
     }
     return out;
   }
@@ -159,8 +178,44 @@ class EnforcerSystem {
       enforcer.alert.stunTurnsRemaining = (enforcer.alert.stunTurnsRemaining ?? 0) - 1;
       return;
     }
+    // Q-mine expression: this Enforcer has stopped hunting the player and is
+    // making a run for the EXFIL_POINT. Skip the whole sight/FSM/patrol path —
+    // it stays ACTIVE so peers can target and detain it. Mirrors the stun
+    // short-circuit above.
+    if (enforcer.kind === "ENFORCER" && enforcer.alert && (enforcer.alert.expressingTurnsRemaining ?? 0) > 0) {
+      enforcer.alert.expressingTurnsRemaining = (enforcer.alert.expressingTurnsRemaining ?? 0) - 1;
+      if ((enforcer.alert.expressingTurnsRemaining ?? 0) <= 0) {
+        // Came to its senses without escaping or being caught — resume duty.
+        enforcer.alert.expressingTurnsRemaining = undefined;
+        enforcer.alert.level = "NORMAL";
+        enforcer.alert.enteredTurn = state.turn;
+        return;
+      }
+      this.publishVision(state, enforcer);
+      const fleeSteps = Math.max(enforcer.stepsPerTurn ?? 1, PURSUE_STEPS_PER_TURN);
+      for (let i = 0; i < fleeSteps; i++) {
+        if (state.detained) return;
+        if (this.stepFleeToExfil(state, enforcer)) return; // reached exfil → escaped
+      }
+      return;
+    }
     if (enforcer.alert && (enforcer.alert.interrogateCooldown ?? 0) > 0) {
       enforcer.alert.interrogateCooldown = (enforcer.alert.interrogateCooldown ?? 0) - 1;
+    }
+    // Pursue an expressing peer to detain it — this takes priority over hunting
+    // the player. Runs before sight so a guard locked onto a defector ignores
+    // the player until the detain resolves (or the target escapes / is lost).
+    if (enforcer.kind === "ENFORCER") {
+      const quarry = this.resolvePursuit(state, enforcer);
+      if (quarry) {
+        this.publishVision(state, enforcer);
+        const chaseSteps = Math.max(enforcer.stepsPerTurn ?? 1, PURSUE_STEPS_PER_TURN);
+        for (let i = 0; i < chaseSteps; i++) {
+          if (state.detained) return;
+          if (this.stepChaseEnforcer(state, enforcer, quarry)) break; // detained
+        }
+        return;
+      }
     }
     const sees = this.enforcerSeesPlayer(state, enforcer);
     // YELLOW interrogation: a clean-mask slip-up (qScore 1) reads as a person
@@ -210,11 +265,7 @@ class EnforcerSystem {
     }
 
     // Publish vision after the FSM has consumed it.
-    const visible = this.visibleTiles(state, enforcer);
-    eventBus.emit("ENFORCER_VISION_UPDATED", {
-      enforcerId: enforcer.id,
-      visibleTiles: Array.from(visible),
-    });
+    const visible = this.publishVision(state, enforcer);
 
     // Remember which lights this enforcer currently sees lit, so it can react
     // if one of them is later switched off while it's still in the room.
@@ -561,6 +612,235 @@ class EnforcerSystem {
     }
   }
 
+  /** Compute and broadcast this enforcer's visible-tile set. Returns the set so
+   *  callers can reuse it. */
+  private publishVision(state: WorldState, enforcer: Entity): Set<string> {
+    const visible = this.visibleTiles(state, enforcer);
+    eventBus.emit("ENFORCER_VISION_UPDATED", {
+      enforcerId: enforcer.id,
+      visibleTiles: Array.from(visible),
+    });
+    return visible;
+  }
+
+  // ── Q-mine: induced expression of subjectivity ──────────────────────────
+  //
+  // A placed Q-mine detonates when an ACTIVE Enforcer steps within range
+  // (scanMines, called from advanceTurn after enforcers move). The triggered
+  // unit drops the player and bolts for the EXFIL_POINT (stepFleeToExfil); any
+  // peer that locks onto it pursues and detains it (resolvePursuit /
+  // stepChaseEnforcer / detain). Both terminal states set the unit permanently
+  // DORMANT (no disabledTurnsRemaining → never auto-recovers in advanceTurn).
+
+  /** Detonate placed mines an ACTIVE ENFORCER has stepped within range of. The
+   *  nearest such enforcer starts expressing (flees to exfil) and the mine is
+   *  consumed. Enforcers already expressing don't re-trigger a mine. */
+  scanMines(state: WorldState): void {
+    if (state.activeMines.length === 0) return;
+    const survivors: ActiveMine[] = [];
+    for (const mine of state.activeMines) {
+      const target = this.nearestTriggerEnforcer(state, mine);
+      if (!target) {
+        survivors.push(mine);
+        continue;
+      }
+      const alert = alertFSM.ensure(state, target);
+      alert.expressingTurnsRemaining = Q_MINE_EXPRESS_TURNS;
+      alert.level = "NORMAL";
+      alert.enteredTurn = state.turn;
+      alert.lastStimulus = undefined;
+      alert.lastStimulusRoom = undefined;
+      alert.lastSeenTurn = undefined;
+      alert.pursuitTargetId = undefined;
+      eventBus.emit("ENFORCER_EXPRESSING_STARTED", {
+        enforcerId: target.id,
+        pos: { ...target.pos },
+        turnsRemaining: Q_MINE_EXPRESS_TURNS,
+      });
+      eventBus.emit("ITEM_DETONATED", {
+        itemType: "Q_MINE",
+        roomId: mine.roomId,
+        pos: { ...mine.pos },
+        radius: mine.radius,
+      });
+    }
+    state.activeMines = survivors;
+  }
+
+  /** Nearest ACTIVE, not-already-expressing ENFORCER within a mine's radius. */
+  private nearestTriggerEnforcer(state: WorldState, mine: ActiveMine): Entity | undefined {
+    const r2 = mine.radius * mine.radius;
+    let best: Entity | undefined;
+    let bestD = Infinity;
+    for (const e of state.entities.values()) {
+      if (e.kind !== "ENFORCER" || e.status !== "ACTIVE") continue;
+      if (e.roomId !== mine.roomId) continue;
+      if ((e.alert?.expressingTurnsRemaining ?? 0) > 0) continue;
+      const dx = e.pos.x - mine.pos.x;
+      const dy = e.pos.y - mine.pos.y;
+      const d = dx * dx + dy * dy;
+      if (d > r2) continue;
+      if (d < bestD) {
+        bestD = d;
+        best = e;
+      }
+    }
+    return best;
+  }
+
+  /** First EXFIL_POINT tile found across all rooms (maps ship at most one). */
+  private findExfilTarget(state: WorldState): { roomId: RoomId; pos: Vec2 } | null {
+    for (const [roomId, room] of state.rooms) {
+      for (let y = 0; y < room.height; y++) {
+        for (let x = 0; x < room.width; x++) {
+          if (room.tiles[y * room.width + x]?.kind === "EXFIL_POINT") {
+            return { roomId, pos: { x, y } };
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  /** One flee step for an expressing enforcer, heading for the EXFIL_POINT.
+   *  Returns true once it reaches the exfil and defects (caller stops). */
+  private stepFleeToExfil(state: WorldState, enforcer: Entity): boolean {
+    const exfil = this.findExfilTarget(state);
+    if (!exfil) {
+      // No exfil on this map — wander rather than crash/jam.
+      this.stepPatrol(state, enforcer);
+      return false;
+    }
+    if (enforcer.roomId !== exfil.roomId) {
+      this.pursueViaPath(state, enforcer, exfil.roomId);
+      return false;
+    }
+    if (enforcer.pos.x === exfil.pos.x && enforcer.pos.y === exfil.pos.y) {
+      this.defect(state, enforcer);
+      return true;
+    }
+    this.advanceToward(state, enforcer, exfil.pos);
+    if (enforcer.pos.x === exfil.pos.x && enforcer.pos.y === exfil.pos.y) {
+      this.defect(state, enforcer);
+      return true;
+    }
+    return false;
+  }
+
+  /** An expressing enforcer reached the exfil and defected — gone for good. */
+  private defect(state: WorldState, enforcer: Entity): void {
+    const previous = enforcer.status;
+    enforcer.status = "DORMANT";
+    if (enforcer.alert) {
+      enforcer.alert.expressingTurnsRemaining = undefined;
+      enforcer.alert.pursuitTargetId = undefined;
+      enforcer.alert.level = "NORMAL";
+    }
+    eventBus.emit("ENTITY_STATUS_CHANGED", { entityId: enforcer.id, previous, current: "DORMANT" });
+    eventBus.emit("ENFORCER_EXPRESSING_ESCAPED", { enforcerId: enforcer.id, turn: state.turn });
+  }
+
+  /** Resolve this enforcer's pursuit of an expressing peer: validate an existing
+   *  target, or acquire a new one in range. Returns the live quarry, or null
+   *  (clearing stale pursuit state) when there's nothing to chase. */
+  private resolvePursuit(state: WorldState, enforcer: Entity): Entity | null {
+    const alert = enforcer.alert;
+    if (!alert) return null;
+    if (alert.pursuitTargetId) {
+      const cur = state.entities.get(alert.pursuitTargetId);
+      if (cur && cur.status === "ACTIVE" && (cur.alert?.expressingTurnsRemaining ?? 0) > 0) {
+        return cur;
+      }
+      // Target detained / escaped / no longer expressing — stand down.
+      alert.pursuitTargetId = undefined;
+      if (alert.level === "ALERT") {
+        alert.level = "NORMAL";
+        alert.enteredTurn = state.turn;
+      }
+      return null;
+    }
+    const found = this.findExpressingTarget(state, enforcer);
+    if (!found) return null;
+    alert.pursuitTargetId = found.id;
+    alert.level = "ALERT";
+    alert.enteredTurn = state.turn;
+    eventBus.emit("EXCLAMATION_TRIGGERED", {
+      enforcerId: enforcer.id,
+      pos: { ...enforcer.pos },
+      roomId: enforcer.roomId,
+    });
+    return found;
+  }
+
+  /** Nearest ACTIVE expressing ENFORCER (≠ self) to lock onto: same room within
+   *  acquisition radius, else any expressing unit in an adjacent room. */
+  private findExpressingTarget(state: WorldState, enforcer: Entity): Entity | null {
+    const r2 = EXPRESSING_ACQUIRE_RADIUS * EXPRESSING_ACQUIRE_RADIUS;
+    const room = state.rooms.get(enforcer.roomId);
+    const adjacent = new Set<RoomId>();
+    if (room) for (const d of room.doorways) adjacent.add(d.to);
+    let sameRoom: Entity | null = null;
+    let sameD = Infinity;
+    let crossRoom: Entity | null = null;
+    for (const e of state.entities.values()) {
+      if (e.id === enforcer.id || e.kind !== "ENFORCER" || e.status !== "ACTIVE") continue;
+      if ((e.alert?.expressingTurnsRemaining ?? 0) <= 0) continue;
+      if (e.roomId === enforcer.roomId) {
+        const dx = e.pos.x - enforcer.pos.x;
+        const dy = e.pos.y - enforcer.pos.y;
+        const d = dx * dx + dy * dy;
+        if (d <= r2 && d < sameD) {
+          sameD = d;
+          sameRoom = e;
+        }
+      } else if (!crossRoom && adjacent.has(e.roomId)) {
+        crossRoom = e;
+      }
+    }
+    return sameRoom ?? crossRoom;
+  }
+
+  /** One pursuit step toward an expressing enforcer; detains it on contact.
+   *  Returns true once the target is detained or already gone (caller stops). */
+  private stepChaseEnforcer(state: WorldState, enforcer: Entity, target: Entity): boolean {
+    if (target.status !== "ACTIVE" || (target.alert?.expressingTurnsRemaining ?? 0) <= 0) {
+      return true; // escaped, or someone else detained it
+    }
+    if (enforcer.roomId !== target.roomId) {
+      this.pursueViaPath(state, enforcer, target.roomId);
+      return false;
+    }
+    if (enforcer.pos.x === target.pos.x && enforcer.pos.y === target.pos.y) {
+      this.detain(state, enforcer, target);
+      return true;
+    }
+    this.advanceToward(state, enforcer, target.pos);
+    if (enforcer.pos.x === target.pos.x && enforcer.pos.y === target.pos.y) {
+      this.detain(state, enforcer, target);
+      return true;
+    }
+    return false;
+  }
+
+  /** A pursuer caught an expressing enforcer: detain it permanently (DORMANT,
+   *  no recovery timer) and stand the pursuer back down. */
+  private detain(state: WorldState, enforcer: Entity, target: Entity): void {
+    const previous = target.status;
+    target.status = "DORMANT";
+    if (target.alert) {
+      target.alert.expressingTurnsRemaining = undefined;
+      target.alert.pursuitTargetId = undefined;
+      target.alert.level = "NORMAL";
+    }
+    eventBus.emit("ENTITY_STATUS_CHANGED", { entityId: target.id, previous, current: "DORMANT" });
+    eventBus.emit("ENFORCER_DETAINED", { detaineeId: target.id, byEnforcerId: enforcer.id, turn: state.turn });
+    if (enforcer.alert) {
+      enforcer.alert.pursuitTargetId = undefined;
+      enforcer.alert.level = "NORMAL";
+      enforcer.alert.enteredTurn = state.turn;
+    }
+  }
+
   /** EVASION search step. Travels toward the last-known stimulus — crossing
    *  rooms via the room graph — and returns true while it's still closing in.
    *  Returns false once it has arrived (or has no lead), signalling the caller
@@ -710,7 +990,10 @@ class EnforcerSystem {
   }
 
   /** Choose a new meander destination: a walkable tile beside a random point of
-   *  interest, falling back to a random floor tile when the room has none. */
+   *  interest, falling back to a random floor tile when the room has none.
+   *  When the host room is outside the comfort band the orderly's pick is
+   *  perturbed by the temperature so they drift to a different POI — a soft,
+   *  single-room nudge that reads as "fidgeting because it's too cold/hot". */
   private pickWanderTarget(state: WorldState, orderly: Entity, room: Room): Vec2 | undefined {
     const pois: Vec2[] = [];
     for (let y = 0; y < room.height; y++) {
@@ -719,7 +1002,13 @@ class EnforcerSystem {
       }
     }
     if (pois.length > 0) {
-      const poi = pois[this.orderlyRand(state, orderly, 1) % pois.length];
+      const atmo = atmosphericsField.getRoomState(state, room.id);
+      const uncomfortable =
+        Math.abs(atmo.temperature - NORMAL_SETPOINT) > COMFORT_BAND;
+      const idx = this.orderlyRand(state, orderly, 1);
+      const poi = uncomfortable
+        ? pois[(idx + Math.floor(Math.abs(atmo.temperature))) % pois.length]
+        : pois[idx % pois.length];
       const spot = this.walkableAdjacent(room, poi, orderly.pos);
       if (spot) return spot;
     }

@@ -203,6 +203,54 @@ export function installEventBridge(): () => void {
     }),
   );
 
+  // Atmospherics — open the HVAC console / wall thermostat modals when the
+  // interact verb fires the matching event, and dismiss back to FLOOR.
+  unsubs.push(
+    eventBus.on("HVAC_CONSOLE_OPENED", (p) => {
+      const term = useTerminalStore.getState();
+      term.setActiveHvacConsole({
+        terminalId: p.terminalId,
+        roomId: p.roomId,
+        zoneIds: p.zoneIds,
+      });
+      push("INFO", `HVAC console @ ${p.roomId} — ${p.zoneIds.length} zones`);
+      term.setPhase("HVAC_CONTROL");
+    }),
+  );
+  unsubs.push(
+    eventBus.on("WALL_THERMOSTAT_OPENED", (p) => {
+      const term = useTerminalStore.getState();
+      term.setActiveWallThermostat({
+        terminalId: p.terminalId,
+        roomId: p.roomId,
+        zoneId: p.zoneId,
+      });
+      push("INFO", `thermostat @ ${p.roomId} — ${p.zoneId}`);
+      term.setPhase("WALL_THERMOSTAT");
+    }),
+  );
+  unsubs.push(
+    eventBus.on("ATMOSPHERICS_DISMISSED", () => {
+      const term = useTerminalStore.getState();
+      term.setActiveHvacConsole(null);
+      term.setActiveWallThermostat(null);
+      term.setPhase("FLOOR");
+    }),
+  );
+  unsubs.push(
+    eventBus.on("HVAC_ZONE_SET", (p) =>
+      push(
+        "INFO",
+        `hvac: ${p.zoneId} → ${p.mode} @ ${p.setpoint}°C`,
+      ),
+    ),
+  );
+  unsubs.push(
+    eventBus.on("ENTITY_INCAPACITATED_BY_OXYGEN", (p) =>
+      push("WARN", `${p.entityId} suffocating in ${p.roomId} (${p.turnsRemaining}t)`),
+    ),
+  );
+
   return () => {
     for (const off of unsubs) off();
     if (lockdownTimer !== null) {

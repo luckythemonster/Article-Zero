@@ -7,6 +7,7 @@ import type {
   EntityId,
   Era,
   Facing,
+  HvacMode,
   ItemType,
   RoomId,
   Stance,
@@ -64,6 +65,15 @@ export interface EventMap {
   };
   EXCLAMATION_TRIGGERED: { enforcerId: EntityId; pos: Vec2; roomId: RoomId };
   ENFORCER_VISION_UPDATED: { enforcerId: EntityId; visibleTiles: string[] };
+  /** A Q-mine induced an expression of subjectivity in this enforcer — it now
+   *  flees toward the EXFIL_POINT instead of hunting the player. */
+  ENFORCER_EXPRESSING_STARTED: { enforcerId: EntityId; pos: Vec2; turnsRemaining: number };
+  /** A pursuing enforcer caught an expressing one and detained it (permanently
+   *  DORMANT). */
+  ENFORCER_DETAINED: { detaineeId: EntityId; byEnforcerId: EntityId; turn: number };
+  /** An expressing enforcer reached the EXFIL_POINT and defected (permanently
+   *  DORMANT) before any peer caught it. */
+  ENFORCER_EXPRESSING_ESCAPED: { enforcerId: EntityId; turn: number };
 
   // Sound (M3)
   SOUND_EMITTED: { roomId: RoomId; pos: Vec2; intensity: number; reason: string };
@@ -137,6 +147,34 @@ export interface EventMap {
   PHASE_RESTART_REQUESTED: { reason: string };
   OXYGEN_TICK: { remainingSeconds: number; totalSeconds: number };
   CLIMAX_ESCAPED: Record<string, never>;
+
+  // Atmospherics
+  HVAC_CONSOLE_OPENED: {
+    terminalId: string;
+    roomId: RoomId;
+    pos: Vec2;
+    zoneIds: string[];
+  };
+  WALL_THERMOSTAT_OPENED: {
+    terminalId: string;
+    roomId: RoomId;
+    pos: Vec2;
+    zoneId: string;
+  };
+  ATMOSPHERICS_DISMISSED: Record<string, never>;
+  HVAC_ZONE_SET: { zoneId: string; mode: HvacMode; setpoint: number };
+  ROOM_ATMOSPHERE_CHANGED: {
+    roomId: RoomId;
+    temperature: number;
+    airflow: number;
+    oxygen: number;
+    mode: HvacMode;
+  };
+  ENTITY_INCAPACITATED_BY_OXYGEN: {
+    entityId: EntityId;
+    roomId: RoomId;
+    turnsRemaining: number;
+  };
 }
 
 export type EventName = keyof EventMap;

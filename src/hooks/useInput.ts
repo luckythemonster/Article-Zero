@@ -84,6 +84,17 @@ export function useInput({ enabled }: Options): void {
       // While a blocking modal is open, suppress all game verbs.
       if (term.inventoryOpen || term.executeResetOpen) return;
 
+      // Shift + direction re-orients facing in place (free, no movement).
+      // Checked before the movement switch so a Shift+move never steps.
+      if (e.shiftKey) {
+        switch (e.key.toLowerCase()) {
+          case "arrowup": case "w": worldEngine.turn("north"); e.preventDefault(); return;
+          case "arrowdown": case "s": worldEngine.turn("south"); e.preventDefault(); return;
+          case "arrowleft": case "a": worldEngine.turn("west"); e.preventDefault(); return;
+          case "arrowright": case "d": worldEngine.turn("east"); e.preventDefault(); return;
+        }
+      }
+
       switch (e.key.toLowerCase()) {
         case "arrowup":
         case "w":

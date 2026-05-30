@@ -790,6 +790,22 @@ body.theme-lattice {
 .dilemma__choice strong { display: block; color: var(--cyan); margin-bottom: 0.25rem; }
 .dilemma__choice span { font-size: 0.75rem; color: var(--dim); }
 
+.ap-meter {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  z-index: 60;
+  width: 84px;
+  height: 84px;
+  pointer-events: none;
+}
+
+.ap-meter img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .climax-hud {
   position: absolute;
   top: 8px;
@@ -904,7 +920,37 @@ body.theme-lattice {
 
 .overlay-panel--inventory {
   width: min(540px, 92%);
-  max-height: 80vh;
+  /* Region-relative so the panel never overflows the shell-main area it lives
+     in (the viewport-relative 80vh used to spill past it and get clipped by
+     .shell-main { overflow: hidden }). When content is taller, the panel's own
+     overflow: auto scrolls instead. */
+  max-height: 92%;
+}
+
+/* Pin the close hint so it stays visible while the item list scrolls. The
+   title is the first child, so it needs z-index to paint over the items that
+   scroll beneath it. */
+.overlay-panel--inventory .overlay-panel__title {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--surface);
+}
+
+@media (pointer: coarse) {
+  /* The shared coarse overlay rules reserve 240/252px at the bottom to dodge
+     the on-screen D-pad. The inventory is centered and narrow (and its backdrop
+     already sits above the controls), so it doesn't need that clearance — on a
+     short tablet viewport the reservation would collapse the panel to nothing.
+     Anchor it to the top and let it use nearly the whole region, scrolling. */
+  .overlay-root--inventory {
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .overlay-panel--inventory {
+    max-height: calc(100% - 24px);
+  }
 }
 
 .inventory__section-label {
@@ -1131,4 +1177,112 @@ body.theme-lattice {
 @keyframes flash-fade {
   from { opacity: 1; }
   to   { opacity: 0; }
+}
+
+/* HVAC console / wall thermostat */
+.hvac__zone {
+  border: 1px solid var(--border);
+  border-left: 3px solid #6ad0a4;
+  padding: 0.5rem 0.75rem;
+  margin: 0.4rem 0;
+}
+.hvac__zone-head {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+}
+.hvac__mode {
+  color: #9adbe6;
+  font-weight: bold;
+}
+.hvac__setpoint {
+  color: var(--muted, #9bb1b6);
+  margin-left: auto;
+}
+.hvac__rooms {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.15rem;
+  margin-bottom: 0.4rem;
+}
+.hvac__room {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--fg, #cfe2e6);
+  padding: 0.15rem 0;
+  border-bottom: 1px dashed rgba(155, 177, 182, 0.18);
+}
+.hvac__room-id {
+  flex: 1 1 auto;
+  color: var(--muted, #9bb1b6);
+}
+.hvac__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.3rem;
+}
+.hvac__modes {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+.hvac__mode-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  padding: 0.2rem 0.5rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.hvac__mode-btn.is-active {
+  background: rgba(106, 208, 164, 0.18);
+  border-color: #6ad0a4;
+  color: #6ad0a4;
+}
+.hvac__mode-btn.is-emergency {
+  border-color: #c84a4a;
+  color: #ff8a8a;
+}
+.hvac__mode-btn.is-emergency.is-active {
+  background: rgba(200, 74, 74, 0.22);
+  color: #ffd0d0;
+}
+.hvac__setpoint-row {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  font-size: 0.85rem;
+}
+.hvac__step {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  font-family: inherit;
+  width: 1.6rem;
+  height: 1.6rem;
+  cursor: pointer;
+}
+.hvac__footer {
+  margin-top: 0.5rem;
+  text-align: right;
+}
+.hvac__dismiss {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  padding: 0.25rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+.hvac__row {
+  font-size: 0.85rem;
+  padding: 0.5rem 0;
 }

@@ -9,9 +9,15 @@ import { worldEngine } from "../engine/WorldEngine";
 import { enforcerSystem } from "../engine/EnforcerSystem";
 import { debugFlags } from "../engine/debugFlags";
 import { useTargetingStore } from "../state/useTargetingStore";
-import type { Entity, Facing, Room, Tile, TileKind, Vec2 } from "../types/world.types";
+import type { Entity, Facing, ItemType, Room, Tile, TileKind, Vec2, WorldState } from "../types/world.types";
 import { roomTileKey } from "../types/world.types";
+import { atmosphericsField } from "../engine/AtmosphericsField";
 import { ITEM_METADATA } from "../data/items/itemMetadata";
+import {
+  DEFAULT_DETONATION_FX,
+  getVfxEffect,
+  ITEM_DETONATION_FX,
+} from "../data/vfx/registry";
 
 const TILE_PX = 32;
 const ELEVATION_PX_PER_STEP = 8;
@@ -139,6 +145,7 @@ const ALERT_COLORS: Record<string, { fill: number; alpha: number }> = {
 
 export class RoomScene extends Phaser.Scene {
   private tileLayer!: Phaser.GameObjects.Graphics;
+  private atmosphereLayer!: Phaser.GameObjects.Graphics;
   private glyphLayer!: Phaser.GameObjects.Graphics;
   private coneLayer!: Phaser.GameObjects.Graphics;
   private telegraphLayer!: Phaser.GameObjects.Graphics;
@@ -179,6 +186,8 @@ export class RoomScene extends Phaser.Scene {
     this.cameras.main.setRoundPixels(true);
     this.cameras.main.setZoom(CAMERA_ZOOM);
     this.tileLayer = this.add.graphics();
+    this.atmosphereLayer = this.add.graphics();
+    this.atmosphereLayer.setDepth(1.5);
     this.glyphLayer = this.add.graphics();
     this.coneLayer = this.add.graphics();
     this.coneLayer.setDepth(2);
@@ -261,6 +270,8 @@ export class RoomScene extends Phaser.Scene {
     }));
     sub(eventBus.on("ENTITY_STATUS_CHANGED", () => this.redraw()));
     sub(eventBus.on("ITEM_DETONATED", (p) => this.playDetonation(p)));
+    sub(eventBus.on("ROOM_ATMOSPHERE_CHANGED", () => this.redraw()));
+    sub(eventBus.on("HVAC_ZONE_SET", () => this.redraw()));
 
     // Subscribe to targeting store so cursor/AoE preview updates on every
     // cursor move (zustand subscribe returns an unsubscribe function).
@@ -460,10 +471,13 @@ export class RoomScene extends Phaser.Scene {
     if (!room) return;
 
     this.tileLayer.clear();
+    this.atmosphereLayer.clear();
     this.glyphLayer.clear();
     this.coneLayer.clear();
     this.telegraphLayer.clear();
     this.overlayLayer.clear();
+
+    this.drawAtmosphere(state, room);
 
     const hasDecoration = !!room.decoration;
     for (let y = 0; y < room.height; y++) {
@@ -626,6 +640,68 @@ export class RoomScene extends Phaser.Scene {
 
     this.drawEnforcerTelegraphs();
     this.drawDebugOverlays();
+  }
+
+  /** Tint floor and stipple fog tiles based on the room's atmosphere. Reads
+   *  from AtmosphericsField (which caches the fog set per propagate) and
+   *  state.atmosphere for temperature/airflow numbers. */
+  private drawAtmosphere(state: WorldState, room: Room): void {
+    const atmo = state.atmosphere.get(room.id);
+    if (!atmo) return;
+    const g = this.atmosphereLayer;
+    const w = room.width * TILE_PX;
+    const h = room.height * TILE_PX;
+    // Temperature tint — cool blue when cold, warm amber when hot, nothing in
+    // the comfort band. Alpha caps at 0.12 so the wash never blots out tiles.
+    const dT = atmo.temperature - 21;
+    if (Math.abs(dT) >= 4) {
+      const cold = dT < 0;
+      const t = Math.min(1, (Math.abs(dT) - 4) / 14);
+      const colour = cold ? 0x4a8fbf : 0xd07a3a;
+      g.fillStyle(colour, 0.04 + t * 0.08);
+      g.fillRect(0, 0, w, h);
+    }
+    // Fog stipple — translucent splotches over fogged floor tiles.
+    const fog = atmosphericsField.getFoggedTiles(state, room);
+    if (fog.size > 0) {
+      g.fillStyle(0x9bb1b6, 0.32);
+      for (const k of fog) {
+        const comma = k.indexOf(",");
+        const x = +k.slice(0, comma);
+        const y = +k.slice(comma + 1);
+        g.fillRect(x * TILE_PX + 1, y * TILE_PX + 1, TILE_PX - 2, TILE_PX - 2);
+      }
+    }
+    // Low-oxygen tint — desaturated reddish wash, applies even without fog.
+    if (atmo.oxygen <= 50) {
+      const t = 1 - atmo.oxygen / 50;
+      g.fillStyle(0x6a1a1a, t * 0.18);
+      g.fillRect(0, 0, w, h);
+    }
+
+    // HVAC console / wall thermostat glyph overlays. The base glyphLayer
+    // already drew a TERMINAL outline; ring it teal/mint so the player can
+    // tell the climate consoles apart from doc terminals.
+    for (let y = 0; y < room.height; y++) {
+      for (let x = 0; x < room.width; x++) {
+        const tile = room.tiles[y * room.width + x];
+        if (tile.kind !== "TERMINAL") continue;
+        if (!state.visibleTiles.has(`${x},${y}`)) continue;
+        const payload = state.terminalPayloads.get(
+          roomTileKey(room.id, { x, y }),
+        );
+        if (!payload) continue;
+        const cx = x * TILE_PX + TILE_PX / 2;
+        const cy = y * TILE_PX + TILE_PX / 2;
+        if (payload.terminalKind === "HVAC_CONSOLE") {
+          this.glyphLayer.lineStyle(2, 0x6ad0a4, 0.95);
+          this.glyphLayer.strokeRect(cx - 9, cy - 7, 18, 14);
+        } else if (payload.terminalKind === "WALL_THERMOSTAT") {
+          this.glyphLayer.lineStyle(2, 0x9adbe6, 0.9);
+          this.glyphLayer.strokeRect(cx - 6, cy - 4, 12, 8);
+        }
+      }
+    }
   }
 
   private drawTile(tile: Tile, x: number, y: number, visible: boolean, chestOpen = false): void {
@@ -963,13 +1039,16 @@ export class RoomScene extends Phaser.Scene {
   private playDetonation(p: { itemType: string; roomId: string; pos: Vec2; radius: number }): void {
     const room = worldEngine.getCurrentRoom();
     if (!room || room.id !== p.roomId) return;
+    const key = ITEM_DETONATION_FX[p.itemType as ItemType] ?? DEFAULT_DETONATION_FX;
+    const effect = getVfxEffect(key);
+    if (!effect) return;
     const cx = p.pos.x * TILE_PX + TILE_PX / 2;
     const cy = p.pos.y * TILE_PX + TILE_PX / 2;
-    const fx = this.add.sprite(cx, cy, "emp_frame_1");
+    const fx = this.add.sprite(cx, cy, effect.key, 0);
     fx.setDepth(12);
     const targetPx = (2 * p.radius + 1) * TILE_PX;
-    fx.setScale(targetPx / 256);
-    fx.play("emp_detonation");
+    fx.setScale(targetPx / effect.frameSize);
+    fx.play(effect.key);
     fx.once("animationcomplete", () => fx.destroy());
   }
 }

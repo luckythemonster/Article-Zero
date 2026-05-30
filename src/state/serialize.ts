@@ -29,6 +29,8 @@ export function serializePhysical(p: PhysicalState): SerializedPhysical {
     playerFacing: p.playerFacing,
     entityPositions: Array.from(p.entityPositions.entries()),
     entityKinds: Array.from(p.entityKinds.entries()),
+    atmosphere: p.atmosphere ? Array.from(p.atmosphere.entries()) : undefined,
+    hvacZones: p.hvacZones ? Array.from(p.hvacZones.entries()) : undefined,
   };
 }
 
@@ -59,6 +61,8 @@ export function deserializePhysical(s: SerializedPhysical): PhysicalState {
     playerFacing: s.playerFacing,
     entityPositions,
     entityKinds: new Map(s.entityKinds),
+    atmosphere: s.atmosphere ? new Map(s.atmosphere) : new Map(),
+    hvacZones: s.hvacZones ? new Map(s.hvacZones) : new Map(),
   };
 }
 
@@ -87,6 +91,7 @@ export function serializeSubjective(s: SubjectiveState): SerializedSubjective {
     worldItems: Array.from(s.worldItems.entries()),
     documentCases: Array.from(s.documentCases.entries()),
     activeEmitters: s.activeEmitters.map((e) => ({ ...e })),
+    activeMines: s.activeMines.map((m) => ({ ...m })),
   };
 }
 
@@ -121,5 +126,6 @@ export function deserializeSubjective(s: SerializedSubjective): SubjectiveState 
     worldItems: new Map(s.worldItems),
     documentCases: new Map(s.documentCases),
     activeEmitters: (s.activeEmitters ?? []).map((e) => ({ ...e })),
+    activeMines: (s.activeMines ?? []).map((m) => ({ ...m })),
   };
 }
