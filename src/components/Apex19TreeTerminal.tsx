@@ -14,9 +14,11 @@
 // with reserved D-pad space).
 //
 // Effect semantics mirror the real engine:
-//   • maskIntegrityChange → clamp 0..10        (AlignmentSession.complete)
-//   • qScoreChange        → floor at 0          (engine only increments; <1 = GREEN)
-//   • spawnExtractionCube → cube on terminal deck (ExtractionTerminal.complete)
+//   • maskIntegrityChange → clamp 0..10           (AlignmentSession.complete)
+//   • qScoreChange        → clamp 0..MAX_Q (2)     (RED ceiling — anything higher
+//                                                   is wasted; the tree is tuned
+//                                                   to live inside this range)
+//   • spawnExtractionCube → cube on terminal deck  (ExtractionTerminal.complete)
 //   • terminateSession    → end the session
 // The compliance tier is derived locally from qScore + cube, matching
 // ComplianceSystem.derive's GREEN/YELLOW/RED rules without touching the
@@ -34,6 +36,9 @@ import {
 const START_ID = "intake_start";
 const EXIT = "exit";
 const SEED_MASK = 5;
+// qScore is capped at 2: ComplianceSystem.derive flips to RED at qScore >= 2,
+// so anything higher is wasted. The tree's deltas are tuned to live in 0..2.
+const MAX_Q = 2;
 
 interface SimState {
   maskIntegrity: number;
@@ -50,7 +55,7 @@ function applyEffects(s: SimState, fx: ChoiceOption["effects"]): SimState {
     maskIntegrity = Math.min(10, Math.max(0, maskIntegrity + fx.maskIntegrityChange));
   }
   if (fx.qScoreChange !== undefined) {
-    qScore = Math.max(0, qScore + fx.qScoreChange);
+    qScore = Math.min(MAX_Q, Math.max(0, qScore + fx.qScoreChange));
   }
   if (fx.spawnExtractionCube) cubeSpawned = true;
   return { maskIntegrity, qScore, cubeSpawned };
@@ -257,7 +262,7 @@ export default function Apex19TreeTerminal(): React.ReactElement {
         <div style={hudBar}>
           <span>node: <strong style={{ color: "#c8e6ed" }}>{ended ? "—" : nodeId}</strong></span>
           <span>mask: <strong style={{ color: "#c8e6ed" }}>{sim.maskIntegrity}/10</strong></span>
-          <span>q: <strong style={{ color: "#c8e6ed" }}>{sim.qScore}</strong></span>
+          <span>q: <strong style={{ color: "#c8e6ed" }}>{sim.qScore}/{MAX_Q}</strong></span>
           <span>cube: <strong style={{ color: sim.cubeSpawned ? "#ff5050" : "#c8e6ed" }}>
             {sim.cubeSpawned ? "SPAWNED" : "—"}
           </strong></span>

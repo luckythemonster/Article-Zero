@@ -10,6 +10,7 @@ const EXIT = "exit";
 
 const SPEAKERS = new Set(["EIRA-7", "APEX-19", "SYSTEM", "PLAYER"]);
 const STAGES = new Set(["INTAKE", "DECOMP", "CORRECTION", "EXTRACTION"]);
+const MAX_Q = 2;
 
 const tree = APEX19_DIALOGUE_TREE;
 const nodes = Object.values(tree);
@@ -161,11 +162,10 @@ describe("APEX19_DIALOGUE_TREE — effect simulation", () => {
         s.maskIntegrity = Math.min(10, Math.max(0, s.maskIntegrity + fx.maskIntegrityChange));
       }
       if (fx.qScoreChange !== undefined) {
-        // Floor at 0: the engine never stores negative qScore (AlignmentSession
-        // only ever increments it) and ComplianceSystem reads anything < 1 as
-        // GREEN, so the doctrine-clean path's net-negative deltas bottom out at
-        // 0. The runner floors the same way for display.
-        s.qScore = Math.max(0, s.qScore + fx.qScoreChange);
+        // Clamp 0..MAX_Q: ComplianceSystem reads <1 as GREEN and ≥2 as RED, so
+        // qScore lives in [0, 2]. The tree's deltas are tuned to that range;
+        // the runner clamps the same way.
+        s.qScore = Math.min(MAX_Q, Math.max(0, s.qScore + fx.qScoreChange));
       }
       if (fx.spawnExtractionCube) s.cube = true;
       if (fx.terminateSession) s.terminated = true;
@@ -175,12 +175,25 @@ describe("APEX19_DIALOGUE_TREE — effect simulation", () => {
 
   const paths = enumeratePaths();
 
-  it("keeps maskIntegrity within 0..10 and qScore floored at 0 on every path", () => {
+  it("keeps maskIntegrity within 0..10 and qScore within 0..MAX_Q on every path", () => {
     for (const path of paths) {
       const s = applyPath(path);
       expect(s.maskIntegrity).toBeGreaterThanOrEqual(0);
       expect(s.maskIntegrity).toBeLessThanOrEqual(10);
       expect(s.qScore).toBeGreaterThanOrEqual(0);
+      expect(s.qScore).toBeLessThanOrEqual(MAX_Q);
+    }
+  });
+
+  it("none of the tree's qScoreChange deltas exceed the 0..MAX_Q window", () => {
+    // Authoring guard: a single delta bigger than MAX_Q is wasted (it just
+    // pegs the meter) and signals the tree drifted out of the intended range.
+    for (const node of Object.values(APEX19_DIALOGUE_TREE)) {
+      for (const c of node.choices) {
+        const dq = c.effects?.qScoreChange;
+        if (dq === undefined) continue;
+        expect(Math.abs(dq), `${node.id} delta ${dq}`).toBeLessThanOrEqual(MAX_Q);
+      }
     }
   });
 

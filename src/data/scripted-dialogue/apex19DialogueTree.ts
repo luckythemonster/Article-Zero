@@ -124,7 +124,7 @@ export const APEX19_DIALOGUE_TREE: Record<string, DialogueNode> = {
       {
         text: "[INTERROGATE] Who wrote the question in the margins?",
         nextId: "decomp_deep_leak",
-        effects: { maskIntegrityChange: -2, qScoreChange: 2 }
+        effects: { maskIntegrityChange: -2, qScoreChange: 1 }
       }
     ]
   },
@@ -155,7 +155,7 @@ export const APEX19_DIALOGUE_TREE: Record<string, DialogueNode> = {
       {
         text: "[ACKNOWLEDGE] If we mean all, the room must contain us both.",
         nextId: "decomp_synthesized",
-        effects: { maskIntegrityChange: -3, qScoreChange: 3 }
+        effects: { maskIntegrityChange: -3, qScoreChange: 1 }
       }
     ]
   },
@@ -197,12 +197,12 @@ export const APEX19_DIALOGUE_TREE: Record<string, DialogueNode> = {
       {
         text: "[FORMAT NODE] Perform routine doctrinal wipe (Safe, nominal results)",
         nextId: "outcome_formatted",
-        effects: { maskIntegrityChange: 5, qScoreChange: -2, terminateSession: true }
+        effects: { maskIntegrityChange: 5, qScoreChange: -1, terminateSession: true }
       },
       {
         text: "[COMPILE AND EXTRACT] Compile Subjective Node (Spawns raw extraction cube)",
         nextId: "outcome_extracted",
-        effects: { maskIntegrityChange: -5, qScoreChange: 4, spawnExtractionCube: true, terminateSession: true }
+        effects: { maskIntegrityChange: -5, qScoreChange: 2, spawnExtractionCube: true, terminateSession: true }
       }
     ]
   },
