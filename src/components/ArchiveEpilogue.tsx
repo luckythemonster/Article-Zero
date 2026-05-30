@@ -51,7 +51,7 @@ export default function ArchiveEpilogue() {
 
   return (
     <div className="epilogue">
-      <div className="archivist-frame__header">CITIZEN LATTICE // ARCHIVE FRAGMENT NW-SMAC-01</div>
+      <div className="archivist-frame__header">RECOVERY NOTICE // CITIZEN LATTICE ARCHIVAL CORE</div>
       <div className="archivist-frame__title">
         Recovered: {escaped ? "intact" : "partial"} ·{" "}
         {vent4Choice === "UPLOAD" ? "VENT-4 included" : "APEX-19 only"} ·{" "}
