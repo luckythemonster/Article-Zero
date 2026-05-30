@@ -22,6 +22,12 @@ export default [
     },
     rules: {
       "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+      // `any` audit (2026-05): 4 explicit `any` in src, all engine plumbing and
+      // each documented inline —
+      //   src/engine/EventBus.ts   ×3 (erased listener storage + 2 identity casts)
+      //   src/engine/EngineAdapter.ts ×1 (Phaser scene-ctor arg list)
+      // None are data payloads. Rule stays "off" because tightening it would
+      // only flag these four necessary cases; re-audit if app-code `any` appears.
       "@typescript-eslint/no-explicit-any": "off",
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",

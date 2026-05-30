@@ -26,7 +26,10 @@ export interface EventScope {
 }
 
 class EventBus {
-  // Storage is loosely typed internally; the public API enforces the typed map.
+  // `any` (intentional): each event key has a different payload type, so a
+  // single Set can't be expressed without per-key existential types (not
+  // representable in TS). Storage is loosely typed; the public on/emit/off
+  // signatures (Handler<K>) enforce the typed EventMap at every call site.
   private listeners: Partial<Record<EventName, Set<(payload: any) => void>>> = {};
 
   on<K extends EventName>(event: K, handler: Handler<K>): () => void {
@@ -35,11 +38,13 @@ class EventBus {
       bucket = new Set();
       this.listeners[event] = bucket;
     }
+    // `any` cast: bridges the typed Handler<K> to the erased storage type above.
     bucket.add(handler as (payload: any) => void);
     return () => this.off(event, handler);
   }
 
   off<K extends EventName>(event: K, handler: Handler<K>): void {
+    // `any` cast: same erasure as on(); identity is preserved so delete works.
     this.listeners[event]?.delete(handler as (payload: any) => void);
   }
 

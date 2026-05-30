@@ -6,6 +6,8 @@
 
 import * as Phaser from "phaser";
 
+// `any[]` (intentional): Phaser scene constructors have heterogeneous arg lists
+// and we only ever pass the ctor to Phaser's scene config, never invoke it here.
 export type SceneCtor = new (...args: any[]) => Phaser.Scene;
 
 export interface GameConfigInput {
