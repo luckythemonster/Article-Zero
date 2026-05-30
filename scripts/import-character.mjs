@@ -48,11 +48,12 @@ const SLUG_MAPS = {
   enforcer: {
     mode: "replace",
     anims: {
-      Cross_Punch: "crosspunch",
-      Walking: "walkcycle",
-      Running: "chase",
-      deactivated: "deactivated",
-      animation: ["idle", "stand"],
+      move: ["walkcycle", "chase"],
+      idle: ["idle", "stand"],
+      apprehend: "crosspunch",
+      deactivate: "deactivated",
+      panic: "panic",
+      reactivate: "reactivate",
     },
   },
   orderly: {
@@ -138,10 +139,11 @@ async function main() {
         const full = path.join(dir, e.name);
         if (e.isDirectory()) {
           await walk(full);
-        } else if (e.name.toLowerCase().endsWith(".png")) {
+        } else if (e.name.toLowerCase().endsWith(".png") && !e.name.startsWith("._")) {
           const rel = path.relative(tmp, full).split(path.sep).join("/");
+          if (rel.startsWith("__MACOSX/")) continue;
           const m = rel.match(/\/animations\/([^/]+)\/([^/]+)\/[^/]+\.png$/);
-          if (m) frames.push({ anim: stripHash(m[1]), dir: m[2], abs: full });
+          if (m) frames.push({ anim: stripHash(m[1]), dir: m[2].toLowerCase(), abs: full });
         }
       }
     };
