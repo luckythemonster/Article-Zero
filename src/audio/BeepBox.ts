@@ -39,8 +39,27 @@ export class BeepBoxPlayer {
     // context resumes — no dependence on play() landing inside a gesture.
     const shared = getSharedContext();
     if (shared) {
-      (this.synth as unknown as { audioCtx: BaseAudioContext | null }).audioCtx =
-        shared;
+      const internal = this.synth as unknown as {
+        audioCtx: BaseAudioContext | null;
+        scriptNode: AudioNode | null;
+        deactivateAudio: () => void;
+      };
+      internal.audioCtx = shared;
+      // Stock deactivateAudio() calls audioCtx.close(), which would tear down
+      // the SHARED context the moment a song pauses (TitleScreen unmount, fade
+      // end, any other Synth teardown) — killing every other audio module:
+      // SFX, footsteps, in-game music, the lot. Override it to disconnect the
+      // ScriptProcessorNode without touching the context we don't own.
+      internal.deactivateAudio = function () {
+        if (this.scriptNode) {
+          try {
+            this.scriptNode.disconnect();
+          } catch {
+            /* already disconnected */
+          }
+          this.scriptNode = null;
+        }
+      };
     }
   }
 

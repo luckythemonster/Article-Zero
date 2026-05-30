@@ -440,54 +440,77 @@ body.theme-lattice {
   background: var(--bg);
 }
 
-/* ── Title art stage (480×320 mockup, scaled to fit) ───────────────────────── */
+/* ── Title art stage (960×640 native, scaled to fit) ───────────────────────── */
 
 .title-screen__stage {
   position: relative;
-  aspect-ratio: 480 / 320;
+  aspect-ratio: 960 / 640;
   width: min(94vw, calc(88vh * 1.5));
-  background: url(/assets/ui/title-screen.svg) center / contain no-repeat;
   image-rendering: pixelated;
 }
 
-/* Transparent click targets positioned over the glyphs baked into the art.
-   Percentages are measured against the 480×320 source. */
-.title-screen__hotspot {
+.title-screen__bg,
+.title-screen__title-art,
+.title-screen__subtitle {
+  position: absolute;
+  image-rendering: pixelated;
+  pointer-events: none;
+  user-select: none;
+}
+
+.title-screen__bg {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Title and subtitle position by top-left as percentages of the 960×640
+   stage; width scales with the stage so they stay pixel-aligned with the bg. */
+.title-screen__title-art {
+  left: 6.9%;
+  top: 4%;
+  width: 86.1%;
+}
+
+.title-screen__subtitle {
+  left: 35.5%;
+  top: 27%;
+  width: 29.1%;
+}
+
+.title-screen__btn {
   position: absolute;
   margin: 0;
   padding: 0;
   border: 0;
-  background: transparent;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.title-screen__hotspot:focus-visible {
-  outline: 2px solid var(--cyan);
-  outline-offset: 2px;
-}
-
-.title-screen__hotspot--start    { left: 42.7%; top: 66.6%; width: 13.1%; height: 8.4%; }
-.title-screen__hotspot--archive  { left: 36.5%; top: 81.6%; width: 13.1%; height: 17.5%; }
-.title-screen__hotspot--settings { left: 49.2%; top: 81.6%; width: 12.9%; height: 17.5%; }
-.title-screen__hotspot--load     { left: 61.7%; top: 81.6%; width: 11.7%; height: 17.5%; }
-
-/* Pressed-state art, revealed while the hotspot is active. */
-.title-screen__pressed {
-  position: absolute;
-  inset: 0;
   background: center / contain no-repeat;
   image-rendering: pixelated;
-  opacity: 0;
-  pointer-events: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  width: 14.4%;
+  height: 7.8%;
+  left: 42.8%;
 }
 
-.title-screen__hotspot:active .title-screen__pressed { opacity: 1; }
+.title-screen__btn:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 4px;
+}
 
-.title-screen__hotspot--start    .title-screen__pressed { background-image: url(/assets/ui/start-click.svg); }
-.title-screen__hotspot--archive  .title-screen__pressed { background-image: url(/assets/ui/archive-click.svg); }
-.title-screen__hotspot--settings .title-screen__pressed { background-image: url(/assets/ui/settings-click.svg); }
-.title-screen__hotspot--load     .title-screen__pressed { background-image: url(/assets/ui/load-click.svg); }
+.title-screen__btn--start   { top: 68.5%; background-image: url(/assets/ui/title/start-idle.png); }
+.title-screen__btn--load    { top: 77.8%; background-image: url(/assets/ui/title/load-idle.png); }
+.title-screen__btn--archive { top: 87.2%; background-image: url(/assets/ui/title/archive-idle.png); }
+
+.title-screen__btn--start:hover,
+.title-screen__btn--start:focus-visible    { background-image: url(/assets/ui/title/start-active.png); }
+.title-screen__btn--load:hover,
+.title-screen__btn--load:focus-visible     { background-image: url(/assets/ui/title/load-active.png); }
+.title-screen__btn--archive:hover,
+.title-screen__btn--archive:focus-visible  { background-image: url(/assets/ui/title/archive-active.png); }
+
+.title-screen__btn--start:active   { background-image: url(/assets/ui/title/start-pressed.png); }
+.title-screen__btn--load:active    { background-image: url(/assets/ui/title/load-pressed.png); }
+.title-screen__btn--archive:active { background-image: url(/assets/ui/title/archive-pressed.png); }
 
 .title-screen__hint {
   font-size: 0.65rem;

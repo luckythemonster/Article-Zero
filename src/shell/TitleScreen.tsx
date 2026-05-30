@@ -48,48 +48,49 @@ export default function TitleScreen({ onStart }: Props) {
     onStart();
   }
 
-  // ARCHIVE and SETTINGS have no front-of-house destination yet; they stay
-  // visually interactive (hover + pressed art) but inert. TODO: wire to an
-  // archive browser / options panel once those screens exist.
+  // ARCHIVE has no destination yet; it stays visually interactive (hover +
+  // pressed art) but inert. LOAD currently re-uses handleStart as a
+  // placeholder until a save-slot picker exists.
   function noop() {}
 
   return (
     <div className="title-screen">
-      {/* The title, menu labels and START/ARCHIVE/SETTINGS/LOAD glyphs are baked
-          into title-screen.svg. Keep an accessible heading plus named hotspot
-          buttons so screen readers and tests still see the menu structure. */}
-      <h1 className="sr-only">Article Zero — A Solar Odyssey</h1>
+      <h1 className="sr-only">Article Zero — A Solar Opus</h1>
       <div className="title-screen__stage" role="group" aria-label="Main menu">
+        <img
+          className="title-screen__bg"
+          src="/assets/ui/title/background.png"
+          alt=""
+          aria-hidden="true"
+        />
+        <img
+          className="title-screen__title-art"
+          src="/assets/ui/title/title.png"
+          alt=""
+          aria-hidden="true"
+        />
+        <img
+          className="title-screen__subtitle"
+          src="/assets/ui/title/subtitle.png"
+          alt=""
+          aria-hidden="true"
+        />
         <button
-          className="title-screen__hotspot title-screen__hotspot--start"
+          className="title-screen__btn title-screen__btn--start"
           onClick={handleStart}
           aria-label="Start"
-        >
-          <span className="title-screen__pressed" aria-hidden="true" />
-        </button>
+        />
         <button
-          className="title-screen__hotspot title-screen__hotspot--archive"
+          className="title-screen__btn title-screen__btn--load"
+          onClick={handleStart}
+          aria-label="Load"
+        />
+        <button
+          className="title-screen__btn title-screen__btn--archive"
           onClick={noop}
           aria-label="Archive"
           title="Archive (coming soon)"
-        >
-          <span className="title-screen__pressed" aria-hidden="true" />
-        </button>
-        <button
-          className="title-screen__hotspot title-screen__hotspot--settings"
-          onClick={noop}
-          aria-label="Settings"
-          title="Settings (coming soon)"
-        >
-          <span className="title-screen__pressed" aria-hidden="true" />
-        </button>
-        <button
-          className="title-screen__hotspot title-screen__hotspot--load"
-          onClick={handleStart}
-          aria-label="Load"
-        >
-          <span className="title-screen__pressed" aria-hidden="true" />
-        </button>
+        />
       </div>
       <div className="title-screen__hint">[ CLICK OR PRESS ANY KEY TO ENABLE AUDIO ]</div>
     </div>
