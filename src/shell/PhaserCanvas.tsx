@@ -48,19 +48,17 @@ export function PhaserCanvas({ moduleId, children }: Props) {
     // canvas lifecycle. Detach on unmount before the next clear. A
     // TerminalShell-level subscription would be wiped by the clear on every
     // PhaserCanvas mount — so the audit-log/phase eventBridge lives here too,
-    // alongside the debug tap and audio bridges.
-    const offEventBridge = installEventBridge();
-    const offTap = installDebugEventTap();
-    const offFootsteps = installFootstepBridge();
-    const offMusic = installMusicBridge();
-    const offSfx = installSfxBridge();
+    // alongside the debug tap and audio bridges. Each installer returns its own
+    // teardown fn; a single scope owns them all so cleanup is one dispose() call.
+    const bridges = eventBus.createScope();
+    bridges.add(installEventBridge());
+    bridges.add(installDebugEventTap());
+    bridges.add(installFootstepBridge());
+    bridges.add(installMusicBridge());
+    bridges.add(installSfxBridge());
 
     return () => {
-      offSfx();
-      offMusic();
-      offFootsteps();
-      offTap();
-      offEventBridge();
+      bridges.dispose();
       gameRef.current?.destroy(true);
       gameRef.current = null;
       eventBus.clear();
