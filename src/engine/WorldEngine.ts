@@ -104,17 +104,15 @@ class WorldEngine {
   }
 
   // ── Store-sync strategy ───────────────────────────────────────────────────
-  // syncStore() publishes the world state to the Zustand mirror so React can
-  // read reactive selectors. Single player actions sync exactly once (their one
-  // syncStore() at the action boundary), so React already renders once per
-  // action. The expensive case is a turn tick, which ticks several subsystems
-  // (enforcers, sound, atmospherics) each of which can mutate state. To avoid
-  // rebuilding the store slices once per subsystem, advanceTurn() sets
-  // `batching` for the cascade: syncStore() then only marks the mirror dirty,
-  // and a single flush() at the end does the one real push. React thus renders
-  // once per turn, not once per subsystem. (advanceTurn still publishes the new
-  // turn counter immediately, before batching, so mid-turn audit-log entries
-  // stamp the correct turn.)
+  // syncStore() publishes WorldState to the Zustand mirror so React re-renders.
+  // Single player actions call it once at their boundary → one render per action.
+  // A turn tick (advanceTurn) mutates state across many subsystems (enforcers,
+  // sound, atmospherics, item/effect timers, …) and emits events throughout.
+  // advanceTurn runs inside a batch: while `batching` is set, syncStore() only
+  // marks the mirror dirty, and a single flush() at the end performs the one
+  // real push — guaranteeing one render per turn no matter how many places sync.
+  // Mid-turn events are emitted before that flush (unchanged), so audit-log
+  // consumers read the prior snapshot until the turn settles.
   private storeDirty = false;
   private batching = false;
 
@@ -415,6 +413,9 @@ class WorldEngine {
 
   private advanceTurn(): void {
     const s = this.getState();
+    // Batch the whole turn: defer the store push to the single flush() below so
+    // the many subsystem mutations coalesce into one React render.
+    this.batching = true;
     actions.clearPeek(s);
     s.turn += 1;
     const previousAp = s.player.ap;
@@ -541,6 +542,8 @@ class WorldEngine {
 
     this.recomputeFOV();
     this.syncStore();
+    this.batching = false;
+    this.flush();
   }
 
   /** Recompute the `bleedLights` array on every room based on the current
