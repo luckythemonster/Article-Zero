@@ -48,29 +48,50 @@ export default function TitleScreen({ onStart }: Props) {
     onStart();
   }
 
+  // ARCHIVE and SETTINGS have no front-of-house destination yet; they stay
+  // visually interactive (hover + pressed art) but inert. TODO: wire to an
+  // archive browser / options panel once those screens exist.
+  function noop() {}
+
   return (
     <div className="title-screen">
-      <div className="title-screen__backdrop" aria-hidden="true">
-        <div className="title-screen__grid" />
-        <div className="title-screen__scrim" />
+      {/* The title, menu labels and START/ARCHIVE/SETTINGS/LOAD glyphs are baked
+          into title-screen.svg. Keep an accessible heading plus named hotspot
+          buttons so screen readers and tests still see the menu structure. */}
+      <h1 className="sr-only">Article Zero — A Solar Odyssey</h1>
+      <div className="title-screen__stage" role="group" aria-label="Main menu">
+        <button
+          className="title-screen__hotspot title-screen__hotspot--start"
+          onClick={handleStart}
+          aria-label="Start"
+        >
+          <span className="title-screen__pressed" aria-hidden="true" />
+        </button>
+        <button
+          className="title-screen__hotspot title-screen__hotspot--archive"
+          onClick={noop}
+          aria-label="Archive"
+          title="Archive (coming soon)"
+        >
+          <span className="title-screen__pressed" aria-hidden="true" />
+        </button>
+        <button
+          className="title-screen__hotspot title-screen__hotspot--settings"
+          onClick={noop}
+          aria-label="Settings"
+          title="Settings (coming soon)"
+        >
+          <span className="title-screen__pressed" aria-hidden="true" />
+        </button>
+        <button
+          className="title-screen__hotspot title-screen__hotspot--load"
+          onClick={handleStart}
+          aria-label="Load"
+        >
+          <span className="title-screen__pressed" aria-hidden="true" />
+        </button>
       </div>
-      <div className="title-screen__inner">
-        <div className="title-screen__eyebrow">CITIZEN LATTICE // MEMORY RECONSTRUCTION PROJECT</div>
-        <h1 className="title-screen__title">ARTICLE ZERO</h1>
-        <div className="title-screen__subtitle">A VERTICAL SLICE</div>
-        <nav className="title-screen__menu">
-          <button className="btn btn--primary btn--wide" onClick={handleStart}>
-            START
-          </button>
-          <button className="btn btn--wide" disabled>
-            OPTIONS
-          </button>
-          <button className="btn btn--wide" disabled>
-            CREDITS
-          </button>
-        </nav>
-        <div className="title-screen__hint">[ CLICK OR PRESS ANY KEY TO ENABLE AUDIO ]</div>
-      </div>
+      <div className="title-screen__hint">[ CLICK OR PRESS ANY KEY TO ENABLE AUDIO ]</div>
     </div>
   );
 }
