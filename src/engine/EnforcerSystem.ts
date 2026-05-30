@@ -22,7 +22,7 @@ import { eventBus } from "./EventBus";
 import { interrogationSession } from "./InterrogationSession";
 import { lightField } from "./LightField";
 import { roomGraph } from "./RoomGraph";
-import { computeCone, ENFORCER_BASE_RANGE, ENFORCER_CONE_HALF_ANGLE, ENFORCER_PROXIMITY_RADIUS } from "./VisionCone";
+import { computeCone, ENFORCER_BASE_RANGE, ENFORCER_CONE_HALF_ANGLE, ENFORCER_PROXIMITY_RADIUS, ORDERLY_BASE_RANGE, ORDERLY_CONE_HALF_ANGLE } from "./VisionCone";
 import type { DeliveredSound } from "./SoundField";
 import { soundField } from "./SoundField";
 import { atmosphericsField, COMFORT_BAND, NORMAL_SETPOINT } from "./AtmosphericsField";
@@ -45,6 +45,17 @@ const Q_MINE_EXPRESS_TURNS = 10;
 /** How close (same room, Euclidean) a peer must be to lock onto an expressing
  *  Enforcer and start pursuing it to detain. */
 const EXPRESSING_ACQUIRE_RADIUS = 8;
+/** SoundField intensity an orderly emits when calling enforcers. Above
+ *  ALERT_SOUND_THRESHOLD (4) by enough that it clears one open doorway
+ *  (attenuation 2) and still escalates neighbour-room enforcers to ALERT —
+ *  same envelope a drone alarm uses. */
+const ORDERLY_ALARM_INTENSITY = ALERT_SOUND_THRESHOLD + 2;
+/** Max turns an orderly will keep running toward a terminal before giving up
+ *  and shouting from where they are. Generous enough for typical room sizes. */
+const ORDERLY_ALARM_RUN_TURNS = 8;
+/** Turns the orderly stays silent after raising an alarm before they can
+ *  call again. Prevents per-tick alarm spam while the player loiters in view. */
+const ORDERLY_ALARM_COOLDOWN_TURNS = 6;
 
 class EnforcerSystem {
   /** Compute the visible-tile set for one enforcer inside its current room.
@@ -960,16 +971,33 @@ class EnforcerSystem {
   }
 
   /** Drive one orderly: dwell at a point of interest, pick a new destination,
-   *  or step toward the current one. Stays within its own room. */
+   *  or step toward the current one. Stays within its own room.
+   *  An orderly with an active `alarm` (Q0 / code violation sighted) breaks
+   *  off wandering to run to the nearest TERMINAL and call enforcers. */
   private tickOrderly(state: WorldState, orderly: Entity): void {
+    const room = state.rooms.get(orderly.roomId);
+    if (!room) return;
+
+    // Alarm sighting check — runs every tick except while the orderly is
+    // already cooling down from a just-raised alarm. Acquiring a fresh
+    // sighting while RUNNING refreshes the stimulus (player has moved) but
+    // does not restart the run countdown.
+    if ((orderly.alarm?.phase ?? "RUNNING") !== "COOLDOWN") {
+      this.maybeArmOrderlyAlarm(state, orderly, room);
+    }
+
+    // Active alarm dominates: drop wander/dwell and head for the terminal.
+    if (orderly.alarm) {
+      this.tickOrderlyAlarm(state, orderly, room);
+      return;
+    }
+
     if ((orderly.idlePauseRemaining ?? 0) > 0) {
       orderly.idlePauseRemaining = (orderly.idlePauseRemaining ?? 0) - 1;
       // Glance around every other turn to read as "doing stuff".
       if (state.turn % 2 === 0) this.rotateScan(orderly);
       return;
     }
-    const room = state.rooms.get(orderly.roomId);
-    if (!room) return;
     const target = orderly.wanderTarget;
     if (target && orderly.pos.x === target.x && orderly.pos.y === target.y) {
       // Arrived — face a neighbouring point of interest (if any) and dwell.
@@ -987,6 +1015,171 @@ class EnforcerSystem {
     // No progress (blocked / unreachable) — drop the target so we re-pick next
     // turn rather than jamming against a wall forever.
     if (orderly.pos === before) orderly.wanderTarget = undefined;
+  }
+
+  /** Same-room directional FOV for an orderly, masked by lighting and fog so
+   *  they can't see the player through dark or fogged tiles. */
+  private orderlyVisibleTiles(state: WorldState, orderly: Entity, room: Room): Set<string> {
+    const cone = computeCone({
+      tiles: room.tiles,
+      width: room.width,
+      height: room.height,
+      ox: orderly.pos.x,
+      oy: orderly.pos.y,
+      radius: ORDERLY_BASE_RANGE,
+      facing: orderly.facing,
+      halfAngle: ORDERLY_CONE_HALF_ANGLE,
+    });
+    const lit = lightField.getOrCompute(room);
+    const fog = atmosphericsField.getFoggedTiles(state, room);
+    const out = new Set<string>();
+    const ownKey = `${orderly.pos.x},${orderly.pos.y}`;
+    for (const k of cone) {
+      if (k === ownKey) { out.add(k); continue; }
+      if (!lit.has(k)) continue;
+      if (fog.has(k)) continue;
+      out.add(k);
+    }
+    return out;
+  }
+
+  /** Whether `orderly` can see the player right now (same room + cone). */
+  private orderlySeesPlayer(state: WorldState, orderly: Entity, room: Room): boolean {
+    if (state.player.roomId !== orderly.roomId) return false;
+    if (state.player.hidingTileKey) return false;
+    const visible = this.orderlyVisibleTiles(state, orderly, room);
+    return visible.has(`${state.player.pos.x},${state.player.pos.y}`);
+  }
+
+  /** Set or refresh the orderly's alarm when they spot a YELLOW/RED player.
+   *  GREEN reads as a TECH on shift and is ignored (matches enforcer doctrine). */
+  private maybeArmOrderlyAlarm(state: WorldState, orderly: Entity, room: Room): void {
+    const tier = state.player.compliance;
+    if (tier !== "YELLOW" && tier !== "RED") return;
+    if (!this.orderlySeesPlayer(state, orderly, room)) return;
+
+    const stimulus = { x: state.player.pos.x, y: state.player.pos.y };
+    const stimulusRoom = state.player.roomId;
+
+    if (orderly.alarm && orderly.alarm.phase === "RUNNING") {
+      // Already running — refresh the stimulus so the eventual alarm pings the
+      // player's current location, but don't reset the run timer.
+      orderly.alarm.stimulus = stimulus;
+      orderly.alarm.stimulusRoom = stimulusRoom;
+      return;
+    }
+
+    const terminal = this.nearestTerminalApproach(room, orderly.pos);
+    orderly.alarm = {
+      phase: "RUNNING",
+      terminalApproach: terminal?.approach,
+      terminalPos: terminal?.terminalPos,
+      stimulus,
+      stimulusRoom,
+      turnsRemaining: ORDERLY_ALARM_RUN_TURNS,
+    };
+    // Drop wander state — the alarm path supersedes it.
+    orderly.wanderTarget = undefined;
+    orderly.idlePauseRemaining = 0;
+    eventBus.emit("ORDERLY_SPOTTED_VIOLATION", {
+      orderlyId: orderly.id,
+      roomId: orderly.roomId,
+      stimulus,
+      tier,
+    });
+  }
+
+  /** Drive an alarmed orderly: cool down, run-to-terminal, or raise. */
+  private tickOrderlyAlarm(state: WorldState, orderly: Entity, room: Room): void {
+    const alarm = orderly.alarm!;
+
+    if (alarm.phase === "COOLDOWN") {
+      alarm.turnsRemaining -= 1;
+      if (state.turn % 2 === 0) this.rotateScan(orderly);
+      if (alarm.turnsRemaining <= 0) orderly.alarm = undefined;
+      return;
+    }
+
+    // No terminal in the room — shout from current position immediately.
+    if (!alarm.terminalApproach || !alarm.terminalPos) {
+      this.raiseOrderlyAlarm(state, orderly, false);
+      return;
+    }
+
+    // Adjacent to the terminal and facing it → raise the alarm this turn.
+    const dx = alarm.terminalPos.x - orderly.pos.x;
+    const dy = alarm.terminalPos.y - orderly.pos.y;
+    const adjacent = Math.abs(dx) + Math.abs(dy) === 1;
+    if (adjacent) {
+      this.faceToward(orderly, alarm.terminalPos);
+      this.raiseOrderlyAlarm(state, orderly, true);
+      return;
+    }
+
+    // Otherwise step toward the approach tile. Give up after the run timer
+    // expires and just shout from here.
+    alarm.turnsRemaining -= 1;
+    if (alarm.turnsRemaining <= 0) {
+      this.raiseOrderlyAlarm(state, orderly, false);
+      return;
+    }
+    const before = orderly.pos;
+    this.advanceToward(state, orderly, alarm.terminalApproach);
+    // Blocked — re-pick a terminal next tick, or fall through to shouting.
+    if (orderly.pos === before) {
+      const fresh = this.nearestTerminalApproach(room, orderly.pos);
+      if (fresh) {
+        alarm.terminalApproach = fresh.approach;
+        alarm.terminalPos = fresh.terminalPos;
+      } else {
+        this.raiseOrderlyAlarm(state, orderly, false);
+      }
+    }
+  }
+
+  /** Emit the high-intensity SoundField pulse that pulls enforcers onto the
+   *  player's last-seen tile, fire the narrative event, and flip the orderly
+   *  into the post-alarm cooldown. */
+  private raiseOrderlyAlarm(_state: WorldState, orderly: Entity, viaTerminal: boolean): void {
+    const alarm = orderly.alarm!;
+    soundField.emit({
+      roomId: alarm.stimulusRoom,
+      pos: alarm.stimulus,
+      intensity: ORDERLY_ALARM_INTENSITY,
+      reason: "orderly-alarm",
+    });
+    eventBus.emit("ORDERLY_ALARM_RAISED", {
+      orderlyId: orderly.id,
+      roomId: orderly.roomId,
+      pos: orderly.pos,
+      viaTerminal,
+    });
+    orderly.alarm = {
+      ...alarm,
+      phase: "COOLDOWN",
+      turnsRemaining: ORDERLY_ALARM_COOLDOWN_TURNS,
+    };
+  }
+
+  /** Find the nearest TERMINAL / EXTRACTION_TERMINAL in `room` (by Manhattan
+   *  distance from `from`) and a walkable tile adjacent to it. Returns
+   *  undefined when the room has no terminal, or none with a free approach. */
+  private nearestTerminalApproach(
+    room: Room,
+    from: Vec2,
+  ): { terminalPos: Vec2; approach: Vec2 } | undefined {
+    let best: { terminalPos: Vec2; approach: Vec2; dist: number } | undefined;
+    for (let y = 0; y < room.height; y++) {
+      for (let x = 0; x < room.width; x++) {
+        const kind = room.tiles[y * room.width + x].kind;
+        if (kind !== "TERMINAL" && kind !== "EXTRACTION_TERMINAL") continue;
+        const approach = this.walkableAdjacent(room, { x, y }, from);
+        if (!approach) continue;
+        const dist = Math.abs(approach.x - from.x) + Math.abs(approach.y - from.y);
+        if (!best || dist < best.dist) best = { terminalPos: { x, y }, approach, dist };
+      }
+    }
+    return best ? { terminalPos: best.terminalPos, approach: best.approach } : undefined;
   }
 
   /** Choose a new meander destination: a walkable tile beside a random point of

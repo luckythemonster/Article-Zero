@@ -317,6 +317,24 @@ export interface AlertState {
   seenLights?: Set<string>;
 }
 
+export interface OrderlyAlarm {
+  /** "RUNNING" — heading to a terminal. "COOLDOWN" — alarm just raised; sit
+   *  this many turns before re-triggering on a fresh sighting. */
+  phase: "RUNNING" | "COOLDOWN";
+  /** Walkable tile adjacent to the chosen TERMINAL. Undefined when the orderly
+   *  is calling from current position (no terminal in room). */
+  terminalApproach?: Vec2;
+  /** Tile of the TERMINAL itself, so the orderly faces it when raising the alarm. */
+  terminalPos?: Vec2;
+  /** Where the player was when the violation was spotted — used as the sound
+   *  source so enforcers route toward the player, not the terminal. */
+  stimulus: Vec2;
+  stimulusRoom: RoomId;
+  /** Phase countdown: turns left running before giving up, or cooldown turns
+   *  left before the orderly can re-arm. */
+  turnsRemaining: number;
+}
+
 export interface Entity {
   id: EntityId;
   kind: EntityKind;
@@ -359,6 +377,10 @@ export interface Entity {
   /** ORDERLY only — turns left dwelling at a point of interest, glancing around
    *  to look busy. Decremented once per turn. Runtime-only. */
   idlePauseRemaining?: number;
+  /** ORDERLY only — set when the orderly has spotted a Q0 or code violation and
+   *  is en route to the nearest TERMINAL to call enforcers. Cleared once the
+   *  alarm is raised (sound emitted) or the orderly gives up. Runtime-only. */
+  alarm?: OrderlyAlarm;
   /** When > 0 this entity is temporarily EMP-disabled: status is forced to
    *  DORMANT while down; decremented once per turn in advanceTurn, which
    *  restores status to ACTIVE at 0. Applies uniformly to all silicate kinds. */
