@@ -91,3 +91,8 @@ export const ENFORCER_BASE_RANGE = 6;
 /** Radius (tiles) of the omnidirectional proximity bubble. A player within
  *  this distance is always detected regardless of cone facing or lighting. */
 export const ENFORCER_PROXIMITY_RADIUS = 2;
+
+/** Orderlies are staff, not trained scanners — a wider but shorter cone:
+ *  glancing around the room while busying themselves. */
+export const ORDERLY_CONE_HALF_ANGLE = (90 / 2) * (Math.PI / 180);
+export const ORDERLY_BASE_RANGE = 4;

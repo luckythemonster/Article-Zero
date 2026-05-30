@@ -78,6 +78,25 @@ export interface EventMap {
   // Sound (M3)
   SOUND_EMITTED: { roomId: RoomId; pos: Vec2; intensity: number; reason: string };
 
+  // Orderlies — staff calling enforcers on a sighted Q0 / code violation.
+  ORDERLY_SPOTTED_VIOLATION: {
+    orderlyId: EntityId;
+    roomId: RoomId;
+    /** Player position at the moment of sighting. */
+    stimulus: Vec2;
+    /** The compliance tier read at sighting (YELLOW or RED). */
+    tier: ComplianceTier;
+  };
+  ORDERLY_ALARM_RAISED: {
+    orderlyId: EntityId;
+    /** Room the alarm was raised from (orderly's room). */
+    roomId: RoomId;
+    /** Orderly's position when the alarm was raised. */
+    pos: Vec2;
+    /** Whether a terminal was reached, or the orderly shouted from their spot. */
+    viaTerminal: boolean;
+  };
+
   // Alignment (M5 — re-bound)
   ALIGNMENT_SESSION_START: {
     entityId: EntityId;
