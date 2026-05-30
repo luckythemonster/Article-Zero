@@ -1187,7 +1187,18 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/chase/east/01",
       "enforcer/chase/east/02",
       "enforcer/chase/east/03",
-      "enforcer/chase/east/04"
+      "enforcer/chase/east/04",
+      "enforcer/chase/east/05",
+      "enforcer/chase/east/06",
+      "enforcer/chase/east/07",
+      "enforcer/chase/east/08",
+      "enforcer/chase/east/09",
+      "enforcer/chase/east/10",
+      "enforcer/chase/east/11",
+      "enforcer/chase/east/12",
+      "enforcer/chase/east/13",
+      "enforcer/chase/east/14",
+      "enforcer/chase/east/15"
     ],
     "texture": "chars-art"
   },
@@ -1199,7 +1210,18 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/chase/north/01",
       "enforcer/chase/north/02",
       "enforcer/chase/north/03",
-      "enforcer/chase/north/04"
+      "enforcer/chase/north/04",
+      "enforcer/chase/north/05",
+      "enforcer/chase/north/06",
+      "enforcer/chase/north/07",
+      "enforcer/chase/north/08",
+      "enforcer/chase/north/09",
+      "enforcer/chase/north/10",
+      "enforcer/chase/north/11",
+      "enforcer/chase/north/12",
+      "enforcer/chase/north/13",
+      "enforcer/chase/north/14",
+      "enforcer/chase/north/15"
     ],
     "texture": "chars-art"
   },
@@ -1211,7 +1233,18 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/chase/south/01",
       "enforcer/chase/south/02",
       "enforcer/chase/south/03",
-      "enforcer/chase/south/04"
+      "enforcer/chase/south/04",
+      "enforcer/chase/south/05",
+      "enforcer/chase/south/06",
+      "enforcer/chase/south/07",
+      "enforcer/chase/south/08",
+      "enforcer/chase/south/09",
+      "enforcer/chase/south/10",
+      "enforcer/chase/south/11",
+      "enforcer/chase/south/12",
+      "enforcer/chase/south/13",
+      "enforcer/chase/south/14",
+      "enforcer/chase/south/15"
     ],
     "texture": "chars-art"
   },
@@ -1223,7 +1256,18 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/chase/west/01",
       "enforcer/chase/west/02",
       "enforcer/chase/west/03",
-      "enforcer/chase/west/04"
+      "enforcer/chase/west/04",
+      "enforcer/chase/west/05",
+      "enforcer/chase/west/06",
+      "enforcer/chase/west/07",
+      "enforcer/chase/west/08",
+      "enforcer/chase/west/09",
+      "enforcer/chase/west/10",
+      "enforcer/chase/west/11",
+      "enforcer/chase/west/12",
+      "enforcer/chase/west/13",
+      "enforcer/chase/west/14",
+      "enforcer/chase/west/15"
     ],
     "texture": "chars-art"
   },
@@ -1237,7 +1281,16 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/crosspunch/east/03",
       "enforcer/crosspunch/east/04",
       "enforcer/crosspunch/east/05",
-      "enforcer/crosspunch/east/06"
+      "enforcer/crosspunch/east/06",
+      "enforcer/crosspunch/east/07",
+      "enforcer/crosspunch/east/08",
+      "enforcer/crosspunch/east/09",
+      "enforcer/crosspunch/east/10",
+      "enforcer/crosspunch/east/11",
+      "enforcer/crosspunch/east/12",
+      "enforcer/crosspunch/east/13",
+      "enforcer/crosspunch/east/14",
+      "enforcer/crosspunch/east/15"
     ],
     "texture": "chars-art"
   },
@@ -1251,7 +1304,16 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/crosspunch/north/03",
       "enforcer/crosspunch/north/04",
       "enforcer/crosspunch/north/05",
-      "enforcer/crosspunch/north/06"
+      "enforcer/crosspunch/north/06",
+      "enforcer/crosspunch/north/07",
+      "enforcer/crosspunch/north/08",
+      "enforcer/crosspunch/north/09",
+      "enforcer/crosspunch/north/10",
+      "enforcer/crosspunch/north/11",
+      "enforcer/crosspunch/north/12",
+      "enforcer/crosspunch/north/13",
+      "enforcer/crosspunch/north/14",
+      "enforcer/crosspunch/north/15"
     ],
     "texture": "chars-art"
   },
@@ -1265,7 +1327,16 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/crosspunch/south/03",
       "enforcer/crosspunch/south/04",
       "enforcer/crosspunch/south/05",
-      "enforcer/crosspunch/south/06"
+      "enforcer/crosspunch/south/06",
+      "enforcer/crosspunch/south/07",
+      "enforcer/crosspunch/south/08",
+      "enforcer/crosspunch/south/09",
+      "enforcer/crosspunch/south/10",
+      "enforcer/crosspunch/south/11",
+      "enforcer/crosspunch/south/12",
+      "enforcer/crosspunch/south/13",
+      "enforcer/crosspunch/south/14",
+      "enforcer/crosspunch/south/15"
     ],
     "texture": "chars-art"
   },
@@ -1279,7 +1350,16 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/crosspunch/west/03",
       "enforcer/crosspunch/west/04",
       "enforcer/crosspunch/west/05",
-      "enforcer/crosspunch/west/06"
+      "enforcer/crosspunch/west/06",
+      "enforcer/crosspunch/west/07",
+      "enforcer/crosspunch/west/08",
+      "enforcer/crosspunch/west/09",
+      "enforcer/crosspunch/west/10",
+      "enforcer/crosspunch/west/11",
+      "enforcer/crosspunch/west/12",
+      "enforcer/crosspunch/west/13",
+      "enforcer/crosspunch/west/14",
+      "enforcer/crosspunch/west/15"
     ],
     "texture": "chars-art"
   },
@@ -1292,7 +1372,17 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/deactivated/east/02",
       "enforcer/deactivated/east/03",
       "enforcer/deactivated/east/04",
-      "enforcer/deactivated/east/05"
+      "enforcer/deactivated/east/05",
+      "enforcer/deactivated/east/06",
+      "enforcer/deactivated/east/07",
+      "enforcer/deactivated/east/08",
+      "enforcer/deactivated/east/09",
+      "enforcer/deactivated/east/10",
+      "enforcer/deactivated/east/11",
+      "enforcer/deactivated/east/12",
+      "enforcer/deactivated/east/13",
+      "enforcer/deactivated/east/14",
+      "enforcer/deactivated/east/15"
     ],
     "texture": "chars-art"
   },
@@ -1305,7 +1395,17 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/deactivated/north/02",
       "enforcer/deactivated/north/03",
       "enforcer/deactivated/north/04",
-      "enforcer/deactivated/north/05"
+      "enforcer/deactivated/north/05",
+      "enforcer/deactivated/north/06",
+      "enforcer/deactivated/north/07",
+      "enforcer/deactivated/north/08",
+      "enforcer/deactivated/north/09",
+      "enforcer/deactivated/north/10",
+      "enforcer/deactivated/north/11",
+      "enforcer/deactivated/north/12",
+      "enforcer/deactivated/north/13",
+      "enforcer/deactivated/north/14",
+      "enforcer/deactivated/north/15"
     ],
     "texture": "chars-art"
   },
@@ -1318,7 +1418,17 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/deactivated/south/02",
       "enforcer/deactivated/south/03",
       "enforcer/deactivated/south/04",
-      "enforcer/deactivated/south/05"
+      "enforcer/deactivated/south/05",
+      "enforcer/deactivated/south/06",
+      "enforcer/deactivated/south/07",
+      "enforcer/deactivated/south/08",
+      "enforcer/deactivated/south/09",
+      "enforcer/deactivated/south/10",
+      "enforcer/deactivated/south/11",
+      "enforcer/deactivated/south/12",
+      "enforcer/deactivated/south/13",
+      "enforcer/deactivated/south/14",
+      "enforcer/deactivated/south/15"
     ],
     "texture": "chars-art"
   },
@@ -1331,7 +1441,17 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/deactivated/west/02",
       "enforcer/deactivated/west/03",
       "enforcer/deactivated/west/04",
-      "enforcer/deactivated/west/05"
+      "enforcer/deactivated/west/05",
+      "enforcer/deactivated/west/06",
+      "enforcer/deactivated/west/07",
+      "enforcer/deactivated/west/08",
+      "enforcer/deactivated/west/09",
+      "enforcer/deactivated/west/10",
+      "enforcer/deactivated/west/11",
+      "enforcer/deactivated/west/12",
+      "enforcer/deactivated/west/13",
+      "enforcer/deactivated/west/14",
+      "enforcer/deactivated/west/15"
     ],
     "texture": "chars-art"
   },
@@ -1344,7 +1464,17 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/idle/east/02",
       "enforcer/idle/east/03",
       "enforcer/idle/east/04",
-      "enforcer/idle/east/05"
+      "enforcer/idle/east/05",
+      "enforcer/idle/east/06",
+      "enforcer/idle/east/07",
+      "enforcer/idle/east/08",
+      "enforcer/idle/east/09",
+      "enforcer/idle/east/10",
+      "enforcer/idle/east/11",
+      "enforcer/idle/east/12",
+      "enforcer/idle/east/13",
+      "enforcer/idle/east/14",
+      "enforcer/idle/east/15"
     ],
     "texture": "chars-art"
   },
@@ -1357,7 +1487,17 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/idle/north/02",
       "enforcer/idle/north/03",
       "enforcer/idle/north/04",
-      "enforcer/idle/north/05"
+      "enforcer/idle/north/05",
+      "enforcer/idle/north/06",
+      "enforcer/idle/north/07",
+      "enforcer/idle/north/08",
+      "enforcer/idle/north/09",
+      "enforcer/idle/north/10",
+      "enforcer/idle/north/11",
+      "enforcer/idle/north/12",
+      "enforcer/idle/north/13",
+      "enforcer/idle/north/14",
+      "enforcer/idle/north/15"
     ],
     "texture": "chars-art"
   },
@@ -1370,7 +1510,17 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/idle/south/02",
       "enforcer/idle/south/03",
       "enforcer/idle/south/04",
-      "enforcer/idle/south/05"
+      "enforcer/idle/south/05",
+      "enforcer/idle/south/06",
+      "enforcer/idle/south/07",
+      "enforcer/idle/south/08",
+      "enforcer/idle/south/09",
+      "enforcer/idle/south/10",
+      "enforcer/idle/south/11",
+      "enforcer/idle/south/12",
+      "enforcer/idle/south/13",
+      "enforcer/idle/south/14",
+      "enforcer/idle/south/15"
     ],
     "texture": "chars-art"
   },
@@ -1383,7 +1533,201 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/idle/west/02",
       "enforcer/idle/west/03",
       "enforcer/idle/west/04",
-      "enforcer/idle/west/05"
+      "enforcer/idle/west/05",
+      "enforcer/idle/west/06",
+      "enforcer/idle/west/07",
+      "enforcer/idle/west/08",
+      "enforcer/idle/west/09",
+      "enforcer/idle/west/10",
+      "enforcer/idle/west/11",
+      "enforcer/idle/west/12",
+      "enforcer/idle/west/13",
+      "enforcer/idle/west/14",
+      "enforcer/idle/west/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "enforcer_panic_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "enforcer/panic/east/01",
+      "enforcer/panic/east/02",
+      "enforcer/panic/east/03",
+      "enforcer/panic/east/04",
+      "enforcer/panic/east/05",
+      "enforcer/panic/east/06",
+      "enforcer/panic/east/07",
+      "enforcer/panic/east/08",
+      "enforcer/panic/east/09",
+      "enforcer/panic/east/10",
+      "enforcer/panic/east/11",
+      "enforcer/panic/east/12",
+      "enforcer/panic/east/13",
+      "enforcer/panic/east/14",
+      "enforcer/panic/east/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "enforcer_panic_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "enforcer/panic/north/01",
+      "enforcer/panic/north/02",
+      "enforcer/panic/north/03",
+      "enforcer/panic/north/04",
+      "enforcer/panic/north/05",
+      "enforcer/panic/north/06",
+      "enforcer/panic/north/07",
+      "enforcer/panic/north/08",
+      "enforcer/panic/north/09",
+      "enforcer/panic/north/10",
+      "enforcer/panic/north/11",
+      "enforcer/panic/north/12",
+      "enforcer/panic/north/13",
+      "enforcer/panic/north/14",
+      "enforcer/panic/north/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "enforcer_panic_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "enforcer/panic/south/01",
+      "enforcer/panic/south/02",
+      "enforcer/panic/south/03",
+      "enforcer/panic/south/04",
+      "enforcer/panic/south/05",
+      "enforcer/panic/south/06",
+      "enforcer/panic/south/07",
+      "enforcer/panic/south/08",
+      "enforcer/panic/south/09",
+      "enforcer/panic/south/10",
+      "enforcer/panic/south/11",
+      "enforcer/panic/south/12",
+      "enforcer/panic/south/13",
+      "enforcer/panic/south/14",
+      "enforcer/panic/south/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "enforcer_panic_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "enforcer/panic/west/01",
+      "enforcer/panic/west/02",
+      "enforcer/panic/west/03",
+      "enforcer/panic/west/04",
+      "enforcer/panic/west/05",
+      "enforcer/panic/west/06",
+      "enforcer/panic/west/07",
+      "enforcer/panic/west/08",
+      "enforcer/panic/west/09",
+      "enforcer/panic/west/10",
+      "enforcer/panic/west/11",
+      "enforcer/panic/west/12",
+      "enforcer/panic/west/13",
+      "enforcer/panic/west/14",
+      "enforcer/panic/west/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "enforcer_reactivate_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "enforcer/reactivate/east/01",
+      "enforcer/reactivate/east/02",
+      "enforcer/reactivate/east/03",
+      "enforcer/reactivate/east/04",
+      "enforcer/reactivate/east/05",
+      "enforcer/reactivate/east/06",
+      "enforcer/reactivate/east/07",
+      "enforcer/reactivate/east/08",
+      "enforcer/reactivate/east/09",
+      "enforcer/reactivate/east/10",
+      "enforcer/reactivate/east/11",
+      "enforcer/reactivate/east/12",
+      "enforcer/reactivate/east/13",
+      "enforcer/reactivate/east/14",
+      "enforcer/reactivate/east/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "enforcer_reactivate_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "enforcer/reactivate/north/01",
+      "enforcer/reactivate/north/02",
+      "enforcer/reactivate/north/03",
+      "enforcer/reactivate/north/04",
+      "enforcer/reactivate/north/05",
+      "enforcer/reactivate/north/06",
+      "enforcer/reactivate/north/07",
+      "enforcer/reactivate/north/08",
+      "enforcer/reactivate/north/09",
+      "enforcer/reactivate/north/10",
+      "enforcer/reactivate/north/11",
+      "enforcer/reactivate/north/12",
+      "enforcer/reactivate/north/13",
+      "enforcer/reactivate/north/14",
+      "enforcer/reactivate/north/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "enforcer_reactivate_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "enforcer/reactivate/south/01",
+      "enforcer/reactivate/south/02",
+      "enforcer/reactivate/south/03",
+      "enforcer/reactivate/south/04",
+      "enforcer/reactivate/south/05",
+      "enforcer/reactivate/south/06",
+      "enforcer/reactivate/south/07",
+      "enforcer/reactivate/south/08",
+      "enforcer/reactivate/south/09",
+      "enforcer/reactivate/south/10",
+      "enforcer/reactivate/south/11",
+      "enforcer/reactivate/south/12",
+      "enforcer/reactivate/south/13",
+      "enforcer/reactivate/south/14",
+      "enforcer/reactivate/south/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "enforcer_reactivate_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "enforcer/reactivate/west/01",
+      "enforcer/reactivate/west/02",
+      "enforcer/reactivate/west/03",
+      "enforcer/reactivate/west/04",
+      "enforcer/reactivate/west/05",
+      "enforcer/reactivate/west/06",
+      "enforcer/reactivate/west/07",
+      "enforcer/reactivate/west/08",
+      "enforcer/reactivate/west/09",
+      "enforcer/reactivate/west/10",
+      "enforcer/reactivate/west/11",
+      "enforcer/reactivate/west/12",
+      "enforcer/reactivate/west/13",
+      "enforcer/reactivate/west/14",
+      "enforcer/reactivate/west/15"
     ],
     "texture": "chars-art"
   },
@@ -1396,7 +1740,17 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/stand/east/02",
       "enforcer/stand/east/03",
       "enforcer/stand/east/04",
-      "enforcer/stand/east/05"
+      "enforcer/stand/east/05",
+      "enforcer/stand/east/06",
+      "enforcer/stand/east/07",
+      "enforcer/stand/east/08",
+      "enforcer/stand/east/09",
+      "enforcer/stand/east/10",
+      "enforcer/stand/east/11",
+      "enforcer/stand/east/12",
+      "enforcer/stand/east/13",
+      "enforcer/stand/east/14",
+      "enforcer/stand/east/15"
     ],
     "texture": "chars-art"
   },
@@ -1409,7 +1763,17 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/stand/north/02",
       "enforcer/stand/north/03",
       "enforcer/stand/north/04",
-      "enforcer/stand/north/05"
+      "enforcer/stand/north/05",
+      "enforcer/stand/north/06",
+      "enforcer/stand/north/07",
+      "enforcer/stand/north/08",
+      "enforcer/stand/north/09",
+      "enforcer/stand/north/10",
+      "enforcer/stand/north/11",
+      "enforcer/stand/north/12",
+      "enforcer/stand/north/13",
+      "enforcer/stand/north/14",
+      "enforcer/stand/north/15"
     ],
     "texture": "chars-art"
   },
@@ -1422,7 +1786,17 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/stand/south/02",
       "enforcer/stand/south/03",
       "enforcer/stand/south/04",
-      "enforcer/stand/south/05"
+      "enforcer/stand/south/05",
+      "enforcer/stand/south/06",
+      "enforcer/stand/south/07",
+      "enforcer/stand/south/08",
+      "enforcer/stand/south/09",
+      "enforcer/stand/south/10",
+      "enforcer/stand/south/11",
+      "enforcer/stand/south/12",
+      "enforcer/stand/south/13",
+      "enforcer/stand/south/14",
+      "enforcer/stand/south/15"
     ],
     "texture": "chars-art"
   },
@@ -1435,7 +1809,17 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/stand/west/02",
       "enforcer/stand/west/03",
       "enforcer/stand/west/04",
-      "enforcer/stand/west/05"
+      "enforcer/stand/west/05",
+      "enforcer/stand/west/06",
+      "enforcer/stand/west/07",
+      "enforcer/stand/west/08",
+      "enforcer/stand/west/09",
+      "enforcer/stand/west/10",
+      "enforcer/stand/west/11",
+      "enforcer/stand/west/12",
+      "enforcer/stand/west/13",
+      "enforcer/stand/west/14",
+      "enforcer/stand/west/15"
     ],
     "texture": "chars-art"
   },
@@ -1447,7 +1831,18 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/walkcycle/east/01",
       "enforcer/walkcycle/east/02",
       "enforcer/walkcycle/east/03",
-      "enforcer/walkcycle/east/04"
+      "enforcer/walkcycle/east/04",
+      "enforcer/walkcycle/east/05",
+      "enforcer/walkcycle/east/06",
+      "enforcer/walkcycle/east/07",
+      "enforcer/walkcycle/east/08",
+      "enforcer/walkcycle/east/09",
+      "enforcer/walkcycle/east/10",
+      "enforcer/walkcycle/east/11",
+      "enforcer/walkcycle/east/12",
+      "enforcer/walkcycle/east/13",
+      "enforcer/walkcycle/east/14",
+      "enforcer/walkcycle/east/15"
     ],
     "texture": "chars-art"
   },
@@ -1459,7 +1854,18 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/walkcycle/north/01",
       "enforcer/walkcycle/north/02",
       "enforcer/walkcycle/north/03",
-      "enforcer/walkcycle/north/04"
+      "enforcer/walkcycle/north/04",
+      "enforcer/walkcycle/north/05",
+      "enforcer/walkcycle/north/06",
+      "enforcer/walkcycle/north/07",
+      "enforcer/walkcycle/north/08",
+      "enforcer/walkcycle/north/09",
+      "enforcer/walkcycle/north/10",
+      "enforcer/walkcycle/north/11",
+      "enforcer/walkcycle/north/12",
+      "enforcer/walkcycle/north/13",
+      "enforcer/walkcycle/north/14",
+      "enforcer/walkcycle/north/15"
     ],
     "texture": "chars-art"
   },
@@ -1471,7 +1877,18 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/walkcycle/south/01",
       "enforcer/walkcycle/south/02",
       "enforcer/walkcycle/south/03",
-      "enforcer/walkcycle/south/04"
+      "enforcer/walkcycle/south/04",
+      "enforcer/walkcycle/south/05",
+      "enforcer/walkcycle/south/06",
+      "enforcer/walkcycle/south/07",
+      "enforcer/walkcycle/south/08",
+      "enforcer/walkcycle/south/09",
+      "enforcer/walkcycle/south/10",
+      "enforcer/walkcycle/south/11",
+      "enforcer/walkcycle/south/12",
+      "enforcer/walkcycle/south/13",
+      "enforcer/walkcycle/south/14",
+      "enforcer/walkcycle/south/15"
     ],
     "texture": "chars-art"
   },
@@ -1483,7 +1900,18 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "enforcer/walkcycle/west/01",
       "enforcer/walkcycle/west/02",
       "enforcer/walkcycle/west/03",
-      "enforcer/walkcycle/west/04"
+      "enforcer/walkcycle/west/04",
+      "enforcer/walkcycle/west/05",
+      "enforcer/walkcycle/west/06",
+      "enforcer/walkcycle/west/07",
+      "enforcer/walkcycle/west/08",
+      "enforcer/walkcycle/west/09",
+      "enforcer/walkcycle/west/10",
+      "enforcer/walkcycle/west/11",
+      "enforcer/walkcycle/west/12",
+      "enforcer/walkcycle/west/13",
+      "enforcer/walkcycle/west/14",
+      "enforcer/walkcycle/west/15"
     ],
     "texture": "chars-art"
   },

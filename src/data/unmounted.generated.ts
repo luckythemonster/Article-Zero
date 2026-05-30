@@ -401,6 +401,31 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "gif"
   },
   {
+    "path": "added by Lucky/UI tests/ap dial 0.png",
+    "sizeBytes": 54330,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/ap dial 1.png",
+    "sizeBytes": 55048,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/ap dial 2.png",
+    "sizeBytes": 56784,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/ap dial 3.png",
+    "sizeBytes": 57672,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/ap dial 4.png",
+    "sizeBytes": 58140,
+    "ext": "png"
+  },
+  {
     "path": "added by Lucky/UI tests/Article Zero UI.psd",
     "sizeBytes": 3633623,
     "ext": "psd"
@@ -503,6 +528,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
   {
     "path": "added by Lucky/VFX sprites _lasers_explosions_energy.zip",
     "sizeBytes": 197059,
+    "ext": "zip"
+  },
+  {
+    "path": "character sprites/Enforcer reimagined.zip",
+    "sizeBytes": 1880686,
     "ext": "zip"
   },
   {
