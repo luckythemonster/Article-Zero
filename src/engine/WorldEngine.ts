@@ -83,8 +83,35 @@ class WorldEngine {
     atmosphericsField.hardReset();
   }
 
+  // ── Store-sync strategy ───────────────────────────────────────────────────
+  // syncStore() publishes the world state to the Zustand mirror so React can
+  // read reactive selectors. Single player actions sync exactly once (their one
+  // syncStore() at the action boundary), so React already renders once per
+  // action. The expensive case is a turn tick, which ticks several subsystems
+  // (enforcers, sound, atmospherics) each of which can mutate state. To avoid
+  // rebuilding the store slices once per subsystem, advanceTurn() sets
+  // `batching` for the cascade: syncStore() then only marks the mirror dirty,
+  // and a single flush() at the end does the one real push. React thus renders
+  // once per turn, not once per subsystem. (advanceTurn still publishes the new
+  // turn counter immediately, before batching, so mid-turn audit-log entries
+  // stamp the correct turn.)
+  private storeDirty = false;
+  private batching = false;
+
   private syncStore(): void {
+    if (this.batching) {
+      this.storeDirty = true;
+      return;
+    }
     if (this.state) useSimStore.getState().syncFromWorldState(this.state);
+  }
+
+  /** Push any pending batched sync to the store as a single React update. */
+  private flush(): void {
+    if (this.storeDirty && this.state) {
+      useSimStore.getState().syncFromWorldState(this.state);
+      this.storeDirty = false;
+    }
   }
 
   // Public action surface -----------------------------------------------
