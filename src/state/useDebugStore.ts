@@ -33,12 +33,16 @@ interface DebugStore {
   /** EIRA-7 dialogue-tree harness overlay (Eira7TreeTerminal). Same UI-only
    *  posture as `dialogueTree` — sibling debug tool, separate tree. */
   eira7DialogueTree: boolean;
+  /** VENT-4 dialogue-tree harness overlay (Vent4TreeTerminal). Same UI-only
+   *  posture as `dialogueTree` — sibling debug tool, separate tree. */
+  vent4DialogueTree: boolean;
   flags: DebugFlags;
   events: DebugEvent[];
   toggleVisible: () => void;
   toggleGallery: () => void;
   toggleDialogueTree: () => void;
   toggleEira7DialogueTree: () => void;
+  toggleVent4DialogueTree: () => void;
   setFlag: (name: keyof DebugFlags, value: boolean) => void;
   pushEvent: (e: Omit<DebugEvent, "id" | "ts">) => void;
   clearEvents: () => void;
@@ -54,6 +58,7 @@ export const useDebugStore = create<DebugStore>()(
       gallery: false,
       dialogueTree: false,
       eira7DialogueTree: false,
+      vent4DialogueTree: false,
       flags: {
         showHitboxes: false,
         disableEnforcerAI: false,
@@ -65,6 +70,8 @@ export const useDebugStore = create<DebugStore>()(
       toggleDialogueTree: () => set((s) => ({ dialogueTree: !s.dialogueTree })),
       toggleEira7DialogueTree: () =>
         set((s) => ({ eira7DialogueTree: !s.eira7DialogueTree })),
+      toggleVent4DialogueTree: () =>
+        set((s) => ({ vent4DialogueTree: !s.vent4DialogueTree })),
       setFlag: (name, value) => {
         setDebugFlag(name as DebugFlagName, value);
         set((s) => ({ flags: { ...s.flags, [name]: value } }));

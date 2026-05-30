@@ -21,6 +21,7 @@ import DebugOverlay from "../components/DebugOverlay";
 import SpriteGallery from "../components/SpriteGallery";
 import Apex19TreeTerminal from "../components/Apex19TreeTerminal";
 import Eira7TreeTerminal from "../components/Eira7TreeTerminal";
+import Vent4TreeTerminal from "../components/Vent4TreeTerminal";
 import InventoryOverlay from "../components/InventoryOverlay";
 import APMeter from "../components/APMeter";
 import ExecuteResetModal from "../components/ExecuteResetModal";
@@ -33,6 +34,7 @@ export default function TerminalShell() {
   const phase = useTerminalStore((s) => s.phase);
   const dialogueTree = useDebugStore((s) => s.dialogueTree);
   const eira7DialogueTree = useDebugStore((s) => s.eira7DialogueTree);
+  const vent4DialogueTree = useDebugStore((s) => s.vent4DialogueTree);
 
   useEffect(() => {
     applySettings(loadSettings());
@@ -118,6 +120,7 @@ export default function TerminalShell() {
       <SpriteGallery />
       {dialogueTree && <Apex19TreeTerminal />}
       {eira7DialogueTree && <Eira7TreeTerminal />}
+      {vent4DialogueTree && <Vent4TreeTerminal />}
       <FullscreenFlash />
     </div>
   );
