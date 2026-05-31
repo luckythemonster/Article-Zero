@@ -23,9 +23,18 @@
   font-size: calc(14px * var(--text-scale));
 }
 
-html, body, #root {
-  height: 100vh;
-  height: 100dvh;
+html {
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* position: fixed on body is the only iOS Safari scroll lock that's truly
+   reliable. It pins the document so rubber-band never starts. Everything
+   inside fills this fixed container via height: 100%. */
+body {
+  position: fixed;
+  inset: 0;
   overflow: hidden;
   overscroll-behavior: none;
   background: var(--bg);
@@ -33,43 +42,36 @@ html, body, #root {
   font-family: "Courier New", Courier, monospace;
 }
 
-/* iOS Safari belt-and-braces scroll lock: pinning body to the viewport
-   stops the rubber-band even when a touchmove slips past preventDefault. */
-body {
-  position: fixed;
-  inset: 0;
-  width: 100%;
+#root {
   height: 100%;
+  overflow: hidden;
 }
 
 /* ── Shell grid ──────────────────────────────────────────────────────────── */
 
 .shell-grid {
-  position: fixed;
-  inset: 0;
   display: grid;
   grid-template-rows: 2rem 1fr 18rem;
+  height: 100%;
   min-height: 0;
+  overflow: hidden;
   touch-action: none;
   overscroll-behavior: none;
 }
 
 .shell-main {
-  /* min-height: 0 stops a grid item with overflowing content from blowing
-     out the 1fr track and making the page scrollable. */
   min-height: 0;
+  overflow: hidden;
 }
 
-/* Touch / short viewports: shrink the footer so the Phaser canvas gets the
-   height it needs. */
-@media (pointer: coarse), (max-height: 900px) {
+/* Short viewports (tablets, shorter desktop windows): shrink the footer. */
+@media (max-height: 1000px) {
   .shell-grid {
     grid-template-rows: 2rem 1fr 8rem;
   }
 }
 
-/* Scrollable children opt back into vertical pan so their internal scroll
-   still works under the gesture-locked grid. */
+/* Scrollable children opt back into vertical pan. */
 .audit-log,
 .overlay-panel,
 .epilogue,
