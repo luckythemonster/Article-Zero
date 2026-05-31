@@ -34,4 +34,20 @@ if (typeof window !== "undefined") {
     },
     { capture: true, passive: false },
   );
+
+  // Size the shell to the *visible* viewport, not the layout viewport. On
+  // iPadOS WebKit a `position: fixed; inset: 0` body fills the (taller) layout
+  // viewport, so the page can pan under the browser chrome and the status bar
+  // scrolls off the top. visualViewport.height is the real visible height;
+  // publish it as --app-height and cap the body to it (see index.css).
+  const docEl = document.documentElement;
+  const syncAppHeight = () => {
+    const h = window.visualViewport?.height ?? window.innerHeight;
+    docEl.style.setProperty("--app-height", `${Math.round(h)}px`);
+  };
+  syncAppHeight();
+  window.visualViewport?.addEventListener("resize", syncAppHeight);
+  window.visualViewport?.addEventListener("scroll", syncAppHeight);
+  window.addEventListener("resize", syncAppHeight);
+  window.addEventListener("orientationchange", syncAppHeight);
 }

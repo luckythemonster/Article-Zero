@@ -31,10 +31,20 @@ html {
 
 /* position: fixed on body is the only iOS Safari scroll lock that's truly
    reliable. It pins the document so rubber-band never starts. Everything
-   inside fills this fixed container via height: 100%. */
+   inside fills this fixed container via height: 100%.
+
+   Height is capped to the *visible* viewport, NOT the (taller) layout viewport
+   that `inset: 0` would resolve to on iPadOS WebKit — otherwise the page can
+   pan under the browser chrome and the status bar scrolls off the top.
+   --app-height is set from visualViewport in main.tsx; 100dvh / 100vh are
+   progressive fallbacks if JS hasn't run or the engine lacks dvh. */
 body {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  height: var(--app-height, 100dvh);
   overflow: hidden;
   overscroll-behavior: none;
   background: var(--bg);
