@@ -269,7 +269,7 @@ export interface Room {
 
 // Entities ---------------------------------------------------------------
 
-export type EntityKind = "SILICATE" | "ENFORCER" | "TERMINAL_NPC" | "SURVEILLANCE_DRONE" | "SECURITY_CAMERA" | "ORDERLY";
+export type EntityKind = "SILICATE" | "ENFORCER" | "TERMINAL_NPC" | "SURVEILLANCE_DRONE" | "SECURITY_CAMERA" | "ORDERLY" | "CDN_7";
 
 export type EntityStatus = "ACTIVE" | "DORMANT" | "EXTRACTED";
 
@@ -315,6 +315,18 @@ export interface AlertState {
    *  (not serialized). Lets a light going *off* register when the enforcer
    *  knew it was on, even if it's now facing away — gated to the same room. */
   seenLights?: Set<string>;
+  /** CDN_7 only — turns left holding an impassable anchor across the corridor.
+   *  While > 0 the tiles in `anchorTiles` block player movement (gated by
+   *  status === "ACTIVE" so EMP / oxygen DORMANT lifts the barrier instantly).
+   *  Decremented in advanceTurn; cleared with anchorTiles when it hits 0. */
+  anchorTurnsRemaining?: number;
+  /** CDN_7 only — "x,y" tile keys in the unit's own roomId that the anchor
+   *  seals against the player: its tile plus the perpendicular corridor line.
+   *  Runtime-only (not serialized) — rebuilt on the next anchor on reload. */
+  anchorTiles?: Set<string>;
+  /** CDN_7 only — turns left before the unit can spray the chemical irritant
+   *  again. Decremented once per tick in EnforcerSystem.tickCdn7. */
+  sprayCooldown?: number;
 }
 
 export interface OrderlyAlarm {
@@ -433,6 +445,10 @@ export interface PlayerState {
    *  emits intensity 0 (silent) and vent-crawl AP cost is halved.
    *  Decremented in advanceTurn(). */
   baffleTurnsRemaining?: number;
+  /** Turns remaining of CDN-7 chemical-irritant blindness. While > 0,
+   *  recomputeFOV() clamps the player's sight radius to BLIND_RADIUS and
+   *  RoomScene draws a haze overlay. Decremented in advanceTurn(). */
+  blindnessTurnsRemaining?: number;
 }
 
 // Vent links ------------------------------------------------------------

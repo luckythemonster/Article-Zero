@@ -68,7 +68,7 @@ const CORRIDOR: RoomSpec = {
   rows: [
     "##########",
     "#......T.#",
-    "#........#",
+    "#....3...#",
     "#........#",
     "#...1....#",
     "#........#",
@@ -148,6 +148,7 @@ function parseRoom(spec: RoomSpec): ParsedRoom {
         case "E": kind = "FLOOR"; marks.E = { x, y }; break;
         case "1": kind = "FLOOR"; marks["1"] = { x, y }; break;
         case "2": kind = "FLOOR"; marks["2"] = { x, y }; break;
+        case "3": kind = "FLOOR"; marks["3"] = { x, y }; break;
         case "W": kind = "FLOOR"; marks.W = { x, y }; break;
         case "Y": kind = "TERMINAL"; marks[`Y_${x}_${y}`] = { x, y }; break;
         default: kind = "FLOOR"; break;
@@ -293,6 +294,7 @@ export function commonwealthEra(): EraSeed {
   const eiraAt = intakeP.marks.E ?? { x: 4, y: 5 };
   const enforcerAPos = corridorP.marks["1"] ?? { x: 4, y: 4 };
   const enforcerBPos = archiveP.marks["2"] ?? { x: 4, y: 4 };
+  const cdn7Pos = corridorP.marks["3"] ?? { x: 4, y: 2 };
   const vent4At = archiveP.marks.W ?? { x: 4, y: 5 };
 
   const player: PlayerState = {
@@ -387,6 +389,30 @@ export function commonwealthEra(): EraSeed {
     ],
   };
 
+  // CDN-7 — riot-control silicate. Patrols the corridor's upper run; on a
+  // confirmed (RED-tier) sighting it sprints, anchors across the corridor as
+  // an impassable barrier, and sprays a chemical irritant that blinds the
+  // player. EnforcerSystem.tickCdn7 drives the FSM/anchor/spray loop.
+  const cdn7: Entity = {
+    id: "CDN-7",
+    kind: "CDN_7",
+    name: "CDN-7",
+    roomId: corridor.id,
+    homeRoomId: corridor.id,
+    pos: cdn7Pos,
+    z: 0,
+    facing: "west",
+    status: "ACTIVE",
+    stepsPerTurn: 1,
+    patrol: [
+      { pos: { x: 2, y: 2 }, faceOnArrival: "east", pause: 1 },
+      { pos: { x: 7, y: 2 }, faceOnArrival: "west", pause: 1 },
+    ],
+    patrolIndex: 0,
+    patrolMode: "pingpong",
+    patrolDir: 1,
+  };
+
   const enforcerB: Entity = {
     id: "ENFORCER-B",
     kind: "ENFORCER",
@@ -461,7 +487,7 @@ export function commonwealthEra(): EraSeed {
     player,
     rooms: [locker, corridor, intake, archive],
     startRoomId: locker.id,
-    entities: [apex, eira, enforcerA, enforcerB, vent4],
+    entities: [apex, eira, enforcerA, enforcerB, cdn7, vent4],
     ventLinks,
     terminals,
   };

@@ -57,6 +57,23 @@ const ORDERLY_ALARM_RUN_TURNS = 8;
  *  call again. Prevents per-tick alarm spam while the player loiters in view. */
 const ORDERLY_ALARM_COOLDOWN_TURNS = 6;
 
+// ── CDN-7 (riot-control) tuning ─────────────────────────────────────────
+/** Tiles a sprinting CDN-7 covers per turn when pursuing. One above the
+ *  enforcer pursue clip, still under the player's 4-tile sprint cap so the
+ *  player can outrun it on a clean run. */
+const CDN7_SPRINT_STEPS = 3;
+/** Manhattan distance at which CDN-7 commits to anchoring across the corridor
+ *  (when ALERT same-room with a clear axial line). */
+const CDN7_ANCHOR_TRIGGER_RANGE = 3;
+/** Turns CDN-7 holds the impassable anchor before releasing. */
+const CDN7_ANCHOR_TURNS = 4;
+/** Max range (Manhattan) of the chemical-irritant spray. */
+const CDN7_SPRAY_RANGE = 3;
+/** Turns between sprays. */
+const CDN7_SPRAY_COOLDOWN = 3;
+/** Turns the player stays blinded by a spray. */
+const CDN7_BLINDNESS_TURNS = 3;
+
 class EnforcerSystem {
   /** Compute the visible-tile set for one enforcer inside its current room.
    *  Masked by the room's lit set — enforcers can't see through unlit tiles. */
@@ -168,6 +185,10 @@ class EnforcerSystem {
         // Background staff — meander and visit points of interest. No vision,
         // alert FSM, lockdown, or sound processing.
         this.tickOrderly(state, entity);
+        continue;
+      }
+      if (entity.kind === "CDN_7") {
+        this.tickCdn7(state, entity, sounds.get(entity.id));
         continue;
       }
       if (
@@ -331,6 +352,153 @@ class EnforcerSystem {
           break;
       }
     }
+  }
+
+  // ── CDN-7 (riot-control) ─────────────────────────────────────────────
+  //
+  // Sprints down hallways (CDN7_SPRINT_STEPS/turn), then anchors across the
+  // corridor for CDN7_ANCHOR_TURNS — its anchorTiles set blocks player
+  // movement (see anchorBlocked in WorldEngineActions). While anchored it
+  // sprays a chemical irritant (CDN7_SPRAY_RANGE) that blinds the player
+  // (state.player.blindnessTurnsRemaining).
+
+  private tickCdn7(state: WorldState, cdn7: Entity, heard?: DeliveredSound): void {
+    // Stun short-circuit — mirrors tickOne.
+    if (cdn7.alert && (cdn7.alert.stunTurnsRemaining ?? 0) > 0) {
+      cdn7.alert.stunTurnsRemaining = (cdn7.alert.stunTurnsRemaining ?? 0) - 1;
+      return;
+    }
+    if (cdn7.alert && (cdn7.alert.sprayCooldown ?? 0) > 0) {
+      cdn7.alert.sprayCooldown = (cdn7.alert.sprayCooldown ?? 0) - 1;
+    }
+
+    const sees = this.enforcerSeesPlayer(state, cdn7);
+    alertFSM.step(state, cdn7, {
+      seesPlayer: sees,
+      heardIntensity: heard?.intensity ?? 0,
+      heardSrc: heard?.src,
+      playerPos: state.player.pos,
+      playerRoomId: state.player.roomId,
+    });
+    this.publishVision(state, cdn7);
+
+    const level = cdn7.alert?.level ?? "NORMAL";
+    const anchored = (cdn7.alert?.anchorTurnsRemaining ?? 0) > 0;
+
+    if (anchored) {
+      // Held in place across the corridor — face the player and try to spray.
+      // The anchor itself ticks down in WorldEngine.advanceTurn.
+      if (state.player.roomId === cdn7.roomId) {
+        this.faceToward(cdn7, state.player.pos);
+        this.maybeSpray(state, cdn7);
+      }
+      return;
+    }
+
+    if (level === "NORMAL" && this.stepPatrolTurn(state, cdn7)) return;
+
+    const base = Math.max(1, cdn7.stepsPerTurn ?? 1);
+    const steps = level === "ALERT" || level === "EVASION"
+      ? Math.max(base, CDN7_SPRINT_STEPS)
+      : base;
+    let scannedThisTurn = false;
+    for (let i = 0; i < steps; i++) {
+      if (state.detained) return;
+      switch (level) {
+        case "NORMAL":
+          this.stepPatrol(state, cdn7);
+          break;
+        case "CAUTION":
+          this.stepInvestigate(state, cdn7);
+          break;
+        case "ALERT":
+          // Commit to an anchor when the player is close in the same room
+          // and the corridor has the headroom — otherwise close the distance.
+          if (this.tryAnchorCdn7(state, cdn7)) return;
+          this.stepChase(state, cdn7);
+          break;
+        case "EVASION":
+          if (!this.stepSearch(state, cdn7)) {
+            if (!scannedThisTurn) {
+              this.rotateScan(cdn7);
+              scannedThisTurn = true;
+            }
+          }
+          break;
+      }
+    }
+    // Drive-by spray: even mid-sprint, a CDN-7 within range will mist the
+    // player on its way past.
+    this.maybeSpray(state, cdn7);
+  }
+
+  /** Anchor CDN-7 perpendicular to its facing if the player is same-room,
+   *  close enough, and there's at least one free tile to seal beyond its own.
+   *  Returns true if an anchor was committed (caller stops moving this turn). */
+  private tryAnchorCdn7(state: WorldState, cdn7: Entity): boolean {
+    if (state.player.roomId !== cdn7.roomId) return false;
+    const dx = state.player.pos.x - cdn7.pos.x;
+    const dy = state.player.pos.y - cdn7.pos.y;
+    const dist = Math.abs(dx) + Math.abs(dy);
+    if (dist > CDN7_ANCHOR_TRIGGER_RANGE) return false;
+    // Face the player so the perpendicular line spans the approach axis.
+    const facing = facingFromDelta(Math.sign(dx), Math.sign(dy));
+    if (facing && facing !== cdn7.facing) {
+      cdn7.facing = facing;
+      eventBus.emit("ENTITY_FACING_CHANGED", { entityId: cdn7.id, facing });
+    }
+    const tiles = this.computeAnchorTiles(state, cdn7);
+    if (tiles.size <= 1) return false; // Just own tile — not worth anchoring.
+    const alert = alertFSM.ensure(state, cdn7);
+    alert.anchorTurnsRemaining = CDN7_ANCHOR_TURNS;
+    alert.anchorTiles = tiles;
+    eventBus.emit("CDN7_ANCHORED", {
+      entityId: cdn7.id,
+      roomId: cdn7.roomId,
+      tiles: Array.from(tiles),
+    });
+    // First spray fires the moment the anchor sets if the player is in range.
+    this.maybeSpray(state, cdn7);
+    return true;
+  }
+
+  /** Compute the perpendicular barrier line through CDN-7's tile, stopping at
+   *  the first solid tile on each side. Always includes its own tile. */
+  private computeAnchorTiles(state: WorldState, cdn7: Entity): Set<string> {
+    const room = state.rooms.get(cdn7.roomId);
+    const out = new Set<string>();
+    out.add(`${cdn7.pos.x},${cdn7.pos.y}`);
+    if (!room) return out;
+    // East/west facing → perpendicular barrier runs north-south (vary y).
+    // North/south facing → barrier runs east-west (vary x).
+    const horizontalFacing = cdn7.facing === "east" || cdn7.facing === "west";
+    const stepA = horizontalFacing ? { x: 0, y: -1 } : { x: -1, y: 0 };
+    const stepB = horizontalFacing ? { x: 0, y: 1 } : { x: 1, y: 0 };
+    for (const step of [stepA, stepB]) {
+      let p = { x: cdn7.pos.x + step.x, y: cdn7.pos.y + step.y };
+      while (p.x >= 0 && p.y >= 0 && p.x < room.width && p.y < room.height) {
+        const tile = room.tiles[p.y * room.width + p.x];
+        if (!tile || tile.solid) break;
+        out.add(`${p.x},${p.y}`);
+        p = { x: p.x + step.x, y: p.y + step.y };
+      }
+    }
+    return out;
+  }
+
+  /** Mist the player if same-room, within spray range along/around facing, and
+   *  cooldown is clear. Sets blindness on the player and arms the cooldown. */
+  private maybeSpray(state: WorldState, cdn7: Entity): void {
+    if (!cdn7.alert) return;
+    if ((cdn7.alert.sprayCooldown ?? 0) > 0) return;
+    if (state.player.roomId !== cdn7.roomId) return;
+    const dx = state.player.pos.x - cdn7.pos.x;
+    const dy = state.player.pos.y - cdn7.pos.y;
+    const dist = Math.abs(dx) + Math.abs(dy);
+    if (dist > CDN7_SPRAY_RANGE) return;
+    state.player.blindnessTurnsRemaining = CDN7_BLINDNESS_TURNS;
+    cdn7.alert.sprayCooldown = CDN7_SPRAY_COOLDOWN;
+    eventBus.emit("PLAYER_BLINDED", { turnsRemaining: CDN7_BLINDNESS_TURNS });
   }
 
   private enforcerSeesPlayer(state: WorldState, enforcer: Entity): boolean {
@@ -609,8 +777,9 @@ class EnforcerSystem {
     if (enforcer.pos.x === state.player.pos.x && enforcer.pos.y === state.player.pos.y) {
       // Surveillance drones can't apprehend the player — reaching the player's
       // tile only flags detection. Detention in the duct comes solely from the
-      // suffocation timer (WorldEngine.advanceTurn).
-      if (enforcer.kind === "ENFORCER") {
+      // suffocation timer (WorldEngine.advanceTurn). Riot-control CDN-7 hits
+      // count as a takedown too.
+      if (enforcer.kind === "ENFORCER" || enforcer.kind === "CDN_7") {
         state.detained = true;
         eventBus.emit("PLAYER_DETAINED", { enforcerId: enforcer.id, turn: state.turn });
       } else {

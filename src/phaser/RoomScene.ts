@@ -178,6 +178,8 @@ export class RoomScene extends Phaser.Scene {
   private onResize = () => this.layout();
   /** 0..1 darkening factor driven by OXYGEN_TICK during the climax. */
   private oxygenDarken = 0;
+  /** 0..1 hazy white wash driven by PLAYER_BLINDED (CDN-7 chemical irritant). */
+  private blindnessHaze = 0;
 
   constructor() {
     super({ key: "RoomScene" });
@@ -268,12 +270,26 @@ export class RoomScene extends Phaser.Scene {
     });
     scope.on("CLIMAX_ESCAPED", () => {
       this.oxygenDarken = 0;
+      this.blindnessHaze = 0;
       this.redraw();
     });
     scope.on("PHASE_RESTART_REQUESTED", () => {
       this.oxygenDarken = 0;
+      this.blindnessHaze = 0;
       this.redraw();
     });
+    scope.on("PLAYER_BLINDED", () => {
+      this.blindnessHaze = 0.55;
+      this.redraw();
+    });
+    scope.on("EFFECT_EXPIRED", (p) => {
+      if (p.effect === "blindness") {
+        this.blindnessHaze = 0;
+        this.redraw();
+      }
+    });
+    scope.on("CDN7_ANCHORED", () => this.redraw());
+    scope.on("CDN7_RELEASED", () => this.redraw());
     scope.on("ENTITY_STATUS_CHANGED", () => this.redraw());
     scope.on("ITEM_DETONATED", (p) => this.playDetonation(p));
     scope.on("ROOM_ATMOSPHERE_CHANGED", () => this.redraw());
@@ -339,6 +355,28 @@ export class RoomScene extends Phaser.Scene {
       // Endpoint pip — marks the pathfind target.
       this.telegraphLayer.fillStyle(0xebd14a, pulse);
       this.telegraphLayer.fillCircle(x2, y2, 3);
+    }
+  }
+
+  /** Wash riot-orange across every tile a CDN-7 is currently sealing.
+   *  Gated on `status === "ACTIVE"` so an EMP'd CDN-7's barrier vanishes the
+   *  same frame the takedown lands. Reuses the telegraphLayer (depth 3). */
+  private drawCdn7Anchors(state: WorldState): void {
+    const room = worldEngine.getCurrentRoom();
+    if (!room) return;
+    for (const e of state.entities.values()) {
+      if (e.kind !== "CDN_7" || e.status !== "ACTIVE") continue;
+      if (e.roomId !== room.id) continue;
+      const tiles = e.alert?.anchorTiles;
+      if (!tiles || tiles.size === 0) continue;
+      if ((e.alert?.anchorTurnsRemaining ?? 0) <= 0) continue;
+      this.telegraphLayer.fillStyle(0xd06a2a, 0.4);
+      for (const k of tiles) {
+        const comma = k.indexOf(",");
+        const x = +k.slice(0, comma);
+        const y = +k.slice(comma + 1);
+        this.telegraphLayer.fillRect(x * TILE_PX + 1, y * TILE_PX + 1, TILE_PX - 2, TILE_PX - 2);
+      }
     }
   }
 
@@ -645,8 +683,15 @@ export class RoomScene extends Phaser.Scene {
       this.overlayLayer.fillStyle(0x000000, this.oxygenDarken);
       this.overlayLayer.fillRect(0, 0, vw, vh);
     }
+    // CDN-7 chemical-irritant haze — hazy near-white wash while the player's
+    // blindnessTurnsRemaining > 0. Cleared by EFFECT_EXPIRED { effect: "blindness" }.
+    if (this.blindnessHaze > 0) {
+      this.overlayLayer.fillStyle(0xb8c2c4, this.blindnessHaze);
+      this.overlayLayer.fillRect(0, 0, vw, vh);
+    }
 
     this.drawEnforcerTelegraphs();
+    this.drawCdn7Anchors(state);
     this.drawDebugOverlays();
   }
 
@@ -889,10 +934,13 @@ export class RoomScene extends Phaser.Scene {
       let rect = this.entityRects.get(entity.id);
       // VENT-4 (Environmental Optimizer) gets the deep-maroon palette of its
       // placeholder atlas frame; other silicates stay on the cyan baseline.
+      // CDN-7 (riot control) shows in riot-orange so it reads distinct from
+      // any other placeholder enemy.
       const colour =
         entity.kind === "SILICATE"
           ? entity.id === "VENT-4" ? 0x9b2c2c : 0x9adbe6
-          : 0xc8dbe6;
+          : entity.kind === "CDN_7" ? 0xd06a2a
+            : 0xc8dbe6;
       if (!rect) {
         rect = this.add.rectangle(px, py, TILE_PX - 14, TILE_PX - 14, colour);
         rect.setStrokeStyle(2, 0xe6f0f2);

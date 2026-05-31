@@ -54,6 +54,21 @@ function entityAt(state: WorldState, roomId: string, p: Vec2) {
   return undefined;
 }
 
+/** True when an ACTIVE CDN-7 is holding an anchor across `p` in `roomId`.
+ *  Gated on `status === "ACTIVE"` so an EMP'd / oxygen-incapacitated CDN-7
+ *  releases the corridor instantly (the timer/event clean-up runs later in
+ *  advanceTurn, but the barrier itself lifts on the same frame as the takedown). */
+function anchorBlocked(state: WorldState, roomId: string, p: Vec2): boolean {
+  const key = `${p.x},${p.y}`;
+  for (const entity of state.entities.values()) {
+    if (entity.kind !== "CDN_7" || entity.status !== "ACTIVE") continue;
+    if (entity.roomId !== roomId) continue;
+    if ((entity.alert?.anchorTurnsRemaining ?? 0) <= 0) continue;
+    if (entity.alert?.anchorTiles?.has(key)) return true;
+  }
+  return false;
+}
+
 /** Flip the on/off state of a set of LIGHT_SOURCE tiles. Coupled toggle: if
  *  any is on, all go off; if all are off, all go on. Emits LIGHT_TOGGLED and
  *  invalidates the room's lit cache. When darkening, asks EnforcerSystem to
@@ -253,6 +268,7 @@ function moveCommon(
   const tile = tileAt(state, fromRoomId, to);
   if (!tile || tile.solid) return false;
   if (entityAt(state, fromRoomId, to)) return false;
+  if (anchorBlocked(state, fromRoomId, to)) return false;
   state.player.pos = to;
   state.player.ap -= apCost;
   state.player.lastMoveTurn = state.turn;
@@ -431,7 +447,8 @@ function detonateEmp(state: WorldState, center: Vec2, radius: number, roomId: Ro
       entity.kind !== "SURVEILLANCE_DRONE" &&
       entity.kind !== "SECURITY_CAMERA" &&
       entity.kind !== "ENFORCER" &&
-      entity.kind !== "SILICATE"
+      entity.kind !== "SILICATE" &&
+      entity.kind !== "CDN_7"
     ) continue;
     if (entity.roomId !== roomId) continue;
     const dx = entity.pos.x - center.x;
