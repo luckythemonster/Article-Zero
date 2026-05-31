@@ -91,3 +91,16 @@ export const ITEM_METADATA: Record<ItemType, ItemMeta> = {
     usesFacing: true,
   },
 };
+
+/** Items that empty chests roll from. Excludes quest items
+ *  (EXTRACTION_CUBE, BYPASS_DRIVE) and OVERRIDE_KEY — the override key would
+ *  devalue locked-chest gating and could soft-lock a locked-but-empty chest. */
+export const RANDOM_CHEST_LOOT_POOL: ItemType[] = [
+  "PHANTOM_EMITTER",
+  "Q0_SPOOF_BADGE",
+  "DUMP_FRAGMENT",
+  "THERMAL_BAFFLE",
+  "EMP",
+  "EMP_GRENADE",
+  "Q_MINE",
+];

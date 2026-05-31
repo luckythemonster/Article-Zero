@@ -7,6 +7,7 @@ import type {
   Era,
   HvacZone,
   ItemInstance,
+  ItemType,
   PlayerState,
   Room,
   RoomAtmosphere,
@@ -17,6 +18,8 @@ import type {
 } from "../types/world.types";
 import { roomTileKey } from "../types/world.types";
 import { NORMAL_AIRFLOW, NORMAL_SETPOINT } from "./AtmosphericsField";
+import { hashSeed, mixRand } from "./rng";
+import { RANDOM_CHEST_LOOT_POOL } from "../data/items/itemMetadata";
 import { commonwealthEra } from "../data/eras/commonwealth";
 import { miradorEra } from "../data/eras/mirador.stub";
 import { eremiteEra } from "../data/eras/eremite";
@@ -32,7 +35,7 @@ export const SEED_VERSIONS: Record<Era, number> = {
   EREMITE: 3,
   MIRADOR: 3,
   NW_SMAC_01: 5,
-  TEST_MAP: 6,
+  TEST_MAP: 7,
 };
 
 export interface EraSeed {
@@ -95,6 +98,19 @@ export function emptyState(era: Era): WorldState {
   };
 }
 
+/** Roll loot for a chest whose era seed left contents empty. Keyed on
+ *  (era, roomId, x, y) so the same chest yields the same items across
+ *  save/reload and replays. */
+function randomChestContents(era: Era, c: ChestPayload): ItemType[] {
+  const h = hashSeed(`${era}:${c.roomId}:${c.pos.x},${c.pos.y}`);
+  const count = mixRand(h, 0) % 100 < 75 ? 1 : 2;
+  const picks: ItemType[] = [];
+  for (let i = 0; i < count; i++) {
+    picks.push(RANDOM_CHEST_LOOT_POOL[mixRand(h, i + 1) % RANDOM_CHEST_LOOT_POOL.length]);
+  }
+  return picks;
+}
+
 export function seedToWorldState(seed: EraSeed): WorldState {
   const state = emptyState(seed.era);
   state.player = seed.player;
@@ -115,6 +131,7 @@ export function seedToWorldState(seed: EraSeed): WorldState {
     state.terminalPayloads.set(roomTileKey(t.roomId, t.pos), t);
   }
   for (const c of seed.chests ?? []) {
+    if (c.contents.length === 0) c.contents = randomChestContents(seed.era, c);
     state.chestPayloads.set(roomTileKey(c.roomId, c.pos), c);
   }
   for (const item of seed.items ?? []) {
