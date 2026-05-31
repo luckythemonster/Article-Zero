@@ -89,9 +89,19 @@ export default function InventoryOverlay() {
   const passiveHeld = inventory.filter((i) => !USABLE.includes(i.itemType));
 
   return (
-    <div className="overlay-root overlay-root--inventory">
-      <div className="overlay-panel overlay-panel--inventory">
-        <div className="overlay-panel__title">INVENTORY // [U] CLOSE</div>
+    <div className="overlay-root overlay-root--inventory" onClick={() => setInventoryOpen(false)}>
+      <div className="overlay-panel overlay-panel--inventory" onClick={(e) => e.stopPropagation()}>
+        <div className="overlay-panel__title inventory__title">
+          <span>INVENTORY</span>
+          <button
+            type="button"
+            className="inventory__close-btn"
+            aria-label="Close inventory"
+            onClick={() => setInventoryOpen(false)}
+          >
+            [U] CLOSE ✕
+          </button>
+        </div>
 
         <div className="inventory__section-label">TACTICAL ITEMS</div>
         <ul className="inventory__list">

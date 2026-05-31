@@ -23,7 +23,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 
 export default [
   {
-    ignores: ["dist", "node_modules", "vite.config.ts"],
+    ignores: ["dist", "node_modules", "vite.config.ts", "unmounted assets/**"],
   },
   {
     files: ["**/*.{ts,tsx}"],

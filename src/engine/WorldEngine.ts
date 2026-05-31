@@ -17,6 +17,7 @@ import type {
 } from "../types/world.types";
 import { eventBus } from "./EventBus";
 import {
+  BLIND_RADIUS,
   computeCone,
   FLASHLIGHT_BONUS,
   getEffectivePlayerRadius,
@@ -454,6 +455,13 @@ class WorldEngine {
         eventBus.emit("EFFECT_EXPIRED", { effect: "baffle" });
       }
     }
+    if ((s.player.blindnessTurnsRemaining ?? 0) > 0) {
+      s.player.blindnessTurnsRemaining! -= 1;
+      if (s.player.blindnessTurnsRemaining === 0) {
+        s.player.blindnessTurnsRemaining = undefined;
+        eventBus.emit("EFFECT_EXPIRED", { effect: "blindness" });
+      }
+    }
 
     // Tick active Phantom Manifest Emitters. Each live emitter pushes a
     // SoundField emission before propagate() so enforcers hear it this turn.
@@ -513,6 +521,17 @@ class WorldEngine {
             previous,
             current: "ACTIVE",
           });
+        }
+      }
+      // CDN-7 anchor countdown — at 0 the barrier lifts. The anchorBlocked
+      // lookup also requires status === "ACTIVE", so a DORMANT CDN-7 stops
+      // sealing the corridor before this timer matters.
+      if (e.kind === "CDN_7" && (e.alert?.anchorTurnsRemaining ?? 0) > 0) {
+        e.alert!.anchorTurnsRemaining = (e.alert!.anchorTurnsRemaining ?? 0) - 1;
+        if (e.alert!.anchorTurnsRemaining === 0) {
+          e.alert!.anchorTurnsRemaining = undefined;
+          e.alert!.anchorTiles = undefined;
+          eventBus.emit("CDN7_RELEASED", { entityId: e.id, roomId: e.roomId });
         }
       }
     }
@@ -596,7 +615,12 @@ class WorldEngine {
     const room = s.rooms.get(s.player.roomId);
     if (!room) return;
     const ambient: AmbientLightLevel = room.ambientLight;
-    const radius = getEffectivePlayerRadius(ambient, s.player.flashlightOn);
+    let radius = getEffectivePlayerRadius(ambient, s.player.flashlightOn);
+    // CDN-7 chemical irritant — clamp sight to a near-tile bubble while
+    // the timer runs. The decrement happens at the top of advanceTurn so
+    // this clears one tick after the FX expires.
+    const blinded = (s.player.blindnessTurnsRemaining ?? 0) > 0;
+    if (blinded) radius = Math.min(radius, BLIND_RADIUS);
     s.visibleTiles.clear();
     if (s.player.hidingTileKey) {
       s.visibleTiles.add(`${s.player.pos.x},${s.player.pos.y}`);
@@ -622,7 +646,9 @@ class WorldEngine {
     const lit = lightField.getOrCompute(room);
     const px = s.player.pos.x;
     const py = s.player.pos.y;
-    const flashlightR = s.player.flashlightOn ? FLASHLIGHT_BONUS : 0;
+    const flashlightR = s.player.flashlightOn
+      ? Math.min(FLASHLIGHT_BONUS, blinded ? BLIND_RADIUS : FLASHLIGHT_BONUS)
+      : 0;
     for (const k of cone) {
       if (lit.has(k)) { s.visibleTiles.add(k); continue; }
       const [xs, ys] = k.split(",");

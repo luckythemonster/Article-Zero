@@ -11,6 +11,7 @@ interface TargetingStore {
   cursor: Vec2 | null;
   begin: (itemType: ItemType, start: Vec2, roomBounds: { w: number; h: number }) => void;
   moveCursor: (dx: number, dy: number) => void;
+  setCursor: (pos: Vec2) => void;
   cancel: () => void;
   _roomBounds: { w: number; h: number } | null;
 }
@@ -30,6 +31,14 @@ export const useTargetingStore = create<TargetingStore>()((set, get) => ({
     if (!cursor || !_roomBounds) return;
     const nx = Math.max(0, Math.min(_roomBounds.w - 1, cursor.x + dx));
     const ny = Math.max(0, Math.min(_roomBounds.h - 1, cursor.y + dy));
+    set({ cursor: { x: nx, y: ny } });
+  },
+
+  setCursor(pos) {
+    const { _roomBounds } = get();
+    if (!_roomBounds) return;
+    const nx = Math.max(0, Math.min(_roomBounds.w - 1, pos.x));
+    const ny = Math.max(0, Math.min(_roomBounds.h - 1, pos.y));
     set({ cursor: { x: nx, y: ny } });
   },
 

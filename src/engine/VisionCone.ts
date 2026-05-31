@@ -13,6 +13,10 @@ const RAY_COUNT = 360;
 export const PLAYER_BASE_RADIUS = 7;
 export const PLAYER_DARK_RADIUS = 3;
 export const FLASHLIGHT_BONUS = 4;
+/** Player sight radius while CDN-7 chemical-irritant blindness is active.
+ *  recomputeFOV() clamps both the base radius and the flashlight bypass to
+ *  this value so the player is functionally blind beyond a tile or two. */
+export const BLIND_RADIUS = 2;
 
 const FACING_VEC: Record<Facing, { dx: number; dy: number }> = {
   east: { dx: 1, dy: 0 },

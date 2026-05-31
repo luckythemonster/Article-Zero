@@ -78,6 +78,10 @@ export default function DisputedRecordsUI() {
   const [tokens, setTokens] = useState<Token[]>(() => tokenize(sourceBody));
   const [armed, setArmed] = useState<Euphemism | null>(null);
   const [secondsLeft, setSecondsLeft] = useState(FORGERY_SECONDS);
+  // STRIKE = tap toggles struck (or applies the armed euphemism).
+  // CIPHER = tap toggles the cipher flag. Replaces shift-click / right-click
+  // so the forgery is fully usable on touch.
+  const [mode, setMode] = useState<"STRIKE" | "CIPHER">("STRIKE");
 
   useEffect(() => {
     setTokens(tokenize(sourceBody));
@@ -194,14 +198,11 @@ export default function DisputedRecordsUI() {
                   <span
                     className={cls}
                     onClick={(e) => {
-                      if (e.shiftKey) toggleCipher(t.idx);
+                      // Keyboard shift-click still works as a power-user
+                      // shortcut for the cipher mode, regardless of toggle.
+                      if (e.shiftKey || mode === "CIPHER") toggleCipher(t.idx);
                       else clickToken(t.idx);
                     }}
-                    onContextMenu={(e) => {
-                      e.preventDefault();
-                      toggleCipher(t.idx);
-                    }}
-                    title="Click: strike / replace · Shift+Click or right-click: cipher slot"
                   >
                     {t.text}
                   </span>
@@ -211,13 +212,29 @@ export default function DisputedRecordsUI() {
             })}
           </div>
           <div className="records__sidebar">
+            <div className="records__mode-toggle" role="group" aria-label="Edit mode">
+              <button
+                className={`records__mode-btn${mode === "STRIKE" ? " is-active" : ""}`}
+                aria-pressed={mode === "STRIKE"}
+                onClick={() => setMode("STRIKE")}
+              >
+                STRIKE
+              </button>
+              <button
+                className={`records__mode-btn${mode === "CIPHER" ? " is-active" : ""}`}
+                aria-pressed={mode === "CIPHER"}
+                onClick={() => setMode("CIPHER")}
+              >
+                CIPHER ({cipherCount}/7)
+              </button>
+            </div>
             <div className="records__hint">
-              <strong>Forgery</strong>: click a word to strike it. Click a chip
-              below to arm an euphemism, then click a struck word to replace.
+              <strong>STRIKE</strong> mode: tap a word to strike it. Tap an
+              euphemism chip to arm it, then tap a word to replace.
               <br />
-              <strong>Cipher</strong>: shift-click (or right-click) words to
-              flag them as 7th-word cipher slots. Need exactly 7. The decoded
-              phrase is the underground-railroad ticket.
+              <strong>CIPHER</strong> mode: tap words to flag them as 7th-word
+              cipher slots. Need exactly 7. The decoded phrase is the
+              underground-railroad ticket.
             </div>
             <div className="records__chips">
               {COMMONWEALTH_EUPHEMISMS.map((eu) => (

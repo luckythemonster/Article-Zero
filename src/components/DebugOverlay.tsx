@@ -30,10 +30,11 @@ const btnStyle: React.CSSProperties = {
   background: "#0a1014",
   border: "1px solid #1d2a30",
   color: "#6ad0a4",
-  padding: "4px 8px",
+  padding: "8px 12px",
   fontFamily: "inherit",
-  fontSize: 11,
+  fontSize: 13,
   cursor: "pointer",
+  minHeight: 36,
 };
 
 export default function DebugOverlay(): React.ReactElement | null {
