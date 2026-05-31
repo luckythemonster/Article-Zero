@@ -248,6 +248,14 @@ body {
   letter-spacing: 0.08em;
 }
 
+/* TURN button when armed — one tap arms, next D-pad tap rotates and clears. */
+.touch-actions__btn--armed {
+  background: rgba(106, 208, 164, 0.32);
+  color: #04090b;
+  border-color: var(--cyan, #6ad0a4);
+  font-weight: bold;
+}
+
 /* ── Debug overlay ───────────────────────────────────────────────────────── */
 
 .debug-overlay {
@@ -824,6 +832,32 @@ body.theme-lattice {
 .records__chip:active { cursor: grabbing; }
 .records__chip.is-armed { border-color: var(--cyan); background: rgba(235, 209, 74, 0.1); }
 
+/* Mode toggle (STRIKE / CIPHER) — replaces shift-click on touch. */
+.records__mode-toggle {
+  display: flex;
+  gap: 0.35rem;
+}
+.records__mode-btn {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-family: inherit;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  padding: 0.45rem 0.6rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.records__mode-btn.is-active {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(106, 208, 164, 0.12);
+}
+.records__mode-btn:active {
+  background: rgba(106, 208, 164, 0.22);
+}
+
 .records__hint {
   font-size: 0.7rem;
   color: var(--dim);
@@ -1353,9 +1387,14 @@ body.theme-lattice {
   border: 1px solid var(--border);
   color: var(--fg);
   font-family: inherit;
-  width: 1.6rem;
-  height: 1.6rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  font-size: 1.1rem;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.hvac__step:active {
+  background: rgba(106, 208, 164, 0.18);
 }
 .hvac__footer {
   margin-top: 0.5rem;
