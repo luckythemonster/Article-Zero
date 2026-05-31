@@ -33,31 +33,44 @@ html, body, #root {
   font-family: "Courier New", Courier, monospace;
 }
 
+/* iOS Safari belt-and-braces scroll lock: pinning body to the viewport
+   stops the rubber-band even when a touchmove slips past preventDefault. */
+body {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
 /* ── Shell grid ──────────────────────────────────────────────────────────── */
 
 .shell-grid {
+  position: fixed;
+  inset: 0;
   display: grid;
   grid-template-rows: 2rem 1fr 18rem;
-  height: 100%;
+  min-height: 0;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+.shell-main {
+  /* min-height: 0 stops a grid item with overflowing content from blowing
+     out the 1fr track and making the page scrollable. */
   min-height: 0;
 }
 
-/* Touch / short viewports: shrink the footer so the canvas gets more height,
-   and gesture-lock the shell so iOS Safari doesn't rubber-band. Scrollable
-   children opt back into vertical pan below. */
-@media (pointer: coarse), (max-height: 800px) {
+/* Touch / short viewports: shrink the footer so the Phaser canvas gets the
+   height it needs. */
+@media (pointer: coarse), (max-height: 900px) {
   .shell-grid {
     grid-template-rows: 2rem 1fr 8rem;
-    touch-action: none;
-    overscroll-behavior: none;
-  }
-
-  .audit-log {
-    touch-action: pan-y;
-    overscroll-behavior: contain;
   }
 }
 
+/* Scrollable children opt back into vertical pan so their internal scroll
+   still works under the gesture-locked grid. */
+.audit-log,
 .overlay-panel,
 .epilogue,
 .debug-overlay {
