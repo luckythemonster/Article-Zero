@@ -38,8 +38,6 @@ export default function TouchControls() {
   const toggleDebug = useDebugStore((s) => s.toggleVisible);
   const phase = useTerminalStore((s) => s.phase);
   const targetingActive = useTargetingStore((s) => s.active);
-  const targetingItem = useTargetingStore((s) => s.itemType);
-  const targetingCursor = useTargetingStore((s) => s.cursor);
 
   // ALIGNMENT/INTERROGATION/FORGERY mount a full-screen blocking modal and
   // pause movement (gameTap already swallows taps in these phases). Leaving the
@@ -49,11 +47,15 @@ export default function TouchControls() {
     return null;
   }
 
+  // Read live from the store at tap time (matches useInput's keyboard path) so
+  // a stale React closure can't fire throwAt with an out-of-date cursor.
+  // Keep aim mode active if the throw is rejected (out of range, not visible,
+  // solid tile) so the player can re-aim instead of being kicked out silently.
   const confirmThrow = () => {
-    if (targetingItem && targetingCursor) {
-      worldEngine.throwAt(targetingItem, targetingCursor);
-    }
-    useTargetingStore.getState().cancel();
+    const { itemType, cursor } = useTargetingStore.getState();
+    if (!itemType || !cursor) return;
+    const ok = worldEngine.throwAt(itemType, cursor);
+    if (ok) useTargetingStore.getState().cancel();
   };
   const cancelThrow = () => useTargetingStore.getState().cancel();
 
