@@ -358,9 +358,9 @@ class EnforcerSystem {
   //
   // Sprints down hallways (CDN7_SPRINT_STEPS/turn), then anchors across the
   // corridor for CDN7_ANCHOR_TURNS — its anchorTiles set blocks player
-  // movement (see anchorBlocked in WorldEngineActions). While anchored it
-  // sprays a chemical irritant (CDN7_SPRAY_RANGE) that blinds the player
-  // (state.player.blindnessTurnsRemaining).
+  // movement (see anchorBlocked in WorldEngineActions). Only while planted
+  // (anchored) AND in red ALERT does it spray a chemical irritant
+  // (CDN7_SPRAY_RANGE) that blinds the player (state.player.blindnessTurnsRemaining).
 
   private tickCdn7(state: WorldState, cdn7: Entity, heard?: DeliveredSound): void {
     // Stun short-circuit — mirrors tickOne.
@@ -427,9 +427,6 @@ class EnforcerSystem {
           break;
       }
     }
-    // Drive-by spray: even mid-sprint, a CDN-7 within range will mist the
-    // player on its way past.
-    this.maybeSpray(state, cdn7);
   }
 
   /** Anchor CDN-7 perpendicular to its facing if the player is same-room,
@@ -487,9 +484,13 @@ class EnforcerSystem {
   }
 
   /** Mist the player if same-room, within spray range along/around facing, and
-   *  cooldown is clear. Sets blindness on the player and arms the cooldown. */
+   *  cooldown is clear. Only fires while CDN-7 is planted (anchored) AND in red
+   *  ALERT — it never sprays mid-sprint or while merely investigating. Sets
+   *  blindness on the player and arms the cooldown. */
   private maybeSpray(state: WorldState, cdn7: Entity): void {
     if (!cdn7.alert) return;
+    if ((cdn7.alert.anchorTurnsRemaining ?? 0) <= 0) return;
+    if (cdn7.alert.level !== "ALERT") return;
     if ((cdn7.alert.sprayCooldown ?? 0) > 0) return;
     if (state.player.roomId !== cdn7.roomId) return;
     const dx = state.player.pos.x - cdn7.pos.x;
