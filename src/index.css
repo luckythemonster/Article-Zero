@@ -582,27 +582,27 @@ body.theme-lattice {
   max-width: 720px;
   margin: 0 auto;
   /* Cap to parent height + min-height: 0 lets flexbox actually shrink us.
-     Without these the frame grows past .shell-main and the buttons end up
-     overlapping the footer. */
+     The document box owns the scroll now (see .archivist-frame__file) so the
+     header/title/buttons stay pinned and the action row never falls behind the
+     audit-log footer on a short iPad viewport. */
   max-height: 100%;
   min-height: 0;
   box-sizing: border-box;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  touch-action: pan-y;
-  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
 }
 
 .archivist-frame__header {
   font-size: 0.75rem;
   letter-spacing: 0.2em;
   color: var(--cyan);
+  flex-shrink: 0;
 }
 
 .archivist-frame__title {
   font-size: 1.5rem;
   letter-spacing: 0.05em;
   color: var(--fg);
+  flex-shrink: 0;
 }
 
 .archivist-frame__file {
@@ -613,12 +613,28 @@ body.theme-lattice {
   font-size: 0.875rem;
   color: var(--dim);
   line-height: 1.6;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 .archivist-frame__actions {
   display: flex;
   gap: 0.75rem;
   padding-top: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Short viewports / touch devices: trim the frame's chrome so the document
+   area is taller and the action buttons sit comfortably above the footer. */
+@media (max-height: 1000px), (pointer: coarse) {
+  .archivist-frame {
+    padding: 1.25rem 1.5rem;
+    gap: 0.75rem;
+  }
 }
 
 /* ── In-world overlay (modals over the Phaser canvas) ────────────────────── */
