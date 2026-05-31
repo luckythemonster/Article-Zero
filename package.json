@@ -18,6 +18,7 @@
     "art": "node scripts/build-atlas.mjs && node scripts/build-unmounted-manifest.mjs",
     "unmounted": "node scripts/build-unmounted-manifest.mjs",
     "moose": "node scripts/import-moose.mjs",
+    "pixellab": "node scripts/pixellab-fetch.mjs",
     "mount:glitch": "bash scripts/mount-glitch-sfx.sh",
     "mount:ui": "bash scripts/mount-ui.sh",
     "mount:vfx": "bash scripts/mount-vfx.sh"
