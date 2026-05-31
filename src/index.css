@@ -580,12 +580,17 @@ body.theme-lattice {
   padding: 2.5rem;
   width: 100%;
   max-width: 720px;
-  margin: auto;
-  /* Scroll the frame's own content when it's taller than the available
-     main-pane height (e.g. on iPad portrait). */
+  margin: 0 auto;
+  /* Cap to parent height + min-height: 0 lets flexbox actually shrink us.
+     Without these the frame grows past .shell-main and the buttons end up
+     overlapping the footer. */
+  max-height: 100%;
+  min-height: 0;
+  box-sizing: border-box;
   overflow-y: auto;
   overscroll-behavior: contain;
   touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 .archivist-frame__header {
