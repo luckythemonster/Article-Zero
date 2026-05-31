@@ -1059,6 +1059,31 @@ body.theme-lattice {
   background: var(--surface);
 }
 
+.inventory__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.inventory__close-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--cyan);
+  font-family: inherit;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  padding: 0.4rem 0.7rem;
+  min-height: 36px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.inventory__close-btn:hover,
+.inventory__close-btn:active {
+  background: rgba(106, 208, 164, 0.18);
+  border-color: var(--cyan);
+}
+
 @media (pointer: coarse) {
   /* The shared coarse overlay rules reserve 240/252px at the bottom to dodge
      the on-screen D-pad. The inventory is centered and narrow (and its backdrop
