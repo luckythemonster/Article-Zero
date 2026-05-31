@@ -11,6 +11,7 @@
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { worldEngine } from "../engine/WorldEngine";
 import { useDebugStore } from "../state/useDebugStore";
+import { useTargetingStore } from "../state/useTargetingStore";
 import { useTerminalStore } from "../state/useTerminalStore";
 
 function tap(fn: () => void) {
@@ -36,6 +37,9 @@ function gameTap(fn: () => void) {
 export default function TouchControls() {
   const toggleDebug = useDebugStore((s) => s.toggleVisible);
   const phase = useTerminalStore((s) => s.phase);
+  const targetingActive = useTargetingStore((s) => s.active);
+  const targetingItem = useTargetingStore((s) => s.itemType);
+  const targetingCursor = useTargetingStore((s) => s.cursor);
 
   // ALIGNMENT/INTERROGATION/FORGERY mount a full-screen blocking modal and
   // pause movement (gameTap already swallows taps in these phases). Leaving the
@@ -44,6 +48,14 @@ export default function TouchControls() {
   if (phase === "ALIGNMENT" || phase === "INTERROGATION" || phase === "FORGERY") {
     return null;
   }
+
+  const confirmThrow = () => {
+    if (targetingItem && targetingCursor) {
+      worldEngine.throwAt(targetingItem, targetingCursor);
+    }
+    useTargetingStore.getState().cancel();
+  };
+  const cancelThrow = () => useTargetingStore.getState().cancel();
 
   return (
     <div className="touch-controls" aria-hidden="false">
@@ -78,6 +90,24 @@ export default function TouchControls() {
         </button>
       </div>
 
+      {targetingActive ? (
+        <div className="touch-actions">
+          <button
+            className="touch-actions__btn touch-actions__btn--wide"
+            aria-label="Throw"
+            onPointerDown={tap(confirmThrow)}
+          >
+            THROW
+          </button>
+          <button
+            className="touch-actions__btn touch-actions__btn--wide"
+            aria-label="Cancel throw"
+            onPointerDown={tap(cancelThrow)}
+          >
+            CANCEL
+          </button>
+        </div>
+      ) : (
       <div className="touch-actions">
         <button
           className="touch-actions__btn"
@@ -129,6 +159,7 @@ export default function TouchControls() {
           ~
         </button>
       </div>
+      )}
     </div>
   );
 }

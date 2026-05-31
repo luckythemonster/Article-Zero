@@ -299,6 +299,19 @@ export class RoomScene extends Phaser.Scene {
     // returns an unsubscribe fn; hand it to the scope so it's disposed too.
     scope.add(useTargetingStore.subscribe(() => this.redraw()));
 
+    // Tap-to-place cursor while aiming a thrown item (touch parity with WASD).
+    // getWorldPoint already accounts for camera zoom + follow offset.
+    const onPointerDown = (pointer: Phaser.Input.Pointer) => {
+      const tgt = useTargetingStore.getState();
+      if (!tgt.active) return;
+      const wp = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+      const tx = Math.floor(wp.x / TILE_PX);
+      const ty = Math.floor(wp.y / TILE_PX);
+      tgt.setCursor({ x: tx, y: ty });
+    };
+    this.input.on("pointerdown", onPointerDown);
+    scope.add(() => this.input.off("pointerdown", onPointerDown));
+
     this.redraw();
   }
 
