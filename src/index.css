@@ -581,6 +581,11 @@ body.theme-lattice {
   width: 100%;
   max-width: 720px;
   margin: auto;
+  /* Scroll the frame's own content when it's taller than the available
+     main-pane height (e.g. on iPad portrait). */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .archivist-frame__header {

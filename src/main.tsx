@@ -22,7 +22,7 @@ root.render(
 // elements that legitimately scroll. Must be { passive: false } so
 // preventDefault actually fires — Safari defaults touchmove to passive.
 if (typeof window !== "undefined") {
-  const scrollables = ".audit-log, .overlay-panel, .epilogue, .debug-overlay";
+  const scrollables = ".audit-log, .archivist-frame, .overlay-panel, .epilogue, .debug-overlay";
   // capture: true fires before Phaser's canvas listeners (which call
   // stopPropagation), so preventDefault actually reaches the browser.
   document.addEventListener(
