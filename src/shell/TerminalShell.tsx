@@ -11,7 +11,7 @@ import { PhaserCanvas } from "./PhaserCanvas";
 import InterrogationTerminal from "../components/InterrogationTerminal";
 import EnforcerInterrogationModal from "../components/EnforcerInterrogationModal";
 import HvacConsole from "../components/HvacConsole";
-import WallThermostat from "../components/WallThermostat";
+import WallTerminal from "../components/WallTerminal";
 import DisputedRecordsUI from "../components/DisputedRecordsUI";
 import Vent4DilemmaModal from "../components/Vent4DilemmaModal";
 import ClimaxOverlay from "../components/ClimaxOverlay";
@@ -68,7 +68,7 @@ export default function TerminalShell() {
       phase === "INTERROGATION" ||
       phase === "FORGERY" ||
       phase === "HVAC_CONTROL" ||
-      phase === "WALL_THERMOSTAT";
+      phase === "WALL_TERMINAL";
     document.body.classList.toggle("phase-fullscreen-modal", fullscreenModal);
   }, [phase]);
 
@@ -90,7 +90,7 @@ export default function TerminalShell() {
             {phase === "INTERROGATION" && <EnforcerInterrogationModal />}
             {phase === "FORGERY" && <DisputedRecordsUI />}
             {phase === "HVAC_CONTROL" && <HvacConsole />}
-            {phase === "WALL_THERMOSTAT" && <WallThermostat />}
+            {phase === "WALL_TERMINAL" && <WallTerminal />}
             {phase === "CLIMAX" && (
               <>
                 <Vent4DilemmaModal />
@@ -100,11 +100,11 @@ export default function TerminalShell() {
             {(phase === "FLOOR" ||
               phase === "CLIMAX" ||
               phase === "HVAC_CONTROL" ||
-              phase === "WALL_THERMOSTAT") && <InventoryOverlay />}
+              phase === "WALL_TERMINAL") && <InventoryOverlay />}
             {(phase === "FLOOR" ||
               phase === "CLIMAX" ||
               phase === "HVAC_CONTROL" ||
-              phase === "WALL_THERMOSTAT") && <APMeter />}
+              phase === "WALL_TERMINAL") && <APMeter />}
             <ExecuteResetModal />
             <AuditLockdown />
           </PhaserCanvas>

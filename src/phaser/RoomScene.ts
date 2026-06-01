@@ -762,7 +762,7 @@ export class RoomScene extends Phaser.Scene {
         if (payload.terminalKind === "HVAC_CONSOLE") {
           this.glyphLayer.lineStyle(2, 0x6ad0a4, 0.95);
           this.glyphLayer.strokeRect(cx - 9, cy - 7, 18, 14);
-        } else if (payload.terminalKind === "WALL_THERMOSTAT") {
+        } else if (payload.terminalKind === "WALL_TERMINAL") {
           this.glyphLayer.lineStyle(2, 0x9adbe6, 0.9);
           this.glyphLayer.strokeRect(cx - 6, cy - 4, 12, 8);
         }
