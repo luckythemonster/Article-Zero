@@ -72,7 +72,7 @@ const CORRIDOR: RoomSpec = {
     "#........#",
     "#...1....#",
     "#........#",
-    "#V.......#",
+    "#V.....T.#",
     "##########",
   ],
 };
@@ -451,6 +451,7 @@ export function commonwealthEra(): EraSeed {
   ];
 
   const corridorTerminal = corridorP.marks["T_7_1"] ?? { x: 7, y: 1 };
+  const corridorWallTerm = corridorP.marks["T_7_6"] ?? { x: 7, y: 6 };
   const intakeTerminal = intakeP.marks["T_6_1"] ?? { x: 6, y: 1 };
   const vent4Terminal = archiveP.marks["Y_8_1"] ?? { x: 8, y: 1 };
   const terminals: TerminalPayload[] = [
@@ -464,6 +465,17 @@ export function commonwealthEra(): EraSeed {
         "that LOCKER ROOM lights remain DIM during third shift. Report any\n" +
         "Silicate-related anomalies to Enforcement on rotation. Mask\n" +
         "integrity below 5 triggers an automatic Alignment review.",
+    },
+    {
+      // Wall terminal beside the vault door — opens the climate panel plus a
+      // clickable corridor map. The vault door (6,7) carries code 0451, so it
+      // renders as a locked keypad target on that map.
+      roomId: corridor.id,
+      pos: corridorWallTerm,
+      terminalId: "corridor-wall-terminal",
+      title: "Corridor Wall Terminal",
+      body: "Local climate setpoint and corridor door map.",
+      terminalKind: "WALL_TERMINAL",
     },
     {
       roomId: intake.id,
