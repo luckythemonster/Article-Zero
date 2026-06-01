@@ -396,6 +396,29 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
+    "key": "cdn7_spray_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/spray/north/01",
+      "cdn7/spray/north/02",
+      "cdn7/spray/north/03",
+      "cdn7/spray/north/04",
+      "cdn7/spray/north/05",
+      "cdn7/spray/north/06",
+      "cdn7/spray/north/07",
+      "cdn7/spray/north/08",
+      "cdn7/spray/north/09",
+      "cdn7/spray/north/10",
+      "cdn7/spray/north/11",
+      "cdn7/spray/north/12",
+      "cdn7/spray/north/13",
+      "cdn7/spray/north/14",
+      "cdn7/spray/north/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
     "key": "cdn7_spray_south",
     "frameRate": 8,
     "repeat": -1,
@@ -415,6 +438,29 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "cdn7/spray/south/13",
       "cdn7/spray/south/14",
       "cdn7/spray/south/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_spray_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/spray/west/01",
+      "cdn7/spray/west/02",
+      "cdn7/spray/west/03",
+      "cdn7/spray/west/04",
+      "cdn7/spray/west/05",
+      "cdn7/spray/west/06",
+      "cdn7/spray/west/07",
+      "cdn7/spray/west/08",
+      "cdn7/spray/west/09",
+      "cdn7/spray/west/10",
+      "cdn7/spray/west/11",
+      "cdn7/spray/west/12",
+      "cdn7/spray/west/13",
+      "cdn7/spray/west/14",
+      "cdn7/spray/west/15"
     ],
     "texture": "chars-art"
   },
