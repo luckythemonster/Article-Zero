@@ -903,12 +903,16 @@ export class RoomScene extends Phaser.Scene {
         entity.kind === "SURVEILLANCE_DRONE" ? "securitydrone" :
           entity.kind === "SECURITY_CAMERA" ? "securitycamera" :
             entity.kind === "ORDERLY" ? "nwsmac01" :
-              null;
+              entity.kind === "CDN_7" ? "cdn7" :
+                null;
+    // Slugs whose static reference pose lives under idle/ rather than stand/
+    // (cdn7 has only idle frames from the Pixel Lab object import).
+    const refPose = slug === "cdn7" ? "idle" : "stand";
 
     if (slug) {
       let sprite = this.entitySprites.get(entity.id);
       if (!sprite) {
-        sprite = this.add.sprite(px, py, "chars-art", `${slug}/stand/${entity.facing}/01`);
+        sprite = this.add.sprite(px, py, "chars-art", `${slug}/${refPose}/${entity.facing}/01`);
         if (PROP_SLUGS.has(slug)) {
           // Props (drone/camera) have little padding — size by frame width,
           // centred. Drones hover, cameras are ceiling-mounted.
@@ -916,7 +920,7 @@ export class RoomScene extends Phaser.Scene {
           sprite.setScale((propFootprintTiles(slug) * TILE_PX) / sprite.width);
         } else {
           // Characters: fit visible body height so padding doesn't shrink them.
-          fitCharacterSprite(sprite, this, "chars-art", `${slug}/stand/south/01`, CHAR_VISIBLE_TILES);
+          fitCharacterSprite(sprite, this, "chars-art", `${slug}/${refPose}/south/01`, CHAR_VISIBLE_TILES);
         }
         sprite.setDepth(4);
         this.entitySprites.set(entity.id, sprite);
@@ -928,10 +932,16 @@ export class RoomScene extends Phaser.Scene {
       this.entityFacingMarks.get(entity.id)?.setVisible(false);
 
       // Cameras are fixed (idle only); enforcers/drones walk when they moved this turn.
+      // CDN-7 holds an `anchor` pose while planted across the corridor; the
+      // fallback list below still resolves to idle for facings where the
+      // anchor anim hasn't been generated yet.
       const moving = entity.lastMoveTurn === state.turn;
+      const cdn7Anchored = entity.kind === "CDN_7" && (entity.alert?.anchorTurnsRemaining ?? 0) > 0;
       const moveAnim = slug === "securitydrone" ? "move" : "walkcycle";
       const motion =
-        entity.kind === "SECURITY_CAMERA" ? "idle" : moving ? moveAnim : "idle";
+        entity.kind === "SECURITY_CAMERA" ? "idle" :
+          cdn7Anchored ? "anchor" :
+            moving ? moveAnim : "idle";
       const animKey = [
         `${slug}_${motion}_${entity.facing}`,
         `${slug}_idle_${entity.facing}`,
@@ -940,20 +950,17 @@ export class RoomScene extends Phaser.Scene {
         if (sprite.anims.currentAnim?.key !== animKey) sprite.play(animKey);
       } else {
         sprite.anims.stop();
-        const frame = `${slug}/stand/${entity.facing}/01`;
+        const frame = `${slug}/${refPose}/${entity.facing}/01`;
         if (this.textures.get("chars-art").has(frame)) sprite.setFrame(frame);
       }
     } else {
       let rect = this.entityRects.get(entity.id);
       // VENT-4 (Environmental Optimizer) gets the deep-maroon palette of its
       // placeholder atlas frame; other silicates stay on the cyan baseline.
-      // CDN-7 (riot control) shows in riot-orange so it reads distinct from
-      // any other placeholder enemy.
       const colour =
         entity.kind === "SILICATE"
           ? entity.id === "VENT-4" ? 0x9b2c2c : 0x9adbe6
-          : entity.kind === "CDN_7" ? 0xd06a2a
-            : 0xc8dbe6;
+          : 0xc8dbe6;
       if (!rect) {
         rect = this.add.rectangle(px, py, TILE_PX - 14, TILE_PX - 14, colour);
         rect.setStrokeStyle(2, 0xe6f0f2);
