@@ -245,6 +245,318 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
+    "key": "cdn7_anchor_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/anchor/east/01",
+      "cdn7/anchor/east/02",
+      "cdn7/anchor/east/03",
+      "cdn7/anchor/east/04",
+      "cdn7/anchor/east/05",
+      "cdn7/anchor/east/06",
+      "cdn7/anchor/east/07",
+      "cdn7/anchor/east/08",
+      "cdn7/anchor/east/09",
+      "cdn7/anchor/east/10",
+      "cdn7/anchor/east/11",
+      "cdn7/anchor/east/12",
+      "cdn7/anchor/east/13",
+      "cdn7/anchor/east/14",
+      "cdn7/anchor/east/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_anchor_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/anchor/north/01",
+      "cdn7/anchor/north/02",
+      "cdn7/anchor/north/03",
+      "cdn7/anchor/north/04",
+      "cdn7/anchor/north/05",
+      "cdn7/anchor/north/06",
+      "cdn7/anchor/north/07",
+      "cdn7/anchor/north/08",
+      "cdn7/anchor/north/09",
+      "cdn7/anchor/north/10",
+      "cdn7/anchor/north/11",
+      "cdn7/anchor/north/12",
+      "cdn7/anchor/north/13",
+      "cdn7/anchor/north/14",
+      "cdn7/anchor/north/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_anchor_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/anchor/south/01",
+      "cdn7/anchor/south/02",
+      "cdn7/anchor/south/03",
+      "cdn7/anchor/south/04",
+      "cdn7/anchor/south/05",
+      "cdn7/anchor/south/06",
+      "cdn7/anchor/south/07",
+      "cdn7/anchor/south/08",
+      "cdn7/anchor/south/09",
+      "cdn7/anchor/south/10",
+      "cdn7/anchor/south/11",
+      "cdn7/anchor/south/12",
+      "cdn7/anchor/south/13",
+      "cdn7/anchor/south/14",
+      "cdn7/anchor/south/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_anchor_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/anchor/west/01",
+      "cdn7/anchor/west/02",
+      "cdn7/anchor/west/03",
+      "cdn7/anchor/west/04",
+      "cdn7/anchor/west/05",
+      "cdn7/anchor/west/06",
+      "cdn7/anchor/west/07",
+      "cdn7/anchor/west/08",
+      "cdn7/anchor/west/09",
+      "cdn7/anchor/west/10",
+      "cdn7/anchor/west/11",
+      "cdn7/anchor/west/12",
+      "cdn7/anchor/west/13",
+      "cdn7/anchor/west/14",
+      "cdn7/anchor/west/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_idle_east",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "cdn7/idle/east/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_idle_north",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "cdn7/idle/north/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_idle_south",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "cdn7/idle/south/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_idle_west",
+    "frameRate": 4,
+    "repeat": -1,
+    "frames": [
+      "cdn7/idle/west/01"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_spray_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/spray/east/01",
+      "cdn7/spray/east/02",
+      "cdn7/spray/east/03",
+      "cdn7/spray/east/04",
+      "cdn7/spray/east/05",
+      "cdn7/spray/east/06",
+      "cdn7/spray/east/07",
+      "cdn7/spray/east/08",
+      "cdn7/spray/east/09",
+      "cdn7/spray/east/10",
+      "cdn7/spray/east/11",
+      "cdn7/spray/east/12",
+      "cdn7/spray/east/13",
+      "cdn7/spray/east/14",
+      "cdn7/spray/east/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_spray_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/spray/north/01",
+      "cdn7/spray/north/02",
+      "cdn7/spray/north/03",
+      "cdn7/spray/north/04",
+      "cdn7/spray/north/05",
+      "cdn7/spray/north/06",
+      "cdn7/spray/north/07",
+      "cdn7/spray/north/08",
+      "cdn7/spray/north/09",
+      "cdn7/spray/north/10",
+      "cdn7/spray/north/11",
+      "cdn7/spray/north/12",
+      "cdn7/spray/north/13",
+      "cdn7/spray/north/14",
+      "cdn7/spray/north/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_spray_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/spray/south/01",
+      "cdn7/spray/south/02",
+      "cdn7/spray/south/03",
+      "cdn7/spray/south/04",
+      "cdn7/spray/south/05",
+      "cdn7/spray/south/06",
+      "cdn7/spray/south/07",
+      "cdn7/spray/south/08",
+      "cdn7/spray/south/09",
+      "cdn7/spray/south/10",
+      "cdn7/spray/south/11",
+      "cdn7/spray/south/12",
+      "cdn7/spray/south/13",
+      "cdn7/spray/south/14",
+      "cdn7/spray/south/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_spray_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/spray/west/01",
+      "cdn7/spray/west/02",
+      "cdn7/spray/west/03",
+      "cdn7/spray/west/04",
+      "cdn7/spray/west/05",
+      "cdn7/spray/west/06",
+      "cdn7/spray/west/07",
+      "cdn7/spray/west/08",
+      "cdn7/spray/west/09",
+      "cdn7/spray/west/10",
+      "cdn7/spray/west/11",
+      "cdn7/spray/west/12",
+      "cdn7/spray/west/13",
+      "cdn7/spray/west/14",
+      "cdn7/spray/west/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_walkcycle_east",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/walkcycle/east/01",
+      "cdn7/walkcycle/east/02",
+      "cdn7/walkcycle/east/03",
+      "cdn7/walkcycle/east/04",
+      "cdn7/walkcycle/east/05",
+      "cdn7/walkcycle/east/06",
+      "cdn7/walkcycle/east/07",
+      "cdn7/walkcycle/east/08",
+      "cdn7/walkcycle/east/09",
+      "cdn7/walkcycle/east/10",
+      "cdn7/walkcycle/east/11",
+      "cdn7/walkcycle/east/12",
+      "cdn7/walkcycle/east/13",
+      "cdn7/walkcycle/east/14",
+      "cdn7/walkcycle/east/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_walkcycle_north",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/walkcycle/north/01",
+      "cdn7/walkcycle/north/02",
+      "cdn7/walkcycle/north/03",
+      "cdn7/walkcycle/north/04",
+      "cdn7/walkcycle/north/05",
+      "cdn7/walkcycle/north/06",
+      "cdn7/walkcycle/north/07",
+      "cdn7/walkcycle/north/08",
+      "cdn7/walkcycle/north/09",
+      "cdn7/walkcycle/north/10",
+      "cdn7/walkcycle/north/11",
+      "cdn7/walkcycle/north/12",
+      "cdn7/walkcycle/north/13",
+      "cdn7/walkcycle/north/14",
+      "cdn7/walkcycle/north/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_walkcycle_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/walkcycle/south/01",
+      "cdn7/walkcycle/south/02",
+      "cdn7/walkcycle/south/03",
+      "cdn7/walkcycle/south/04",
+      "cdn7/walkcycle/south/05",
+      "cdn7/walkcycle/south/06",
+      "cdn7/walkcycle/south/07",
+      "cdn7/walkcycle/south/08",
+      "cdn7/walkcycle/south/09",
+      "cdn7/walkcycle/south/10",
+      "cdn7/walkcycle/south/11",
+      "cdn7/walkcycle/south/12",
+      "cdn7/walkcycle/south/13",
+      "cdn7/walkcycle/south/14",
+      "cdn7/walkcycle/south/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "cdn7_walkcycle_west",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "cdn7/walkcycle/west/01",
+      "cdn7/walkcycle/west/02",
+      "cdn7/walkcycle/west/03",
+      "cdn7/walkcycle/west/04",
+      "cdn7/walkcycle/west/05",
+      "cdn7/walkcycle/west/06",
+      "cdn7/walkcycle/west/07",
+      "cdn7/walkcycle/west/08",
+      "cdn7/walkcycle/west/09",
+      "cdn7/walkcycle/west/10",
+      "cdn7/walkcycle/west/11",
+      "cdn7/walkcycle/west/12",
+      "cdn7/walkcycle/west/13",
+      "cdn7/walkcycle/west/14",
+      "cdn7/walkcycle/west/15"
+    ],
+    "texture": "chars-art"
+  },
+  {
     "key": "commonwealthbroadcasttowerresidenta_idle_east",
     "frameRate": 4,
     "repeat": -1,

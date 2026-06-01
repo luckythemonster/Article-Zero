@@ -1,25 +1,39 @@
 // pixellab-fetch.mjs — generate a 4-direction character via the Pixel Lab API
-// and drop the resulting PNGs into the art/<slug>/idle/<dir>/01.png layout that
-// build-atlas.mjs already consumes.
+// and drop the resulting PNGs into the art/<slug>/{idle,walkcycle}/<dir>/NN.png
+// layout that build-atlas.mjs already consumes.
 //
 // Usage:
 //   PIXELLAB_API_TOKEN=... \
 //   node scripts/pixellab-fetch.mjs <slug> \
 //     --description "weathered orbital marshal in matte black tac plate" \
-//     [--size 64] [--view low_top_down] [--proportions heroic] \
-//     [--outline single_color_black_outline] [--shading basic_shading] \
-//     [--detail medium_detail] [--anim idle] [--force]
+//     [--size 64] [--view "low top-down"] [--proportions heroic] \
+//     [--outline ...] [--shading ...] [--detail ...] \
+//     [--skip-walk] [--walk-frames 8] [--force]
 //
 // Then:
 //   npm run art
 //
-// Notes:
-// - Only the synchronous /create-character-with-4-directions endpoint is wired
-//   up. Walk-cycle generation is async (background jobs) and the response
-//   schema for the polling endpoint is not documented in the public OpenAPI
-//   spec — see the TODO block at the bottom of this file before extending.
-// - All frames for one character must share dimensions (enforced by
-//   build-atlas.mjs). Pick a --size once per character and stick to it.
+// Endpoint behaviour (probed against the live API — the public OpenAPI doc
+// describes some fields incorrectly):
+//   POST /v2/create-character-with-4-directions  → always async; returns
+//     { background_job_id, character_id, status: "processing" } immediately.
+//   POST /v2/animate-character                   → async; returns one
+//     background_job_id per direction.
+//   GET  /v2/background-jobs/{id}                → poll until status is
+//     "completed" or "failed". On completion:
+//       create:   last_response.storage_urls.{dir}    = PNG URL (Backblaze)
+//       animate:  last_response.storage_urls.frames   = array of PNG URLs
+//                 (one per frame; Pixel Lab returns frame_count + 1 to make
+//                 the cycle loop cleanly — asking for 8 yields 9)
+//     We download from storage_urls. The `images[*].base64` field in the
+//     same response is RAW RGBA bytes (not PNG-encoded), so it's unusable
+//     without client-side image construction. Use the URLs.
+//
+// Quirks:
+//   - image_size snaps to Pixel Lab's grid — 64×64 returns 92×92.
+//   - Walk frame count clamped to 4-16, must be even (their v3 mode rule).
+//   - Their TLS cert rotates often and our sandbox clock can be ~1s ahead of
+//     their CA — we transparently retry on CERT_NOT_YET_VALID.
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -32,7 +46,7 @@ const ART_DIR = path.join(ROOT, "art");
 const API_BASE = process.env.PIXELLAB_API_BASE ?? "https://api.pixellab.ai/v2";
 const TOKEN = process.env.PIXELLAB_API_TOKEN;
 
-const VIEWS = new Set(["low_top_down", "high_top_down", "side"]);
+const VIEWS = new Set(["side", "low top-down", "high top-down"]);
 const PROPORTIONS = new Set([
   "chibi",
   "cartoon",
@@ -66,28 +80,98 @@ function parseArgs(argv) {
 function usage(message) {
   if (message) console.error(`error: ${message}\n`);
   console.error(
-    "usage: node scripts/pixellab-fetch.mjs <slug> --description \"...\"\n" +
-      "       [--size 64] [--view low_top_down] [--proportions heroic]\n" +
+    'usage: node scripts/pixellab-fetch.mjs <slug> --description "..."\n' +
+      '       [--size 64] [--view "low top-down"] [--proportions heroic]\n' +
       "       [--outline ...] [--shading ...] [--detail ...]\n" +
-      "       [--anim idle] [--force]\n\n" +
+      "       [--skip-walk] [--walk-frames 8] [--force]\n\n" +
+      "View options: " + [...VIEWS].map((v) => `"${v}"`).join(", ") + "\n" +
+      "  (also accepts low_top_down / low-top-down — normalised to API form)\n" +
+      "Proportions: " + [...PROPORTIONS].join(", ") + "\n\n" +
       "Requires PIXELLAB_API_TOKEN env var.",
   );
   process.exit(message ? 1 : 0);
 }
 
-function decodeBase64Image(value) {
-  // The API returns one of:
-  //   { type: "base64", base64: "data:image/png;base64,..." }
-  //   { base64: "..." }                  (no data URI prefix)
-  //   "data:image/png;base64,..."        (rare)
-  let s;
-  if (typeof value === "string") s = value;
-  else if (value && typeof value.base64 === "string") s = value.base64;
-  else throw new Error(`unrecognised image payload: ${JSON.stringify(value).slice(0, 120)}`);
+function normaliseView(s) {
+  // Accept low_top_down / low-top-down / low top-down → "low top-down"
+  const v = s.toLowerCase().replace(/_/g, " ").replace(/^(low|high) (top.down)$/, (_, h) => `${h} top-down`);
+  return v;
+}
 
-  const comma = s.indexOf(",");
-  if (s.startsWith("data:") && comma > 0) s = s.slice(comma + 1);
-  return Buffer.from(s, "base64");
+// fetch() with retry on CERT_NOT_YET_VALID (Pixel Lab rotates TLS certs every
+// few minutes; our sandbox clock can be a hair ahead of their CA).
+async function tlsFetch(url, opts, { retries = 5, delayMs = 2000 } = {}) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fetch(url, opts);
+    } catch (e) {
+      if (e?.cause?.code === "CERT_NOT_YET_VALID" && i < retries - 1) {
+        await new Promise((r) => setTimeout(r, delayMs));
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error("unreachable");
+}
+
+async function postJson(pathname, body) {
+  const res = await tlsFetch(`${API_BASE}${pathname}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`POST ${pathname} → ${res.status} ${res.statusText}: ${text.slice(0, 500)}`);
+  }
+  return res.json();
+}
+
+async function getJson(pathname) {
+  const res = await tlsFetch(`${API_BASE}${pathname}`, {
+    headers: { Authorization: `Bearer ${TOKEN}` },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`GET ${pathname} → ${res.status} ${res.statusText}: ${text.slice(0, 500)}`);
+  }
+  return res.json();
+}
+
+async function downloadPng(url) {
+  const res = await tlsFetch(url);
+  if (!res.ok) throw new Error(`download ${url} → ${res.status}`);
+  const buf = Buffer.from(await res.arrayBuffer());
+  if (buf[0] !== 0x89 || buf[1] !== 0x50 || buf[2] !== 0x4e || buf[3] !== 0x47) {
+    throw new Error(`download ${url} did not return a PNG (first 4 bytes: ${[...buf.slice(0, 4)].map((b) => b.toString(16).padStart(2, "0")).join(" ")})`);
+  }
+  return buf;
+}
+
+async function pollJob(jobId, { intervalMs = 3000, timeoutMs = 5 * 60 * 1000, label } = {}) {
+  const start = Date.now();
+  let last = "";
+  const tag = label ?? jobId.slice(0, 8);
+  for (;;) {
+    if (Date.now() - start > timeoutMs) {
+      throw new Error(`background job ${jobId} (${tag}) timed out after ${timeoutMs}ms`);
+    }
+    await new Promise((r) => setTimeout(r, intervalMs));
+    const j = await getJson(`/background-jobs/${jobId}`);
+    if (j.status !== last) {
+      process.stdout.write(`  ${tag}: ${j.status}\n`);
+      last = j.status;
+    }
+    if (j.status === "completed") return j;
+    if (j.status === "failed") {
+      const err = j.last_response?.error ?? j.last_response?.detail ?? "unknown error";
+      throw new Error(`job ${jobId} (${tag}) failed: ${err}`);
+    }
+  }
 }
 
 async function ensureEmptyDir(dir, { force }) {
@@ -104,32 +188,16 @@ async function ensureEmptyDir(dir, { force }) {
   await fs.mkdir(dir, { recursive: true });
 }
 
-async function createCharacter4Dir(body) {
-  const res = await fetch(`${API_BASE}/create-character-with-4-directions`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${TOKEN}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Pixel Lab ${res.status} ${res.statusText}: ${text.slice(0, 500)}`);
-  }
-  return res.json();
-}
-
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help || args.h) usage();
 
   const slug = args._[0];
   if (!slug) usage("missing <slug> positional argument");
-  if (!/^[a-z0-9]+$/.test(slug)) usage("<slug> must be lowercase alphanumeric (matches art/ folder convention)");
+  if (!/^[a-z0-9]+$/.test(slug)) usage("<slug> must be lowercase alphanumeric");
   if (!TOKEN) usage("PIXELLAB_API_TOKEN env var is required");
   if (!args.description || typeof args.description !== "string") {
-    usage("--description \"...\" is required");
+    usage('--description "..." is required');
   }
 
   const size = Number.parseInt(args.size ?? "64", 10);
@@ -137,84 +205,119 @@ async function main() {
     usage("--size must be an integer between 16 and 256");
   }
 
-  const view = args.view ?? "low_top_down";
-  if (!VIEWS.has(view)) usage(`--view must be one of ${[...VIEWS].join(", ")}`);
+  const view = normaliseView(args.view ?? "low top-down");
+  if (!VIEWS.has(view)) {
+    usage(`--view must normalise to one of ${[...VIEWS].map((v) => `"${v}"`).join(", ")}`);
+  }
 
   const proportions = args.proportions ?? "heroic";
   if (!PROPORTIONS.has(proportions)) {
     usage(`--proportions must be one of ${[...PROPORTIONS].join(", ")}`);
   }
 
-  const anim = args.anim ?? "idle";
-  if (anim !== "idle") {
-    // walkcycle / chase / interact need /animate-character + background-job
-    // polling; see TODO at bottom of file.
-    throw new Error(
-      `--anim ${anim} is not implemented yet. Only "idle" is wired up. ` +
-        "See the TODO in scripts/pixellab-fetch.mjs.",
-    );
+  const walkFrames = Number.parseInt(args["walk-frames"] ?? "8", 10);
+  if (!Number.isFinite(walkFrames) || walkFrames < 4 || walkFrames > 16 || walkFrames % 2 !== 0) {
+    usage("--walk-frames must be an even integer in 4..16");
   }
+  const skipWalk = args["skip-walk"] === true;
+  const force = args.force === true;
 
-  const body = {
+  const createBody = {
     description: args.description,
     image_size: { width: size, height: size },
     view,
     proportions: { type: "preset", name: proportions },
   };
-  for (const k of ["outline", "shading", "detail", "color_palette"]) {
-    if (typeof args[k] === "string") body[k] = args[k];
+  for (const k of ["outline", "shading", "detail"]) {
+    if (typeof args[k] === "string") createBody[k] = args[k];
   }
 
-  console.log(
-    `Pixel Lab → ${slug} (${size}×${size}, ${view}, ${proportions}): ${args.description}`,
-  );
+  console.log(`Pixel Lab → ${slug} (${size}×${size}, "${view}", ${proportions})`);
+  console.log(`  "${args.description}"`);
 
-  const result = await createCharacter4Dir(body);
-  if (!result?.images || typeof result.images !== "object") {
-    throw new Error(`unexpected response: ${JSON.stringify(result).slice(0, 200)}`);
+  // ── Phase 1: rotations (idle) ──────────────────────────────────────────
+  const create = await postJson("/create-character-with-4-directions", createBody);
+  if (!create.background_job_id) {
+    throw new Error(`no background_job_id in create response: ${JSON.stringify(create)}`);
+  }
+  console.log(`  character_id: ${create.character_id}`);
+  console.log(`  polling rotations job ${create.background_job_id.slice(0, 8)}...`);
+
+  const idleJob = await pollJob(create.background_job_id, { label: "rotations" });
+  const idleResp = idleJob.last_response;
+  if (!idleResp?.storage_urls) {
+    throw new Error(`completed rotations job has no last_response.storage_urls: ${JSON.stringify(idleResp).slice(0, 300)}`);
+  }
+  const actualW = idleResp.image_width ?? "?";
+  const actualH = idleResp.image_height ?? "?";
+  if (actualW !== size || actualH !== size) {
+    console.log(`  note: returned size ${actualW}×${actualH} (Pixel Lab snaps to its own grid)`);
   }
 
-  const animDir = path.join(ART_DIR, slug, anim);
-  for (const dir of DIRECTIONS) {
-    const img = result.images[dir];
-    if (!img) throw new Error(`response missing direction "${dir}"`);
-    const png = decodeBase64Image(img);
-    const outDir = path.join(animDir, dir);
-    await ensureEmptyDir(outDir, { force: args.force === true });
-    const outFile = path.join(outDir, "01.png");
-    await fs.writeFile(outFile, png);
-    console.log(`  wrote ${path.relative(ROOT, outFile)} (${png.length} bytes)`);
+  await writeIdleFrames(slug, idleResp.storage_urls, force);
+
+  // ── Phase 2: walk cycle ────────────────────────────────────────────────
+  if (skipWalk) {
+    console.log("  skipping walk cycle (--skip-walk)");
+  } else {
+    console.log(`  animating walkcycle (${walkFrames} frames × 4 directions)...`);
+    const anim = await postJson("/animate-character", {
+      character_id: create.character_id,
+      action_description: "walking",
+      mode: "v3",
+      frame_count: walkFrames,
+      directions: DIRECTIONS,
+    });
+    if (!Array.isArray(anim.background_job_ids) || anim.background_job_ids.length !== anim.directions?.length) {
+      throw new Error(`unexpected animate response: ${JSON.stringify(anim).slice(0, 300)}`);
+    }
+
+    // Poll all 4 direction-jobs concurrently — each is independent.
+    const dirJobs = anim.directions.map((dir, i) => ({
+      dir,
+      jobId: anim.background_job_ids[i],
+    }));
+    const completed = await Promise.all(
+      dirJobs.map(async ({ dir, jobId }) => ({
+        dir,
+        job: await pollJob(jobId, { label: dir }),
+      })),
+    );
+
+    for (const { dir, job } of completed) {
+      const urls = job.last_response?.storage_urls?.frames;
+      if (!Array.isArray(urls) || urls.length === 0) {
+        throw new Error(`walkcycle ${dir}: no frames in last_response.storage_urls.frames`);
+      }
+      const outDir = path.join(ART_DIR, slug, "walkcycle", dir);
+      await ensureEmptyDir(outDir, { force });
+      const pngs = await Promise.all(urls.map((u) => downloadPng(u)));
+      for (let i = 0; i < pngs.length; i++) {
+        const name = String(i + 1).padStart(2, "0") + ".png";
+        await fs.writeFile(path.join(outDir, name), pngs[i]);
+      }
+      console.log(`  wrote ${pngs.length} frames → art/${slug}/walkcycle/${dir}/`);
+    }
   }
 
   console.log("\nNext:");
   console.log("  npm run art   # pack atlas + regenerate char-anims.generated.ts");
-  console.log(
-    `\nNote: ${slug} is ${size}×${size}. Existing canon characters are 36×36 / 68×68. ` +
-      "Pick a size and keep it consistent — build-atlas.mjs enforces per-character.",
-  );
+  console.log(`\nRemote character_id: ${create.character_id}`);
+}
+
+async function writeIdleFrames(slug, storageUrls, force) {
+  for (const dir of DIRECTIONS) {
+    const url = storageUrls[dir];
+    if (!url) throw new Error(`rotations: missing storage_urls.${dir}`);
+    const png = await downloadPng(url);
+    const outDir = path.join(ART_DIR, slug, "idle", dir);
+    await ensureEmptyDir(outDir, { force });
+    await fs.writeFile(path.join(outDir, "01.png"), png);
+  }
+  console.log(`  wrote idle/{${DIRECTIONS.join(",")}}/01.png`);
 }
 
 main().catch((err) => {
   console.error(err.message ?? err);
   process.exit(1);
 });
-
-// ---------------------------------------------------------------------------
-// TODO: walk-cycle (and other multi-frame) animations
-//
-// The /animate-character endpoint needs a `character_id` UUID. None of the
-// synchronous create endpoints return one. The async create endpoints
-// (/create-character-v3, /create-character-pro) return a `background_job_id`
-// and require polling GET /v2/background-jobs/{id}, but the OpenAPI spec
-// does NOT document the polling response schema. Before wiring walk:
-//
-//   1. Run a v3 create against a throwaway prompt and inspect the polling
-//      response (does it include character_id? frame URLs? base64 array?).
-//   2. Confirm /animate-character's job response shape the same way.
-//   3. Decide whether to store images as URLs (download per-frame) or as
-//      base64 (decode in-process).
-//   4. Wire each completed frame into art/<slug>/walkcycle/<dir>/NN.png with
-//      zero-padded indices so they sort lexically.
-//
-// Until then, only idle (single-frame, 4-direction) is fetched here.
-// ---------------------------------------------------------------------------

@@ -266,6 +266,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "json"
   },
   {
+    "path": "added by Lucky/music/Article zero theme 2 maybe.json",
+    "sizeBytes": 37472,
+    "ext": "json"
+  },
+  {
     "path": "added by Lucky/music/Article Zero Title Theme finalish.json",
     "sizeBytes": 17505,
     "ext": "json"
@@ -276,8 +281,28 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "json"
   },
   {
+    "path": "added by Lucky/music/bug in the pit.json",
+    "sizeBytes": 44137,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/citizen lattice theme w intro outro.json",
+    "sizeBytes": 43710,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/citizen lattice theme.json",
+    "sizeBytes": 38484,
+    "ext": "json"
+  },
+  {
     "path": "added by Lucky/music/crazy monkeou.json",
     "sizeBytes": 30539,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/EXPANDO.json",
+    "sizeBytes": 31992,
     "ext": "json"
   },
   {
@@ -321,8 +346,18 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "json"
   },
   {
+    "path": "added by Lucky/music/suffocate.json",
+    "sizeBytes": 47727,
+    "ext": "json"
+  },
+  {
     "path": "added by Lucky/music/sweeeo.json",
     "sizeBytes": 31664,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/VENT-4 THEME.json",
+    "sizeBytes": 37755,
     "ext": "json"
   },
   {

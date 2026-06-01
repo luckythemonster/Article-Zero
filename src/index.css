@@ -1438,3 +1438,84 @@ body.theme-lattice {
   font-size: 0.85rem;
   padding: 0.5rem 0;
 }
+
+/* ── Wall terminal ──────────────────────────────────────────────────────── */
+.wall-terminal {
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.wall-terminal__section {
+  margin-bottom: 0.75rem;
+}
+
+.wall-terminal__section-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: var(--fg-dim, #5a7a80);
+  margin-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border, #2a3d44);
+  padding-bottom: 0.15rem;
+}
+
+.wall-terminal__map {
+  display: grid;
+  gap: 1px;
+  background: #0b1417;
+  border: 1px solid var(--border, #2a3d44);
+  padding: 2px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.wall-terminal__tile {
+  aspect-ratio: 1;
+  background: #111d22;
+}
+
+.wall-terminal__tile--wall        { background: #2a3d44; }
+.wall-terminal__tile--floor       { background: #111d22; }
+.wall-terminal__tile--door-open   { background: #1e4a3a; border: 1px solid #2fb87a; }
+.wall-terminal__tile--door-closed { background: #1e2e38; border: 1px solid #4a8a9a; }
+.wall-terminal__tile--door-locked { background: #1e2030; border: 1px solid #6060a0; }
+.wall-terminal__tile--light-on    { background: #3a4e1a; outline: 1px solid #a8e060; }
+.wall-terminal__tile--light-off   { background: #1a2010; outline: 1px solid #3a5020; }
+.wall-terminal__tile--switch      { background: #2a3e1e; outline: 1px solid #6ad0a4; }
+.wall-terminal__tile--terminal    { background: #1a2c34; outline: 1px solid #4a9ab0; }
+.wall-terminal__tile--vent        { background: #1e2a2e; outline: 1px solid #3a6070; }
+.wall-terminal__tile--locker      { background: #252018; outline: 1px solid #806040; }
+.wall-terminal__tile--chasm       { background: #060a0c; }
+.wall-terminal__tile--player      { background: #1e4060; outline: 2px solid #60b8e0; }
+
+.wall-terminal__tile--clickable {
+  cursor: pointer;
+}
+.wall-terminal__tile--clickable:hover {
+  filter: brightness(1.5);
+}
+
+.wall-terminal__map-legend {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--fg-dim, #5a7a80);
+}
+
+.wall-terminal__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+.wall-terminal__legend-item::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+}
+.wall-terminal__legend--switch::before    { background: #2a3e1e; outline: 1px solid #6ad0a4; }
+.wall-terminal__legend--door-closed::before { background: #1e2e38; border: 1px solid #4a8a9a; }
+.wall-terminal__legend--light-on::before  { background: #3a4e1a; outline: 1px solid #a8e060; }
+.wall-terminal__legend--player::before    { background: #1e4060; outline: 2px solid #60b8e0; }

@@ -495,14 +495,14 @@ export interface TerminalPayload {
   clearsLockdown?: boolean;
   /** Atmospherics-control flavour. STANDARD/undefined is the document-filing
    *  terminal you've always had. HVAC_CONSOLE opens the multi-zone climate UI
-   *  (emergency modes, oxygen cutoff). WALL_THERMOSTAT opens the local
-   *  setpoint UI for the host room's zone. Both atmospherics flavours are
-   *  reusable and don't file documents. */
-  terminalKind?: "STANDARD" | "HVAC_CONSOLE" | "WALL_THERMOSTAT";
+   *  (emergency modes, oxygen cutoff). WALL_TERMINAL opens the local
+   *  setpoint UI for the host room's zone plus a clickable room map. Both
+   *  atmospherics flavours are reusable and don't file documents. */
+  terminalKind?: "STANDARD" | "HVAC_CONSOLE" | "WALL_TERMINAL";
   /** HVAC_CONSOLE: list of HvacZone ids this console controls. Empty/missing
    *  defaults to "every zone in the world" when the modal opens. */
   hvacZones?: string[];
-  /** WALL_THERMOSTAT: id of the single HvacZone this thermostat edits. */
+  /** WALL_TERMINAL: id of the single HvacZone this terminal edits. */
   hvacZoneId?: string;
 }
 
