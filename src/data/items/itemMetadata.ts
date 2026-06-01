@@ -90,6 +90,11 @@ export const ITEM_METADATA: Record<ItemType, ItemMeta> = {
     placeholderColor: 0xff5fa2,
     usesFacing: true,
   },
+  BATTERY: {
+    displayName: "Battery",
+    blurb: "Field cell. Restores 15 charge to the flashlight (max 30).",
+    placeholderColor: 0xfdd835,
+  },
 };
 
 /** Items that empty chests roll from. Excludes quest items
@@ -103,4 +108,5 @@ export const RANDOM_CHEST_LOOT_POOL: ItemType[] = [
   "EMP",
   "EMP_GRENADE",
   "Q_MINE",
+  "BATTERY",
 ];

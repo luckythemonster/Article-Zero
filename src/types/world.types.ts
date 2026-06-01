@@ -69,7 +69,8 @@ export type ItemType =
   | "OVERRIDE_KEY"
   | "EMP"
   | "EMP_GRENADE"
-  | "Q_MINE";
+  | "Q_MINE"
+  | "BATTERY";
 
 /** Ephemeral world-state for a deployed Phantom Manifest Emitter. Tracked on
  *  WorldState.activeEmitters; consumed at the top of advanceTurn() to push a

@@ -1419,6 +1419,10 @@ export const actions = {
         // This case is a safety fallback; InventoryOverlay routes to throwAt.
         eventBus.emit("ITEM_REJECTED", { itemType, reason: "needs-target" });
         return false;
+      case "BATTERY":
+        state.player.flashlightBattery = Math.min(30, state.player.flashlightBattery + 15);
+        ok = true;
+        break;
       default:
         return false;
     }

@@ -24,6 +24,7 @@ const USABLE: ItemType[] = [
   "EMP",
   "EMP_GRENADE",
   "Q_MINE",
+  "BATTERY",
 ];
 
 // Items that need a target tile — selecting these enters targeting mode

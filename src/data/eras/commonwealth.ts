@@ -509,5 +509,8 @@ export function commonwealthEra(): EraSeed {
     entities: [apex, eira, enforcerA, enforcerB, cdn7, vent4],
     ventLinks,
     terminals,
+    items: [
+      { id: "battery-cw", itemType: "BATTERY", roomId: locker.id, pos: { x: 7, y: 6 } },
+    ],
   };
 }
