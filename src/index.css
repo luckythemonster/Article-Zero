@@ -578,6 +578,29 @@ body.theme-lattice {
   opacity: 0.5;
 }
 
+.title-screen__debug {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  margin: 0;
+  padding: 4px 8px;
+  background: rgba(5, 8, 9, 0.7);
+  border: 1px solid #1d2a30;
+  color: #6ad0a4;
+  font-family: inherit;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 120ms ease;
+}
+
+.title-screen__debug:hover,
+.title-screen__debug:focus-visible {
+  opacity: 1;
+  outline: none;
+}
+
 /* Accessible-but-invisible text (titles/labels now live in the art). */
 .sr-only {
   position: absolute;
@@ -1441,13 +1464,103 @@ body.theme-lattice {
 
 /* ── Wall terminal ──────────────────────────────────────────────────────── */
 .wall-terminal {
+  --wt-chrome: #1d2436;
+  --wt-chrome-hi: #2a3450;
+  --wt-chrome-lo: #0e1320;
+  --wt-led: #c89030;
+  --wt-led-bg: #2a1f0c;
   max-width: 520px;
   max-height: 90vh;
   overflow-y: auto;
+  background: linear-gradient(
+    180deg,
+    var(--wt-chrome-hi) 0%,
+    var(--wt-chrome) 8%,
+    var(--wt-chrome) 92%,
+    var(--wt-chrome-lo) 100%
+  );
+  border: 1px solid #0a0e18;
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+    0 6px 24px rgba(0, 0, 0, 0.5);
+  padding: 0.75rem 0.85rem 0.85rem;
+}
+
+.wall-terminal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.wall-terminal__title {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  color: #a8c0d0;
+  text-transform: uppercase;
+}
+
+.wall-terminal__emergency {
+  display: inline-block;
+  width: 64px;
+  height: 18px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  image-rendering: pixelated;
+}
+
+.wall-terminal__emergency--lit {
+  background-image: url("/assets/ui/wall-terminal/emergency-lit.png");
+}
+
+.wall-terminal__emergency--dim {
+  background-image: url("/assets/ui/wall-terminal/emergency-dim.png");
 }
 
 .wall-terminal__section {
   margin-bottom: 0.75rem;
+}
+
+.wall-terminal__section--code {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding-top: 0.25rem;
+}
+
+.wall-terminal__display {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  justify-content: center;
+  background: var(--wt-led-bg);
+  border: 1px solid #0a0e18;
+  border-radius: 4px;
+  padding: 0.4rem 0.9rem;
+  min-width: 200px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.7);
+}
+
+.wall-terminal__display-char {
+  font-family: ui-monospace, "JetBrains Mono", "Fira Code", monospace;
+  font-size: 1.4rem;
+  letter-spacing: 0.05em;
+  color: rgba(200, 144, 48, 0.25);
+  text-shadow: 0 0 6px rgba(200, 144, 48, 0.2);
+  min-width: 0.9em;
+  text-align: center;
+}
+
+.wall-terminal__display-char--filled {
+  color: var(--wt-led);
+  text-shadow: 0 0 8px rgba(220, 160, 60, 0.55);
 }
 
 .wall-terminal__section-label {
@@ -1457,6 +1570,102 @@ body.theme-lattice {
   margin-bottom: 0.35rem;
   border-bottom: 1px solid var(--border, #2a3d44);
   padding-bottom: 0.15rem;
+}
+
+/* ── Keypad (amber idle, red pressed) ───────────────────────────────────── */
+.wall-terminal__keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 68px);
+  grid-template-rows: repeat(4, 36px);
+  gap: 6px;
+  padding: 0.4rem;
+  background: var(--wt-chrome-lo);
+  border: 1px solid #06090f;
+  border-radius: 6px;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.wall-terminal__key {
+  position: relative;
+  width: 68px;
+  height: 36px;
+  padding: 0;
+  background-color: transparent;
+  background-image: url("/assets/ui/wall-terminal/keypad-amber.png");
+  background-size: 244px 154px;
+  background-position:
+    calc(var(--key-col, 0) * -88px - 2px)
+    calc(var(--key-row, 0) * -39px - 4px);
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.wall-terminal__key:hover {
+  filter: brightness(1.18);
+}
+
+.wall-terminal__key:active,
+.wall-terminal__keypad--error .wall-terminal__key {
+  background-image: url("/assets/ui/wall-terminal/keypad-red.png");
+}
+
+.wall-terminal__keypad--error {
+  animation: wt-keypad-shake 0.32s ease-in-out;
+}
+
+.wall-terminal__key-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 0;
+  color: transparent;
+}
+
+@keyframes wt-keypad-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+}
+
+/* ── Arrow buttons (red ▲ / blue ▼ setpoint adjusters) ──────────────────── */
+.wall-terminal__arrow {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  image-rendering: pixelated;
+  cursor: pointer;
+}
+
+.wall-terminal__arrow--up {
+  background-image: url("/assets/ui/wall-terminal/arrow-up-idle.png");
+}
+
+.wall-terminal__arrow--down {
+  background-image: url("/assets/ui/wall-terminal/arrow-down-idle.png");
+}
+
+.wall-terminal__arrow--up:active {
+  background-image: url("/assets/ui/wall-terminal/arrow-up-pressed.png");
+}
+
+.wall-terminal__arrow--down:active {
+  background-image: url("/assets/ui/wall-terminal/arrow-down-pressed.png");
+}
+
+.wall-terminal__arrow:hover {
+  filter: brightness(1.15);
 }
 
 .wall-terminal__map {
@@ -1517,5 +1726,6 @@ body.theme-lattice {
 }
 .wall-terminal__legend--switch::before    { background: #2a3e1e; outline: 1px solid #6ad0a4; }
 .wall-terminal__legend--door-closed::before { background: #1e2e38; border: 1px solid #4a8a9a; }
+.wall-terminal__legend--door-locked::before { background: #1e2030; border: 1px solid #6060a0; }
 .wall-terminal__legend--light-on::before  { background: #3a4e1a; outline: 1px solid #a8e060; }
 .wall-terminal__legend--player::before    { background: #1e4060; outline: 2px solid #60b8e0; }

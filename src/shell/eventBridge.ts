@@ -246,6 +246,16 @@ export function installEventBridge(): () => void {
     ),
   );
   unsubs.push(
+    eventBus.on("WALL_TERMINAL_CODE_SUBMITTED", (p) =>
+      push(
+        p.success ? "INFO" : "WARN",
+        p.success
+          ? `keypad: door @ ${p.roomId} (${p.pos.x},${p.pos.y}) unlocked`
+          : `keypad: rejected @ ${p.roomId} (${p.pos.x},${p.pos.y})`,
+      ),
+    ),
+  );
+  unsubs.push(
     eventBus.on("ENTITY_INCAPACITATED_BY_OXYGEN", (p) =>
       push("WARN", `${p.entityId} suffocating in ${p.roomId} (${p.turnsRemaining}t)`),
     ),

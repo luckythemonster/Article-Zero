@@ -225,6 +225,20 @@ class WorldEngine {
     return ok;
   };
 
+  /** Try a numeric code at a locked door from the wall terminal keypad.
+   *  Returns true iff the code matched and the door is now unlocked. The
+   *  door stays closed; the caller toggles it via toggleDoorTile. */
+  unlockDoorWithCode = (
+    roomId: import("../types/world.types").RoomId,
+    pos: import("../types/world.types").Vec2,
+    code: string,
+  ) => {
+    const s = this.getState();
+    const ok = actions.unlockDoorWithCode(s, roomId, pos, code);
+    if (ok) this.syncStore();
+    return ok;
+  };
+
   pryDoor = (required = 5) => {
     const result = actions.pryDoor(this.getState(), required);
     if (result.ok) {

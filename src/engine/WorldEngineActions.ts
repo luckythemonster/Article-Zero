@@ -1533,4 +1533,27 @@ export const actions = {
     if (t.locked) return false;
     return toggleDoorTileAt(room, pos) !== null;
   },
+
+  /** Try to unlock a code-bearing door from the wall terminal keypad. Returns
+   *  true iff the tile is a locked DOOR_CLOSED whose `code` matches the
+   *  supplied string. Clears the lock but leaves the door closed; the caller
+   *  toggles it separately. Emits WALL_TERMINAL_CODE_SUBMITTED either way. */
+  unlockDoorWithCode(
+    state: WorldState,
+    roomId: RoomId,
+    pos: Vec2,
+    code: string,
+  ): boolean {
+    const room = state.rooms.get(roomId);
+    let success = false;
+    if (room) {
+      const t = room.tiles[pos.y * room.width + pos.x];
+      if (t && t.kind === "DOOR_CLOSED" && t.locked && t.code && t.code === code) {
+        t.locked = false;
+        success = true;
+      }
+    }
+    eventBus.emit("WALL_TERMINAL_CODE_SUBMITTED", { roomId, pos, success });
+    return success;
+  },
 };
