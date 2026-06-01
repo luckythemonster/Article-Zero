@@ -21,6 +21,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "wav"
   },
   {
+    "path": "added by Lucky/APEX-19 dialogue tree.ts",
+    "sizeBytes": 9620,
+    "ext": "ts"
+  },
+  {
     "path": "added by Lucky/apex-19 theme.json",
     "sizeBytes": 17991,
     "ext": "json"
@@ -116,6 +121,36 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "wav"
   },
   {
+    "path": "added by Lucky/dialogue/ARTICLEZERODRAFTARCHIVISTINTRO",
+    "sizeBytes": 1293,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/dialogue/CommonwealthEraIntro.ts",
+    "sizeBytes": 3590,
+    "ext": "ts"
+  },
+  {
+    "path": "added by Lucky/dialogue/EIRA-7 thematic dialogue",
+    "sizeBytes": 3469,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/dialogue/EIRA-7.ts",
+    "sizeBytes": 10321,
+    "ext": "ts"
+  },
+  {
+    "path": "added by Lucky/dialogue/orderly conversations",
+    "sizeBytes": 4512,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/dialogue/thematic dialogue",
+    "sizeBytes": 6024,
+    "ext": ""
+  },
+  {
     "path": "added by Lucky/Doctrinal Override Key (the red date).png",
     "sizeBytes": 3683,
     "ext": "png"
@@ -149,6 +184,21 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "path": "added by Lucky/emp grenade 3.aseprite",
     "sizeBytes": 9437,
     "ext": "aseprite"
+  },
+  {
+    "path": "added by Lucky/EMP grenade/emp grenade 3.aseprite",
+    "sizeBytes": 9437,
+    "ext": "aseprite"
+  },
+  {
+    "path": "added by Lucky/EMP grenade/grenade explosion.aseprite",
+    "sizeBytes": 9418,
+    "ext": "aseprite"
+  },
+  {
+    "path": "added by Lucky/EMP grenade/readme",
+    "sizeBytes": 37,
+    "ext": ""
   },
   {
     "path": "added by Lucky/epic banananana.json",
@@ -191,6 +241,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "zip"
   },
   {
+    "path": "added by Lucky/levels/test_map_V_3.zip",
+    "sizeBytes": 38392,
+    "ext": "zip"
+  },
+  {
     "path": "added by Lucky/Metadata.csv",
     "sizeBytes": 184235,
     "ext": "csv"
@@ -211,6 +266,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "json"
   },
   {
+    "path": "added by Lucky/music/Article zero theme 2 maybe.json",
+    "sizeBytes": 37472,
+    "ext": "json"
+  },
+  {
     "path": "added by Lucky/music/Article Zero Title Theme finalish.json",
     "sizeBytes": 17505,
     "ext": "json"
@@ -221,8 +281,28 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "json"
   },
   {
+    "path": "added by Lucky/music/bug in the pit.json",
+    "sizeBytes": 44137,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/citizen lattice theme w intro outro.json",
+    "sizeBytes": 43710,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/citizen lattice theme.json",
+    "sizeBytes": 38484,
+    "ext": "json"
+  },
+  {
     "path": "added by Lucky/music/crazy monkeou.json",
     "sizeBytes": 30539,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/EXPANDO.json",
+    "sizeBytes": 31992,
     "ext": "json"
   },
   {
@@ -266,8 +346,18 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "json"
   },
   {
+    "path": "added by Lucky/music/suffocate.json",
+    "sizeBytes": 47727,
+    "ext": "json"
+  },
+  {
     "path": "added by Lucky/music/sweeeo.json",
     "sizeBytes": 31664,
+    "ext": "json"
+  },
+  {
+    "path": "added by Lucky/music/VENT-4 THEME.json",
+    "sizeBytes": 37755,
     "ext": "json"
   },
   {
@@ -382,7 +472,7 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
   },
   {
     "path": "added by Lucky/sounds 4 _NEW_",
-    "sizeBytes": 5076,
+    "sizeBytes": 5708,
     "ext": ""
   },
   {
@@ -471,6 +561,146 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "png"
   },
   {
+    "path": "added by Lucky/UI tests/New UI/Article Zero UI archive active.png",
+    "sizeBytes": 2580,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/New UI/Article Zero UI archive idle.png",
+    "sizeBytes": 2557,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/New UI/Article Zero UI archive pressed.png",
+    "sizeBytes": 2472,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/New UI/Article Zero UI load active.png",
+    "sizeBytes": 2427,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/New UI/Article Zero UI load idle.png",
+    "sizeBytes": 2397,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/New UI/Article Zero UI load pressed.png",
+    "sizeBytes": 2245,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/New UI/Article Zero UI start active.png",
+    "sizeBytes": 2451,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/New UI/Article Zero UI start idle.png",
+    "sizeBytes": 2457,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/New UI/Article Zero UI start pressed.png",
+    "sizeBytes": 2297,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/New UI/Article Zero UI subtitle.png",
+    "sizeBytes": 4014,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/New UI/Article Zero UI title.png",
+    "sizeBytes": 17100,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/New UI/Article Zero UI-title screen assembled.png",
+    "sizeBytes": 109169,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/New UI/Article Zero UI-title screen background.png",
+    "sizeBytes": 85520,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/New UI/readme",
+    "sizeBytes": 18,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/UI tests/SVG test/Article Zero UI-archive button click.svg",
+    "sizeBytes": 4291,
+    "ext": "svg"
+  },
+  {
+    "path": "added by Lucky/UI tests/SVG test/Article Zero UI-doors.svg",
+    "sizeBytes": 5923,
+    "ext": "svg"
+  },
+  {
+    "path": "added by Lucky/UI tests/SVG test/Article Zero UI-era menu.svg",
+    "sizeBytes": 53154,
+    "ext": "svg"
+  },
+  {
+    "path": "added by Lucky/UI tests/SVG test/Article Zero UI-lights.svg",
+    "sizeBytes": 7314,
+    "ext": "svg"
+  },
+  {
+    "path": "added by Lucky/UI tests/SVG test/Article Zero UI-load click.svg",
+    "sizeBytes": 6794,
+    "ext": "svg"
+  },
+  {
+    "path": "added by Lucky/UI tests/SVG test/Article Zero UI-settings icon click.svg",
+    "sizeBytes": 7376,
+    "ext": "svg"
+  },
+  {
+    "path": "added by Lucky/UI tests/SVG test/Article Zero UI-start button click.svg",
+    "sizeBytes": 5398,
+    "ext": "svg"
+  },
+  {
+    "path": "added by Lucky/UI tests/SVG test/Article Zero UI-title screen.svg",
+    "sizeBytes": 171646,
+    "ext": "svg"
+  },
+  {
+    "path": "added by Lucky/UI tests/SVG test/Article Zero UI-wall panel click.svg",
+    "sizeBytes": 7657,
+    "ext": "svg"
+  },
+  {
+    "path": "added by Lucky/UI tests/SVG test/Article Zero UI-wall panel code input.svg",
+    "sizeBytes": 10070,
+    "ext": "svg"
+  },
+  {
+    "path": "added by Lucky/UI tests/SVG test/Article Zero UI-wall panel.svg",
+    "sizeBytes": 9989,
+    "ext": "svg"
+  },
+  {
+    "path": "added by Lucky/UI tests/SVG test/readme",
+    "sizeBytes": 26,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/UI tests/SVG test/thermostat.svg",
+    "sizeBytes": 7112,
+    "ext": "svg"
+  },
+  {
+    "path": "added by Lucky/UI tests/title screen.psd",
+    "sizeBytes": 1879568,
+    "ext": "psd"
+  },
+  {
     "path": "added by Lucky/UIAlert_Cancel 001_VZ_GN.wav",
     "sizeBytes": 24126,
     "ext": "wav"
@@ -519,6 +749,11 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "path": "added by Lucky/UIMvmt_Scroll 001_VZ_GN.wav",
     "sizeBytes": 9722,
     "ext": "wav"
+  },
+  {
+    "path": "added by Lucky/VENT_4_DIALOGUE_TREE.ts",
+    "sizeBytes": 5528,
+    "ext": "ts"
   },
   {
     "path": "added by Lucky/vent-4 theme.json",
