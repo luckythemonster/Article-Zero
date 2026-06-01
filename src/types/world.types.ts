@@ -176,6 +176,10 @@ export interface Tile {
   /** DOOR_CLOSED only. When true the door can't be opened by walking up and
    *  interacting — it's operated solely by its wired LIGHT_SWITCH. */
   locked?: boolean;
+  /** DOOR_CLOSED + locked only. Optional numeric code accepted by the wall
+   *  terminal keypad as an alternative to the wired switch. When supplied,
+   *  the door becomes clickable on the room map and prompts a code entry. */
+  code?: string;
 }
 
 /** Wiring between a LIGHT_SWITCH tile and the LIGHT_SOURCE tiles it controls.

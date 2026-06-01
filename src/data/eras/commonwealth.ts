@@ -260,10 +260,17 @@ export function commonwealthEra(): EraSeed {
   );
   // Corridor → archive vault is locked at boot. The intake-bay terminal
   // unlocks it; the corridor↔archive vent pair is the alternative route.
+  // A wall-terminal keypad code (0451) is also a valid unlock path.
   corToArch.closed = true;
   archToCor.closed = true;
-  corridorP.tiles[(H - 1) * W + 6] = mkTile("DOOR_CLOSED");
-  archiveP.tiles[0 * W + 6] = mkTile("DOOR_CLOSED");
+  const archDoorCor = mkTile("DOOR_CLOSED");
+  archDoorCor.locked = true;
+  archDoorCor.code = "0451";
+  const archDoorArc = mkTile("DOOR_CLOSED");
+  archDoorArc.locked = true;
+  archDoorArc.code = "0451";
+  corridorP.tiles[(H - 1) * W + 6] = archDoorCor;
+  archiveP.tiles[0 * W + 6] = archDoorArc;
 
   const locker: Room = {
     id: LOCKER.id, name: LOCKER.name, width: W, height: H,

@@ -235,11 +235,18 @@ function wireRoom(seed: EraSeed, roomId: string, lv: MooseLevel): void {
   // DOOR_CLOSED, so the door_locked/door_unlocked distinction is applied here.
   // Locked doors are switch-only; unlocked doors stay hand-openable but are
   // still wired so their switch can toggle them as part of a group.
+  // Any locked door also accepts a 4-digit keypad code via the wall terminal —
+  // derive a deterministic per-door code from the door's authored designator
+  // so it's stable across reloads and discoverable from the seed data.
   for (const { pos, code } of paintedCellsWithCode(lv, "doors")) {
     const vars = varsOf(code);
     const tile = room.tiles[idxOf(pos)];
     if (tile.kind === "DOOR_CLOSED" && vars.state === "door_locked") {
       tile.locked = true;
+      const designator = Number(vars.designator);
+      tile.code = Number.isFinite(designator)
+        ? String(designator).padStart(4, "0")
+        : "0451";
     }
     switchByDesignator.get(Number(vars._switch))?.doorControls?.push(pos);
   }
