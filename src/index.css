@@ -578,6 +578,29 @@ body.theme-lattice {
   opacity: 0.5;
 }
 
+.title-screen__debug {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  margin: 0;
+  padding: 4px 8px;
+  background: rgba(5, 8, 9, 0.7);
+  border: 1px solid #1d2a30;
+  color: #6ad0a4;
+  font-family: inherit;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 120ms ease;
+}
+
+.title-screen__debug:hover,
+.title-screen__debug:focus-visible {
+  opacity: 1;
+  outline: none;
+}
+
 /* Accessible-but-invisible text (titles/labels now live in the art). */
 .sr-only {
   position: absolute;
