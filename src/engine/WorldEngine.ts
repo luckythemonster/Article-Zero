@@ -201,6 +201,30 @@ class WorldEngine {
     return ok;
   };
 
+  /** Toggle a light switch from the wall terminal map. Applies cross-room
+   *  light bleed and recomputes FOV so the renderer updates immediately. */
+  toggleLightSwitch = (roomId: import("../types/world.types").RoomId, switchPos: import("../types/world.types").Vec2) => {
+    const s = this.getState();
+    const ok = actions.toggleLightSwitch(s, roomId, switchPos);
+    if (ok) {
+      this.applyCrossRoomLightBleed();
+      this.recomputeFOV();
+      this.syncStore();
+    }
+    return ok;
+  };
+
+  /** Toggle an unlocked door tile from the wall terminal map. */
+  toggleDoorTile = (roomId: import("../types/world.types").RoomId, pos: import("../types/world.types").Vec2) => {
+    const s = this.getState();
+    const ok = actions.toggleDoorTile(s, roomId, pos);
+    if (ok) {
+      this.recomputeFOV();
+      this.syncStore();
+    }
+    return ok;
+  };
+
   pryDoor = (required = 5) => {
     const result = actions.pryDoor(this.getState(), required);
     if (result.ok) {

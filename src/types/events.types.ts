@@ -179,7 +179,7 @@ export interface EventMap {
     pos: Vec2;
     zoneIds: string[];
   };
-  WALL_THERMOSTAT_OPENED: {
+  WALL_TERMINAL_OPENED: {
     terminalId: string;
     roomId: RoomId;
     pos: Vec2;

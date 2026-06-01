@@ -593,7 +593,7 @@ export function testMapEra(): EraSeed {
           terminalId: "test-map-thermostat-deck",
           title: "WALL THERMOSTAT — DECK",
           body: "Local zone setpoint and cool/heat toggle.",
-          terminalKind: "WALL_THERMOSTAT",
+          terminalKind: "WALL_TERMINAL",
           hvacZoneId: "deck-climate",
         });
       }
@@ -615,7 +615,7 @@ export function testMapEra(): EraSeed {
         terminalId: "test-map-thermostat-sublevel",
         title: "WALL THERMOSTAT — SUB-DECK",
         body: "Local zone setpoint and cool/heat toggle.",
-        terminalKind: "WALL_THERMOSTAT",
+        terminalKind: "WALL_TERMINAL",
         hvacZoneId: "sublevel-climate",
       });
     }

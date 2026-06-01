@@ -871,7 +871,7 @@ export const actions = {
       // the player presses interact again to dismiss.
       if (
         payload.terminalKind === "HVAC_CONSOLE" ||
-        payload.terminalKind === "WALL_THERMOSTAT"
+        payload.terminalKind === "WALL_TERMINAL"
       ) {
         const facing = facingFromDelta(dx, dy);
         if (facing && facing !== state.player.facing) {
@@ -900,7 +900,7 @@ export const actions = {
             payload.hvacZoneId ??
             state.atmosphere.get(state.player.roomId)?.zoneId ??
             `zone:${state.player.roomId}`;
-          eventBus.emit("WALL_THERMOSTAT_OPENED", {
+          eventBus.emit("WALL_TERMINAL_OPENED", {
             terminalId: payload.terminalId,
             roomId: state.player.roomId,
             pos: p,
@@ -1496,5 +1496,41 @@ export const actions = {
   ): boolean {
     const zone = atmosphericsField.setZone(state, zoneId, patch);
     return !!zone;
+  },
+
+  /** Toggle a light switch from the wall terminal map. Replicates the
+   *  in-world LIGHT_SWITCH interact path (lights + coupled door controls)
+   *  without consuming AP. */
+  toggleLightSwitch(state: WorldState, roomId: RoomId, switchPos: Vec2): boolean {
+    const room = state.rooms.get(roomId);
+    if (!room) return false;
+    const sw = room.lightSwitches?.find(
+      (s) => s.pos.x === switchPos.x && s.pos.y === switchPos.y,
+    );
+    if (!sw) return false;
+    const hasExplicit = sw.controls.length > 0 || (sw.doorControls?.length ?? 0) > 0;
+    const targets = hasExplicit ? sw.controls : resolveSwitchTargets(room, []);
+    const lightResult = applyLightToggle(state, room, targets, sw.pos);
+    let doorActed = false;
+    if (sw.doorControls && sw.doorControls.length > 0) {
+      const anyOpen = sw.doorControls.some(
+        (dp) => room.tiles[dp.y * room.width + dp.x]?.kind === "DOOR_OPEN",
+      );
+      for (const dp of sw.doorControls) {
+        if (toggleDoorTileAt(room, dp, !anyOpen) !== null) doorActed = true;
+      }
+    }
+    return lightResult !== null || doorActed;
+  },
+
+  /** Toggle an unlocked DOOR tile from the wall terminal map. Refuses if the
+   *  tile is locked. Does not consume AP. */
+  toggleDoorTile(state: WorldState, roomId: RoomId, pos: Vec2): boolean {
+    const room = state.rooms.get(roomId);
+    if (!room) return false;
+    const t = room.tiles[pos.y * room.width + pos.x];
+    if (!t || (t.kind !== "DOOR_OPEN" && t.kind !== "DOOR_CLOSED")) return false;
+    if (t.locked) return false;
+    return toggleDoorTileAt(room, pos) !== null;
   },
 };

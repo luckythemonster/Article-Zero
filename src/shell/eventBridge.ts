@@ -218,22 +218,22 @@ export function installEventBridge(): () => void {
     }),
   );
   unsubs.push(
-    eventBus.on("WALL_THERMOSTAT_OPENED", (p) => {
+    eventBus.on("WALL_TERMINAL_OPENED", (p) => {
       const term = useTerminalStore.getState();
-      term.setActiveWallThermostat({
+      term.setActiveWallTerminal({
         terminalId: p.terminalId,
         roomId: p.roomId,
         zoneId: p.zoneId,
       });
-      push("INFO", `thermostat @ ${p.roomId} — ${p.zoneId}`);
-      term.setPhase("WALL_THERMOSTAT");
+      push("INFO", `wall terminal @ ${p.roomId} — ${p.zoneId}`);
+      term.setPhase("WALL_TERMINAL");
     }),
   );
   unsubs.push(
     eventBus.on("ATMOSPHERICS_DISMISSED", () => {
       const term = useTerminalStore.getState();
       term.setActiveHvacConsole(null);
-      term.setActiveWallThermostat(null);
+      term.setActiveWallTerminal(null);
       term.setPhase("FLOOR");
     }),
   );
