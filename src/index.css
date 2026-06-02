@@ -1466,16 +1466,17 @@ body.theme-lattice {
 /* ── WALL TERMINAL NEW UI ────────────────────────────────────────────────── */
 .wall-terminal {
   position: relative;
-  width: 520px;
-  height: 520px;
+  width: 538px;
+  height: 522px;
   max-width: 90vw;
   max-height: 90vh;
-  /* Add padding to fit inside the new frame */
   padding: 0;
   background: none;
   border: none;
   border-radius: 0;
   box-shadow: none;
+  overflow: visible;
+  image-rendering: pixelated;
 }
 
 /* Base background (repeating grid) */
@@ -1502,7 +1503,7 @@ body.theme-lattice {
 
 .wall-terminal__content {
   position: relative;
-  padding: 2.5rem 2rem;
+  padding: 46px 36px 40px 36px;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
