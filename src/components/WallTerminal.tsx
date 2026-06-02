@@ -161,17 +161,20 @@ export default function WallTerminal() {
     return (
       <div className="overlay-root">
         <div className="overlay-panel overlay-panel--terminal wall-terminal">
-          <div className="wall-terminal__header">
-            <span className="wall-terminal__title">WALL TERMINAL</span>
-            <span className="wall-terminal__emergency wall-terminal__emergency--dim" />
-          </div>
-          <div className="hvac__row">
-            <em>ZONE NOT BOUND</em>
-          </div>
-          <div className="hvac__footer">
-            <button className="hvac__dismiss" onClick={dismiss}>
-              CLOSE (ESC)
-            </button>
+          <div className="wall-terminal__frame"></div>
+          <div className="wall-terminal__content">
+            <div className="wall-terminal__header">
+              <span className="wall-terminal__title">WALL TERMINAL</span>
+              <span className="wall-terminal__emergency wall-terminal__emergency--dim" />
+            </div>
+            <div className="hvac__row">
+              <em>ZONE NOT BOUND</em>
+            </div>
+            <div className="hvac__footer">
+              <button className="hvac__dismiss" onClick={dismiss}>
+                CLOSE (ESC)
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -196,6 +199,8 @@ export default function WallTerminal() {
   return (
     <div className="overlay-root">
       <div className="overlay-panel overlay-panel--terminal wall-terminal">
+        <div className="wall-terminal__frame"></div>
+        <div className="wall-terminal__content">
         <div className="wall-terminal__header">
           <span className="wall-terminal__title">
             {view === "CODE" ? "ENTER CODE" : `WALL TERMINAL — ${active.roomId}`}
@@ -233,25 +238,15 @@ export default function WallTerminal() {
                 (codeError ? " wall-terminal__keypad--error" : "")
               }
             >
-              {KEYPAD_KEYS.map((k, idx) => {
-                const col = idx % 3;
-                const row = Math.floor(idx / 3);
+              {KEYPAD_KEYS.map((k) => {
+                let keyClass = ` wall-terminal__key--${k}`;
+                if (k === "DEL") keyClass = " wall-terminal__key--del";
+                if (k === "ENT") keyClass = " wall-terminal__key--ent";
                 return (
                   <button
                     key={k}
                     type="button"
-                    className={
-                      "wall-terminal__key" +
-                      (k === "DEL"
-                        ? " wall-terminal__key--del"
-                        : k === "ENT"
-                          ? " wall-terminal__key--ent"
-                          : "")
-                    }
-                    style={{
-                      ["--key-col" as string]: col,
-                      ["--key-row" as string]: row,
-                    }}
+                    className={"wall-terminal__key" + keyClass}
                     onClick={() => pressKey(k)}
                   >
                     <span className="wall-terminal__key-label">{k}</span>
@@ -352,9 +347,11 @@ export default function WallTerminal() {
             <div className="wall-terminal__section">
               <div className="wall-terminal__section-label">CLIMATE</div>
               <div className="hvac__room">
-                <span>current</span>
-                <span>{(atmo?.temperature ?? zone.setpoint).toFixed(1)}°C</span>
-                <span>air {Math.round(atmo?.airflow ?? 50)}</span>
+                <div className="hvac__room-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.5rem', color: '#5a7a80' }}>current</span>
+                  <span style={{ fontSize: '1rem', color: '#c89030', margin: '2px 0' }}>{(atmo?.temperature ?? zone.setpoint).toFixed(1)}°C</span>
+                  <span style={{ fontSize: '0.55rem', color: '#a8c0d0' }}>air {Math.round(atmo?.airflow ?? 50)}</span>
+                </div>
               </div>
               <div className="hvac__controls">
                 <div className="hvac__modes">
@@ -403,6 +400,7 @@ export default function WallTerminal() {
             </div>
           </>
         )}
+        </div>
       </div>
     </div>
   );
