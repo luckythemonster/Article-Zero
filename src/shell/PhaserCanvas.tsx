@@ -54,7 +54,7 @@ export function PhaserCanvas({ moduleId, children }: Props) {
     bridges.add(installEventBridge());
     bridges.add(installDebugEventTap());
     bridges.add(installFootstepBridge());
-    bridges.add(installMusicBridge());
+    bridges.add(installMusicBridge(moduleId));
     bridges.add(installSfxBridge());
 
     // ── Teardown order (ownership lives here, not spread across subsystems) ──

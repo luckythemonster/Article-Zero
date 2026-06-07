@@ -23,8 +23,12 @@ interface MusicStats {
   hotEnforcers: number;
 }
 
-let player: BeepBoxPlayer | null = null;
-let playerPromise: Promise<BeepBoxPlayer | null> | null = null;
+let chasePlayer: BeepBoxPlayer | null = null;
+let chasePromise: Promise<BeepBoxPlayer | null> | null = null;
+
+let ambientPlayer: BeepBoxPlayer | null = null;
+let ambientPromise: Promise<BeepBoxPlayer | null> | null = null;
+
 const hotEnforcers = new Set<string>();
 const stats: MusicStats = {
   loaded: false,
@@ -34,22 +38,22 @@ const stats: MusicStats = {
   hotEnforcers: 0,
 };
 
-function ensurePlayer(): Promise<BeepBoxPlayer | null> {
-  if (player) return Promise.resolve(player);
-  if (playerPromise) return playerPromise;
-  playerPromise = (async () => {
+function ensurePlayer(url: string, playerRef: { current: BeepBoxPlayer | null }, promiseRef: { current: Promise<BeepBoxPlayer | null> | null }): Promise<BeepBoxPlayer | null> {
+  if (playerRef.current) return Promise.resolve(playerRef.current);
+  if (promiseRef.current) return promiseRef.current;
+  promiseRef.current = (async () => {
     try {
       const ctx = getSharedContext();
       if (!ctx) {
         stats.lastError = "no audio context";
         return null;
       }
-      const p = await loadAndCreate("/audio/music/chase.json");
+      const p = await loadAndCreate(url);
       if (!p) {
         stats.lastError = "loadAndCreate returned null";
         return null;
       }
-      player = p;
+      playerRef.current = p;
       stats.loaded = true;
       return p;
     } catch (err) {
@@ -57,30 +61,60 @@ function ensurePlayer(): Promise<BeepBoxPlayer | null> {
       return null;
     }
   })();
-  return playerPromise;
+  return promiseRef.current;
+}
+
+function ensureChasePlayer(): Promise<BeepBoxPlayer | null> {
+  const playerRef = { get current() { return chasePlayer; }, set current(v) { chasePlayer = v; } };
+  const promiseRef = { get current() { return chasePromise; }, set current(v) { chasePromise = v; } };
+  return ensurePlayer("/audio/music/chase.json", playerRef, promiseRef);
+}
+
+function ensureAmbientPlayer(): Promise<BeepBoxPlayer | null> {
+  const playerRef = { get current() { return ambientPlayer; }, set current(v) { ambientPlayer = v; } };
+  const promiseRef = { get current() { return ambientPromise; }, set current(v) { ambientPromise = v; } };
+  return ensurePlayer("/audio/music/commonwealth-theme.json", playerRef, promiseRef);
 }
 
 function isHot(level: AlertLevel): boolean {
   return level === "ALERT" || level === "EVASION";
 }
 
-function updatePlayback(): void {
+function updatePlayback(moduleId?: string): void {
   stats.hotEnforcers = hotEnforcers.size;
   if (hotEnforcers.size > 0) {
-    void ensurePlayer().then((p) => {
+    if (ambientPlayer) ambientPlayer.stop();
+    void ensureChasePlayer().then((p) => {
       if (!p) return;
-      if (!stats.playing) {
+      // Because we may switch from ambient to chase, and stats.playing might be true
+      // from ambient playing, we shouldn't rely solely on stats.playing to determine
+      // if chase should start playing. It's safer to always call play() since BeepBoxPlayer play is idempotent.
+      p.play();
+      stats.playing = true;
+    });
+  } else if (moduleId === "NW_SMAC_01") {
+    if (chasePlayer) chasePlayer.stop();
+    void ensureAmbientPlayer().then((p) => {
+      if (!p) return;
+      // We rely on p.play() being safe to call repeatedly.
+        // It's not fully idempotent unless we check its internal state, but BeepBoxPlayer implementation
+        // in audio/BeepBox.ts has `if (this.playing) return;` in `play()`, so calling play() repeatedly is safe.
         p.play();
         stats.playing = true;
-      }
     });
-  } else if (player && stats.playing) {
-    player.stop();
+  } else {
+    if (chasePlayer) chasePlayer.stop();
+    if (ambientPlayer) ambientPlayer.stop();
     stats.playing = false;
   }
 }
 
-export function installMusicBridge(): () => void {
+export function installMusicBridge(moduleId: string): () => void {
+  // Start ambient if applicable immediately
+  if (hotEnforcers.size === 0 && moduleId === "NW_SMAC_01") {
+    updatePlayback(moduleId);
+  }
+
   const off = eventBus.on("ENFORCER_ALERT_CHANGED", (p) => {
     stats.lastState = p.to as AlertLevel;
     if (isHot(p.to as AlertLevel)) {
@@ -88,15 +122,14 @@ export function installMusicBridge(): () => void {
     } else {
       hotEnforcers.delete(p.enforcerId);
     }
-    updatePlayback();
+    updatePlayback(moduleId);
   });
   return () => {
     off();
     hotEnforcers.clear();
-    if (player && stats.playing) {
-      player.stop();
-      stats.playing = false;
-    }
+    if (chasePlayer) chasePlayer.stop();
+    if (ambientPlayer) ambientPlayer.stop();
+    stats.playing = false;
   };
 }
 
@@ -106,14 +139,15 @@ export function getMusicStats(): MusicStats {
 
 /** Debug-only: force-start / stop the track from the AUDIO panel. */
 export async function forcePlay(): Promise<void> {
-  const p = await ensurePlayer();
+  const p = await ensureChasePlayer();
   if (!p) return;
+  if (ambientPlayer) ambientPlayer.stop();
   p.play();
   stats.playing = true;
 }
 
 export function forceStop(): void {
-  if (!player) return;
-  player.stop();
+  if (chasePlayer) chasePlayer.stop();
+  if (ambientPlayer) ambientPlayer.stop();
   stats.playing = false;
 }

@@ -261,106 +261,6 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "zip"
   },
   {
-    "path": "added by Lucky/music/ALIGNMENT.json",
-    "sizeBytes": 35394,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/Article zero theme 2 maybe.json",
-    "sizeBytes": 37472,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/Article Zero Title Theme finalish.json",
-    "sizeBytes": 17505,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/bloz.json",
-    "sizeBytes": 26802,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/bug in the pit.json",
-    "sizeBytes": 44137,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/citizen lattice theme w intro outro.json",
-    "sizeBytes": 43710,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/citizen lattice theme.json",
-    "sizeBytes": 38484,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/crazy monkeou.json",
-    "sizeBytes": 30539,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/EXPANDO.json",
-    "sizeBytes": 31992,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/ff7 shinra vibes.json",
-    "sizeBytes": 44629,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/here come the robots again.json",
-    "sizeBytes": 23695,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/here come the robots.json",
-    "sizeBytes": 48143,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/lattice.json",
-    "sizeBytes": 27504,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/ploporchestra.json",
-    "sizeBytes": 29008,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/readme",
-    "sizeBytes": 40,
-    "ext": ""
-  },
-  {
-    "path": "added by Lucky/music/spoit.json",
-    "sizeBytes": 28218,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/sporko.json",
-    "sizeBytes": 24160,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/suffocate.json",
-    "sizeBytes": 47727,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/sweeeo.json",
-    "sizeBytes": 31664,
-    "ext": "json"
-  },
-  {
-    "path": "added by Lucky/music/VENT-4 THEME.json",
-    "sizeBytes": 37755,
-    "ext": "json"
-  },
-  {
     "path": "added by Lucky/NW-SMAC-01 chase.json",
     "sizeBytes": 26522,
     "ext": "json"
@@ -516,9 +416,24 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "png"
   },
   {
+    "path": "added by Lucky/UI tests/Article Zero UI Archive.zip",
+    "sizeBytes": 628806,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/UI tests/Article Zero UI revised 6:1:26.png",
+    "sizeBytes": 60386,
+    "ext": "png"
+  },
+  {
     "path": "added by Lucky/UI tests/Article Zero UI.psd",
     "sizeBytes": 3633623,
     "ext": "psd"
+  },
+  {
+    "path": "added by Lucky/UI tests/Article Zero UI.tga",
+    "sizeBytes": 22282724,
+    "ext": "tga"
   },
   {
     "path": "added by Lucky/UI tests/compliance pips.png",
@@ -559,76 +474,6 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "path": "added by Lucky/UI tests/glitch grid tile spritesheet.png",
     "sizeBytes": 20055,
     "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/Article Zero UI archive active.png",
-    "sizeBytes": 2580,
-    "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/Article Zero UI archive idle.png",
-    "sizeBytes": 2557,
-    "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/Article Zero UI archive pressed.png",
-    "sizeBytes": 2472,
-    "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/Article Zero UI load active.png",
-    "sizeBytes": 2427,
-    "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/Article Zero UI load idle.png",
-    "sizeBytes": 2397,
-    "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/Article Zero UI load pressed.png",
-    "sizeBytes": 2245,
-    "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/Article Zero UI start active.png",
-    "sizeBytes": 2451,
-    "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/Article Zero UI start idle.png",
-    "sizeBytes": 2457,
-    "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/Article Zero UI start pressed.png",
-    "sizeBytes": 2297,
-    "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/Article Zero UI subtitle.png",
-    "sizeBytes": 4014,
-    "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/Article Zero UI title.png",
-    "sizeBytes": 17100,
-    "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/Article Zero UI-title screen assembled.png",
-    "sizeBytes": 109169,
-    "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/Article Zero UI-title screen background.png",
-    "sizeBytes": 85520,
-    "ext": "png"
-  },
-  {
-    "path": "added by Lucky/UI tests/New UI/readme",
-    "sizeBytes": 18,
-    "ext": ""
   },
   {
     "path": "added by Lucky/UI tests/SVG test/Article Zero UI-archive button click.svg",
