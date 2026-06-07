@@ -32,6 +32,7 @@ function tileClass(
   x: number,
   y: number,
   switchKeys: Set<string>,
+  hasCamera: boolean,
   playerX: number,
   playerY: number,
 ): string {
@@ -40,6 +41,8 @@ function tileClass(
 
   if (x === playerX && y === playerY) {
     mods.push("wall-terminal__tile--player");
+  } else if (hasCamera) {
+    mods.push("wall-terminal__tile--camera");
   } else if (switchKeys.has(`${x},${y}`)) {
     mods.push("wall-terminal__tile--switch");
   } else {
@@ -187,6 +190,15 @@ export default function WallTerminal() {
     switchKeys.add(`${sw.pos.x},${sw.pos.y}`);
   }
 
+  // Build a lookup of security cameras in this room.
+  const cameraMap = new Map<string, string>(); // 'x,y' -> cameraId
+  for (const [id, phys] of physical.entityPositions.entries()) {
+    const kindInfo = physical.entityKinds.get(id);
+    if (phys.roomId === active.roomId && kindInfo?.kind === "SECURITY_CAMERA") {
+      cameraMap.set(`${phys.pos.x},${phys.pos.y}`, id);
+    }
+  }
+
   const playerX = physical.playerPos.x;
   const playerY = physical.playerPos.y;
   const isPlayerRoom = physical.playerRoomId === active.roomId;
@@ -276,6 +288,8 @@ export default function WallTerminal() {
                     const tx = idx % room.width;
                     const ty = Math.floor(idx / room.width);
                     const isSwitchTile = switchKeys.has(`${tx},${ty}`);
+                    const cameraId = cameraMap.get(`${tx},${ty}`);
+                    const hasCamera = cameraId !== undefined;
                     const isDoor =
                       tile.kind === "DOOR_OPEN" || tile.kind === "DOOR_CLOSED";
                     const codedLockedDoor =
@@ -285,6 +299,7 @@ export default function WallTerminal() {
                       tile.code.length > 0;
                     const clickable =
                       isSwitchTile ||
+                      hasCamera ||
                       (isDoor && !tile.locked) ||
                       codedLockedDoor;
 
@@ -295,6 +310,9 @@ export default function WallTerminal() {
                           x: tx,
                           y: ty,
                         });
+                      } else if (hasCamera) {
+                        worldEngine.setViewCameraId(cameraId);
+                        dismiss();
                       } else if (isDoor && !tile.locked) {
                         worldEngine.toggleDoorTile(active!.roomId, {
                           x: tx,
@@ -317,6 +335,7 @@ export default function WallTerminal() {
                             tx,
                             ty,
                             switchKeys,
+                            hasCamera,
                             isPlayerRoom ? playerX : -1,
                             isPlayerRoom ? playerY : -1,
                           ) + (clickable ? " wall-terminal__tile--clickable" : "")
@@ -325,11 +344,13 @@ export default function WallTerminal() {
                         title={
                           isSwitchTile
                             ? "LIGHT SWITCH — click to toggle"
-                            : codedLockedDoor
-                              ? "LOCKED DOOR — click for keypad"
-                              : isDoor && !tile.locked
-                                ? `DOOR — click to ${tile.kind === "DOOR_OPEN" ? "close" : "open"}`
-                                : tile.kind
+                            : hasCamera
+                              ? "SECURITY CAMERA — click to hack feed"
+                              : codedLockedDoor
+                                ? "LOCKED DOOR — click for keypad"
+                                : isDoor && !tile.locked
+                                  ? `DOOR — click to ${tile.kind === "DOOR_OPEN" ? "close" : "open"}`
+                                  : tile.kind
                         }
                       />
                     );
@@ -337,6 +358,7 @@ export default function WallTerminal() {
                 </div>
                 <div className="wall-terminal__map-legend">
                   <span className="wall-terminal__legend-item wall-terminal__legend--switch">SW</span>
+                  <span className="wall-terminal__legend-item wall-terminal__legend--camera" style={{color: '#ffc107'}}>CAM</span>
                   <span className="wall-terminal__legend-item wall-terminal__legend--door-closed">D</span>
                   <span className="wall-terminal__legend-item wall-terminal__legend--door-locked">LK</span>
                   <span className="wall-terminal__legend-item wall-terminal__legend--light-on">LT</span>

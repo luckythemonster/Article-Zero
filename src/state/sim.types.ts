@@ -99,6 +99,7 @@ export interface SubjectiveState {
   hidingTileKey?: string;
   spoofTurnsRemaining?: number;
   baffleTurnsRemaining?: number;
+  viewingCameraId?: string;
   lastMoveTurn?: number;
   entityMinds: Map<EntityId, EntityMind>;
   visibleTiles: Set<string>;
@@ -148,6 +149,7 @@ export interface SerializedSubjective {
   hidingTileKey?: string;
   spoofTurnsRemaining?: number;
   baffleTurnsRemaining?: number;
+  viewingCameraId?: string;
   lastMoveTurn?: number;
   entityMinds: [EntityId, EntityMind][];
   visibleTiles: string[];

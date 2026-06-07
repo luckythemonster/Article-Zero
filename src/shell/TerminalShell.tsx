@@ -24,6 +24,7 @@ import Eira7TreeTerminal from "../components/Eira7TreeTerminal";
 import Vent4TreeTerminal from "../components/Vent4TreeTerminal";
 import InventoryOverlay from "../components/InventoryOverlay";
 import APMeter from "../components/APMeter";
+import CameraFeedOverlay from "../components/CameraFeedOverlay";
 import ExecuteResetModal from "../components/ExecuteResetModal";
 import FullscreenFlash from "./FullscreenFlash";
 import TitleScreen from "./TitleScreen";
@@ -105,6 +106,7 @@ export default function TerminalShell() {
               phase === "CLIMAX" ||
               phase === "HVAC_CONTROL" ||
               phase === "WALL_TERMINAL") && <APMeter />}
+            <CameraFeedOverlay />
             <ExecuteResetModal />
             <AuditLockdown />
           </PhaserCanvas>

@@ -203,6 +203,10 @@ function moveCommon(
     state.player.peeking = undefined;
     eventBus.emit("PLAYER_PEEKED", { facing: null });
   }
+  // Any movement disconnects from a camera feed.
+  if (state.player.viewingCameraId) {
+    state.player.viewingCameraId = undefined;
+  }
   const facing = facingFromDelta(dx, dy);
   if (facing && facing !== state.player.facing) {
     state.player.facing = facing;
@@ -655,6 +659,10 @@ export const actions = {
   turn(state: WorldState, facing: Facing): boolean {
     if (state.detained) return false;
     if (state.player.hidingTileKey) return false;
+    // Any turn disconnects from a camera feed.
+    if (state.player.viewingCameraId) {
+      state.player.viewingCameraId = undefined;
+    }
     if (state.player.facing === facing && !state.player.peeking) return false;
     if (state.player.peeking) {
       state.player.peeking = undefined;

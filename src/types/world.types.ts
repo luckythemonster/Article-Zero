@@ -453,6 +453,8 @@ export interface PlayerState {
    *  recomputeFOV() clamps the player's sight radius to BLIND_RADIUS and
    *  RoomScene draws a haze overlay. Decremented in advanceTurn(). */
   blindnessTurnsRemaining?: number;
+  /** If set, the player is currently viewing the FOV of this camera entity. */
+  viewingCameraId?: string;
 }
 
 // Vent links ------------------------------------------------------------

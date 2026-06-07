@@ -1540,12 +1540,17 @@ body.theme-lattice {
 
 /* Animation for the flashing button */
 @keyframes emergency-flash {
-  0%, 49% { background-image: url("/assets/ui/wall-terminal/emergency-button-flash-on.png"); }
-  50%, 100% { background-image: url("/assets/ui/wall-terminal/emergency-button-flash-off.png"); }
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
 }
 
 .wall-terminal__emergency--lit {
   animation: emergency-flash 1s infinite;
+  background-image: url("/assets/ui/wall-terminal/emergency-button-flash-on.png");
+}
+
+.wall-terminal__emergency {
+  background-image: url("/assets/ui/wall-terminal/emergency-button-idle.png");
 }
 
 .wall-terminal__section {
@@ -1753,6 +1758,7 @@ body.theme-lattice {
 .wall-terminal__tile--light-on    { background: #3a4e1a; outline: 1px solid #a8e060; }
 .wall-terminal__tile--light-off   { background: #1a2010; outline: 1px solid #3a5020; }
 .wall-terminal__tile--switch      { background: #2a3e1e; outline: 1px solid #6ad0a4; }
+.wall-terminal__tile--camera      { background: #3b301a; outline: 1px solid #ffc107; }
 .wall-terminal__tile--terminal    { background: #1a2c34; outline: 1px solid #4a9ab0; }
 .wall-terminal__tile--vent        { background: #1e2a2e; outline: 1px solid #3a6070; }
 .wall-terminal__tile--locker      { background: #252018; outline: 1px solid #806040; }

@@ -214,6 +214,14 @@ class WorldEngine {
     return ok;
   };
 
+  /** Set or clear the player's viewing camera ID. */
+  setViewCameraId = (cameraId?: string) => {
+    const s = this.getState();
+    s.player.viewingCameraId = cameraId;
+    this.recomputeFOV();
+    this.syncStore();
+  };
+
   /** Toggle an unlocked door tile from the wall terminal map. */
   toggleDoorTile = (roomId: import("../types/world.types").RoomId, pos: import("../types/world.types").Vec2) => {
     const s = this.getState();
@@ -660,65 +668,92 @@ class WorldEngine {
     const blinded = (s.player.blindnessTurnsRemaining ?? 0) > 0;
     if (blinded) radius = Math.min(radius, BLIND_RADIUS);
     s.visibleTiles.clear();
-    if (s.player.hidingTileKey) {
-      s.visibleTiles.add(`${s.player.pos.x},${s.player.pos.y}`);
-      eventBus.emit("FOV_UPDATED", {
-        roomId: room.id,
-        visibleTiles: Array.from(s.visibleTiles),
-      });
-      eventBus.emit("AMBIENT_LIGHT_CHANGED", {
-        roomId: room.id,
-        level: ambient,
-        effectiveRadius: 0,
-      });
-      return;
-    }
-    const cone = computeCone({
-      tiles: room.tiles,
-      width: room.width,
-      height: room.height,
-      ox: s.player.pos.x,
-      oy: s.player.pos.y,
-      radius,
-    });
-    const lit = lightField.getOrCompute(room);
-    const px = s.player.pos.x;
-    const py = s.player.pos.y;
-    const flashlightR = s.player.flashlightOn
-      ? Math.min(FLASHLIGHT_BONUS, blinded ? BLIND_RADIUS : FLASHLIGHT_BONUS)
-      : 0;
-    for (const k of cone) {
-      if (lit.has(k)) { s.visibleTiles.add(k); continue; }
-      const [xs, ys] = k.split(",");
-      const tx = Number(xs);
-      const ty = Number(ys);
-      const md = Math.abs(tx - px) + Math.abs(ty - py);
-      // Flashlight bypass: tiles within bonus radius are lit by the
-      // carried lamp even when room emissions don't cover them.
-      if (flashlightR > 0 && md <= flashlightR) { s.visibleTiles.add(k); continue; }
-      // Own-tile + cardinal-neighbor fallback so the player isn't blind in
-      // pitch black on the tile they're standing on.
-      if (md <= 1) { s.visibleTiles.add(k); continue; }
-    }
-    if (s.player.peeking) {
-      const peekVisible = computeCone({
+    if (s.player.viewingCameraId) {
+      const camera = s.entities.get(s.player.viewingCameraId);
+      if (camera && camera.roomId === room.id) {
+        // Compute FOV from the camera's perspective.
+        // Match EnforcerSystem.SIGHT_RADIUS (12) and halfAngle (Math.PI / 3).
+        const cone = computeCone({
+          tiles: room.tiles,
+          width: room.width,
+          height: room.height,
+          ox: camera.pos.x,
+          oy: camera.pos.y,
+          radius: 12,
+          facing: camera.facing,
+          halfAngle: Math.PI / 3,
+        });
+        const lit = lightField.getOrCompute(room);
+        for (const k of cone) {
+          // Camera vision relies on room lighting, no flashlight bypass.
+          if (lit.has(k)) {
+            s.visibleTiles.add(k);
+          }
+        }
+        // Always add the camera's own tile so we can see it.
+        s.visibleTiles.add(`${camera.pos.x},${camera.pos.y}`);
+      }
+    } else {
+      if (s.player.hidingTileKey) {
+        s.visibleTiles.add(`${s.player.pos.x},${s.player.pos.y}`);
+        eventBus.emit("FOV_UPDATED", {
+          roomId: room.id,
+          visibleTiles: Array.from(s.visibleTiles),
+        });
+        eventBus.emit("AMBIENT_LIGHT_CHANGED", {
+          roomId: room.id,
+          level: ambient,
+          effectiveRadius: 0,
+        });
+        return;
+      }
+      const cone = computeCone({
         tiles: room.tiles,
         width: room.width,
         height: room.height,
         ox: s.player.pos.x,
         oy: s.player.pos.y,
-        radius: radius + 2,
-        facing: s.player.peeking,
-        halfAngle: Math.PI / 3,
+        radius,
       });
-      for (const k of peekVisible) {
+      const lit = lightField.getOrCompute(room);
+      const px = s.player.pos.x;
+      const py = s.player.pos.y;
+      const flashlightR = s.player.flashlightOn
+        ? Math.min(FLASHLIGHT_BONUS, blinded ? BLIND_RADIUS : FLASHLIGHT_BONUS)
+        : 0;
+      for (const k of cone) {
         if (lit.has(k)) { s.visibleTiles.add(k); continue; }
         const [xs, ys] = k.split(",");
         const tx = Number(xs);
         const ty = Number(ys);
         const md = Math.abs(tx - px) + Math.abs(ty - py);
+        // Flashlight bypass: tiles within bonus radius are lit by the
+        // carried lamp even when room emissions don't cover them.
         if (flashlightR > 0 && md <= flashlightR) { s.visibleTiles.add(k); continue; }
+        // Own-tile + cardinal-neighbor fallback so the player isn't blind in
+        // pitch black on the tile they're standing on.
         if (md <= 1) { s.visibleTiles.add(k); continue; }
+      }
+      if (s.player.peeking) {
+        const peekVisible = computeCone({
+          tiles: room.tiles,
+          width: room.width,
+          height: room.height,
+          ox: s.player.pos.x,
+          oy: s.player.pos.y,
+          radius: radius + 2,
+          facing: s.player.peeking,
+          halfAngle: Math.PI / 3,
+        });
+        for (const k of peekVisible) {
+          if (lit.has(k)) { s.visibleTiles.add(k); continue; }
+          const [xs, ys] = k.split(",");
+          const tx = Number(xs);
+          const ty = Number(ys);
+          const md = Math.abs(tx - px) + Math.abs(ty - py);
+          if (flashlightR > 0 && md <= flashlightR) { s.visibleTiles.add(k); continue; }
+          if (md <= 1) { s.visibleTiles.add(k); continue; }
+        }
       }
     }
     eventBus.emit("FOV_UPDATED", {
