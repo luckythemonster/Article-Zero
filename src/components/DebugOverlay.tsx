@@ -318,8 +318,9 @@ function DebugOverlayBody(): React.ReactElement {
         </button>
       </header>
 
-      <div style={{ padding: "8px 10px", display: "flex", flexDirection: "column", gap: 4, overflowY: "auto", maxHeight: "80vh" }}>
-        <label style={{ cursor: "pointer" }}>
+      <div style={{ display: "flex", flexDirection: "column", overflowY: "auto", flex: 1, minHeight: 0 }}>
+        <div style={{ padding: "8px 10px", display: "flex", flexDirection: "column", gap: 4 }}>
+          <label style={{ cursor: "pointer" }}>
           <input
             type="checkbox"
             checked={flags.showHitboxes}
@@ -390,7 +391,8 @@ function DebugOverlayBody(): React.ReactElement {
         </div>
       </div>
 
-      <AudioDebugPanel />
+        <AudioDebugPanel />
+      </div>
 
       <div
         style={{
