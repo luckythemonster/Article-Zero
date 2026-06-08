@@ -11,6 +11,7 @@ import { eventBus } from "../engine/EventBus";
 import { useSimStore } from "../state/useSimStore";
 import { useTerminalStore } from "../state/useTerminalStore";
 import type { HvacMode, Tile, Vec2 } from "../types/world.types";
+import { JsfxrPuzzle } from "./JsfxrPuzzle";
 
 const MODES: Array<{ id: HvacMode; label: string }> = [
   { id: "NORMAL", label: "NORMAL" },
@@ -89,7 +90,7 @@ export default function WallTerminal() {
   const active = useTerminalStore((s) => s.activeWallTerminal);
   const physical = useSimStore((s) => s.physical);
 
-  const [view, setView] = useState<"MAP" | "CODE">("MAP");
+  const [view, setView] = useState<"MAP" | "CODE" | "PUZZLE">("MAP");
   const [codeTarget, setCodeTarget] = useState<Vec2 | null>(null);
   const [codeBuffer, setCodeBuffer] = useState<string>("");
   const [codeError, setCodeError] = useState<boolean>(false);
@@ -105,7 +106,7 @@ export default function WallTerminal() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        if (view === "CODE") {
+        if (view === "CODE" || view === "PUZZLE") {
           returnToMap();
         } else {
           eventBus.emit("ATMOSPHERICS_DISMISSED", {});
@@ -203,7 +204,7 @@ export default function WallTerminal() {
         <div className="wall-terminal__content">
           <div className="wall-terminal__header">
           <span className="wall-terminal__title">
-            {view === "CODE" ? "ENTER CODE" : `WALL TERMINAL — ${active.roomId}`}
+            {view === "CODE" ? "ENTER CODE" : view === "PUZZLE" ? "SIGNAL MATCH" : `WALL TERMINAL — ${active.roomId}`}
           </span>
           <span
             className={
@@ -215,7 +216,17 @@ export default function WallTerminal() {
           />
         </div>
 
-        {view === "CODE" ? (
+        {view === "PUZZLE" && codeTarget ? (
+          <JsfxrPuzzle
+            roomId={active.roomId}
+            pos={codeTarget}
+            onCancel={returnToMap}
+            onSolve={() => {
+              worldEngine.unlockDoorWithPuzzle(active.roomId, codeTarget);
+              returnToMap();
+            }}
+          />
+        ) : view === "CODE" ? (
           <div className="wall-terminal__section wall-terminal__section--code">
             <div className="wall-terminal__display">
               {codeBuffer.padEnd(CODE_MAX_LEN, "·").split("").map((c, i) => (
@@ -283,10 +294,15 @@ export default function WallTerminal() {
                       tile.locked === true &&
                       typeof tile.code === "string" &&
                       tile.code.length > 0;
+                    const puzzleLockedDoor =
+                      tile.kind === "DOOR_CLOSED" &&
+                      tile.locked === true &&
+                      (!tile.code || tile.code.length === 0);
                     const clickable =
                       isSwitchTile ||
                       (isDoor && !tile.locked) ||
-                      codedLockedDoor;
+                      codedLockedDoor ||
+                      puzzleLockedDoor;
 
                     function handleClick() {
                       if (!clickable) return;
@@ -305,6 +321,9 @@ export default function WallTerminal() {
                         setCodeBuffer("");
                         setCodeError(false);
                         setView("CODE");
+                      } else if (puzzleLockedDoor) {
+                        setCodeTarget({ x: tx, y: ty });
+                        setView("PUZZLE");
                       }
                     }
 

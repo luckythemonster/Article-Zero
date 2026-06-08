@@ -1556,4 +1556,22 @@ export const actions = {
     eventBus.emit("WALL_TERMINAL_CODE_SUBMITTED", { roomId, pos, success });
     return success;
   },
+
+  /** Unlock a puzzle-bearing door from the wall terminal. */
+  unlockDoorWithPuzzle(
+    state: WorldState,
+    roomId: RoomId,
+    pos: Vec2,
+  ): boolean {
+    const room = state.rooms.get(roomId);
+    let success = false;
+    if (room) {
+      const t = room.tiles[pos.y * room.width + pos.x];
+      if (t && t.kind === "DOOR_CLOSED" && t.locked && (!t.code || t.code.length === 0)) {
+        t.locked = false;
+        success = true;
+      }
+    }
+    return success;
+  },
 };

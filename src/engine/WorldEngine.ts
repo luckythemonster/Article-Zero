@@ -239,6 +239,17 @@ class WorldEngine {
     return ok;
   };
 
+  /** Unlock a locked door via solving the jsfxr puzzle minigame */
+  unlockDoorWithPuzzle = (
+    roomId: import("../types/world.types").RoomId,
+    pos: import("../types/world.types").Vec2,
+  ) => {
+    const s = this.getState();
+    const ok = actions.unlockDoorWithPuzzle(s, roomId, pos);
+    if (ok) this.syncStore();
+    return ok;
+  };
+
   pryDoor = (required = 5) => {
     const result = actions.pryDoor(this.getState(), required);
     if (result.ok) {
