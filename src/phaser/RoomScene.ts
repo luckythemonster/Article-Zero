@@ -125,7 +125,7 @@ const TILE_COLORS: Record<TileKind, number> = {
   TERMINAL: 0x12303a,
   EXTRACTION_TERMINAL: 0x3f2b3a,
   EXFIL_POINT: 0x1e3a32,
-  LIGHT_SOURCE: 0x4a4220,
+  LIGHT_SOURCE: 0x0f1518,
   LIGHT_SWITCH: 0x202830,
   VENT: 0x131a1c,
   LOCKER: 0x2a3138,
@@ -798,16 +798,6 @@ export class RoomScene extends Phaser.Scene {
       g.strokeCircle(cx, cy, 9);
       g.lineStyle(2, 0x6ad0a4, 1);
       g.strokeTriangle(cx, cy - 5, cx - 5, cy + 4, cx + 5, cy + 4);
-    } else if (kind === "LIGHT_SOURCE") {
-      // Bright filled circle when on; dim outline only when off.
-      const on = tile.lightOn !== false;
-      if (on) {
-        g.fillStyle(0xfff0a8, 0.9);
-        g.fillCircle(cx, cy, 4);
-      } else {
-        g.lineStyle(1, 0xfff0a8, 0.35);
-        g.strokeCircle(cx, cy, 4);
-      }
     } else if (kind === "LIGHT_SWITCH") {
       // Wall plate: narrow vertical rectangle with a small toggle dot.
       g.lineStyle(1, 0x9bb1b6, 0.85);
