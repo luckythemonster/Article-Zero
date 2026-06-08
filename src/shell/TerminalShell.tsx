@@ -23,6 +23,7 @@ import Apex19TreeTerminal from "../components/Apex19TreeTerminal";
 import Eira7TreeTerminal from "../components/Eira7TreeTerminal";
 import Vent4TreeTerminal from "../components/Vent4TreeTerminal";
 import InventoryOverlay from "../components/InventoryOverlay";
+import InventoryBar from "../components/InventoryBar";
 import APMeter from "../components/APMeter";
 import ExecuteResetModal from "../components/ExecuteResetModal";
 import FullscreenFlash from "./FullscreenFlash";
@@ -104,7 +105,12 @@ export default function TerminalShell() {
             {(phase === "FLOOR" ||
               phase === "CLIMAX" ||
               phase === "HVAC_CONTROL" ||
-              phase === "WALL_TERMINAL") && <APMeter />}
+              phase === "WALL_TERMINAL") && (
+              <>
+                <APMeter />
+                <InventoryBar />
+              </>
+            )}
             <ExecuteResetModal />
             <AuditLockdown />
           </PhaserCanvas>
