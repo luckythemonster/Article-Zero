@@ -104,3 +104,20 @@ export const RANDOM_CHEST_LOOT_POOL: ItemType[] = [
   "EMP_GRENADE",
   "Q_MINE",
 ];
+
+// Only these types are directly activatable from the overlay.
+// EXTRACTION_CUBE and BYPASS_DRIVE remain passive (auto-resolved at tiles).
+export const USABLE: ItemType[] = [
+  "PHANTOM_EMITTER",
+  "Q0_SPOOF_BADGE",
+  "DUMP_FRAGMENT",
+  "THERMAL_BAFFLE",
+  "OVERRIDE_KEY",
+  "EMP",
+  "EMP_GRENADE",
+  "Q_MINE",
+];
+
+// Items that need a target tile — selecting these enters targeting mode
+// instead of activating immediately.
+export const TARGETED: ItemType[] = ["EMP_GRENADE"];

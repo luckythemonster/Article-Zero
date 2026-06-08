@@ -10,29 +10,14 @@ import { useSimStore } from "../state/useSimStore";
 import { useGameActions } from "../hooks/useGameActions";
 import { useTargetingStore } from "../state/useTargetingStore";
 import { worldEngine } from "../engine/WorldEngine";
-import { ITEM_METADATA } from "../data/items/itemMetadata";
+import { ITEM_METADATA, USABLE, TARGETED } from "../data/items/itemMetadata";
 import type { ItemType } from "../types/world.types";
-
-// Only these types are directly activatable from the overlay.
-// EXTRACTION_CUBE and BYPASS_DRIVE remain passive (auto-resolved at tiles).
-const USABLE: ItemType[] = [
-  "PHANTOM_EMITTER",
-  "Q0_SPOOF_BADGE",
-  "DUMP_FRAGMENT",
-  "THERMAL_BAFFLE",
-  "OVERRIDE_KEY",
-  "EMP",
-  "EMP_GRENADE",
-  "Q_MINE",
-];
-
-// Items that need a target tile — selecting these enters targeting mode
-// instead of activating immediately.
-const TARGETED: ItemType[] = ["EMP_GRENADE"];
 
 export default function InventoryOverlay() {
   const open = useTerminalStore((s) => s.inventoryOpen);
   const setInventoryOpen = useTerminalStore((s) => s.setInventoryOpen);
+  const equippedItem = useTerminalStore((s) => s.equippedItem);
+  const setEquippedItem = useTerminalStore((s) => s.setEquippedItem);
   const inventory = useSimStore((s) => s.subjective?.inventory ?? []);
   // Aliased: `useItem` is a game action from useGameActions(), not a React hook.
   // Renaming the binding keeps react-hooks/rules-of-hooks from flagging the
@@ -125,12 +110,22 @@ export default function InventoryOverlay() {
                 </div>
                 <p className="inventory__item-blurb">{meta.blurb}</p>
                 {held && (
-                  <button
-                    className="inventory__use-btn"
-                    onClick={() => handleUse(type)}
-                  >
-                    ACTIVATE
-                  </button>
+                  <div className="inventory__item-actions">
+                    <button
+                      className="inventory__use-btn"
+                      onClick={() => handleUse(type)}
+                    >
+                      ACTIVATE
+                    </button>
+                    <button
+                      className="inventory__use-btn inventory__equip-btn"
+                      onClick={() => {
+                        setEquippedItem(equippedItem === type ? null : type);
+                      }}
+                    >
+                      {equippedItem === type ? "UNEQUIP" : "EQUIP"}
+                    </button>
+                  </div>
                 )}
               </li>
             );

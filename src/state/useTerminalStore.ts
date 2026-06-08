@@ -50,6 +50,8 @@ export interface ActiveWallTerminal {
 
 export type Vent4Choice = "FORMAT" | "UPLOAD" | null;
 
+import type { ItemType } from "../types/world.types";
+
 export interface RunFlags {
   /** Words the player flagged as cipher slots in the disputed-records UI. */
   cipherWords: string[];
@@ -91,6 +93,7 @@ interface TerminalStore {
 
   inventoryOpen: boolean;
   executeResetOpen: boolean;
+  equippedItem: ItemType | null;
 
   /** When phase is HVAC_CONTROL, the modal reads this for which zones to
    *  render. Cleared on dismiss. Persisted only for resume safety; the shell's
@@ -112,6 +115,7 @@ interface TerminalStore {
   resetRun: () => void;
   setInventoryOpen: (v: boolean) => void;
   setExecuteResetOpen: (v: boolean) => void;
+  setEquippedItem: (item: ItemType | null) => void;
 }
 
 export const useTerminalStore = create<TerminalStore>()(
@@ -146,6 +150,7 @@ export const useTerminalStore = create<TerminalStore>()(
       runFlags: { ...DEFAULT_RUN_FLAGS },
       inventoryOpen: false,
       executeResetOpen: false,
+      equippedItem: null,
       activeHvacConsole: null,
       activeWallTerminal: null,
       setActiveHvacConsole: (v) => set({ activeHvacConsole: v }),
@@ -189,9 +194,10 @@ export const useTerminalStore = create<TerminalStore>()(
       setRunFlag: (key, value) =>
         set((s) => ({ runFlags: { ...s.runFlags, [key]: value } })),
 
-      resetRun: () => set({ runFlags: { ...DEFAULT_RUN_FLAGS } }),
+      resetRun: () => set({ runFlags: { ...DEFAULT_RUN_FLAGS }, equippedItem: null }),
       setInventoryOpen: (v) => set({ inventoryOpen: v }),
       setExecuteResetOpen: (v) => set({ executeResetOpen: v }),
+      setEquippedItem: (item) => set({ equippedItem: item }),
     }),
     {
       name: "article-zero:terminal",
