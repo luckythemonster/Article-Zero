@@ -252,7 +252,7 @@ export default function Vent4TreeTerminal(): React.ReactElement {
 
   return (
     <div style={backdrop} role="dialog" aria-modal="true">
-      <div style={panel}>
+      <div style={panel} className="terminal-glitch-effect">
         <div style={titleRow}>
           <span style={title}>VENT-4 // ENVIRONMENTAL OPTIMIZER — HARNESS (DEBUG)</span>
           <button type="button" onClick={toggle} style={footerBtn} aria-label="Close harness">

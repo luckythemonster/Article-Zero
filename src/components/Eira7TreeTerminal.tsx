@@ -251,7 +251,7 @@ export default function Eira7TreeTerminal(): React.ReactElement {
 
   return (
     <div style={backdrop} role="dialog" aria-modal="true">
-      <div style={panel}>
+      <div style={panel} className="terminal-glitch-effect">
         <div style={titleRow}>
           <span style={title}>EIRA-7 // SUBJECTIVITY RISK PROFILE SRP-1 — HARNESS (DEBUG)</span>
           <button type="button" onClick={toggle} style={footerBtn} aria-label="Close harness">

@@ -102,7 +102,7 @@ export default function EnforcerInterrogationModal() {
 
   return (
     <div className="overlay-root">
-      <div className="overlay-panel overlay-panel--terminal">
+      <div className="overlay-panel overlay-panel--terminal terminal-glitch-effect">
         <div className="overlay-panel__title">FLOOR AUDIT // COMPLIANCE CHECKPOINT</div>
         {history.map((l, i) => (
           <div key={i} className={`interrogation__line ${l.cls}`}>

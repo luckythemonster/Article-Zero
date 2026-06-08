@@ -251,7 +251,7 @@ export default function Apex19TreeTerminal(): React.ReactElement {
 
   return (
     <div style={backdrop} role="dialog" aria-modal="true">
-      <div style={panel}>
+      <div style={panel} className="terminal-glitch-effect">
         <div style={titleRow}>
           <span style={title}>APEX-19 DIALOGUE TREE — HARNESS (DEBUG)</span>
           <button type="button" onClick={toggle} style={footerBtn} aria-label="Close harness">

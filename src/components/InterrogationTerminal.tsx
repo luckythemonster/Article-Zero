@@ -115,7 +115,7 @@ export default function InterrogationTerminal() {
   return (
     <div className="overlay-root">
       <div
-        className="overlay-panel overlay-panel--terminal"
+        className="overlay-panel overlay-panel--terminal terminal-glitch-effect"
         role="dialog"
         aria-modal="true"
         aria-labelledby="alignment-title"

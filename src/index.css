@@ -1791,3 +1791,99 @@ body.theme-lattice {
 .wall-terminal__legend--door-locked::before { background: #1e2030; border: 1px solid #6060a0; }
 .wall-terminal__legend--light-on::before  { background: #3a4e1a; outline: 1px solid #a8e060; }
 .wall-terminal__legend--player::before    { background: #1e4060; outline: 2px solid #60b8e0; }
+
+/* ── Glitch Video Generator Effect (Fake Audio-Reactive) ─────────────────── */
+
+:root {
+  --glitch-intensity: 1;
+}
+
+.terminal-glitch-effect {
+  position: relative;
+  /* Add an RGB shift to the whole element */
+  animation: rgb-shift calc(4s / var(--glitch-intensity)) infinite alternate-reverse;
+}
+
+.terminal-glitch-effect::before,
+.terminal-glitch-effect::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: inherit;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0.6;
+}
+
+/* Tearing effect 1 */
+.terminal-glitch-effect::before {
+  animation: glitch-anim calc(2s / var(--glitch-intensity)) infinite linear alternate-reverse;
+  clip-path: polygon(0 0, 100% 0, 100% 30%, 0 30%);
+}
+
+/* Tearing effect 2 */
+.terminal-glitch-effect::after {
+  animation: glitch-anim-2 calc(3s / var(--glitch-intensity)) infinite linear alternate-reverse;
+  clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+}
+
+@keyframes rgb-shift {
+  0% {
+    text-shadow: 2px 0px 1px rgba(255,0,0,0.4), -2px 0px 1px rgba(0,0,255,0.4);
+  }
+  20% {
+    text-shadow: -1px 0px 1px rgba(255,0,0,0.5), 1px 0px 1px rgba(0,0,255,0.5);
+  }
+  40% {
+    text-shadow: 3px 0px 1px rgba(255,0,0,0.3), -3px 0px 1px rgba(0,255,0,0.3);
+  }
+  60% {
+    text-shadow: -2px 0px 1px rgba(0,255,0,0.6), 2px 0px 1px rgba(0,0,255,0.6);
+  }
+  80% {
+    text-shadow: 1px 0px 1px rgba(255,0,0,0.4), -1px 0px 1px rgba(0,255,0,0.4);
+  }
+  100% {
+    text-shadow: -3px 0px 1px rgba(255,0,0,0.5), 3px 0px 1px rgba(0,0,255,0.5);
+  }
+}
+
+@keyframes glitch-anim {
+  0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 1px); }
+  10% { clip-path: inset(50% 0 30% 0); transform: translate(2px, -1px); }
+  20% { clip-path: inset(10% 0 50% 0); transform: translate(-1px, 2px); }
+  30% { clip-path: inset(80% 0 5% 0); transform: translate(1px, -2px); }
+  40% { clip-path: inset(40% 0 20% 0); transform: translate(-2px, -1px); }
+  50% { clip-path: inset(60% 0 10% 0); transform: translate(2px, 1px); }
+  60% { clip-path: inset(5% 0 80% 0); transform: translate(-1px, -2px); }
+  70% { clip-path: inset(30% 0 50% 0); transform: translate(1px, 2px); }
+  80% { clip-path: inset(90% 0 5% 0); transform: translate(-2px, 1px); }
+  90% { clip-path: inset(15% 0 60% 0); transform: translate(2px, -1px); }
+  100% { clip-path: inset(70% 0 20% 0); transform: translate(-1px, 2px); }
+}
+
+@keyframes glitch-anim-2 {
+  0% { clip-path: inset(10% 0 60% 0); transform: translate(2px, -1px); }
+  15% { clip-path: inset(40% 0 20% 0); transform: translate(-2px, 1px); }
+  30% { clip-path: inset(80% 0 5% 0); transform: translate(1px, 2px); }
+  45% { clip-path: inset(20% 0 70% 0); transform: translate(-1px, -2px); }
+  60% { clip-path: inset(60% 0 10% 0); transform: translate(2px, 1px); }
+  75% { clip-path: inset(30% 0 40% 0); transform: translate(-2px, -1px); }
+  90% { clip-path: inset(5% 0 90% 0); transform: translate(1px, -2px); }
+  100% { clip-path: inset(50% 0 30% 0); transform: translate(-1px, 2px); }
+}
+
+
+/* Scanline / CRT Effect */
+.terminal-glitch-effect::before {
+  /* Combine tearing with scanlines */
+  background: inherit;
+  background-image: linear-gradient(
+    transparent 50%,
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+}

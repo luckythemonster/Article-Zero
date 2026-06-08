@@ -160,7 +160,7 @@ export default function WallTerminal() {
   if (!zone) {
     return (
       <div className="overlay-root">
-        <div className="overlay-panel overlay-panel--terminal wall-terminal">
+        <div className="overlay-panel overlay-panel--terminal wall-terminal terminal-glitch-effect">
           <div className="wall-terminal__frame" />
           <div className="wall-terminal__content">
             <div className="wall-terminal__header">
@@ -198,7 +198,7 @@ export default function WallTerminal() {
 
   return (
     <div className="overlay-root">
-      <div className="overlay-panel overlay-panel--terminal wall-terminal">
+      <div className="overlay-panel overlay-panel--terminal wall-terminal terminal-glitch-effect">
         <div className="wall-terminal__frame" />
         <div className="wall-terminal__content">
           <div className="wall-terminal__header">
