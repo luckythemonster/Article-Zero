@@ -146,6 +146,11 @@ class WorldEngine {
     return ok;
   };
 
+  giveItem = (itemType: ItemType) => {
+    actions.giveItem(this.getState(), itemType);
+    this.syncStore();
+  };
+
   knock = () => {
     const ok = actions.knock(this.getState());
     if (ok) {

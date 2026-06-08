@@ -11,6 +11,9 @@ import { forcePlay, forceStop, getMusicStats } from "../audio/MusicBridge";
 import { sfx } from "../audio/Sfx";
 import { getSfxBridgeStats } from "../audio/sfx-bridge";
 import { soundField } from "../engine/SoundField";
+import { ITEM_METADATA } from "../data/items/itemMetadata";
+import type { ItemType } from "../types/world.types";
+import { worldEngine } from "../engine/WorldEngine";
 
 const LEVEL_COLOR: Record<DebugEvent["level"], string> = {
   INFO: "#9bb1b6",
@@ -315,7 +318,7 @@ function DebugOverlayBody(): React.ReactElement {
         </button>
       </header>
 
-      <div style={{ padding: "8px 10px", display: "flex", flexDirection: "column", gap: 4 }}>
+      <div style={{ padding: "8px 10px", display: "flex", flexDirection: "column", gap: 4, overflowY: "auto", maxHeight: "80vh" }}>
         <label style={{ cursor: "pointer" }}>
           <input
             type="checkbox"
@@ -365,6 +368,25 @@ function DebugOverlayBody(): React.ReactElement {
           >
             [VENT-4 dialogue tree]
           </button>
+        </div>
+
+        <div style={{ color: "#6ad0a4", letterSpacing: 1.2, marginTop: 4 }}>ITEMS</div>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {Object.entries(ITEM_METADATA).map(([itemType, meta]) => (
+            <button
+              key={itemType}
+              type="button"
+              onClick={() => {
+                if (worldEngine.hasState()) {
+                  worldEngine.giveItem(itemType as ItemType);
+                }
+              }}
+              style={btnStyle}
+              title={`Give ${meta.displayName}`}
+            >
+              [{itemType}]
+            </button>
+          ))}
         </div>
       </div>
 

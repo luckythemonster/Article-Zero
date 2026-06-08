@@ -1623,6 +1623,16 @@ export const actions = {
     return true;
   },
 
+  /** Debug action to give the player an item. */
+  giveItem(state: WorldState, itemType: ItemType): void {
+    const held: ItemInstance = {
+      id: `debug-${state.turn}-${Math.random().toString(36).substring(2, 9)}`,
+      itemType,
+    };
+    state.player.inventory.push(held);
+    eventBus.emit("ITEM_PICKED_UP", { itemId: held.id, itemType });
+  },
+
   /** Single dispatch for player-facing item use. Charges INTERACT_AP_COST on
    *  success, consumes the matching ItemInstance, and routes to the per-item
    *  handler. Returns false if no inventory match, AP-starved, or the
