@@ -638,6 +638,7 @@ export function testMapEra(): EraSeed {
   seed.player.inventory.push({ id: "emp-grenade-1", itemType: "EMP_GRENADE" });
   seed.player.inventory.push({ id: "override-key-1", itemType: "OVERRIDE_KEY" });
   seed.player.inventory.push({ id: "q-mine-1", itemType: "Q_MINE" });
+  seed.player.inventory.push({ id: "stun-baton-1", itemType: "STUN_BATON" });
 
   return seed;
 }

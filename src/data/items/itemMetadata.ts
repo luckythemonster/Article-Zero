@@ -90,6 +90,14 @@ export const ITEM_METADATA: Record<ItemType, ItemMeta> = {
     placeholderColor: 0xff5fa2,
     usesFacing: true,
   },
+  STUN_BATON: {
+    displayName: "Stun Baton",
+    blurb:
+      "Non-lethal electrical pacifier. Consumes 1 flashlight battery to " +
+      "knock out an orderly for 10 turns. Must be undetected.",
+    placeholderColor: 0xffdd55,
+    usesFacing: true,
+  },
 };
 
 /** Items that empty chests roll from. Excludes quest items

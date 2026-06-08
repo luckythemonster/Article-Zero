@@ -558,7 +558,7 @@ function SpriteGalleryBody(): React.ReactElement {
       >
         <span style={{ flex: "1 1 auto" }}>
           SPRITE GALLERY · {charCount} chars · {animCount} anims · {tilesetCount} tilesets ·{" "}
-          {itemCount} items · {unmountedCount} unmounted · [G] OR [X] TO CLOSE
+          {itemCount} items · {unmountedCount} unmounted · [F8] OR [X] TO CLOSE
         </span>
         <input
           ref={filterRef}

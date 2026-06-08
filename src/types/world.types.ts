@@ -69,7 +69,8 @@ export type ItemType =
   | "OVERRIDE_KEY"
   | "EMP"
   | "EMP_GRENADE"
-  | "Q_MINE";
+  | "Q_MINE"
+  | "STUN_BATON";
 
 /** Ephemeral world-state for a deployed Phantom Manifest Emitter. Tracked on
  *  WorldState.activeEmitters; consumed at the top of advanceTurn() to push a
@@ -397,6 +398,12 @@ export interface Entity {
    *  is en route to the nearest TERMINAL to call enforcers. Cleared once the
    *  alarm is raised (sound emitted) or the orderly gives up. Runtime-only. */
   alarm?: OrderlyAlarm;
+  /** ORDERLY only — turns left knocked out (DORMANT). Decremented each turn.
+   *  Wakes up at 0 or if another orderly spots them and wakes them. */
+  knockoutTurnsRemaining?: number;
+  /** ORDERLY only — true if this orderly is currently being dragged by the
+   *  player. The orderly's position follows the player's previous tile. */
+  draggedByPlayer?: boolean;
   /** When > 0 this entity is temporarily EMP-disabled: status is forced to
    *  DORMANT while down; decremented once per turn in advanceTurn, which
    *  restores status to ACTIVE at 0. Applies uniformly to all silicate kinds. */

@@ -30,9 +30,9 @@ export function useInput({ enabled }: Options): void {
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
 
-      // Sprite gallery toggle (G). Works regardless of phase so the gallery
-      // can be opened from FRAME / EPILOGUE too.
-      if (e.code === "KeyG") {
+      // Sprite gallery toggle (Ctrl+G or something to free up G).
+      // Actually let's use F8 instead of G for the debug gallery.
+      if (e.code === "F8") {
         useDebugStore.getState().toggleGallery();
         e.preventDefault();
         return;
@@ -120,6 +120,12 @@ export function useInput({ enabled }: Options): void {
           worldEngine.toggleStance(); e.preventDefault(); break;
         case "l":
           worldEngine.toggleFlashlight(); e.preventDefault(); break;
+        case "g":
+          worldEngine.toggleDrag(); e.preventDefault(); break;
+        case "t":
+          worldEngine.stun(); e.preventDefault(); break;
+        case "f":
+          worldEngine.loot(); e.preventDefault(); break;
         case "p":
           // Climax escape: pry the blast door the player is facing. 5 presses.
           if (term.phase === "CLIMAX") {

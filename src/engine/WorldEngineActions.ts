@@ -20,6 +20,8 @@ const SNEAK_AP_COST = 1;
 const RUN_AP_COST = 1;
 const KNOCK_AP_COST = 1;
 const INTERACT_AP_COST = 1;
+const STUN_AP_COST = 2;
+const LOOT_AP_COST = 4;
 const VENT_AP_COST = 2;
 const LADDER_AP_COST = 1;
 const KILL_SCREEN_AP_COST = 1;
@@ -192,7 +194,19 @@ function moveCommon(
   intensity: number,
   reason: string,
 ): boolean {
-  if (state.detained || state.player.ap < apCost) return false;
+  // If dragging an orderly, double the AP cost
+  let isDragging = false;
+  let draggedOrderly: Entity | undefined;
+  for (const ent of state.entities.values()) {
+    if (ent.draggedByPlayer) {
+      isDragging = true;
+      draggedOrderly = ent;
+      break;
+    }
+  }
+  const actualApCost = isDragging ? apCost * 2 : apCost;
+
+  if (state.detained || state.player.ap < actualApCost) return false;
   if (state.player.hidingTileKey) return false;
   // Thermal Baffle — wipes the footstep emission for the duration of the buff.
   // Run, walk, sneak all become silent. Doesn't change AP cost.
@@ -226,8 +240,9 @@ function moveCommon(
     if (ventDoor) {
       if (state.player.stance !== "SNEAK") return false;
       if (state.player.ap < VENT_AP_COST) return false;
+      if (isDragging) return false; // Cannot drag through vents
     }
-    const cost = ventDoor ? VENT_AP_COST : apCost;
+    const cost = ventDoor ? VENT_AP_COST : actualApCost;
     eventBus.emit("ROOM_EXITED", { roomId: fromRoomId });
     state.player.roomId = crossing.toRoom;
     if (state.lockdown && state.lockdown.roomId !== crossing.toRoom) {
@@ -248,6 +263,21 @@ function moveCommon(
       to: state.player.pos,
       roomId: state.player.roomId,
     });
+
+    if (isDragging && draggedOrderly) {
+      draggedOrderly.roomId = state.player.roomId;
+      draggedOrderly.pos = { ...state.player.pos };
+
+      // Moving a dragged entity across a room boundary requires
+      // teleporting it to the new room, not leaving it in the old one.
+      eventBus.emit("ENTITY_MOVED", {
+        entityId: draggedOrderly.id,
+        roomId: draggedOrderly.roomId,
+        from: { ...fromPos },
+        to: { ...draggedOrderly.pos }
+      });
+    }
+
     eventBus.emit("ROOM_ENTERED", {
       roomId: state.player.roomId,
       from: fromRoomId,
@@ -270,11 +300,23 @@ function moveCommon(
   if (entityAt(state, fromRoomId, to)) return false;
   if (anchorBlocked(state, fromRoomId, to)) return false;
   state.player.pos = to;
-  state.player.ap -= apCost;
+  state.player.ap -= actualApCost;
   state.player.lastMoveTurn = state.turn;
   eventBus.emit("PLAYER_MOVED", { from: fromPos, to, roomId: fromRoomId });
+
+  if (isDragging && draggedOrderly) {
+    const fromOrderlyPos = { ...draggedOrderly.pos };
+    draggedOrderly.pos = { ...fromPos };
+    eventBus.emit("ENTITY_MOVED", {
+      entityId: draggedOrderly.id,
+      roomId: draggedOrderly.roomId,
+      from: fromOrderlyPos,
+      to: draggedOrderly.pos
+    });
+  }
+
   eventBus.emit("PLAYER_AP_CHANGED", {
-    previous: state.player.ap + apCost,
+    previous: state.player.ap + actualApCost,
     current: state.player.ap,
   });
   if (effIntensity > 0) {
@@ -591,6 +633,206 @@ export const actions = {
   },
   run(state: WorldState, dx: number, dy: number): boolean {
     return moveCommon(state, dx, dy, RUN_AP_COST, RUN_INTENSITY, "run");
+  },
+
+  /** Toggle dragging a knocked out orderly on the facing tile. */
+  toggleDrag(state: WorldState): boolean {
+    if (state.detained) return false;
+
+    // First check if we're already dragging. If so, drop them.
+    for (const ent of state.entities.values()) {
+      if (ent.draggedByPlayer) {
+        ent.draggedByPlayer = false;
+
+        // If player is inside a locker, we hide the body permanently by extracting it.
+        // This removes it from play and vision checks.
+        if (state.player.hidingTileKey) {
+          const previous = ent.status;
+          ent.status = "EXTRACTED";
+          eventBus.emit("ENTITY_STATUS_CHANGED", {
+            entityId: ent.id,
+            previous,
+            current: "EXTRACTED",
+          });
+        }
+
+        return true;
+      }
+    }
+
+    // We're not dragging. Try to grab a knocked out orderly in front of us.
+    const f = state.player.facing;
+    const dx = f === "east" ? 1 : f === "west" ? -1 : 0;
+    const dy = f === "south" ? 1 : f === "north" ? -1 : 0;
+    const targetPos = { x: state.player.pos.x + dx, y: state.player.pos.y + dy };
+
+    for (const ent of state.entities.values()) {
+      if (
+        ent.roomId === state.player.roomId &&
+        ent.pos.x === targetPos.x &&
+        ent.pos.y === targetPos.y &&
+        ent.kind === "ORDERLY" &&
+        ent.status === "DORMANT"
+      ) {
+        ent.draggedByPlayer = true;
+        // Move them to our tile so they trail from where we are
+        ent.pos = { ...state.player.pos };
+        eventBus.emit("ENTITY_MOVED", {
+          entityId: ent.id,
+          roomId: ent.roomId,
+          from: targetPos,
+          to: ent.pos
+        });
+        return true;
+      }
+    }
+
+    return false;
+  },
+
+  /** Loot or pickpocket an orderly on the facing tile. */
+  loot(state: WorldState): boolean {
+    if (state.detained || state.player.ap < LOOT_AP_COST) return false;
+    if (state.player.hidingTileKey) return false;
+    if (state.detected) return false; // Must be completely undetected
+
+    const f = state.player.facing;
+    const dx = f === "east" ? 1 : f === "west" ? -1 : 0;
+    const dy = f === "south" ? 1 : f === "north" ? -1 : 0;
+    const targetPos = { x: state.player.pos.x + dx, y: state.player.pos.y + dy };
+
+    let targetOrderly: Entity | undefined;
+    for (const ent of state.entities.values()) {
+      if (
+        ent.roomId === state.player.roomId &&
+        ent.pos.x === targetPos.x &&
+        ent.pos.y === targetPos.y &&
+        ent.kind === "ORDERLY"
+      ) {
+        targetOrderly = ent;
+        break;
+      }
+    }
+
+    if (!targetOrderly) return false;
+
+    // Pickpocketing: orderly must be ACTIVE and not looking at the player
+    // Looting: orderly must be DORMANT
+    if (targetOrderly.status === "ACTIVE") {
+      // Basic facing check: if the orderly is facing the player, pickpocketing fails
+      const ox = targetOrderly.pos.x;
+      const oy = targetOrderly.pos.y;
+      const px = state.player.pos.x;
+      const py = state.player.pos.y;
+      const of = targetOrderly.facing;
+
+      const isFacingPlayer =
+        (of === "east" && px > ox) ||
+        (of === "west" && px < ox) ||
+        (of === "south" && py > oy) ||
+        (of === "north" && py < oy);
+
+      if (isFacingPlayer) return false;
+    } else if (targetOrderly.status !== "DORMANT") {
+      return false; // Can't loot EXTRACTED etc.
+    }
+
+    // Apply loot action
+    state.player.ap -= LOOT_AP_COST;
+
+    eventBus.emit("PLAYER_AP_CHANGED", {
+      previous: state.player.ap + LOOT_AP_COST,
+      current: state.player.ap,
+    });
+
+    // Play interaction sound
+    eventBus.emit("SOUND_EMITTED", {
+      roomId: state.player.roomId,
+      pos: state.player.pos,
+      intensity: WALK_INTENSITY, // Similar noise level to walking
+      reason: "loot",
+    });
+
+    // Instead of auto-giving battery, trigger the CHEST_OPENED UI event
+    // with some random or fixed loot to show the UI popup.
+    // Pickpocketing gives some items. Since orderlies don't have an inventory yet,
+    // we give them a generated loot table for now.
+    const lootItems: ItemType[] = [];
+    if (Math.random() < 0.5) lootItems.push("THERMAL_BAFFLE");
+    if (Math.random() < 0.3) lootItems.push("EMP_GRENADE");
+    if (lootItems.length === 0) lootItems.push("PHANTOM_EMITTER"); // Always give something for testing
+
+    // We add them to inventory here because the CHEST_OPENED event is just for UI presentation.
+    lootItems.forEach((itemType, i) => {
+        const held: ItemInstance = {
+          id: `pickpocket-${state.turn}-${i}`,
+          itemType,
+        };
+        state.player.inventory.push(held);
+        eventBus.emit("ITEM_PICKED_UP", { itemId: held.id, itemType });
+    });
+
+    eventBus.emit("CHEST_OPENED", {
+      roomId: state.player.roomId,
+      pos: targetPos,
+      contents: lootItems,
+    });
+
+    return true;
+  },
+
+  /** Stun an orderly on the facing tile with the Stun Baton. */
+  stun(state: WorldState): boolean {
+    if (state.detained || state.player.ap < STUN_AP_COST) return false;
+    if (state.player.hidingTileKey) return false;
+    if (state.detected) return false; // Must be undetected
+
+    const hasBaton = state.player.inventory.some((i) => i.itemType === "STUN_BATON");
+    if (!hasBaton) return false;
+    if (state.player.flashlightBattery < 1) return false; // Needs battery
+
+    const f = state.player.facing;
+    const dx = f === "east" ? 1 : f === "west" ? -1 : 0;
+    const dy = f === "south" ? 1 : f === "north" ? -1 : 0;
+    const targetPos = { x: state.player.pos.x + dx, y: state.player.pos.y + dy };
+
+    let targetOrderly: Entity | undefined;
+    for (const ent of state.entities.values()) {
+      if (
+        ent.roomId === state.player.roomId &&
+        ent.pos.x === targetPos.x &&
+        ent.pos.y === targetPos.y &&
+        ent.kind === "ORDERLY" &&
+        ent.status === "ACTIVE"
+      ) {
+        targetOrderly = ent;
+        break;
+      }
+    }
+
+    if (!targetOrderly) return false;
+
+    // Apply stun
+    state.player.flashlightBattery -= 1;
+    state.player.ap -= STUN_AP_COST;
+
+    const previousStatus = targetOrderly.status;
+    targetOrderly.status = "DORMANT";
+    targetOrderly.knockoutTurnsRemaining = 10;
+    targetOrderly.alarm = undefined;
+    targetOrderly.wanderTarget = undefined;
+    targetOrderly.idlePauseRemaining = undefined;
+
+    eventBus.emit("ENTITY_STATUS_CHANGED", {
+      entityId: targetOrderly.id,
+      previous: previousStatus,
+      current: "DORMANT",
+    });
+    eventBus.emit("PLAYER_AP_CHANGED", {
+      previous: state.player.ap + STUN_AP_COST,
+      current: state.player.ap,
+    });
+    return true;
   },
 
   /** Rap on the wall the player is facing. Loud noise, lures enforcers. */
@@ -1419,6 +1661,16 @@ export const actions = {
         // This case is a safety fallback; InventoryOverlay routes to throwAt.
         eventBus.emit("ITEM_REJECTED", { itemType, reason: "needs-target" });
         return false;
+      case "STUN_BATON":
+        ok = actions.stun(state);
+        // Stun Baton shouldn't be consumed like a normal item, it just costs battery
+        if (ok) {
+           eventBus.emit("ITEM_USED", { itemId: item.id, itemType });
+           return true;
+        } else {
+           eventBus.emit("ITEM_REJECTED", { itemType, reason: "stun-failed" });
+           return false;
+        }
       default:
         return false;
     }

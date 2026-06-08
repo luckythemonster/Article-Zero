@@ -161,6 +161,24 @@ class WorldEngine {
     this.syncStore();
   };
 
+  stun = () => {
+    const ok = actions.stun(this.getState());
+    if (ok) this.syncStore();
+    return ok;
+  };
+
+  loot = () => {
+    const ok = actions.loot(this.getState());
+    if (ok) this.syncStore();
+    return ok;
+  };
+
+  toggleDrag = () => {
+    const ok = actions.toggleDrag(this.getState());
+    if (ok) this.syncStore();
+    return ok;
+  };
+
   interact = () => {
     const ok = actions.interact(this.getState());
     if (ok) {
@@ -561,6 +579,22 @@ class WorldEngine {
           });
         }
       }
+
+      if ((e.knockoutTurnsRemaining ?? 0) > 0) {
+        e.knockoutTurnsRemaining! -= 1;
+        if (e.knockoutTurnsRemaining === 0) {
+          e.knockoutTurnsRemaining = undefined;
+          e.draggedByPlayer = false; // Make sure they aren't dragged when waking up
+          const previous = e.status;
+          e.status = "ACTIVE";
+          eventBus.emit("ENTITY_STATUS_CHANGED", {
+            entityId: e.id,
+            previous,
+            current: "ACTIVE",
+          });
+        }
+      }
+
       // CDN-7 anchor countdown — at 0 the barrier lifts. The anchorBlocked
       // lookup also requires status === "ACTIVE", so a DORMANT CDN-7 stops
       // sealing the corridor before this timer matters.
