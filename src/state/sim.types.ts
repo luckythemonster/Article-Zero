@@ -48,6 +48,7 @@ export interface EntityPhysical {
   stepsPerTurn?: number;
   lastMoveTurn?: number;
   disabledTurnsRemaining?: number;
+  blindnessTurnsRemaining?: number;
 }
 
 export interface EntityKindInfo {
@@ -98,7 +99,6 @@ export interface SubjectiveState {
   peeking?: Facing;
   hidingTileKey?: string;
   spoofTurnsRemaining?: number;
-  baffleTurnsRemaining?: number;
   lastMoveTurn?: number;
   entityMinds: Map<EntityId, EntityMind>;
   visibleTiles: Set<string>;
@@ -147,7 +147,6 @@ export interface SerializedSubjective {
   peeking?: Facing;
   hidingTileKey?: string;
   spoofTurnsRemaining?: number;
-  baffleTurnsRemaining?: number;
   lastMoveTurn?: number;
   entityMinds: [EntityId, EntityMind][];
   visibleTiles: string[];

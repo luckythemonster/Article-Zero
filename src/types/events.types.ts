@@ -138,8 +138,8 @@ export interface EventMap {
   ITEM_DETONATED: { itemType: ItemType; roomId: RoomId; pos: Vec2; radius: number };
   ITEM_REJECTED: { itemType: ItemType; reason: string };
   CHEST_OPENED: { roomId: RoomId; pos: Vec2; contents: ItemType[] };
-  ITEM_EFFECT_STARTED: { effect: "spoof" | "baffle" | "blindness"; turnsRemaining: number };
-  EFFECT_EXPIRED: { effect: "spoof" | "baffle" | "blindness" };
+  ITEM_EFFECT_STARTED: { effect: "spoof" | "blindness"; turnsRemaining: number };
+  EFFECT_EXPIRED: { effect: "spoof" | "blindness" };
 
   // CDN-7 riot-control enemy
   PLAYER_BLINDED: { turnsRemaining: number };

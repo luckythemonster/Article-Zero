@@ -53,8 +53,8 @@ export const ITEM_METADATA: Record<ItemType, ItemMeta> = {
   THERMAL_BAFFLE: {
     displayName: "Thermal Baffle",
     blurb:
-      "4-turn thermodynamic mask. All movement emits intensity 0; " +
-      "vent crawls cost 1 AP instead of 2.",
+      "Omnidirectional burst centered on you (radius 5). Temporarily blinds " +
+      "every silicate unit in range for 3 turns — they lose all vision.",
     placeholderColor: 0xa0c8e8,
   },
   OVERRIDE_KEY: {
