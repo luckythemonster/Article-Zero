@@ -319,7 +319,7 @@ function DebugOverlayBody(): React.ReactElement {
         </button>
       </header>
 
-      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+      <div style={{ display: "flex", flex: 1, overflow: "hidden", minHeight: 0 }}>
         {/* Left Column: Controls */}
         <div
           style={{
@@ -328,6 +328,7 @@ function DebugOverlayBody(): React.ReactElement {
             display: "flex",
             flexDirection: "column",
             overflowY: "auto",
+            WebkitOverflowScrolling: "touch",
             paddingBottom: "20px",
           }}
         >
@@ -396,7 +397,7 @@ function DebugOverlayBody(): React.ReactElement {
         </div>
 
         {/* Right Column: Events */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minHeight: 0 }}>
           <div
             style={{
               padding: "6px 10px",
@@ -460,6 +461,7 @@ function DebugOverlayBody(): React.ReactElement {
               padding: "6px 10px",
               flex: 1,
               overflowY: "auto",
+              WebkitOverflowScrolling: "touch",
               userSelect: "text",
               background: "#04070a",
               fontFamily: "inherit",
