@@ -260,22 +260,13 @@ body {
 
 .debug-overlay {
   position: fixed;
-  top: 12px;
-  right: 12px;
-  width: 380px;
-  max-height: 70vh;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-height: none;
   z-index: 9999;
   display: flex;
   flex-direction: column;
-}
-
-@media (pointer: coarse) {
-  .debug-overlay {
-    width: min(380px, calc(100vw - 24px));
-    /* Touch action buttons stack ~5 rows × 56px + gaps + bottom inset ≈ 308px.
-       Leave clearance so the panel never overlaps the dismiss button. */
-    max-height: calc(100dvh - 332px);
-  }
 }
 
 .debug-overlay__close {
