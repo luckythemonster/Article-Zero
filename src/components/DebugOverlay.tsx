@@ -292,6 +292,8 @@ function DebugOverlayBody(): React.ReactElement {
         fontFamily: '"Berkeley Mono", "Courier New", monospace',
         fontSize: 11,
         boxShadow: "0 0 24px rgba(0,0,0,0.6)",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <header
@@ -303,6 +305,7 @@ function DebugOverlayBody(): React.ReactElement {
           display: "flex",
           alignItems: "center",
           gap: 8,
+          flexShrink: 0,
         }}
       >
         <span style={{ flex: 1 }}>ARCHIVIST DEBUG // ~ OR [X] TO CLOSE</span>
@@ -316,145 +319,162 @@ function DebugOverlayBody(): React.ReactElement {
         </button>
       </header>
 
-      <div style={{ padding: "8px 10px", display: "flex", flexDirection: "column", gap: 4 }}>
-        <label style={{ cursor: "pointer" }}>
-          <input
-            type="checkbox"
-            checked={flags.showHitboxes}
-            onChange={(e) => setFlag("showHitboxes", e.target.checked)}
-          />{" "}
-          Show hitboxes
-        </label>
-        <label style={{ cursor: "pointer" }}>
-          <input
-            type="checkbox"
-            checked={flags.disableEnforcerAI}
-            onChange={(e) => setFlag("disableEnforcerAI", e.target.checked)}
-          />{" "}
-          Disable Enforcer AI
-        </label>
-        <label style={{ cursor: "pointer" }}>
-          <input
-            type="checkbox"
-            checked={flags.showTileElevation}
-            onChange={(e) => setFlag("showTileElevation", e.target.checked)}
-          />{" "}
-          Show tile elevation
-        </label>
-        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
-          <button
-            type="button"
-            onClick={toggleDialogueTree}
-            style={btnStyle}
-            title="Open the standalone APEX-19 dialogue-tree harness"
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+        {/* Left Column: Controls */}
+        <div
+          style={{
+            flex: "0 0 380px",
+            borderRight: "1px solid #1d2a30",
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "auto",
+            paddingBottom: "20px",
+          }}
+        >
+          <div style={{ padding: "8px 10px", display: "flex", flexDirection: "column", gap: 4 }}>
+            <label style={{ cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={flags.showHitboxes}
+                onChange={(e) => setFlag("showHitboxes", e.target.checked)}
+              />{" "}
+              Show hitboxes
+            </label>
+            <label style={{ cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={flags.disableEnforcerAI}
+                onChange={(e) => setFlag("disableEnforcerAI", e.target.checked)}
+              />{" "}
+              Disable Enforcer AI
+            </label>
+            <label style={{ cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={flags.showTileElevation}
+                onChange={(e) => setFlag("showTileElevation", e.target.checked)}
+              />{" "}
+              Show tile elevation
+            </label>
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
+              <button
+                type="button"
+                onClick={toggleDialogueTree}
+                style={btnStyle}
+                title="Open the standalone APEX-19 dialogue-tree harness"
+              >
+                [APEX-19 dialogue tree]
+              </button>
+              <button
+                type="button"
+                onClick={toggleEira7DialogueTree}
+                style={btnStyle}
+                title="Open the standalone EIRA-7 SRP-1 dialogue-tree harness"
+              >
+                [EIRA-7 dialogue tree]
+              </button>
+              <button
+                type="button"
+                onClick={toggleVent4DialogueTree}
+                style={btnStyle}
+                title="Open the standalone VENT-4 environmental-optimizer dialogue-tree harness"
+              >
+                [VENT-4 dialogue tree]
+              </button>
+              <button
+                type="button"
+                onClick={toggleGlitchOverlay}
+                style={btnStyle}
+                title="Toggle the experimental CRT/glitch full-screen overlay"
+              >
+                [Toggle Glitch Overlay]
+              </button>
+            </div>
+          </div>
+
+          <AudioDebugPanel />
+        </div>
+
+        {/* Right Column: Events */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+          <div
+            style={{
+              padding: "6px 10px",
+              borderBottom: "1px solid #1d2a30",
+              display: "flex",
+              gap: 6,
+              alignItems: "center",
+              flexShrink: 0,
+            }}
           >
-            [APEX-19 dialogue tree]
-          </button>
-          <button
-            type="button"
-            onClick={toggleEira7DialogueTree}
-            style={btnStyle}
-            title="Open the standalone EIRA-7 SRP-1 dialogue-tree harness"
+            <input
+              type="text"
+              placeholder="filter tag…"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              style={{
+                flex: 1,
+                background: "#0a1014",
+                border: "1px solid #1d2a30",
+                color: "#9bb1b6",
+                padding: "2px 6px",
+                fontFamily: "inherit",
+                fontSize: 11,
+              }}
+            />
+            <button
+              type="button"
+              onClick={copyAll}
+              style={{
+                background: "#0a1014",
+                border: "1px solid #1d2a30",
+                color: "#6ad0a4",
+                padding: "2px 8px",
+                fontFamily: "inherit",
+                fontSize: 11,
+                cursor: "pointer",
+              }}
+            >
+              [copy all]
+            </button>
+            <button
+              type="button"
+              onClick={clearEvents}
+              style={{
+                background: "#0a1014",
+                border: "1px solid #1d2a30",
+                color: "#9bb1b6",
+                padding: "2px 8px",
+                fontFamily: "inherit",
+                fontSize: 11,
+                cursor: "pointer",
+              }}
+            >
+              [clear]
+            </button>
+          </div>
+
+          <pre
+            style={{
+              margin: 0,
+              padding: "6px 10px",
+              flex: 1,
+              overflowY: "auto",
+              userSelect: "text",
+              background: "#04070a",
+              fontFamily: "inherit",
+              fontSize: 11,
+              lineHeight: 1.4,
+            }}
           >
-            [EIRA-7 dialogue tree]
-          </button>
-          <button
-            type="button"
-            onClick={toggleVent4DialogueTree}
-            style={btnStyle}
-            title="Open the standalone VENT-4 environmental-optimizer dialogue-tree harness"
-          >
-            [VENT-4 dialogue tree]
-          </button>
-          <button
-            type="button"
-            onClick={toggleGlitchOverlay}
-            style={btnStyle}
-            title="Toggle the experimental CRT/glitch full-screen overlay"
-          >
-            [Toggle Glitch Overlay]
-          </button>
+            {filtered.map((e) => (
+              <div key={e.id} style={{ color: LEVEL_COLOR[e.level] }}>
+                {formatLine(e)}
+              </div>
+            ))}
+          </pre>
         </div>
       </div>
-
-      <AudioDebugPanel />
-
-      <div
-        style={{
-          padding: "6px 10px",
-          borderTop: "1px solid #1d2a30",
-          display: "flex",
-          gap: 6,
-          alignItems: "center",
-        }}
-      >
-        <input
-          type="text"
-          placeholder="filter tag…"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          style={{
-            flex: 1,
-            background: "#0a1014",
-            border: "1px solid #1d2a30",
-            color: "#9bb1b6",
-            padding: "2px 6px",
-            fontFamily: "inherit",
-            fontSize: 11,
-          }}
-        />
-        <button
-          type="button"
-          onClick={copyAll}
-          style={{
-            background: "#0a1014",
-            border: "1px solid #1d2a30",
-            color: "#6ad0a4",
-            padding: "2px 8px",
-            fontFamily: "inherit",
-            fontSize: 11,
-            cursor: "pointer",
-          }}
-        >
-          [copy all]
-        </button>
-        <button
-          type="button"
-          onClick={clearEvents}
-          style={{
-            background: "#0a1014",
-            border: "1px solid #1d2a30",
-            color: "#9bb1b6",
-            padding: "2px 8px",
-            fontFamily: "inherit",
-            fontSize: 11,
-            cursor: "pointer",
-          }}
-        >
-          [clear]
-        </button>
-      </div>
-
-      <pre
-        style={{
-          margin: 0,
-          padding: "6px 10px",
-          flex: 1,
-          overflowY: "auto",
-          userSelect: "text",
-          background: "#04070a",
-          borderTop: "1px solid #1d2a30",
-          fontFamily: "inherit",
-          fontSize: 11,
-          lineHeight: 1.4,
-        }}
-      >
-        {filtered.map((e) => (
-          <div key={e.id} style={{ color: LEVEL_COLOR[e.level] }}>
-            {formatLine(e)}
-          </div>
-        ))}
-      </pre>
     </div>
   );
 }
