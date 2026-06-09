@@ -28,6 +28,7 @@ import APMeter from "../components/APMeter";
 import ExecuteResetModal from "../components/ExecuteResetModal";
 import FullscreenFlash from "./FullscreenFlash";
 import TitleScreen from "./TitleScreen";
+import GlitchOverlay from "./GlitchOverlay";
 
 export default function TerminalShell() {
   const [started, setStarted] = useState(false);
@@ -127,6 +128,7 @@ export default function TerminalShell() {
       {dialogueTree && <Apex19TreeTerminal />}
       {eira7DialogueTree && <Eira7TreeTerminal />}
       {vent4DialogueTree && <Vent4TreeTerminal />}
+      <GlitchOverlay />
       <FullscreenFlash />
     </div>
   );
