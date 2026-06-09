@@ -36,6 +36,7 @@ export function worldStateToSlices(ws: WorldState): {
       stepsPerTurn: e.stepsPerTurn,
       lastMoveTurn: e.lastMoveTurn,
       disabledTurnsRemaining: e.disabledTurnsRemaining,
+      blindnessTurnsRemaining: e.blindnessTurnsRemaining,
     });
     entityKinds.set(id, { kind: e.kind, name: e.name });
     entityMinds.set(id, {
@@ -83,7 +84,6 @@ export function worldStateToSlices(ws: WorldState): {
     peeking: ws.player.peeking,
     hidingTileKey: ws.player.hidingTileKey,
     spoofTurnsRemaining: ws.player.spoofTurnsRemaining,
-    baffleTurnsRemaining: ws.player.baffleTurnsRemaining,
     lastMoveTurn: ws.player.lastMoveTurn,
     entityMinds,
     visibleTiles: new Set(ws.visibleTiles),
@@ -131,6 +131,7 @@ export function slicesToWorldState(
       stepsPerTurn: phys.stepsPerTurn,
       lastMoveTurn: phys.lastMoveTurn,
       disabledTurnsRemaining: phys.disabledTurnsRemaining,
+      blindnessTurnsRemaining: phys.blindnessTurnsRemaining,
       alert: mind?.alert,
       maskIntegrity: mind?.maskIntegrity,
       sideLogs: mind?.sideLogs,
@@ -159,7 +160,6 @@ export function slicesToWorldState(
       peeking: subjective.peeking,
       hidingTileKey: subjective.hidingTileKey,
       spoofTurnsRemaining: subjective.spoofTurnsRemaining,
-      baffleTurnsRemaining: subjective.baffleTurnsRemaining,
     },
     rooms: new Map(physical.rooms),
     entities,

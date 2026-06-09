@@ -194,10 +194,7 @@ function moveCommon(
 ): boolean {
   if (state.detained || state.player.ap < apCost) return false;
   if (state.player.hidingTileKey) return false;
-  // Thermal Baffle — wipes the footstep emission for the duration of the buff.
-  // Run, walk, sneak all become silent. Doesn't change AP cost.
-  const baffled = (state.player.baffleTurnsRemaining ?? 0) > 0;
-  const effIntensity = baffled ? 0 : intensity;
+  const effIntensity = intensity;
   // Any movement breaks an active peek.
   if (state.player.peeking) {
     state.player.peeking = undefined;
@@ -291,7 +288,8 @@ function moveCommon(
 const PHANTOM_EMITTER_INTENSITY = 2;
 const PHANTOM_EMITTER_TURNS = 3;
 const SPOOF_TURNS = 4;
-const BAFFLE_TURNS = 4;
+const BAFFLE_TURNS = 3;
+const BAFFLE_RADIUS = 5;
 const DUMP_FRAGMENT_RADIUS = 5;
 const DUMP_FRAGMENT_STUN_TURNS = 1;
 const EMP_RADIUS = 5;
@@ -375,11 +373,32 @@ function useSpoofBadge(state: WorldState): boolean {
   return true;
 }
 
+function detonateBaffle(state: WorldState, center: Vec2, radius: number, roomId: RoomId): Entity[] {
+  const r2 = radius * radius;
+  const targets: Entity[] = [];
+  for (const entity of state.entities.values()) {
+    if (entity.status !== "ACTIVE") continue;
+    if (entity.kind !== "SILICATE" && entity.kind !== "CDN_7") continue;
+    if (entity.roomId !== roomId) continue;
+    const dx = entity.pos.x - center.x;
+    const dy = entity.pos.y - center.y;
+    if (dx * dx + dy * dy > r2) continue;
+    targets.push(entity);
+  }
+
+  for (const target of targets) {
+    target.blindnessTurnsRemaining = BAFFLE_TURNS;
+  }
+  return targets;
+}
+
 function useBaffle(state: WorldState): boolean {
-  state.player.baffleTurnsRemaining = BAFFLE_TURNS;
-  eventBus.emit("ITEM_EFFECT_STARTED", {
-    effect: "baffle",
-    turnsRemaining: BAFFLE_TURNS,
+  detonateBaffle(state, state.player.pos, BAFFLE_RADIUS, state.player.roomId);
+  eventBus.emit("ITEM_DETONATED", {
+    itemType: "THERMAL_BAFFLE",
+    roomId: state.player.roomId,
+    pos: { ...state.player.pos },
+    radius: BAFFLE_RADIUS,
   });
   return true;
 }
@@ -737,11 +756,7 @@ export const actions = {
         eventBus.emit("INTERACT_REJECTED", { action: "vent", reason: "needs_sneak" });
         return false;
       }
-      // Thermal Baffle halves vent-crawl AP cost — the buff smooths airflow
-      // resistance against the body and the crawl moves with the duct's
-      // pressure differential instead of against it.
-      const baffled = (state.player.baffleTurnsRemaining ?? 0) > 0;
-      const ventCost = baffled ? 1 : VENT_AP_COST;
+      const ventCost = VENT_AP_COST;
       if (state.player.ap < ventCost) {
         eventBus.emit("INTERACT_REJECTED", { action: "vent", reason: "needs_ap" });
         return false;

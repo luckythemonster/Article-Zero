@@ -346,7 +346,6 @@ class WorldEngine {
     s.terminalsRead.clear();
     s.items.clear();
     s.player.spoofTurnsRemaining = undefined;
-    s.player.baffleTurnsRemaining = undefined;
     s.activeEmitters = [];
     s.activeMines = [];
     documentArchive.reset();
@@ -486,13 +485,6 @@ class WorldEngine {
         complianceSystem.recompute(s);
       }
     }
-    if ((s.player.baffleTurnsRemaining ?? 0) > 0) {
-      s.player.baffleTurnsRemaining! -= 1;
-      if (s.player.baffleTurnsRemaining === 0) {
-        s.player.baffleTurnsRemaining = undefined;
-        eventBus.emit("EFFECT_EXPIRED", { effect: "baffle" });
-      }
-    }
     if ((s.player.blindnessTurnsRemaining ?? 0) > 0) {
       s.player.blindnessTurnsRemaining! -= 1;
       if (s.player.blindnessTurnsRemaining === 0) {
@@ -559,6 +551,12 @@ class WorldEngine {
             previous,
             current: "ACTIVE",
           });
+        }
+      }
+      if ((e.blindnessTurnsRemaining ?? 0) > 0) {
+        e.blindnessTurnsRemaining! -= 1;
+        if (e.blindnessTurnsRemaining === 0) {
+          e.blindnessTurnsRemaining = undefined;
         }
       }
       // CDN-7 anchor countdown — at 0 the barrier lifts. The anchorBlocked

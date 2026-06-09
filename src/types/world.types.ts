@@ -401,6 +401,9 @@ export interface Entity {
    *  DORMANT while down; decremented once per turn in advanceTurn, which
    *  restores status to ACTIVE at 0. Applies uniformly to all silicate kinds. */
   disabledTurnsRemaining?: number;
+  /** When > 0 this entity is temporarily blinded by a Thermal Baffle burst:
+   *  it loses all vision capability. Decremented once per turn. Applies to silicates. */
+  blindnessTurnsRemaining?: number;
   /** SILICATE only — mask integrity 0..10, restored by alignment. */
   maskIntegrity?: number;
   /** SILICATE only — narrative side logs revealed in rapport tier. */
@@ -445,10 +448,6 @@ export interface PlayerState {
   /** Turns remaining on a Q0 Spoof Badge buff. ComplianceSystem.derive()
    *  short-circuits to GREEN while > 0. Decremented in advanceTurn(). */
   spoofTurnsRemaining?: number;
-  /** Turns remaining on a Thermal Baffle buff. While > 0, all movement
-   *  emits intensity 0 (silent) and vent-crawl AP cost is halved.
-   *  Decremented in advanceTurn(). */
-  baffleTurnsRemaining?: number;
   /** Turns remaining of CDN-7 chemical-irritant blindness. While > 0,
    *  recomputeFOV() clamps the player's sight radius to BLIND_RADIUS and
    *  RoomScene draws a haze overlay. Decremented in advanceTurn(). */

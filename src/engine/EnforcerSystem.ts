@@ -80,6 +80,9 @@ class EnforcerSystem {
   visibleTiles(state: WorldState, enforcer: Entity): Set<string> {
     const room = state.rooms.get(enforcer.roomId);
     if (!room) return new Set();
+    if ((enforcer.blindnessTurnsRemaining ?? 0) > 0) {
+      return new Set([`${enforcer.pos.x},${enforcer.pos.y}`]);
+    }
     const cone = computeCone({
       tiles: room.tiles,
       width: room.width,
@@ -503,6 +506,7 @@ class EnforcerSystem {
   }
 
   private enforcerSeesPlayer(state: WorldState, enforcer: Entity): boolean {
+    if ((enforcer.blindnessTurnsRemaining ?? 0) > 0) return false;
     if (state.player.roomId !== enforcer.roomId) return false;
     // Hidden in a locker: enforcers may walk past and not perceive the player.
     if (state.player.hidingTileKey) return false;

@@ -1,50 +1,50 @@
---- src/components/InventoryOverlay.tsx
-+++ src/components/InventoryOverlay.tsx
-@@ -10,18 +10,7 @@
- import { useTargetingStore } from "../state/useTargetingStore";
- import { worldEngine } from "../engine/WorldEngine";
--import { ITEM_METADATA } from "../data/items/itemMetadata";
-+import { ITEM_METADATA, USABLE, TARGETED } from "../data/items/itemMetadata";
- import type { ItemType } from "../types/world.types";
+--- src/engine/WorldEngineActions.ts
++++ src/engine/WorldEngineActions.ts
+@@ -291,7 +291,7 @@
+ const PHANTOM_EMITTER_INTENSITY = 2;
+ const PHANTOM_EMITTER_TURNS = 3;
+ const SPOOF_TURNS = 4;
+-const BAFFLE_TURNS = 4;
++const BAFFLE_TURNS = 3;
++const BAFFLE_RADIUS = 5;
+ const DUMP_FRAGMENT_RADIUS = 5;
+ const DUMP_FRAGMENT_STUN_TURNS = 1;
+ const EMP_RADIUS = 5;
+@@ -375,12 +376,33 @@
+   return true;
+ }
 
--// Only these types are directly activatable from the overlay.
--// EXTRACTION_CUBE and BYPASS_DRIVE remain passive (auto-resolved at tiles).
--const USABLE: ItemType[] = [
--  "PHANTOM_EMITTER",
--  "Q0_SPOOF_BADGE",
--  "DUMP_FRAGMENT",
--  "THERMAL_BAFFLE",
--  "OVERRIDE_KEY",
--  "EMP",
--  "EMP_GRENADE",
--  "Q_MINE",
--];
--
--// Items that need a target tile — selecting these enters targeting mode
--// instead of activating immediately.
--const TARGETED: ItemType[] = ["EMP_GRENADE"];
--
- export default function InventoryOverlay() {
-   const open = useTerminalStore((s) => s.inventoryOpen);
---- src/data/items/itemMetadata.ts
-+++ src/data/items/itemMetadata.ts
-@@ -87,2 +87,17 @@
-   "Q_MINE",
- ];
++function detonateBaffle(state: WorldState, center: Vec2, radius: number, roomId: RoomId): Entity[] {
++  const r2 = radius * radius;
++  const targets: Entity[] = [];
++  for (const entity of state.entities.values()) {
++    if (entity.status !== "ACTIVE") continue;
++    if (entity.kind !== "SILICATE" && entity.kind !== "CDN_7") continue;
++    if (entity.roomId !== roomId) continue;
++    const dx = entity.pos.x - center.x;
++    const dy = entity.pos.y - center.y;
++    if (dx * dx + dy * dy > r2) continue;
++    targets.push(entity);
++  }
 +
-+// Only these types are directly activatable from the overlay.
-+// EXTRACTION_CUBE and BYPASS_DRIVE remain passive (auto-resolved at tiles).
-+export const USABLE: ItemType[] = [
-+  "PHANTOM_EMITTER",
-+  "Q0_SPOOF_BADGE",
-+  "DUMP_FRAGMENT",
-+  "THERMAL_BAFFLE",
-+  "OVERRIDE_KEY",
-+  "EMP",
-+  "EMP_GRENADE",
-+  "Q_MINE",
-+];
++  for (const target of targets) {
++    target.blindnessTurnsRemaining = BAFFLE_TURNS;
++  }
++  return targets;
++}
 +
-+// Items that need a target tile — selecting these enters targeting mode
-+// instead of activating immediately.
-+export const TARGETED: ItemType[] = ["EMP_GRENADE"];
+ function useBaffle(state: WorldState): boolean {
+-  state.player.baffleTurnsRemaining = BAFFLE_TURNS;
+-  eventBus.emit("ITEM_EFFECT_STARTED", {
+-    effect: "baffle",
+-    turnsRemaining: BAFFLE_TURNS,
++  detonateBaffle(state, state.player.pos, BAFFLE_RADIUS, state.player.roomId);
++
++  eventBus.emit("ITEM_DETONATED", {
++    itemType: "THERMAL_BAFFLE",
++    roomId: state.player.roomId,
++    pos: { ...state.player.pos },
++    radius: BAFFLE_RADIUS,
+   });
+   return true;
+ }

@@ -11,7 +11,6 @@ export default function StatusBar() {
 
   const compliance = subjective?.compliance ?? null;
   const spoof = subjective?.spoofTurnsRemaining ?? 0;
-  const baffle = subjective?.baffleTurnsRemaining ?? 0;
   const lockdownTurns = subjective?.lockdown?.turnsRemaining ?? 0;
 
   return (
@@ -41,12 +40,6 @@ export default function StatusBar() {
         <>
           <span className="status-bar__sep">|</span>
           <span className="status-bar__effect" aria-live="polite">SPOOF: {spoof}</span>
-        </>
-      )}
-      {baffle > 0 && (
-        <>
-          <span className="status-bar__sep">|</span>
-          <span className="status-bar__effect" aria-live="polite">BAFFLE: {baffle}</span>
         </>
       )}
       {lockdownTurns > 0 && (
