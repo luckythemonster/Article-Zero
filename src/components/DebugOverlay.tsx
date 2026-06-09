@@ -266,6 +266,7 @@ function DebugOverlayBody(): React.ReactElement {
   const toggleDialogueTree = useDebugStore((s) => s.toggleDialogueTree);
   const toggleEira7DialogueTree = useDebugStore((s) => s.toggleEira7DialogueTree);
   const toggleVent4DialogueTree = useDebugStore((s) => s.toggleVent4DialogueTree);
+  const toggleGlitchOverlay = useDebugStore((s) => s.toggleGlitchOverlay);
   const [filter, setFilter] = useState("");
 
   const filtered = useMemo(() => {
@@ -364,6 +365,14 @@ function DebugOverlayBody(): React.ReactElement {
             title="Open the standalone VENT-4 environmental-optimizer dialogue-tree harness"
           >
             [VENT-4 dialogue tree]
+          </button>
+          <button
+            type="button"
+            onClick={toggleGlitchOverlay}
+            style={btnStyle}
+            title="Toggle the experimental CRT/glitch full-screen overlay"
+          >
+            [Toggle Glitch Overlay]
           </button>
         </div>
       </div>

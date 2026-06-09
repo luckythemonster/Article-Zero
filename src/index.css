@@ -1866,3 +1866,31 @@ body.theme-lattice {
 .wall-terminal__legend--door-locked::before { background: #1e2030; border: 1px solid #6060a0; }
 .wall-terminal__legend--light-on::before  { background: #3a4e1a; outline: 1px solid #a8e060; }
 .wall-terminal__legend--player::before    { background: #1e4060; outline: 2px solid #60b8e0; }
+
+/* ── Glitch Overlay ──────────────────────────────────────────────────────── */
+
+.glitch-overlay-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998; /* just below fullscreen-flash */
+  overflow: hidden;
+}
+
+.glitch-overlay-scanline {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.15;
+  mix-blend-mode: overlay;
+}
+
+.glitch-overlay-texture {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.25;
+  mix-blend-mode: color-dodge;
+}

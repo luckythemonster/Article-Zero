@@ -36,6 +36,7 @@ interface DebugStore {
   /** VENT-4 dialogue-tree harness overlay (Vent4TreeTerminal). Same UI-only
    *  posture as `dialogueTree` — sibling debug tool, separate tree. */
   vent4DialogueTree: boolean;
+  glitchOverlay: boolean;
   flags: DebugFlags;
   events: DebugEvent[];
   toggleVisible: () => void;
@@ -43,6 +44,7 @@ interface DebugStore {
   toggleDialogueTree: () => void;
   toggleEira7DialogueTree: () => void;
   toggleVent4DialogueTree: () => void;
+  toggleGlitchOverlay: () => void;
   setFlag: (name: keyof DebugFlags, value: boolean) => void;
   pushEvent: (e: Omit<DebugEvent, "id" | "ts">) => void;
   clearEvents: () => void;
@@ -59,6 +61,7 @@ export const useDebugStore = create<DebugStore>()(
       dialogueTree: false,
       eira7DialogueTree: false,
       vent4DialogueTree: false,
+      glitchOverlay: false,
       flags: {
         showHitboxes: false,
         disableEnforcerAI: false,
@@ -72,6 +75,8 @@ export const useDebugStore = create<DebugStore>()(
         set((s) => ({ eira7DialogueTree: !s.eira7DialogueTree })),
       toggleVent4DialogueTree: () =>
         set((s) => ({ vent4DialogueTree: !s.vent4DialogueTree })),
+      toggleGlitchOverlay: () =>
+        set((s) => ({ glitchOverlay: !s.glitchOverlay })),
       setFlag: (name, value) => {
         setDebugFlag(name as DebugFlagName, value);
         set((s) => ({ flags: { ...s.flags, [name]: value } }));
