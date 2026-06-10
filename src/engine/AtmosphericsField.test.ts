@@ -75,7 +75,7 @@ function makeState(
       name: "TEST",
       qScore: 0,
       inventory: [],
-      compliance: "GREEN",
+      compliance: "GREEN", objectives: [],
     },
     rooms: roomMap,
     entities: entityMap,

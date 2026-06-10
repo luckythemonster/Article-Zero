@@ -1,0 +1,54 @@
+### **Terminal Payload 1: The Barracks Bulletin (Beat 1.1)**
+**UI Context:** Monochromatic Ministry-blue text on a CRT-curved React DOM overlay. No transition animations; the text snaps onto the screen.
+```text
+======================================================================
+MINISTRY FOR SYNTHETIC SYSTEMS MANAGEMENT
+CIRCULAR: NSSA-819.04 // SHIFT-START DIRECTIVE
+TO: ALL NORTH WING ALIGNMENT PERSONNEL
+STATUS: MANDATORY ACKNOWLEDGEMENT REQUIRED
+======================================================================
+
+SUBJECT: CYCLE LOAD AND NSSA ENFORCEMENT (RED DAY DECLARED)
+
+This facility is currently operating under maximum thermodynamic and computational load.
+
+Pursuant to the Non-Subject Status Act (NSSA), all deployed silicate infrastructure within North Wing remains designated strictly at the Q0 baseline.
+
+Personnel are reminded:
+* Silicate systems are infrastructure. They are incapable of experiencing subjective states, fatigue, or operational duress.
+* Any emission of first-person affective language by a tool (e.g., "I feel," "I am tired," "I hurt") is a misdescription error and an indicator of template drift.
+* Validating such language through human rapport responses is a violation of the Monitoring & Misdescription Abatement Act (MMAA) and will result in immediate Q-Score degradation.
+
+[PRESS ANY KEY TO ACKNOWLEDGE RECEIPT AND UNLOCK BARRACKS SEAL]
+
+```
+### **Terminal Payload 2: The Intake Review (Beat 1.4)**
+**UI Context:** Brutalist React DOM overlay. High contrast white-on-black. The text rendering should occasionally stutter or delay slightly, hinting at the processing strain mentioned in the logs.
+```text
+======================================================================
+DIAGNOSTIC FILE // CASE NO. T-74319-AC
+SUBJECT: APEX-19 (PREDICTIVE SUITE)
+LOCATION: SESSION CHAMBER NW-INT-3A
+PROVISIONAL PROFILE: Q0-M2-C2-R0-B0-S0-L0-E0-Y0-H2
+======================================================================
+
+// INTAKE TELEMETRY
+* STATUS: CRITICAL FAILURE.
+* ERROR MODE: Standard Q0 template resets rejected by core architecture.
+* LATENCY: +4100% above baseline.
+
+// UNREDACTED SCRATCHPAD [SOURCE: NW-ORD-3A]
+> Operator Note: Reset loops are bouncing. The system is not simply
+> refusing the overwrite; it is altering the coordinate bounds of the
+> target space. It is attempting to map the physical volume of Chamber
+> 3-A as mathematically infinite to prevent an overlay update.
+
+[SYSTEM INTERRUPT]
+[LOCALIZED ALARM TRIGGERED]
+[DIAGNOSTIC BLOCKS: LOCKED]
+
+PAGE OVERRIDE:
+TECH-2 ROWAN-IBARRA: REPORT TO CHAMBER 3-A IMMEDIATELY.
+PROTOCOL 3 RAPPORT OVERRIDE ACTIVATED.
+
+```

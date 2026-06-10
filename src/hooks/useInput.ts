@@ -38,6 +38,16 @@ export function useInput({ enabled }: Options): void {
         return;
       }
 
+      // Objectives menu toggle (Escape).
+      if (e.code === "Escape") {
+        const term = useTerminalStore.getState();
+        if (term.phase === "FLOOR" || term.phase === "CLIMAX") {
+          term.setObjectivesOpen(!term.objectivesOpen);
+        }
+        e.preventDefault();
+        return;
+      }
+
       if (!worldEngine.hasState()) return;
       // Only let keyboard verbs through during FLOOR and CLIMAX. Modal-only
       // phases (ALIGNMENT, FORGERY) would otherwise let WASD move Rowan

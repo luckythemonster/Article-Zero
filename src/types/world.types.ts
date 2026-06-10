@@ -416,6 +416,15 @@ export interface Entity {
 
 export type Stance = "WALK" | "SNEAK" | "RUN";
 
+export type ObjectiveStatus = "active" | "completed" | "failed";
+
+export interface Objective {
+  id: string;
+  description: string;
+  status: ObjectiveStatus;
+  isFinal?: boolean;
+}
+
 export interface PlayerState {
   /** Which room the player is currently inside. */
   roomId: RoomId;
@@ -439,6 +448,8 @@ export interface PlayerState {
   inventory: ItemInstance[];
   /** Cached compliance tier; written by ComplianceSystem.compute(). */
   compliance: ComplianceTier;
+  /** Active and completed objectives */
+  objectives: Objective[];
   /** Set by `peek`; cleared by movement and end-of-turn. While set, FOV
    *  extends in this direction. */
   peeking?: Facing;

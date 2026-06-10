@@ -261,6 +261,17 @@ export function installEventBridge(): () => void {
     ),
   );
 
+  unsubs.push(
+    eventBus.on("OBJECTIVE_ADDED", (p) =>
+      push("INFO", `OBJECTIVE ADDED: ${p.objectiveId}`)
+    ),
+  );
+  unsubs.push(
+    eventBus.on("OBJECTIVE_COMPLETED", (p) =>
+      push("INFO", `OBJECTIVE COMPLETED: ${p.objectiveId}`)
+    ),
+  );
+
   return () => {
     for (const off of unsubs) off();
     if (lockdownTimer !== null) {

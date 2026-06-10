@@ -320,7 +320,7 @@ export function commonwealthEra(): EraSeed {
       { id: "emp-cw", itemType: "EMP" },
       { id: "emp-grenade-cw", itemType: "EMP_GRENADE" },
     ],
-    compliance: "GREEN",
+    compliance: "GREEN", objectives: [],
   };
 
   const apex: Entity = {
