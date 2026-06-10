@@ -237,7 +237,7 @@ export class RoomScene extends Phaser.Scene {
     this.layout();
     this.scale.on("resize", this.onResize);
 
-    this.interactText = this.add.text(0, 0, "INTERACT", {
+    this.interactText = this.add.text(0, 0, "[E] INTERACT", {
       fontFamily: "monospace",
       fontSize: "10px",
       color: "#00ffff", // Teal color
@@ -641,16 +641,37 @@ export class RoomScene extends Phaser.Scene {
 
     if (action && this.playerSprite) {
       this.interactText.setPosition(this.playerSprite.x, this.playerSprite.y - 40);
-      let text = "INTERACT";
-      if (action === "terminal") text = "TERMINAL";
-      if (action === "door") text = "DOOR";
-      if (action === "locker") text = "LOCKER";
-      if (action === "loot") text = "LOOT";
-      if (action === "silicate") text = "SILICATE";
-      if (action === "vent") text = "VENT";
-      if (action === "ladder") text = "LADDER";
-      if (action === "exfil") text = "EXFIL";
-      if (action === "item") text = "PICK UP";
+      let text = "INTERACT WITH OBJECT";
+      if (action === "terminal") text = "USE TERMINAL";
+      if (action === "door") {
+        // Find if door is open
+        const room = state.rooms.get(state.player.roomId);
+        if (room) {
+          const char = state.player;
+          const targetPos = { x: char.pos.x, y: char.pos.y };
+          if (char.facing === "north") targetPos.y -= 1;
+          else if (char.facing === "south") targetPos.y += 1;
+          else if (char.facing === "east") targetPos.x += 1;
+          else if (char.facing === "west") targetPos.x -= 1;
+          const t = room.tiles[targetPos.y * room.width + targetPos.x];
+          if (t && t.kind === "DOOR_OPEN") {
+            text = "CLOSE DOOR";
+          } else {
+            text = "OPEN DOOR";
+          }
+        } else {
+          text = "OPEN DOOR";
+        }
+      }
+      if (action === "locker") {
+        text = state.player.hidingTileKey ? "EXIT LOCKER" : "HIDE IN LOCKER";
+      }
+      if (action === "loot") text = "OPEN CHEST";
+      if (action === "item") text = "PICK UP ITEM";
+      if (action === "vent") text = "ENTER VENT";
+      if (action === "ladder") text = "USE LADDER";
+      if (action === "exfil") text = "EXTRACT";
+
       this.interactText.setText(`[E] to ${text}`);
       this.interactText.setVisible(true);
     } else if (this.interactText) {
