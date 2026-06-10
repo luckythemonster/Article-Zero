@@ -617,7 +617,7 @@ export class RoomScene extends Phaser.Scene {
     const playerCx = state.player.pos.x * TILE_PX + TILE_PX / 2;
     const playerCy =
       state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP + CHAR_Y_OFFSET_PX;
-    this.playerSprite.setPosition(playerCx, playerCy);
+    this.tweenTo(this.playerSprite, playerCx, playerCy);
     this.playerSprite.setVisible(!state.player.hidingTileKey);
     if (state.player.hidingTileKey) {
       this.playerSprite.setTint(0x6a6a6a);
@@ -666,7 +666,8 @@ export class RoomScene extends Phaser.Scene {
         // Item PNGs are native 32×32. Offset above the player's head by half
         // the rendered character height so it tracks the sprite footprint
         // regardless of the character art's frame size.
-        this.heldItemSprite.setPosition(
+        this.tweenTo(
+          this.heldItemSprite,
           playerCx,
           playerCy - this.playerSprite.displayHeight / 2,
         );
@@ -915,7 +916,7 @@ export class RoomScene extends Phaser.Scene {
         sprite.setDepth(4);
         this.entitySprites.set(entity.id, sprite);
       }
-      sprite.setPosition(px, py + (PROP_SLUGS.has(slug) ? 0 : CHAR_Y_OFFSET_PX));
+      this.tweenTo(sprite, px, py + (PROP_SLUGS.has(slug) ? 0 : CHAR_Y_OFFSET_PX));
       sprite.setVisible(visible);
       // The directional sprite conveys facing on its own — hide the rect/triangle.
       this.entityRects.get(entity.id)?.setVisible(false);
@@ -957,7 +958,7 @@ export class RoomScene extends Phaser.Scene {
         rect.setDepth(4);
         this.entityRects.set(entity.id, rect);
       }
-      rect.setPosition(px, py);
+      this.tweenTo(rect, px, py);
       rect.setFillStyle(colour);
       rect.setVisible(visible);
 
@@ -1013,16 +1014,16 @@ export class RoomScene extends Phaser.Scene {
   ): void {
     const offset = TILE_PX / 2 - 6;
     if (facing === "north") {
-      mark.setPosition(cx, cy - offset);
+      this.tweenTo(mark, cx, cy - offset);
       mark.setRotation(Math.PI);
     } else if (facing === "south") {
-      mark.setPosition(cx, cy + offset);
+      this.tweenTo(mark, cx, cy + offset);
       mark.setRotation(0);
     } else if (facing === "east") {
-      mark.setPosition(cx + offset, cy);
+      this.tweenTo(mark, cx + offset, cy);
       mark.setRotation(-Math.PI / 2);
     } else {
-      mark.setPosition(cx - offset, cy);
+      this.tweenTo(mark, cx - offset, cy);
       mark.setRotation(Math.PI / 2);
     }
   }
@@ -1056,6 +1057,20 @@ export class RoomScene extends Phaser.Scene {
         mark!.setVisible(false);
         mark!.setAlpha(1);
       },
+    });
+  }
+
+  private tweenTo(target: Phaser.GameObjects.Components.Transform, x: number, y: number): void {
+    if (target.x === x && target.y === y) return;
+    this.tweens.add({
+      targets: target,
+      x: x,
+      y: y,
+      duration: 200,
+      ease: 'Linear',
+      // overwrite: true will cancel existing tweens on the target
+      // to avoid conflicting movements
+      overwrite: true,
     });
   }
 
