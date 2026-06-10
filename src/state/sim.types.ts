@@ -25,6 +25,7 @@ import type {
   VentEndpoint,
 } from "../types/world.types";
 import type { DocumentCase } from "../types/documents.types";
+import type { Objective } from "../types/world.types";
 
 // ── Physical ──────────────────────────────────────────────────────────────────
 
@@ -90,6 +91,7 @@ export interface SubjectiveState {
   qScore: number;
   compliance: ComplianceTier;
   inventory: ItemInstance[];
+  objectives: Objective[];
   ap: number;
   apMax: number;
   stance: Stance;
@@ -138,6 +140,7 @@ export interface SerializedSubjective {
   qScore: number;
   compliance: ComplianceTier;
   inventory: ItemInstance[];
+  objectives: Objective[];
   ap: number;
   apMax: number;
   stance: Stance;

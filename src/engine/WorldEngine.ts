@@ -421,7 +421,7 @@ class WorldEngine {
     }
     return {
       qScore: 0,
-      compliance: "GREEN",
+      compliance: "GREEN", objectives: [],
       inventory: [],
       ap: 4,
       apMax: 4,

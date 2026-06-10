@@ -92,6 +92,7 @@ interface TerminalStore {
   runFlags: RunFlags;
 
   inventoryOpen: boolean;
+  objectivesOpen: boolean;
   executeResetOpen: boolean;
   equippedItem: ItemType | null;
 
@@ -114,6 +115,7 @@ interface TerminalStore {
   setRunFlag: <K extends keyof RunFlags>(key: K, value: RunFlags[K]) => void;
   resetRun: () => void;
   setInventoryOpen: (v: boolean) => void;
+  setObjectivesOpen: (v: boolean) => void;
   setExecuteResetOpen: (v: boolean) => void;
   setEquippedItem: (item: ItemType | null) => void;
 }
@@ -149,6 +151,7 @@ export const useTerminalStore = create<TerminalStore>()(
       phase: "FRAME",
       runFlags: { ...DEFAULT_RUN_FLAGS },
       inventoryOpen: false,
+      objectivesOpen: false,
       executeResetOpen: false,
       equippedItem: null,
       activeHvacConsole: null,
@@ -196,6 +199,7 @@ export const useTerminalStore = create<TerminalStore>()(
 
       resetRun: () => set({ runFlags: { ...DEFAULT_RUN_FLAGS }, equippedItem: null }),
       setInventoryOpen: (v) => set({ inventoryOpen: v }),
+      setObjectivesOpen: (v) => set({ objectivesOpen: v }),
       setExecuteResetOpen: (v) => set({ executeResetOpen: v }),
       setEquippedItem: (item) => set({ equippedItem: item }),
     }),
