@@ -48,8 +48,6 @@ The following components have been sourced from external
 providers and are licensed for use within the facility.
 
 * Visual Distortion Patterns (ui/glitch/*) - Glitch Engine Lite v5.0 by David Dawo220
-* Thermodynamic Particle Effects (vfx/*) - Sci-Fi Effects Pack (Unverified Author/License via asset cache)
-* Auditory Logs (audio/*) - Glitch Noises by Vladislav Zharkov (vladislavzh.net)
 
 -----------------------------------------------------------
 [ UNVERIFIED ASSET MANIFEST ]
@@ -57,7 +55,7 @@ The following sub-routines and artifact fragments have been
 detected in the asset cache. Their provenance is currently
 under audit by the Enforcers.
 
-// TODO: Review and attribute the remaining internet-sourced materials:
-* Any BeepBox audio loops (music, footsteps, ambient mechanical noise) missing explicit attribution
-* Additional character sprites or UI elements not directly authored by Lucky
+// TODO: Review and attribute the following internet-sourced materials:
+* Thermodynamic Particle Effects (vfx/*): Warp gates, lightning, sparks, and charge signatures
+* Auditory Logs (audio/*): Footsteps, UI sounds, ambient mechanical noise
 `;
