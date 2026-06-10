@@ -9,6 +9,7 @@ import { worldEngine } from "../engine/WorldEngine";
 import { enforcerSystem } from "../engine/EnforcerSystem";
 import { debugFlags } from "../engine/debugFlags";
 import { useTargetingStore } from "../state/useTargetingStore";
+import { actions } from "../engine/WorldEngineActions";
 import type { Entity, Facing, ItemType, Room, Tile, TileKind, Vec2, WorldState } from "../types/world.types";
 import { roomTileKey } from "../types/world.types";
 import { atmosphericsField } from "../engine/AtmosphericsField";
@@ -152,6 +153,7 @@ export class RoomScene extends Phaser.Scene {
   private overlayLayer!: Phaser.GameObjects.Graphics;
   private playerSprite!: Phaser.GameObjects.Sprite;
   private heldItemSprite!: Phaser.GameObjects.Image;
+  private interactText!: Phaser.GameObjects.Text;
   private entityRects = new Map<string, Phaser.GameObjects.Rectangle>();
   private entitySprites = new Map<string, Phaser.GameObjects.Sprite>();
   private entityFacingMarks = new Map<string, Phaser.GameObjects.Triangle>();
@@ -234,6 +236,23 @@ export class RoomScene extends Phaser.Scene {
 
     this.layout();
     this.scale.on("resize", this.onResize);
+
+    this.interactText = this.add.text(0, 0, "[SPACE] INTERACT", {
+      fontFamily: "monospace",
+      fontSize: "10px",
+      color: "#00ffff", // Teal color
+      stroke: "#000",
+      strokeThickness: 2,
+    }).setOrigin(0.5, 1).setDepth(2000).setVisible(false);
+
+    this.tweens.add({
+      targets: this.interactText,
+      alpha: 0.2,
+      yoyo: true,
+      repeat: -1,
+      duration: 800
+    });
+
 
     // Scoped subscriptions — every on()/add() here is auto-removed by the
     // single scope.dispose() in shutdown(), so there's no per-handler cleanup
@@ -618,6 +637,15 @@ export class RoomScene extends Phaser.Scene {
     const playerCy =
       state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP + CHAR_Y_OFFSET_PX;
     this.playerSprite.setPosition(playerCx, playerCy);
+    const action = actions.getAvailableInteractAction(state);
+
+    if (action && this.playerSprite) {
+      this.interactText.setPosition(this.playerSprite.x, this.playerSprite.y - 40);
+      this.interactText.setVisible(true);
+    } else if (this.interactText) {
+      this.interactText.setVisible(false);
+    }
+
     this.playerSprite.setVisible(!state.player.hidingTileKey);
     if (state.player.hidingTileKey) {
       this.playerSprite.setTint(0x6a6a6a);
