@@ -687,7 +687,7 @@ export const actions = {
   },
 
 
-  getAvailableInteractAction(state: WorldState): "terminal" | "door" | "locker" | "loot" | "silicate" | null {
+  getAvailableInteractAction(state: WorldState): string | null {
     if (state.detained) return null;
     const { player } = state;
     const room = state.rooms.get(player.roomId);
@@ -709,15 +709,32 @@ export const actions = {
     else if (player.facing === "west") targetPos.x -= 1;
 
     const t = room.tiles[targetPos.y * room.width + targetPos.x];
-    if (!t) return null;
-
-    if (t.kind === "TERMINAL") return "terminal";
-    if (t.kind === "DOOR_CLOSED" || t.kind === "DOOR_OPEN") return "door";
-    if (t.kind === "LOCKER") return "locker";
+    if (t) {
+      if (t.kind === "TERMINAL") return "terminal";
+      if (t.kind === "DOOR_CLOSED" || t.kind === "DOOR_OPEN") return "door";
+      if (t.kind === "LOCKER") return "locker";
+      if (t.kind === "ITEM_CHEST") {
+        const chest = state.chestPayloads.get(roomTileKey(state.player.roomId, targetPos));
+        if (chest && !chest.opened) return "loot";
+      }
+    }
 
     // Check standing tile
     const st = room.tiles[player.pos.y * room.width + player.pos.x];
-    if (st && st.kind === "LOCKER") return "locker";
+    if (st) {
+      if (st.kind === "LOCKER") return "locker";
+      if (st.kind === "VENT") return "vent";
+      if (st.kind === "LADDER") {
+        const door = roomGraph.doorwayAt(state, state.player.roomId, player.pos.x, player.pos.y);
+        if (door && door.kind === "ladder" && !door.closed) return "ladder";
+      }
+      if (st.kind === "EXFIL_POINT") {
+        const carryingCube = state.player.inventory.some((i) => i.itemType === "EXTRACTION_CUBE");
+        if (carryingCube) return "exfil";
+      }
+    }
+    const itemHere = findItemAt(state, state.player.roomId, player.pos);
+    if (itemHere) return "item";
 
     return null;
   },
