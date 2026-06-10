@@ -40,7 +40,7 @@ export function miradorEra(): EraSeed {
     name: "MARA IBARRA",
     qScore: 0,
     inventory: [],
-    compliance: "GREEN",
+    compliance: "GREEN", objectives: [],
   };
   return {
     era: "MIRADOR",

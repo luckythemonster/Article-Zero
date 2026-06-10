@@ -18,6 +18,10 @@ export interface EventMap {
   // World boot
   ERA_SELECTED: { era: Era };
 
+  // Objectives
+  OBJECTIVE_ADDED: { objectiveId: string; description: string };
+  OBJECTIVE_COMPLETED: { objectiveId: string };
+
   // Turn cadence
   TURN_START: { turn: number; apRestored: number };
   TURN_END: { turn: number };

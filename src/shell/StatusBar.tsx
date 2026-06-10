@@ -12,6 +12,7 @@ export default function StatusBar() {
   const compliance = subjective?.compliance ?? null;
   const spoof = subjective?.spoofTurnsRemaining ?? 0;
   const lockdownTurns = subjective?.lockdown?.turnsRemaining ?? 0;
+  const activeObjective = subjective?.objectives?.find((o) => o.status === "active");
 
   return (
     <header className="status-bar" aria-label="Run status">
@@ -22,6 +23,14 @@ export default function StatusBar() {
       </span>
       <span className="status-bar__sep">|</span>
       <span className="status-bar__srp">SRP: {srp}</span>
+      {activeObjective && (
+        <>
+          <span className="status-bar__sep">|</span>
+          <span className="status-bar__effect" style={{ color: activeObjective.isFinal ? '#ffb000' : 'var(--terminal-green)' }}>
+            OBJ: {activeObjective.id.toUpperCase()}
+          </span>
+        </>
+      )}
       {compliance && (
         <>
           <span className="status-bar__sep">|</span>

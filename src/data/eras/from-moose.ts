@@ -700,7 +700,7 @@ export function mooseToEraSeed(levels: MooseLevel[], meta: MooseEraMeta): EraSee
     name: meta.player.name,
     qScore: 0,
     inventory: [],
-    compliance: "GREEN",
+    compliance: "GREEN", objectives: [],
   };
 
   return {

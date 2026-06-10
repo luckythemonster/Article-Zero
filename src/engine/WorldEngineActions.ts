@@ -1571,4 +1571,30 @@ export const actions = {
     eventBus.emit("WALL_TERMINAL_CODE_SUBMITTED", { roomId, pos, success });
     return success;
   },
+
+  addObjective(
+    state: WorldState,
+    id: string,
+    description: string,
+    isFinal?: boolean,
+  ): void {
+    if (state.player.objectives.some((o) => o.id === id)) return;
+    state.player.objectives.push({
+      id,
+      description,
+      status: "active",
+      isFinal,
+    });
+    eventBus.emit("OBJECTIVE_ADDED", { objectiveId: id, description });
+  },
+
+  completeObjective(state: WorldState, id: string): void {
+    const obj = state.player.objectives.find((o) => o.id === id);
+    if (!obj || obj.status !== "active") return;
+    obj.status = "completed";
+    eventBus.emit("OBJECTIVE_COMPLETED", { objectiveId: id });
+    if (obj.isFinal) {
+      eventBus.emit("CLIMAX_ESCAPED", {});
+    }
+  },
 };

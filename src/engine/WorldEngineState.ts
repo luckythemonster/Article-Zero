@@ -79,6 +79,7 @@ export function emptyState(era: Era): WorldState {
       qScore: 0,
       inventory: [],
       compliance: "GREEN",
+      objectives: [],
     },
     rooms: new Map(),
     entities: new Map(),
