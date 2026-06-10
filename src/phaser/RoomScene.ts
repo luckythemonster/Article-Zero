@@ -237,7 +237,7 @@ export class RoomScene extends Phaser.Scene {
     this.layout();
     this.scale.on("resize", this.onResize);
 
-    this.interactText = this.add.text(0, 0, "[SPACE] INTERACT", {
+    this.interactText = this.add.text(0, 0, "[E] INTERACT", {
       fontFamily: "monospace",
       fontSize: "10px",
       color: "#00ffff", // Teal color
@@ -641,6 +641,13 @@ export class RoomScene extends Phaser.Scene {
 
     if (action && this.playerSprite) {
       this.interactText.setPosition(this.playerSprite.x, this.playerSprite.y - 40);
+      let text = "[E] INTERACT";
+      if (action === "terminal") text = "[E] TERMINAL";
+      if (action === "door") text = "[E] DOOR";
+      if (action === "locker") text = "[E] LOCKER";
+      if (action === "loot") text = "[E] LOOT";
+      if (action === "silicate") text = "[E] SILICATE";
+      this.interactText.setText(text);
       this.interactText.setVisible(true);
     } else if (this.interactText) {
       this.interactText.setVisible(false);
