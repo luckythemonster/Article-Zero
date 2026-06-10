@@ -43,13 +43,19 @@ bureaucratic compilers with strictly Zero Subjectivity.
 * Vite - Deep-Template Build Compiler
 
 -----------------------------------------------------------
+[ THIRD-PARTY ASSETS & ARTIFACTS ]
+The following components have been sourced from external
+providers and are licensed for use within the facility.
+
+* Visual Distortion Patterns (ui/glitch/*) - Glitch Engine Lite v5.0 by David Dawo220
+
+-----------------------------------------------------------
 [ UNVERIFIED ASSET MANIFEST ]
 The following sub-routines and artifact fragments have been
 detected in the asset cache. Their provenance is currently
 under audit by the Enforcers.
 
 // TODO: Review and attribute the following internet-sourced materials:
-* Visual Distortion Patterns (ui/glitch/*): Chromatic aberration, CRT scanlines, hologram shimmer, VHS distortion
 * Thermodynamic Particle Effects (vfx/*): Warp gates, lightning, sparks, and charge signatures
 * Auditory Logs (audio/*): Footsteps, UI sounds, ambient mechanical noise
 `;
