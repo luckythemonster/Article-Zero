@@ -686,7 +686,61 @@ export const actions = {
     return true;
   },
 
+
+  getAvailableInteractAction(state: WorldState): string | null {
+    if (state.detained) return null;
+    const { player } = state;
+    const room = state.rooms.get(player.roomId);
+    if (!room) return null;
+
+    for (const entity of state.entities.values()) {
+      if (entity.roomId !== player.roomId) continue;
+      const dx = Math.abs(entity.pos.x - player.pos.x);
+      const dy = Math.abs(entity.pos.y - player.pos.y);
+      if (dx + dy === 1 || dx + dy === 0) {
+        if (entity.kind === "SILICATE" && entity.status === "ACTIVE") return "silicate";
+      }
+    }
+
+    const targetPos = { ...player.pos };
+    if (player.facing === "north") targetPos.y -= 1;
+    else if (player.facing === "south") targetPos.y += 1;
+    else if (player.facing === "east") targetPos.x += 1;
+    else if (player.facing === "west") targetPos.x -= 1;
+
+    const t = room.tiles[targetPos.y * room.width + targetPos.x];
+    if (t) {
+      if (t.kind === "TERMINAL") return "terminal";
+      if (t.kind === "DOOR_CLOSED" || t.kind === "DOOR_OPEN") return "door";
+      if (t.kind === "LOCKER") return "locker";
+      if (t.kind === "ITEM_CHEST") {
+        const chest = state.chestPayloads.get(roomTileKey(state.player.roomId, targetPos));
+        if (chest && !chest.opened) return "loot";
+      }
+    }
+
+    // Check standing tile
+    const st = room.tiles[player.pos.y * room.width + player.pos.x];
+    if (st) {
+      if (st.kind === "LOCKER") return "locker";
+      if (st.kind === "VENT") return "vent";
+      if (st.kind === "LADDER") {
+        const door = roomGraph.doorwayAt(state, state.player.roomId, player.pos.x, player.pos.y);
+        if (door && door.kind === "ladder" && !door.closed) return "ladder";
+      }
+      if (st.kind === "EXFIL_POINT") {
+        const carryingCube = state.player.inventory.some((i) => i.itemType === "EXTRACTION_CUBE");
+        if (carryingCube) return "exfil";
+      }
+    }
+    const itemHere = findItemAt(state, state.player.roomId, player.pos);
+    if (itemHere) return "item";
+
+    return null;
+  },
+
   interact(state: WorldState): boolean {
+
     if (state.detained || state.player.ap < INTERACT_AP_COST) return false;
 
     // Hide-toggle takes priority. If already hidden, E exits the locker;

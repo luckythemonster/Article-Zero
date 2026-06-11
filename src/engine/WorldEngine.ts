@@ -25,6 +25,7 @@ import {
 import { lightField } from "./LightField";
 import { SEED_VERSIONS, seedFromEra } from "./WorldEngineState";
 import { actions } from "./WorldEngineActions";
+export { actions };
 import { documentArchive } from "./DocumentArchive";
 import { alignmentSession } from "./AlignmentSession";
 import { interrogationSession } from "./InterrogationSession";
