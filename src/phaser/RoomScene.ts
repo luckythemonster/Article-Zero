@@ -637,47 +637,6 @@ export class RoomScene extends Phaser.Scene {
     const playerCy =
       state.player.pos.y * TILE_PX + TILE_PX / 2 - elev * ELEVATION_PX_PER_STEP + CHAR_Y_OFFSET_PX;
     this.tweenTo(this.playerSprite, playerCx, playerCy);
-    const action = actions.getAvailableInteractAction(state);
-
-    if (action && this.playerSprite) {
-      this.interactText.setPosition(this.playerSprite.x, this.playerSprite.y - 40);
-      let text = "INTERACT WITH OBJECT";
-      if (action === "terminal") text = "USE TERMINAL";
-      if (action === "door") {
-        // Find if door is open
-        const room = state.rooms.get(state.player.roomId);
-        if (room) {
-          const char = state.player;
-          const targetPos = { x: char.pos.x, y: char.pos.y };
-          if (char.facing === "north") targetPos.y -= 1;
-          else if (char.facing === "south") targetPos.y += 1;
-          else if (char.facing === "east") targetPos.x += 1;
-          else if (char.facing === "west") targetPos.x -= 1;
-          const t = room.tiles[targetPos.y * room.width + targetPos.x];
-          if (t && t.kind === "DOOR_OPEN") {
-            text = "CLOSE DOOR";
-          } else {
-            text = "OPEN DOOR";
-          }
-        } else {
-          text = "OPEN DOOR";
-        }
-      }
-      if (action === "locker") {
-        text = state.player.hidingTileKey ? "EXIT LOCKER" : "HIDE IN LOCKER";
-      }
-      if (action === "loot") text = "OPEN CHEST";
-      if (action === "item") text = "PICK UP ITEM";
-      if (action === "vent") text = "ENTER VENT";
-      if (action === "ladder") text = "USE LADDER";
-      if (action === "exfil") text = "EXTRACT";
-
-      this.interactText.setText(`[E] to ${text}`);
-      this.interactText.setVisible(true);
-    } else if (this.interactText) {
-      this.interactText.setVisible(false);
-    }
-
     this.playerSprite.setVisible(!state.player.hidingTileKey);
     if (state.player.hidingTileKey) {
       this.playerSprite.setTint(0x6a6a6a);
