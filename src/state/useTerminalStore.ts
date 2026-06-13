@@ -34,7 +34,8 @@ export type NarrativePhase =
   | "CLIMAX"
   | "EPILOGUE"
   | "HVAC_CONTROL"
-  | "WALL_TERMINAL";
+  | "WALL_TERMINAL"
+  | "DOOR_KEYPAD";
 
 export interface ActiveHvacConsole {
   terminalId: string;
@@ -102,8 +103,10 @@ interface TerminalStore {
   activeHvacConsole: ActiveHvacConsole | null;
   /** When phase is WALL_TERMINAL, the modal reads this for the local zone. */
   activeWallTerminal: ActiveWallTerminal | null;
+  activeDoorKeypad: { roomId: string; pos: import("../types/world.types").Vec2 } | null;
   setActiveHvacConsole: (v: ActiveHvacConsole | null) => void;
   setActiveWallTerminal: (v: ActiveWallTerminal | null) => void;
+  setActiveDoorKeypad: (v: { roomId: string; pos: import("../types/world.types").Vec2 } | null) => void;
 
   log: (entry: Omit<AuditEntry, "id">) => void;
   pushCommand: (cmd: string) => void;
@@ -156,8 +159,10 @@ export const useTerminalStore = create<TerminalStore>()(
       equippedItem: null,
       activeHvacConsole: null,
       activeWallTerminal: null,
+      activeDoorKeypad: null,
       setActiveHvacConsole: (v) => set({ activeHvacConsole: v }),
       setActiveWallTerminal: (v) => set({ activeWallTerminal: v }),
+      setActiveDoorKeypad: (v) => set({ activeDoorKeypad: v }),
 
       log: (entry) =>
         set((s) => ({
