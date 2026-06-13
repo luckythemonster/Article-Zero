@@ -953,6 +953,14 @@ body.theme-lattice {
   pointer-events: none; /* Let clicks pass through empty space */
 }
 
+@media (pointer: coarse) {
+  .inventory-bar {
+    top: 22px; /* vertically center with ap-meter somewhat */
+    left: 108px; /* to the right of ap-meter */
+    flex-direction: row;
+  }
+}
+
 .inventory-bar__slot {
   pointer-events: auto; /* Re-enable clicks for slots */
   position: relative;
