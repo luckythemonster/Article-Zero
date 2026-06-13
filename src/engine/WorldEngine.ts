@@ -240,6 +240,20 @@ class WorldEngine {
     return ok;
   };
 
+  submitDoorCode = (
+    roomId: import("../types/world.types").RoomId,
+    pos: import("../types/world.types").Vec2,
+    code: string,
+  ) => {
+    const s = this.getState();
+    const ok = actions.submitDoorCode(s, roomId, pos, code);
+    if (ok) {
+      this.recomputeFOV();
+      this.syncStore();
+    }
+    return ok;
+  };
+
   pryDoor = (required = 5) => {
     const result = actions.pryDoor(this.getState(), required);
     if (result.ok) {

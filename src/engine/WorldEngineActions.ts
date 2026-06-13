@@ -1330,9 +1330,20 @@ export const actions = {
         // Locked doors refuse a hand-open — they're operated only by their
         // wired switch.
         if (tile.kind === "DOOR_CLOSED" && tile.locked) {
-          eventBus.emit("INTERACT_REJECTED", { action: "door", reason: "locked" });
+          if (typeof tile.code === "string" && tile.code.length > 0) {
+            eventBus.emit("DOOR_CODE_PROMPT_REQUESTED", { roomId: state.player.roomId, pos: here });
+          } else {
+            eventBus.emit("INTERACT_REJECTED", { action: "door", reason: "locked" });
+          }
           return true;
         }
+
+        // If it's an unlocked door with a code, still allow locking it with the keypad directly
+        if (typeof tile.code === "string" && tile.code.length > 0) {
+          eventBus.emit("DOOR_CODE_PROMPT_REQUESTED", { roomId: state.player.roomId, pos: here });
+          return true;
+        }
+
         const room = state.rooms.get(state.player.roomId);
         if (room) toggleDoorTileAt(room, here);
         state.player.ap -= INTERACT_AP_COST;
@@ -1623,6 +1634,35 @@ export const actions = {
       }
     }
     eventBus.emit("WALL_TERMINAL_CODE_SUBMITTED", { roomId, pos, success });
+    return success;
+  },
+
+  submitDoorCode(
+    state: WorldState,
+    roomId: RoomId,
+    pos: Vec2,
+    code: string,
+  ): boolean {
+    const room = state.rooms.get(roomId);
+    let success = false;
+    if (room) {
+      const t = room.tiles[pos.y * room.width + pos.x];
+      if (t && (t.kind === "DOOR_CLOSED" || t.kind === "DOOR_OPEN") && t.code && t.code === code) {
+        t.locked = !t.locked;
+        if (t.kind === "DOOR_CLOSED" && !t.locked) {
+          t.kind = "DOOR_OPEN";
+          t.solid = false;
+          t.opaque = false;
+        } else if (t.kind === "DOOR_OPEN" && t.locked) {
+          t.kind = "DOOR_CLOSED";
+          t.solid = true;
+          t.opaque = true;
+        }
+        eventBus.emit("DOOR_TOGGLED", { roomId, pos, open: t.kind === "DOOR_OPEN" });
+        success = true;
+      }
+    }
+    eventBus.emit("DOOR_CODE_SUBMITTED", { roomId, pos, success });
     return success;
   },
 

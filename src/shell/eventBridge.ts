@@ -246,6 +246,24 @@ export function installEventBridge(): () => void {
     ),
   );
   unsubs.push(
+    eventBus.on("DOOR_CODE_PROMPT_REQUESTED", (p) => {
+      const term = useTerminalStore.getState();
+      term.setActiveDoorKeypad({ roomId: p.roomId, pos: p.pos });
+      push("INFO", `keypad accessed @ ${p.roomId} (${p.pos.x},${p.pos.y})`);
+      term.setPhase("DOOR_KEYPAD");
+    }),
+  );
+  unsubs.push(
+    eventBus.on("DOOR_CODE_SUBMITTED", (p) =>
+      push(
+        p.success ? "INFO" : "WARN",
+        p.success
+          ? `door keypad: door @ ${p.roomId} (${p.pos.x},${p.pos.y}) code accepted`
+          : `door keypad: rejected @ ${p.roomId} (${p.pos.x},${p.pos.y})`,
+      ),
+    ),
+  );
+  unsubs.push(
     eventBus.on("WALL_TERMINAL_CODE_SUBMITTED", (p) =>
       push(
         p.success ? "INFO" : "WARN",
