@@ -194,6 +194,15 @@ export interface EventMap {
     pos: Vec2;
     success: boolean;
   };
+  DOOR_CODE_PROMPT_REQUESTED: {
+    roomId: RoomId;
+    pos: Vec2;
+  };
+  DOOR_CODE_SUBMITTED: {
+    roomId: RoomId;
+    pos: Vec2;
+    success: boolean;
+  };
   ATMOSPHERICS_DISMISSED: Record<string, never>;
   HVAC_ZONE_SET: { zoneId: string; mode: HvacMode; setpoint: number };
   ROOM_ATMOSPHERE_CHANGED: {

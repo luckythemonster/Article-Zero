@@ -12,6 +12,7 @@ import InterrogationTerminal from "../components/InterrogationTerminal";
 import EnforcerInterrogationModal from "../components/EnforcerInterrogationModal";
 import HvacConsole from "../components/HvacConsole";
 import WallTerminal from "../components/WallTerminal";
+import { DoorKeypad } from "../components/DoorKeypad";
 import DisputedRecordsUI from "../components/DisputedRecordsUI";
 import Vent4DilemmaModal from "../components/Vent4DilemmaModal";
 import ClimaxOverlay from "../components/ClimaxOverlay";
@@ -94,6 +95,7 @@ export default function TerminalShell() {
             {phase === "FORGERY" && <DisputedRecordsUI />}
             {phase === "HVAC_CONTROL" && <HvacConsole />}
             {phase === "WALL_TERMINAL" && <WallTerminal />}
+            {phase === "DOOR_KEYPAD" && <DoorKeypad />}
             {phase === "CLIMAX" && (
               <>
                 <Vent4DilemmaModal />
@@ -103,15 +105,18 @@ export default function TerminalShell() {
             {(phase === "FLOOR" ||
               phase === "CLIMAX" ||
               phase === "HVAC_CONTROL" ||
-              phase === "WALL_TERMINAL") && <InventoryOverlay />}
+              phase === "WALL_TERMINAL" ||
+              phase === "DOOR_KEYPAD") && <InventoryOverlay />}
             {(phase === "FLOOR" ||
               phase === "CLIMAX" ||
               phase === "HVAC_CONTROL" ||
-              phase === "WALL_TERMINAL") && <ObjectivesOverlay />}
+              phase === "WALL_TERMINAL" ||
+              phase === "DOOR_KEYPAD") && <ObjectivesOverlay />}
             {(phase === "FLOOR" ||
               phase === "CLIMAX" ||
               phase === "HVAC_CONTROL" ||
-              phase === "WALL_TERMINAL") && (
+              phase === "WALL_TERMINAL" ||
+              phase === "DOOR_KEYPAD") && (
               <>
                 <APMeter />
                 <InventoryBar />
