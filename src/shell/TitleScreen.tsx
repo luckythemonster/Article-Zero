@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { loadAndCreate, type BeepBoxPlayer } from "../audio/BeepBox";
+import FlickerText from "../components/FlickerText";
+import { type FontData } from "../components/SpriteFont";
 
 interface Props {
   onStart: () => void;
@@ -28,6 +30,21 @@ export default function TitleScreen({ onStart }: Props) {
   const playerRef = useRef<BeepBoxPlayer | null>(null);
   const audioUnlockedRef = useRef(false);
   const [themeIdx, setThemeIdx] = useState(loadThemeIdx);
+
+  const [titleFont, setTitleFont] = useState<FontData | null>(null);
+  const [subtitleFont, setSubtitleFont] = useState<FontData | null>(null);
+
+  useEffect(() => {
+    fetch("/assets/ui/title/fonts/Ethnocentric_title_screen_title.json")
+      .then((res) => res.json())
+      .then(setTitleFont)
+      .catch(console.error);
+
+    fetch("/assets/ui/title/fonts/Asimovian_title_screen_subtitle.json")
+      .then((res) => res.json())
+      .then(setSubtitleFont)
+      .catch(console.error);
+  }, []);
 
   // Load (and reload, on swap) the selected theme.
   useEffect(() => {
@@ -93,18 +110,38 @@ export default function TitleScreen({ onStart }: Props) {
           alt=""
           aria-hidden="true"
         />
-        <img
+        <div
           className="title-screen__title-art"
-          src="/assets/ui/title/title.png"
-          alt=""
-          aria-hidden="true"
-        />
-        <img
+          style={{
+            // Scale font wrapper to fit original bounding box percentages.
+            transform: "scale(0.81)",
+            transformOrigin: "top left",
+            top: "7%"
+          }}
+        >
+            <FlickerText
+              text="ARTICLE ZERO"
+              fontData={titleFont}
+              textureUrl="/assets/ui/title/fonts/Ethnocentric_title_screen_title.png"
+            />
+        </div>
+        <div
           className="title-screen__subtitle"
-          src="/assets/ui/title/subtitle.png"
-          alt=""
-          aria-hidden="true"
-        />
+          style={{
+            // Scale font wrapper to fit original bounding box.
+            transform: "scale(0.61)",
+            transformOrigin: "top left",
+            top: "29%",
+            left: "35%"
+          }}
+        >
+            <FlickerText
+              text="A SOLAR OPUS"
+              fontData={subtitleFont}
+              textureUrl="/assets/ui/title/fonts/Asimovian_title_screen_subtitle.png"
+              letterSpacing={10}
+            />
+        </div>
         <button
           className="title-screen__btn title-screen__btn--start"
           onClick={handleStart}
