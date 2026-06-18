@@ -113,10 +113,11 @@ export default function TitleScreen({ onStart }: Props) {
         <div
           className="title-screen__title-art"
           style={{
-            // Scale font wrapper to fit original bounding box percentages.
-            transform: "scale(0.66)",
-            transformOrigin: "top left",
-            top: "7%"
+            left: "50%",
+            transform: "translateX(-50%) scale(0.66)",
+            transformOrigin: "top center",
+            top: "7%",
+            width: "max-content"
           }}
         >
             <FlickerText
@@ -129,11 +130,11 @@ export default function TitleScreen({ onStart }: Props) {
         <div
           className="title-screen__subtitle"
           style={{
-            // Scale font wrapper to fit original bounding box.
-            transform: "scale(0.50)",
-            transformOrigin: "top left",
+            left: "50%",
+            transform: "translateX(-50%) scale(0.50)",
+            transformOrigin: "top center",
             top: "28%",
-            left: "35%"
+            width: "max-content"
           }}
         >
             <FlickerText
