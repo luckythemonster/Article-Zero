@@ -114,7 +114,7 @@ export default function TitleScreen({ onStart }: Props) {
           className="title-screen__title-art"
           style={{
             // Scale font wrapper to fit original bounding box percentages.
-            transform: "scale(0.81)",
+            transform: "scale(0.66)",
             transformOrigin: "top left",
             top: "7%"
           }}
@@ -123,15 +123,16 @@ export default function TitleScreen({ onStart }: Props) {
               text="ARTICLE ZERO"
               fontData={titleFont}
               textureUrl="/assets/ui/title/fonts/Ethnocentric_title_screen_title.png"
+              flickerDurationMs={6000}
             />
         </div>
         <div
           className="title-screen__subtitle"
           style={{
             // Scale font wrapper to fit original bounding box.
-            transform: "scale(0.61)",
+            transform: "scale(0.50)",
             transformOrigin: "top left",
-            top: "29%",
+            top: "28%",
             left: "35%"
           }}
         >
@@ -140,6 +141,7 @@ export default function TitleScreen({ onStart }: Props) {
               fontData={subtitleFont}
               textureUrl="/assets/ui/title/fonts/Asimovian_title_screen_subtitle.png"
               letterSpacing={10}
+              flickerDurationMs={5000}
             />
         </div>
         <button
