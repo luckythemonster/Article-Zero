@@ -27,6 +27,7 @@ import InventoryOverlay from "../components/InventoryOverlay";
 import ObjectivesOverlay from "../components/ObjectivesOverlay";
 import InventoryBar from "../components/InventoryBar";
 import APMeter from "../components/APMeter";
+import NssaComplianceIndicator from "../components/NssaComplianceIndicator";
 import ExecuteResetModal from "../components/ExecuteResetModal";
 import FullscreenFlash from "./FullscreenFlash";
 import TitleScreen from "./TitleScreen";
@@ -120,6 +121,7 @@ export default function TerminalShell() {
               <>
                 <APMeter />
                 <InventoryBar />
+                <NssaComplianceIndicator />
               </>
             )}
             <ExecuteResetModal />

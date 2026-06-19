@@ -9,7 +9,6 @@ export default function StatusBar() {
   const setExecuteResetOpen = useTerminalStore((s) => s.setExecuteResetOpen);
   const subjective = useSimStore((s) => s.subjective);
 
-  const compliance = subjective?.compliance ?? null;
   const spoof = subjective?.spoofTurnsRemaining ?? 0;
   const lockdownTurns = subjective?.lockdown?.turnsRemaining ?? 0;
   const activeObjective = subjective?.objectives?.find((o) => o.status === "active");
@@ -28,20 +27,6 @@ export default function StatusBar() {
           <span className="status-bar__sep">|</span>
           <span className="status-bar__effect" style={{ color: activeObjective.isFinal ? '#ffb000' : 'var(--terminal-green)' }}>
             OBJ: {activeObjective.id.toUpperCase()}
-          </span>
-        </>
-      )}
-      {compliance && (
-        <>
-          <span className="status-bar__sep">|</span>
-          <span
-            className={`status-bar__compliance is-${compliance.toLowerCase()}`}
-            role="status"
-            aria-live="polite"
-            aria-label={`Compliance ${compliance}`}
-          >
-            <span className={`status-bar__pip is-${compliance.toLowerCase()}`} aria-hidden="true" />
-            {compliance}
           </span>
         </>
       )}

@@ -165,70 +165,69 @@ body {
 /* ── Touch controls ──────────────────────────────────────────────────────── */
 
 .touch-controls {
-  display: none;
+  display: block;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
 }
 
-@media (pointer: coarse) {
-  .touch-controls {
-    display: block;
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 50;
-  }
+.touch-dpad-container {
+  position: absolute;
+  left: 12px;
+  bottom: 40px;
+  width: 140px;
+  height: 140px;
+  pointer-events: auto;
 }
 
 .touch-dpad {
-  position: absolute;
-  left: 0.75rem;
-  bottom: 0.75rem;
-  display: grid;
-  grid-template-columns: 56px 56px 56px;
-  grid-template-rows: 56px 56px 56px;
-  gap: 4px;
-  pointer-events: auto;
+  width: 100%;
+  height: 100%;
+  background-image: url("/assets/ui/gameplay/d-pad.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative;
 }
 
 .touch-dpad__btn {
-  background: rgba(5, 8, 9, 0.7);
-  border: 1px solid var(--cyan, #6ad0a4);
-  color: var(--cyan, #6ad0a4);
-  font-family: "Berkeley Mono", "Courier New", monospace;
-  font-size: 1.25rem;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: none;
+  position: absolute;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
   cursor: pointer;
-  border-radius: 4px;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.touch-dpad__btn:active {
-  background: rgba(106, 208, 164, 0.18);
-}
-
-.touch-dpad__btn--up    { grid-column: 2; grid-row: 1; }
-.touch-dpad__btn--left  { grid-column: 1; grid-row: 2; }
-.touch-dpad__btn--right { grid-column: 3; grid-row: 2; }
-.touch-dpad__btn--down  { grid-column: 2; grid-row: 3; }
+/* Hitboxes for the d-pad sprite */
+.touch-dpad__btn--up    { top: 0; left: 33%; width: 34%; height: 33%; }
+.touch-dpad__btn--down  { bottom: 0; left: 33%; width: 34%; height: 33%; }
+.touch-dpad__btn--left  { top: 33%; left: 0; width: 33%; height: 34%; }
+.touch-dpad__btn--right { top: 33%; right: 0; width: 33%; height: 34%; }
 
 .touch-actions {
   position: absolute;
-  right: 0.75rem;
-  bottom: 0.75rem;
+  right: 12px;
+  bottom: 120px;
   display: grid;
-  grid-template-columns: 56px 56px;
-  gap: 4px;
+  grid-template-columns: 60px 60px;
+  gap: 8px;
   pointer-events: auto;
+  border: 2px dashed rgba(120, 160, 180, 0.4);
+  padding: 12px;
+  background: rgba(10, 20, 25, 0.6);
 }
 
 .touch-actions__btn {
-  background: rgba(5, 8, 9, 0.7);
+  background: rgba(30, 45, 55, 0.8);
   border: 1px solid var(--cyan, #6ad0a4);
   color: var(--cyan, #6ad0a4);
   font-family: "Berkeley Mono", "Courier New", monospace;
   font-size: 0.9rem;
-  height: 56px;
+  height: 50px;
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
@@ -239,7 +238,7 @@ body {
 }
 
 .touch-actions__btn:active {
-  background: rgba(106, 208, 164, 0.18);
+  background: rgba(106, 208, 164, 0.3);
 }
 
 .touch-actions__btn--wide {
@@ -250,7 +249,7 @@ body {
 
 /* TURN button when armed — one tap arms, next D-pad tap rotates and clears. */
 .touch-actions__btn--armed {
-  background: rgba(106, 208, 164, 0.32);
+  background: rgba(106, 208, 164, 0.5);
   color: #04090b;
   border-color: var(--cyan, #6ad0a4);
   font-weight: bold;
@@ -928,12 +927,12 @@ body.theme-lattice {
 
 .ap-meter {
   position: absolute;
-  top: 8px;
-  left: 12px;
+  bottom: 120px;
+  right: 170px;
   z-index: 60;
   width: 84px;
   height: 84px;
-  pointer-events: none;
+  pointer-events: auto; /* Tap to end turn */
 }
 
 .ap-meter img {
@@ -944,39 +943,50 @@ body.theme-lattice {
 
 .inventory-bar {
   position: absolute;
-  top: 96px; /* below ap-meter (8px + 84px = 92px) + a little padding */
+  top: 12px;
   left: 12px;
   z-index: 60;
+  pointer-events: none; /* Let clicks pass through empty space */
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  pointer-events: none; /* Let clicks pass through empty space */
 }
 
-@media (pointer: coarse) {
-  .inventory-bar {
-    top: 22px; /* vertically center with ap-meter somewhat */
-    left: 108px; /* to the right of ap-meter */
-    flex-direction: row;
-  }
+/* Hexagonal Grid Container */
+.inventory-bar__hex-grid {
+  position: relative;
+  width: 140px;
+  height: 200px;
 }
 
 .inventory-bar__slot {
   pointer-events: auto; /* Re-enable clicks for slots */
-  position: relative;
-  width: 48px;
-  height: 48px;
-  background: rgba(5, 8, 9, 0.85);
-  border: 1px solid var(--border);
+  position: absolute;
+  width: 49px; /* Half width of a 98px image to scale it down, adjust as needed */
+  height: 49px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-image: url("/assets/ui/gameplay/item-cell-idle.png");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 
+.inventory-bar__slot:active {
+  background-image: url("/assets/ui/gameplay/item-cell-pressed.png");
+}
+
+/* Hex grid positioning (rough approximation, will need adjustment) */
+.inventory-bar__slot:nth-child(1) { top: 0px; left: 24px; }
+.inventory-bar__slot:nth-child(2) { top: 36px; left: 0px; }
+.inventory-bar__slot:nth-child(3) { top: 36px; left: 48px; z-index: 2; }
+.inventory-bar__slot:nth-child(4) { top: 72px; left: 0px; }
+.inventory-bar__slot:nth-child(5) { top: 72px; left: 48px; }
+.inventory-bar__slot:nth-child(6) { top: 108px; left: 0px; }
+.inventory-bar__slot:nth-child(7) { top: 108px; left: 48px; }
+
 .inventory-bar__slot.is-equipped {
-  width: 56px;
-  height: 56px;
-  border-color: var(--cyan);
+  /* Equipped item can use a slightly different style or glow */
+  filter: drop-shadow(0 0 4px var(--cyan));
 }
 
 .inventory-bar__slot.is-empty {
@@ -1892,4 +1902,32 @@ body.theme-lattice {
   background-position: center;
   opacity: 0.25;
   mix-blend-mode: color-dodge;
+}
+
+.nssa-indicator {
+  position: absolute;
+  top: 12px;
+  right: 180px;
+  z-index: 60;
+  width: 140px;
+  height: 50px;
+  pointer-events: none;
+}
+
+.nssa-indicator__bg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  object-fit: contain;
+}
+
+.nssa-indicator__led {
+  position: absolute;
+  top: 19px;
+  left: 10px;
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
 }

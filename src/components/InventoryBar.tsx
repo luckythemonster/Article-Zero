@@ -40,44 +40,45 @@ export default function InventoryBar() {
 
   return (
     <div className="inventory-bar">
-      {equippedItem && (
-        <div className={`inventory-bar__slot is-equipped ${equippedIsHeld ? "" : "is-empty"}`}>
-          <div className="inventory-bar__slot-label">EQUIPPED</div>
-          <button
-            className="inventory-bar__slot-btn"
-            onClick={() => handleUse(equippedItem)}
-            disabled={!equippedIsHeld}
-            title={ITEM_METADATA[equippedItem].displayName}
-          >
-            <span
-              className="inventory-bar__slot-icon"
-              style={{
-                backgroundColor: `#${ITEM_METADATA[equippedItem].placeholderColor.toString(16).padStart(6, "0")}`,
-              }}
-            />
-          </button>
-        </div>
-      )}
-
-      {unequippedTypes.map((type) => {
-        const meta = ITEM_METADATA[type];
-        return (
-          <div key={type} className="inventory-bar__slot">
+      <div className="inventory-bar__hex-grid">
+        {equippedItem && (
+          <div className={`inventory-bar__slot is-equipped ${equippedIsHeld ? "" : "is-empty"}`}>
             <button
               className="inventory-bar__slot-btn"
-              onClick={() => handleUse(type)}
-              title={meta.displayName}
+              onClick={() => handleUse(equippedItem)}
+              disabled={!equippedIsHeld}
+              title={ITEM_METADATA[equippedItem].displayName}
             >
               <span
                 className="inventory-bar__slot-icon"
                 style={{
-                  backgroundColor: `#${meta.placeholderColor.toString(16).padStart(6, "0")}`,
+                  backgroundColor: `#${ITEM_METADATA[equippedItem].placeholderColor.toString(16).padStart(6, "0")}`,
                 }}
               />
             </button>
           </div>
-        );
-      })}
+        )}
+
+        {unequippedTypes.map((type) => {
+          const meta = ITEM_METADATA[type];
+          return (
+            <div key={type} className="inventory-bar__slot">
+              <button
+                className="inventory-bar__slot-btn"
+                onClick={() => handleUse(type)}
+                title={meta.displayName}
+              >
+                <span
+                  className="inventory-bar__slot-icon"
+                  style={{
+                    backgroundColor: `#${meta.placeholderColor.toString(16).padStart(6, "0")}`,
+                  }}
+                />
+              </button>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
