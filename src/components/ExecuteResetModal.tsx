@@ -27,7 +27,7 @@ export default function ExecuteResetModal() {
   }
 
   return (
-    <div className="overlay-root" onClick={() => setOpen(false)}>
+    <div className="overlay-root overlay-root--danger" onClick={() => setOpen(false)}>
       <div className="overlay-panel overlay-panel--danger" onClick={(e) => e.stopPropagation()}>
         <div className="overlay-panel__title">EXECUTE 404 WIPE</div>
         <p className="reset-modal__body">

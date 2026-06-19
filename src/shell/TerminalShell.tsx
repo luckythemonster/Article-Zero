@@ -124,6 +124,7 @@ export default function TerminalShell() {
                 <NssaComplianceIndicator />
               </>
             )}
+
             <ExecuteResetModal />
             <AuditLockdown />
           </PhaserCanvas>
