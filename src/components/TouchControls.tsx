@@ -163,6 +163,7 @@ export default function TouchControls() {
             className="touch-actions__btn"
             aria-label="Interact"
             onPointerDown={gameTap(() => worldEngine.interact())}
+            style={{ backgroundImage: "url(/assets/ui/gameplay/interact-idle.png)", color: "transparent" }}
           >
             E
           </button>
@@ -170,6 +171,7 @@ export default function TouchControls() {
             className="touch-actions__btn"
             aria-label="Inventory"
             onPointerDown={inventoryTap(toggleInventory)}
+            style={{ backgroundImage: "url(/assets/ui/gameplay/inventory-idle.png)", color: "transparent" }}
           >
             I
           </button>
@@ -177,6 +179,7 @@ export default function TouchControls() {
             className="touch-actions__btn"
             aria-label="Knock"
             onPointerDown={gameTap(() => worldEngine.knock())}
+            style={{ backgroundImage: "url(/assets/ui/gameplay/knock-idle.png)", color: "transparent" }}
           >
             K
           </button>
@@ -184,6 +187,7 @@ export default function TouchControls() {
             className="touch-actions__btn"
             aria-label="Peek"
             onPointerDown={gameTap(() => worldEngine.peek())}
+            style={{ backgroundImage: "url(/assets/ui/gameplay/peek-idle.png)", color: "transparent" }}
           >
             Q
           </button>
@@ -191,6 +195,7 @@ export default function TouchControls() {
             className="touch-actions__btn"
             aria-label="Toggle stance"
             onPointerDown={gameTap(() => worldEngine.toggleStance())}
+            style={{ backgroundImage: "url(/assets/ui/gameplay/crouch-idle.png)", color: "transparent" }}
           >
             C
           </button>
@@ -198,6 +203,7 @@ export default function TouchControls() {
             className="touch-actions__btn"
             aria-label="Toggle flashlight"
             onPointerDown={gameTap(() => worldEngine.toggleFlashlight())}
+            style={{ backgroundImage: "url(/assets/ui/gameplay/flashlight-idle.png)", color: "transparent" }}
           >
             L
           </button>

@@ -222,23 +222,26 @@ body {
 }
 
 .touch-actions__btn {
-  background: rgba(30, 45, 55, 0.8);
-  border: 1px solid var(--cyan, #6ad0a4);
-  color: var(--cyan, #6ad0a4);
-  font-family: "Berkeley Mono", "Courier New", monospace;
-  font-size: 0.9rem;
-  height: 50px;
-  user-select: none;
-  -webkit-user-select: none;
+  pointer-events: auto;
+  padding: 12px;
+  min-height: 48px;
+  min-width: 48px;
+  border: none;
+  border-radius: 8px;
+  background-color: transparent;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: bold;
+  touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  touch-action: none;
-  cursor: pointer;
-  border-radius: 4px;
-  padding: 0 0.4rem;
 }
 
 .touch-actions__btn:active {
-  background: rgba(106, 208, 164, 0.3);
+  filter: brightness(0.7);
 }
 
 .touch-actions__btn--wide {
