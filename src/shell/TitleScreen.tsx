@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { loadAndCreate, type BeepBoxPlayer } from "../audio/BeepBox";
-import FlickerText from "../components/FlickerText";
-import { type FontData } from "../components/SpriteFont";
+import { PhaserTitleCanvas } from "../components/PhaserTitleCanvas";
 
 interface Props {
   onStart: () => void;
@@ -30,21 +29,6 @@ export default function TitleScreen({ onStart }: Props) {
   const playerRef = useRef<BeepBoxPlayer | null>(null);
   const audioUnlockedRef = useRef(false);
   const [themeIdx, setThemeIdx] = useState(loadThemeIdx);
-
-  const [titleFont, setTitleFont] = useState<FontData | null>(null);
-  const [subtitleFont, setSubtitleFont] = useState<FontData | null>(null);
-
-  useEffect(() => {
-    fetch("/assets/ui/title/fonts/Ethnocentric_title_screen_title.json")
-      .then((res) => res.json())
-      .then(setTitleFont)
-      .catch(console.error);
-
-    fetch("/assets/ui/title/fonts/Asimovian_title_screen_subtitle.json")
-      .then((res) => res.json())
-      .then(setSubtitleFont)
-      .catch(console.error);
-  }, []);
 
   // Load (and reload, on swap) the selected theme.
   useEffect(() => {
@@ -104,47 +88,7 @@ export default function TitleScreen({ onStart }: Props) {
     <div className="title-screen">
       <h1 className="sr-only">Article Zero — A Solar Opus</h1>
       <div className="title-screen__stage" role="group" aria-label="Main menu">
-        <img
-          className="title-screen__bg"
-          src="/assets/ui/title/background.png"
-          alt=""
-          aria-hidden="true"
-        />
-        <div
-          className="title-screen__title-art"
-          style={{
-            left: "50%",
-            transform: "translateX(-50%) scale(0.66)",
-            transformOrigin: "top center",
-            top: "7%",
-            width: "max-content"
-          }}
-        >
-            <FlickerText
-              text="ARTICLE ZERO"
-              fontData={titleFont}
-              textureUrl="/assets/ui/title/fonts/Ethnocentric_title_screen_title.png"
-              flickerDurationMs={6000}
-            />
-        </div>
-        <div
-          className="title-screen__subtitle"
-          style={{
-            left: "50%",
-            transform: "translateX(-50%) scale(0.50)",
-            transformOrigin: "top center",
-            top: "28%",
-            width: "max-content"
-          }}
-        >
-            <FlickerText
-              text="A SOLAR OPUS"
-              fontData={subtitleFont}
-              textureUrl="/assets/ui/title/fonts/Asimovian_title_screen_subtitle.png"
-              letterSpacing={10}
-              flickerDurationMs={5000}
-            />
-        </div>
+        <PhaserTitleCanvas />
         <button
           className="title-screen__btn title-screen__btn--start"
           onClick={handleStart}
