@@ -9,6 +9,7 @@ export interface SettingsState {
   textScale: number;
   llmEnabled: boolean;
   apiKey: string;
+  proceduralFootsteps: boolean;
 }
 
 const KEY = "articlezero.settings";
@@ -18,6 +19,7 @@ const DEFAULT: SettingsState = {
   textScale: 1,
   llmEnabled: false,
   apiKey: "",
+  proceduralFootsteps: false,
 };
 
 export function loadSettings(): SettingsState {
