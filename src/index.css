@@ -1200,6 +1200,17 @@ body.theme-lattice {
   .overlay-panel--inventory {
     max-height: calc(100% - 24px);
   }
+
+  /* Similar to the inventory, the danger/reset modal should be legible and doesn't
+     need to dodge the D-pad as strictly, because you are about to confirm a wipe anyway. */
+  .overlay-root--danger {
+    align-items: center;
+    padding: 16px;
+  }
+
+  .overlay-root--danger .overlay-panel {
+    max-height: calc(100% - 32px);
+  }
 }
 
 .inventory__section-label {
