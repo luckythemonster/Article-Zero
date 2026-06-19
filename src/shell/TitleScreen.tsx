@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { loadAndCreate, type BeepBoxPlayer } from "../audio/BeepBox";
+import { PhaserTitleCanvas } from "../components/PhaserTitleCanvas";
 
 interface Props {
   onStart: () => void;
@@ -87,24 +88,7 @@ export default function TitleScreen({ onStart }: Props) {
     <div className="title-screen">
       <h1 className="sr-only">Article Zero — A Solar Opus</h1>
       <div className="title-screen__stage" role="group" aria-label="Main menu">
-        <img
-          className="title-screen__bg"
-          src="/assets/ui/title/background.png"
-          alt=""
-          aria-hidden="true"
-        />
-        <img
-          className="title-screen__title-art"
-          src="/assets/ui/title/title.png"
-          alt=""
-          aria-hidden="true"
-        />
-        <img
-          className="title-screen__subtitle"
-          src="/assets/ui/title/subtitle.png"
-          alt=""
-          aria-hidden="true"
-        />
+        <PhaserTitleCanvas />
         <button
           className="title-screen__btn title-screen__btn--start"
           onClick={handleStart}
