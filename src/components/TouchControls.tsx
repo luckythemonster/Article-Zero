@@ -115,35 +115,29 @@ export default function TouchControls() {
 
   return (
     <div className="touch-controls" aria-hidden="false">
-      <div className="touch-dpad">
-        <button
-          className="touch-dpad__btn touch-dpad__btn--up"
-          aria-label={turnArmed ? "Face up" : "Move up"}
-          onPointerDown={dpad(0, -1, "north")}
-        >
-          ▲
-        </button>
-        <button
-          className="touch-dpad__btn touch-dpad__btn--left"
-          aria-label={turnArmed ? "Face left" : "Move left"}
-          onPointerDown={dpad(-1, 0, "west")}
-        >
-          ◀
-        </button>
-        <button
-          className="touch-dpad__btn touch-dpad__btn--right"
-          aria-label={turnArmed ? "Face right" : "Move right"}
-          onPointerDown={dpad(1, 0, "east")}
-        >
-          ▶
-        </button>
-        <button
-          className="touch-dpad__btn touch-dpad__btn--down"
-          aria-label={turnArmed ? "Face down" : "Move down"}
-          onPointerDown={dpad(0, 1, "south")}
-        >
-          ▼
-        </button>
+      <div className="touch-dpad-container">
+        <div className="touch-dpad">
+          <button
+            className="touch-dpad__btn touch-dpad__btn--up"
+            aria-label={turnArmed ? "Face up" : "Move up"}
+            onPointerDown={dpad(0, -1, "north")}
+          />
+          <button
+            className="touch-dpad__btn touch-dpad__btn--left"
+            aria-label={turnArmed ? "Face left" : "Move left"}
+            onPointerDown={dpad(-1, 0, "west")}
+          />
+          <button
+            className="touch-dpad__btn touch-dpad__btn--right"
+            aria-label={turnArmed ? "Face right" : "Move right"}
+            onPointerDown={dpad(1, 0, "east")}
+          />
+          <button
+            className="touch-dpad__btn touch-dpad__btn--down"
+            aria-label={turnArmed ? "Face down" : "Move down"}
+            onPointerDown={dpad(0, 1, "south")}
+          />
+        </div>
       </div>
 
       {targetingActive ? (

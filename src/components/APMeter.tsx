@@ -12,6 +12,7 @@
 // segments read as "spent"; the numeric centre stays correct.
 
 import { useSimStore } from "../state/useSimStore";
+import { worldEngine } from "../engine/WorldEngine";
 
 export default function APMeter() {
   const subjective = useSimStore((s) => s.subjective);
@@ -19,8 +20,14 @@ export default function APMeter() {
   if (!subjective) return null;
 
   const sprite = Math.max(0, Math.min(4, subjective.ap));
+
+  // "Tap to end turn"
+  const handleEndTurn = () => {
+    worldEngine.endTurn();
+  };
+
   return (
-    <div className="ap-meter">
+    <div className="ap-meter" onClick={handleEndTurn} style={{ cursor: "pointer" }}>
       <img
         src={`/assets/ui/ap-dial-${sprite}.png`}
         alt={`Action points ${subjective.ap} of ${subjective.apMax}`}
