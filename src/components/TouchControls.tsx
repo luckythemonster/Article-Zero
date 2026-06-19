@@ -141,7 +141,7 @@ export default function TouchControls() {
       </div>
 
       {targetingActive ? (
-        <div className="touch-actions">
+        <div className="touch-actions-misc">
           <button
             className="touch-actions__btn touch-actions__btn--wide"
             aria-label="Throw"
@@ -158,89 +158,77 @@ export default function TouchControls() {
           </button>
         </div>
       ) : (
-        <div className="touch-actions">
+        <>
+          <div className="touch-action-cluster">
+            <button
+              className="touch-action-btn touch-action-btn--peek"
+              aria-label="Peek"
+              onPointerDown={gameTap(() => worldEngine.peek())}
+            />
+            <button
+              className="touch-action-btn touch-action-btn--knock"
+              aria-label="Knock"
+              onPointerDown={gameTap(() => worldEngine.knock())}
+            />
+            <button
+              className="touch-action-btn touch-action-btn--crouch"
+              aria-label="Toggle stance"
+              onPointerDown={gameTap(() => worldEngine.toggleStance())}
+            />
+            <button
+              className="touch-action-btn touch-action-btn--flashlight"
+              aria-label="Toggle flashlight"
+              onPointerDown={gameTap(() => worldEngine.toggleFlashlight())}
+            />
+            <button
+              className="touch-action-btn touch-action-btn--interact"
+              aria-label="Interact"
+              onPointerDown={gameTap(() => worldEngine.interact())}
+            />
+          </div>
+
           <button
-            className="touch-actions__btn"
-            aria-label="Interact"
-            onPointerDown={gameTap(() => worldEngine.interact())}
-            style={{ backgroundImage: "url(/assets/ui/gameplay/interact-idle.png)", color: "transparent" }}
-          >
-            E
-          </button>
-          <button
-            className="touch-actions__btn"
+            className="touch-inventory-btn"
             aria-label="Inventory"
             onPointerDown={inventoryTap(toggleInventory)}
-            style={{ backgroundImage: "url(/assets/ui/gameplay/inventory-idle.png)", color: "transparent" }}
-          >
-            I
-          </button>
-          <button
-            className="touch-actions__btn"
-            aria-label="Knock"
-            onPointerDown={gameTap(() => worldEngine.knock())}
-            style={{ backgroundImage: "url(/assets/ui/gameplay/knock-idle.png)", color: "transparent" }}
-          >
-            K
-          </button>
-          <button
-            className="touch-actions__btn"
-            aria-label="Peek"
-            onPointerDown={gameTap(() => worldEngine.peek())}
-            style={{ backgroundImage: "url(/assets/ui/gameplay/peek-idle.png)", color: "transparent" }}
-          >
-            Q
-          </button>
-          <button
-            className="touch-actions__btn"
-            aria-label="Toggle stance"
-            onPointerDown={gameTap(() => worldEngine.toggleStance())}
-            style={{ backgroundImage: "url(/assets/ui/gameplay/crouch-idle.png)", color: "transparent" }}
-          >
-            C
-          </button>
-          <button
-            className="touch-actions__btn"
-            aria-label="Toggle flashlight"
-            onPointerDown={gameTap(() => worldEngine.toggleFlashlight())}
-            style={{ backgroundImage: "url(/assets/ui/gameplay/flashlight-idle.png)", color: "transparent" }}
-          >
-            L
-          </button>
-          <button
-            className={`touch-actions__btn touch-actions__btn--wide${
-              turnArmed ? " touch-actions__btn--armed" : ""
-            }`}
-            aria-label={turnArmed ? "Cancel turn-in-place" : "Turn in place"}
-            aria-pressed={turnArmed}
-            onPointerDown={gameTap(() => setTurnArmed((v) => !v))}
-          >
-            {turnArmed ? "TURN ▸ TAP DIR" : "TURN"}
-          </button>
-          {showPry && (
+          />
+
+          <div className="touch-actions-misc">
+            <button
+              className={`touch-actions__btn touch-actions__btn--wide${
+                turnArmed ? " touch-actions__btn--armed" : ""
+              }`}
+              aria-label={turnArmed ? "Cancel turn-in-place" : "Turn in place"}
+              aria-pressed={turnArmed}
+              onPointerDown={gameTap(() => setTurnArmed((v) => !v))}
+            >
+              {turnArmed ? "TURN ▸ TAP DIR" : "TURN"}
+            </button>
+            {showPry && (
+              <button
+                className="touch-actions__btn touch-actions__btn--wide"
+                aria-label="Pry blast door"
+                onPointerDown={gameTap(() => worldEngine.pryDoor(5))}
+              >
+                PRY
+              </button>
+            )}
             <button
               className="touch-actions__btn touch-actions__btn--wide"
-              aria-label="Pry blast door"
-              onPointerDown={gameTap(() => worldEngine.pryDoor(5))}
+              aria-label="End turn"
+              onPointerDown={gameTap(() => worldEngine.endTurn())}
             >
-              PRY
+              END TURN
             </button>
-          )}
-          <button
-            className="touch-actions__btn touch-actions__btn--wide"
-            aria-label="End turn"
-            onPointerDown={gameTap(() => worldEngine.endTurn())}
-          >
-            END TURN
-          </button>
-          <button
-            className="touch-actions__btn"
-            aria-label="Toggle debug overlay"
-            onPointerDown={tap(toggleDebug)}
-          >
-            ~
-          </button>
-        </div>
+            <button
+              className="touch-actions__btn"
+              aria-label="Toggle debug overlay"
+              onPointerDown={tap(toggleDebug)}
+            >
+              ~
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
