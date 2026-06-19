@@ -14,7 +14,9 @@ import { roomGraph } from "../engine/RoomGraph";
 import { tileSurface } from "../engine/surfaces";
 import type { RoomId, Vec2 } from "../types/world.types";
 import { footsteps } from "./Footsteps";
+import { proceduralFootsteps } from "./ProceduralFootsteps";
 import type { FootstepAction } from "./footstep-manifest";
+import { loadSettings } from "../shell/settings";
 
 // Reason → (action, volume). Reasons not in this table emit no footstep.
 const REASON_PROFILE: Record<string, { action: FootstepAction; volume: number }> = {
@@ -108,7 +110,12 @@ export function installFootstepBridge(): () => void {
       }
       playerStats.played++;
       playerStats.last = { reason: p.reason, roomId: p.roomId, pos: p.pos, surface };
-      footsteps.play({ surface, action: profile.action, volume: profile.volume });
+      const settings = loadSettings();
+      if (settings.proceduralFootsteps) {
+        proceduralFootsteps.play({ surface, action: profile.action, volume: profile.volume });
+      } else {
+        footsteps.play({ surface, action: profile.action, volume: profile.volume });
+      }
     }),
   );
 
@@ -149,7 +156,12 @@ export function installFootstepBridge(): () => void {
       }
       enforcerStats.played++;
       enforcerStats.last = { roomId: p.roomId, pos: p.pos, dist, volume };
-      footsteps.play({ surface, action: "walk", volume });
+      const settings = loadSettings();
+      if (settings.proceduralFootsteps) {
+        proceduralFootsteps.play({ surface, action: "walk", volume });
+      } else {
+        footsteps.play({ surface, action: "walk", volume });
+      }
     }),
   );
 

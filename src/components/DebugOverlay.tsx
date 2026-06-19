@@ -5,7 +5,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebugStore, type DebugEvent } from "../state/useDebugStore";
 import { footsteps } from "../audio/Footsteps";
+import { proceduralFootsteps } from "../audio/ProceduralFootsteps";
 import { getSharedContext, getUnlockStats } from "../audio/audio-context";
+import { loadSettings, saveSettings } from "../shell/settings";
 import { getBridgeStats } from "../audio/footstep-bridge";
 import { forcePlay, forceStop, getMusicStats } from "../audio/MusicBridge";
 import { sfx } from "../audio/Sfx";
@@ -142,6 +144,15 @@ function AudioDebugPanel(): React.ReactElement {
           style={btnStyle}
         >
           [test sample]
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            proceduralFootsteps.play({ surface: "dirtyground", action: "walk", volume: 1 })
+          }
+          style={btnStyle}
+        >
+          [test procedural]
         </button>
         <button
           type="button"
@@ -356,6 +367,20 @@ function DebugOverlayBody(): React.ReactElement {
                 onChange={(e) => setFlag("showTileElevation", e.target.checked)}
               />{" "}
               Show tile elevation
+            </label>
+            <label style={{ cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={loadSettings().proceduralFootsteps}
+                onChange={(e) => {
+                  const s = loadSettings();
+                  s.proceduralFootsteps = e.target.checked;
+                  saveSettings(s);
+                  // Force a re-render by toggling a dummy flag (or just relying on the next click)
+                  setFlag("showTileElevation", flags.showTileElevation);
+                }}
+              />{" "}
+              Procedural Footsteps
             </label>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 }}>
               <button
