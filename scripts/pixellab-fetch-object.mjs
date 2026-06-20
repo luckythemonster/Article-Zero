@@ -166,7 +166,12 @@ async function pollJob(jobId, { intervalMs = 3000, timeoutMs = 5 * 60 * 1000, la
 // freeform names and uses the prompt as a fallback when display_name is blank.
 function normalizeAnimKey(displayName, description) {
   const n = ((displayName || "") + " " + (description || "")).toLowerCase();
-  if (/\bwalk(\b|ing|cycle)/.test(n)) return "walkcycle";
+  if (/\bwalk(\b|ing|cycle|forward)/.test(n) || n.includes("moves for") || /\bmove\b/.test(n)) return "walkcycle";
+  if (/deactivate|power.*down|emp/i.test(n)) return "deactivate";
+  if (/scan|survey|sweep/i.test(n)) return "scan";
+  if (/attack|thrust|ram|apprehend/i.test(n)) return "attack";
+  if (/panic/i.test(n)) return "panic";
+  if (/idle|stand/i.test(n)) return "idle";
   if (/\b(plant|anchor)\b/.test(n)) return "anchor";
   if (/spray|chemical|irritant|nozzle|mist/.test(n)) return "spray";
   return null;
