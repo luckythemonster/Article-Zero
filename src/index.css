@@ -207,6 +207,7 @@ body {
 .touch-dpad__btn--down  { bottom: 0; left: 33%; width: 34%; height: 33%; }
 .touch-dpad__btn--left  { top: 33%; left: 0; width: 33%; height: 34%; }
 .touch-dpad__btn--right { top: 33%; right: 0; width: 33%; height: 34%; }
+.touch-dpad__btn--center { top: 33%; left: 33%; width: 34%; height: 34%; touch-action: none; }
 
 .touch-actions {
   position: absolute;
@@ -222,40 +223,30 @@ body {
 }
 
 .touch-actions__btn {
-  pointer-events: auto;
-  padding: 12px;
-  min-height: 48px;
-  min-width: 48px;
-  border: none;
-  border-radius: 8px;
-  background-color: transparent;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  color: var(--color-text);
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: bold;
-  touch-action: manipulation;
+  background: rgba(30, 45, 55, 0.8);
+  border: 1px solid var(--cyan, #6ad0a4);
+  color: var(--cyan, #6ad0a4);
+  font-family: "Berkeley Mono", "Courier New", monospace;
+  font-size: 0.9rem;
+  height: 50px;
+  user-select: none;
+  -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0 0.4rem;
+  pointer-events: auto;
 }
 
 .touch-actions__btn:active {
-  filter: brightness(0.7);
+  background: rgba(106, 208, 164, 0.3);
 }
 
 .touch-actions__btn--wide {
   grid-column: span 2;
   font-size: 0.75rem;
   letter-spacing: 0.08em;
-}
-
-/* TURN button when armed — one tap arms, next D-pad tap rotates and clears. */
-.touch-actions__btn--armed {
-  background: rgba(106, 208, 164, 0.5);
-  color: #04090b;
-  border-color: var(--cyan, #6ad0a4);
-  font-weight: bold;
 }
 
 /* ── Debug overlay ───────────────────────────────────────────────────────── */
@@ -936,6 +927,13 @@ body.theme-lattice {
   width: 84px;
   height: 84px;
   pointer-events: auto; /* Tap to end turn */
+}
+
+@media (pointer: coarse) {
+  .ap-meter {
+    right: 20px;
+    bottom: 360px;
+  }
 }
 
 .ap-meter img {
@@ -1938,7 +1936,7 @@ body.theme-lattice {
 /* ── Touch Action Cluster (Hexagonal Layout) ────────────────────────────────────────────── */
 .touch-action-cluster {
   position: absolute;
-  bottom: 120px;
+  bottom: 220px;
   right: 20px;
   width: 250px;
   height: 231px;
@@ -1997,7 +1995,7 @@ body.theme-lattice {
 .touch-inventory-btn {
   position: absolute;
   top: 60px;
-  right: 20px;
+  left: 20px;
   width: 104px;
   height: 104px;
   pointer-events: auto;
@@ -2018,7 +2016,7 @@ body.theme-lattice {
 
 .touch-actions-misc {
   position: absolute;
-  top: 180px;
+  top: 60px;
   right: 20px;
   display: flex;
   flex-direction: column;
