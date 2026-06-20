@@ -21,3 +21,4 @@ tsconfig.tsbuildinfo
 
 # Build artefacts
 coverage
+node_modules
