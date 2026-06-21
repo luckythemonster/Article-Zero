@@ -76,7 +76,7 @@ async function readMeta(characterDir) {
 }
 
 async function collect() {
-  const characters = await listDirs(ART_DIR);
+  const characters = (await listDirs(ART_DIR)).filter(c => c !== "ui");
   const groups = []; // [{ character, animation, direction, files: [absPath, ...] }]
   const meta = {}; // { [character]: { [animation]: { frameRate, repeat } } }
 

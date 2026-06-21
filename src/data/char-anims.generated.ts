@@ -559,23 +559,6 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
-    "key": "broken_robot_1a7232b6_malfunctioning_south",
-    "frameRate": 8,
-    "repeat": -1,
-    "frames": [
-      "broken_robot_1a7232b6/malfunctioning/south/00",
-      "broken_robot_1a7232b6/malfunctioning/south/01",
-      "broken_robot_1a7232b6/malfunctioning/south/02",
-      "broken_robot_1a7232b6/malfunctioning/south/03",
-      "broken_robot_1a7232b6/malfunctioning/south/04",
-      "broken_robot_1a7232b6/malfunctioning/south/05",
-      "broken_robot_1a7232b6/malfunctioning/south/06",
-      "broken_robot_1a7232b6/malfunctioning/south/07",
-      "broken_robot_1a7232b6/malfunctioning/south/08"
-    ],
-    "texture": "chars-art"
-  },
-  {
     "key": "broken_robot_3c1802b4_malfunctioning_south",
     "frameRate": 8,
     "repeat": -1,
@@ -5606,6 +5589,23 @@ export const GENERATED_ANIMS: CharAnim[] = [
       "rowanibarra/walkcycle/west/06",
       "rowanibarra/walkcycle/west/07",
       "rowanibarra/walkcycle/west/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
+    "key": "seating_1a7232b6_spinning_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "seating_1a7232b6/spinning/south/00",
+      "seating_1a7232b6/spinning/south/01",
+      "seating_1a7232b6/spinning/south/02",
+      "seating_1a7232b6/spinning/south/03",
+      "seating_1a7232b6/spinning/south/04",
+      "seating_1a7232b6/spinning/south/05",
+      "seating_1a7232b6/spinning/south/06",
+      "seating_1a7232b6/spinning/south/07",
+      "seating_1a7232b6/spinning/south/08"
     ],
     "texture": "chars-art"
   },
