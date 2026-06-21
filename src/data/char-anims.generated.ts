@@ -559,6 +559,23 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
+    "key": "broken_robot_1a7232b6_malfunctioning_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "broken_robot_1a7232b6/malfunctioning/south/00",
+      "broken_robot_1a7232b6/malfunctioning/south/01",
+      "broken_robot_1a7232b6/malfunctioning/south/02",
+      "broken_robot_1a7232b6/malfunctioning/south/03",
+      "broken_robot_1a7232b6/malfunctioning/south/04",
+      "broken_robot_1a7232b6/malfunctioning/south/05",
+      "broken_robot_1a7232b6/malfunctioning/south/06",
+      "broken_robot_1a7232b6/malfunctioning/south/07",
+      "broken_robot_1a7232b6/malfunctioning/south/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
     "key": "broken_robot_3c1802b4_malfunctioning_south",
     "frameRate": 8,
     "repeat": -1,
