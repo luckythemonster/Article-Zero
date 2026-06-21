@@ -34,7 +34,7 @@ import TitleScreen from "./TitleScreen";
 import GlitchOverlay from "./GlitchOverlay";
 
 export default function TerminalShell() {
-  const [started, setStarted] = useState(false);
+  const [started, setStarted] = useState(true);
   const activeModule = useTerminalStore((s) => s.activeModuleId);
   const phase = useTerminalStore((s) => s.phase);
   const dialogueTree = useDebugStore((s) => s.dialogueTree);
