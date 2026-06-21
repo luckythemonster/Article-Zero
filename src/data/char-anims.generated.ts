@@ -5593,6 +5593,23 @@ export const GENERATED_ANIMS: CharAnim[] = [
     "texture": "chars-art"
   },
   {
+    "key": "seating_1a7232b6_spinning_south",
+    "frameRate": 8,
+    "repeat": -1,
+    "frames": [
+      "seating_1a7232b6/spinning/south/00",
+      "seating_1a7232b6/spinning/south/01",
+      "seating_1a7232b6/spinning/south/02",
+      "seating_1a7232b6/spinning/south/03",
+      "seating_1a7232b6/spinning/south/04",
+      "seating_1a7232b6/spinning/south/05",
+      "seating_1a7232b6/spinning/south/06",
+      "seating_1a7232b6/spinning/south/07",
+      "seating_1a7232b6/spinning/south/08"
+    ],
+    "texture": "chars-art"
+  },
+  {
     "key": "securitron_attack_east",
     "frameRate": 8,
     "repeat": -1,
