@@ -31,6 +31,21 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "json"
   },
   {
+    "path": "added by Lucky/attributions/license.txt",
+    "sizeBytes": 1910,
+    "ext": "txt"
+  },
+  {
+    "path": "added by Lucky/attributions/License.txt",
+    "sizeBytes": 35,
+    "ext": "txt"
+  },
+  {
+    "path": "added by Lucky/attributions/Readme",
+    "sizeBytes": 29,
+    "ext": ""
+  },
+  {
     "path": "added by Lucky/baffle theme.json",
     "sizeBytes": 17496,
     "ext": "json"
@@ -141,8 +156,18 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": "ts"
   },
   {
+    "path": "added by Lucky/dialogue/NW-SMAC-01_sequence01",
+    "sizeBytes": 4382,
+    "ext": ""
+  },
+  {
     "path": "added by Lucky/dialogue/orderly conversations",
     "sizeBytes": 4512,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/dialogue/terminal payloads NW-SMAC-01_sequence01",
+    "sizeBytes": 2630,
     "ext": ""
   },
   {
@@ -209,6 +234,46 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "path": "added by Lucky/flashlight.png",
     "sizeBytes": 2052,
     "ext": "png"
+  },
+  {
+    "path": "added by Lucky/fonts/Alarm clock.zip",
+    "sizeBytes": 33292,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/fonts/capture it.zip",
+    "sizeBytes": 114346,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/fonts/D-din condensed .zip",
+    "sizeBytes": 109497,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/fonts/D-din condensed bold.zip",
+    "sizeBytes": 103866,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/fonts/Readme",
+    "sizeBytes": 19,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/Glitch stuff/GlitchEngine Lite v5.0.zip",
+    "sizeBytes": 24470735,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/Glitch stuff/IMG_4177.gif",
+    "sizeBytes": 5319,
+    "ext": "gif"
+  },
+  {
+    "path": "added by Lucky/Glitch stuff/Readme",
+    "sizeBytes": 140,
+    "ext": ""
   },
   {
     "path": "added by Lucky/grenade explosion.aseprite",
@@ -471,9 +536,184 @@ export const UNMOUNTED_FILES: UnmountedFile[] = [
     "ext": ""
   },
   {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI action buttons.png",
+    "sizeBytes": 143585,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI crouch button.png",
+    "sizeBytes": 29451,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI emp grenade icon.png",
+    "sizeBytes": 7517,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI flashlight button.png",
+    "sizeBytes": 30943,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI ID icon.png",
+    "sizeBytes": 4773,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI interact button.png",
+    "sizeBytes": 27872,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI inventory.png",
+    "sizeBytes": 141187,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI keycard icon.png",
+    "sizeBytes": 2168,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI knock button.png",
+    "sizeBytes": 32573,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI labeled gameplay GUI.png",
+    "sizeBytes": 702430,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI peek button.png",
+    "sizeBytes": 30039,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI Q mine icon.png",
+    "sizeBytes": 3564,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI subjective dump icon.png",
+    "sizeBytes": 8752,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI unlabeled gameplay GUI.png",
+    "sizeBytes": 491663,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Article Zero UI- NSSA compliance indicator.png",
+    "sizeBytes": 82975,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/gameplay screen 61926/Readme",
+    "sizeBytes": 14,
+    "ext": ""
+  },
+  {
     "path": "added by Lucky/UI tests/glitch grid tile spritesheet.png",
     "sizeBytes": 20055,
     "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Article Zero UI subtitle .png",
+    "sizeBytes": 45534,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Article Zero UI title.png",
+    "sizeBytes": 111788,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Article Zero UI-title screen assembled example.png",
+    "sizeBytes": 846079,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Article Zero UI-title screen bg.png",
+    "sizeBytes": 556975,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Asimovian subtitle.zip",
+    "sizeBytes": 533786,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Asimovian_title_screen_subtitle.zip",
+    "sizeBytes": 709576,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Ethnocentric title.zip",
+    "sizeBytes": 816050,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Ethnocentric_title_screen_title.zip",
+    "sizeBytes": 1835384,
+    "ext": "zip"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Gameplay screen/Article Zero UI - d-pad.png",
+    "sizeBytes": 29093,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Gameplay screen/Article Zero UI - gameplay screen example.png",
+    "sizeBytes": 324384,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Gameplay screen/Article Zero UI - item cell idle.png",
+    "sizeBytes": 7867,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Gameplay screen/Article Zero UI - item cell pressed.png",
+    "sizeBytes": 16733,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Gameplay screen/Article Zero UI - NSSA compliance indicator.png",
+    "sizeBytes": 38648,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Gameplay screen/Article Zero UI-LED off.png",
+    "sizeBytes": 1094,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Gameplay screen/Article Zero UI-LED on amber.png",
+    "sizeBytes": 4226,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Gameplay screen/Article Zero UI-LED on green.png",
+    "sizeBytes": 4107,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Gameplay screen/Article Zero UI-LED on red.png",
+    "sizeBytes": 4316,
+    "ext": "png"
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Gameplay screen/Readme",
+    "sizeBytes": 13,
+    "ext": ""
+  },
+  {
+    "path": "added by Lucky/UI tests/June 18/Readme",
+    "sizeBytes": 197,
+    "ext": ""
   },
   {
     "path": "added by Lucky/UI tests/SVG test/Article Zero UI-archive button click.svg",
