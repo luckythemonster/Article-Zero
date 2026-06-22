@@ -1566,261 +1566,411 @@ body.theme-lattice {
 
 /* ── Wall terminal ──────────────────────────────────────────────────────── */
 /* ── WALL TERMINAL NEW UI ────────────────────────────────────────────────── */
+/* ========================================================================
+   WALL TERMINAL / DOOR KEYPAD — pure-CSS retro-futuristic sci-fi terminal
+   No raster assets. Grungy green/amber phosphor on dark grimy panels.
+   ======================================================================== */
+
 .wall-terminal {
+  --wt-bg:          #0a0f0c;          /* near-black green-tinted base   */
+  --wt-bg-panel:    #0e1512;          /* slightly lifted panel surface  */
+  --wt-bg-inset:    #060a08;          /* recessed wells (display/keys)  */
+  --wt-grid:        rgba(64, 255, 160, 0.05);
+  --wt-line:        #1d2c24;          /* hairline dividers / bezels     */
+  --wt-line-bright: #2c4438;
+  --wt-green:       #4dffa6;          /* primary phosphor green         */
+  --wt-green-dim:   #2e9968;
+  --wt-amber:       #ffb44d;          /* secondary amber accent         */
+  --wt-amber-dim:   #9a6a23;
+  --wt-red:         #ff4d52;          /* error / emergency              */
+  --wt-text:        #9fe9c6;
+  --wt-text-dim:    #5c7a6c;
+  --wt-radius:      6px;
+
   position: relative;
-  width: 538px;
-  height: 522px;
-  max-width: 90vw;
-  max-height: 90vh;
-  padding: 0;
-  background: none;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  overflow: visible;
-  image-rendering: pixelated;
+  width: min(420px, 92vw);
+  color: var(--wt-text);
+  background-color: var(--wt-bg);
+  /* layered: subtle scanlines + faint grid + radial vignette */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.25) 0px,
+      rgba(0, 0, 0, 0.25) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    linear-gradient(var(--wt-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--wt-grid) 1px, transparent 1px),
+    radial-gradient(
+      120% 100% at 50% 0%,
+      rgba(64, 255, 160, 0.06) 0%,
+      transparent 60%
+    );
+  background-size: 100% 3px, 22px 22px, 22px 22px, 100% 100%;
+  border: 1px solid var(--wt-line-bright);
+  border-radius: var(--wt-radius);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.6),
+    0 18px 50px -12px rgba(0, 0, 0, 0.85),
+    inset 0 0 40px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(120, 255, 190, 0.06);
+  font-family: "Courier New", ui-monospace, monospace;
+  overflow: hidden;
 }
 
-/* Base background (repeating grid) */
-.wall-terminal::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("/assets/ui/wall-terminal/grid-bg-full.png");
-  background-repeat: repeat;
-  background-size: cover; /* Adjust if needed */
-  z-index: -2;
-}
-
-/* Foreground Frame */
+/* Decorative beveled frame + glitchy corner ticks */
 .wall-terminal__frame {
   position: absolute;
-  inset: 0;
-  background-image: url("/assets/ui/wall-terminal/wall-terminal-interface.png");
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  z-index: -1;
+  inset: 6px;
   pointer-events: none;
+  border: 1px solid var(--wt-line);
+  border-radius: calc(var(--wt-radius) - 2px);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+.wall-terminal__frame::before,
+.wall-terminal__frame::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--wt-green-dim);
+  opacity: 0.7;
+}
+.wall-terminal__frame::before {
+  top: -1px;
+  left: -1px;
+  border-right: none;
+  border-bottom: none;
+}
+.wall-terminal__frame::after {
+  bottom: -1px;
+  right: -1px;
+  border-left: none;
+  border-top: none;
 }
 
 .wall-terminal__content {
   position: relative;
-  padding: 46px 36px 40px 36px;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
+  z-index: 1;
+  padding: 1.25rem 1.25rem 1rem;
 }
 
+/* ---- Header ---------------------------------------------------------- */
 .wall-terminal__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.35rem;
+  padding-bottom: 0.6rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--wt-line);
 }
-
 .wall-terminal__title {
-  font-size: 0.75rem;
-  letter-spacing: 0.18em;
-  color: #a8c0d0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
+  color: var(--wt-green);
+  text-shadow: 0 0 8px rgba(77, 255, 166, 0.55);
 }
-
+/* Pulsing emergency / status indicator */
 .wall-terminal__emergency {
-  display: inline-block;
-  width: 46px; /* Update with actual dimensions if different */
-  height: 20px;
-  background-image: url("/assets/ui/wall-terminal/emergency-button-idle.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  image-rendering: pixelated;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--wt-red), #7a1418 70%);
+  box-shadow:
+    0 0 8px rgba(255, 77, 82, 0.8),
+    inset 0 0 3px rgba(0, 0, 0, 0.6);
+  animation: wt-blink 1.6s steps(1, end) infinite;
 }
-
-/* Animation for the flashing button */
-@keyframes emergency-flash {
-  0%, 49% { background-image: url("/assets/ui/wall-terminal/emergency-button-flash-on.png"); }
-  50%, 100% { background-image: url("/assets/ui/wall-terminal/emergency-button-flash-off.png"); }
-}
-
-.wall-terminal__emergency--lit {
-  animation: emergency-flash 1s infinite;
+@keyframes wt-blink {
+  0%, 60%   { opacity: 1; }
+  61%, 100% { opacity: 0.25; }
 }
 
 .wall-terminal__section {
-  margin-bottom: 0.75rem;
-}
-
-.wall-terminal__section--code {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
-  padding-top: 0.25rem;
-  flex: 1;
 }
 
+/* ---- Code display (segmented well) ----------------------------------- */
 .wall-terminal__display {
-  display: inline-flex;
-  gap: 0.4rem;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: var(--wt-bg-inset);
+  border: 1px solid var(--wt-line);
+  border-radius: 4px;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.8),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+.wall-terminal__display-char {
+  display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url("/assets/ui/wall-terminal/integer-entry.png");
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  padding: 0.4rem 0.9rem;
-  min-width: 200px;
-  height: 40px;
+  height: 2.4rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--wt-text-dim);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.25));
+  border: 1px solid var(--wt-line);
+  border-radius: 3px;
+  text-shadow: 0 0 6px rgba(77, 255, 166, 0.15);
+  transition: color 0.12s ease, text-shadow 0.12s ease;
 }
-
-.wall-terminal__display-char {
-  font-family: ui-monospace, "JetBrains Mono", "Fira Code", monospace;
-  font-size: 1.4rem;
-  letter-spacing: 0.05em;
-  color: rgba(200, 144, 48, 0.25);
-  text-shadow: 0 0 6px rgba(200, 144, 48, 0.2);
-  min-width: 0.9em;
-  text-align: center;
-}
-
 .wall-terminal__display-char--filled {
-  color: var(--wt-led, #c89030);
-  text-shadow: 0 0 8px rgba(220, 160, 60, 0.55);
+  color: var(--wt-green);
+  text-shadow: 0 0 10px rgba(77, 255, 166, 0.75);
 }
 
-.wall-terminal__section-label {
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  color: var(--fg-dim, #5a7a80);
-  margin-bottom: 0.35rem;
-  border-bottom: 1px solid var(--border, #2a3d44);
-  padding-bottom: 0.15rem;
-}
-
-/* ── Keypad New Assets ───────────────────────────────────── */
+/* ---- Keypad (CSS Grid) ----------------------------------------------- */
 .wall-terminal__keypad {
   display: grid;
-  grid-template-columns: repeat(3, 60px);
-  grid-template-rows: repeat(4, 30px);
-  gap: 6px;
-  padding: 0.4rem;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  justify-content: center;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  padding: 0.75rem;
+  background-color: var(--wt-bg-panel);
+  border: 1px solid var(--wt-line);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+.wall-terminal__keypad--error {
+  animation: wt-shake 0.4s ease;
+}
+.wall-terminal__keypad--error .wall-terminal__key {
+  border-color: var(--wt-red);
+  color: var(--wt-red);
+  box-shadow:
+    0 0 10px rgba(255, 77, 82, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  text-shadow: 0 0 8px rgba(255, 77, 82, 0.6);
+}
+@keyframes wt-shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-5px); }
+  40%      { transform: translateX(5px); }
+  60%      { transform: translateX(-3px); }
+  80%      { transform: translateX(3px); }
 }
 
+/* Base key — embossed dark button with phosphor label */
 .wall-terminal__key {
   position: relative;
-  width: 60px;
-  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
   padding: 0;
-  background-color: transparent;
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-  image-rendering: pixelated;
-  border: none;
   cursor: pointer;
-  outline: none;
+  color: var(--wt-text);
+  background:
+    linear-gradient(180deg, #16201b 0%, #0d1410 100%);
+  border: 1px solid var(--wt-line-bright);
+  border-radius: 4px;
+  box-shadow:
+    inset 0 1px 0 rgba(120, 255, 190, 0.08),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.6),
+    0 1px 0 rgba(0, 0, 0, 0.4);
+  font-family: inherit;
+  transition:
+    transform 0.06s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
 }
-
-/* Map specific keys to their assets */
-.wall-terminal__key--0 { background-image: url("/assets/ui/wall-terminal/0-idle.png"); }
-.wall-terminal__key--0:active { background-image: url("/assets/ui/wall-terminal/0-pressed.png"); }
-.wall-terminal__key--1 { background-image: url("/assets/ui/wall-terminal/1-idle.png"); }
-.wall-terminal__key--1:active { background-image: url("/assets/ui/wall-terminal/1-pressed.png"); }
-.wall-terminal__key--2 { background-image: url("/assets/ui/wall-terminal/2-idle.png"); }
-.wall-terminal__key--2:active { background-image: url("/assets/ui/wall-terminal/2-pressed.png"); }
-.wall-terminal__key--3 { background-image: url("/assets/ui/wall-terminal/3-idle.png"); }
-.wall-terminal__key--3:active { background-image: url("/assets/ui/wall-terminal/3-pressed.png"); }
-.wall-terminal__key--4 { background-image: url("/assets/ui/wall-terminal/4-idle.png"); }
-.wall-terminal__key--4:active { background-image: url("/assets/ui/wall-terminal/4-pressed.png"); }
-.wall-terminal__key--5 { background-image: url("/assets/ui/wall-terminal/5-idle.png"); }
-.wall-terminal__key--5:active { background-image: url("/assets/ui/wall-terminal/5-pressed.png"); }
-.wall-terminal__key--6 { background-image: url("/assets/ui/wall-terminal/6-idle.png"); }
-.wall-terminal__key--6:active { background-image: url("/assets/ui/wall-terminal/6-pressed.png"); }
-.wall-terminal__key--7 { background-image: url("/assets/ui/wall-terminal/7-idle.png"); }
-.wall-terminal__key--7:active { background-image: url("/assets/ui/wall-terminal/7-pressed.png"); }
-.wall-terminal__key--8 { background-image: url("/assets/ui/wall-terminal/8-idle.png"); }
-.wall-terminal__key--8:active { background-image: url("/assets/ui/wall-terminal/8-pressed.png"); }
-.wall-terminal__key--9 { background-image: url("/assets/ui/wall-terminal/9-idle.png"); }
-.wall-terminal__key--9:active { background-image: url("/assets/ui/wall-terminal/9-pressed.png"); }
-
-.wall-terminal__key--del { background-image: url("/assets/ui/wall-terminal/delete-idle.png"); }
-.wall-terminal__key--del:active { background-image: url("/assets/ui/wall-terminal/delete-pressed.png"); }
-
-.wall-terminal__key--ent { background-image: url("/assets/ui/wall-terminal/enter-idle.png"); }
-.wall-terminal__key--ent:active { background-image: url("/assets/ui/wall-terminal/enter-pressed.png"); }
+.wall-terminal__key-label {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 6px rgba(77, 255, 166, 0.3);
+}
 
 .wall-terminal__key:hover {
-  filter: brightness(1.18);
+  color: var(--wt-green);
+  border-color: var(--wt-green-dim);
+  box-shadow:
+    inset 0 1px 0 rgba(120, 255, 190, 0.12),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.6),
+    0 0 12px rgba(77, 255, 166, 0.25);
+}
+.wall-terminal__key:hover .wall-terminal__key-label {
+  text-shadow: 0 0 10px rgba(77, 255, 166, 0.7);
+}
+.wall-terminal__key:active {
+  transform: translateY(1px);
+  background: linear-gradient(180deg, #0d1410 0%, #16201b 100%);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.8),
+    0 0 8px rgba(77, 255, 166, 0.2);
+}
+.wall-terminal__key:focus-visible {
+  outline: 1px solid var(--wt-green);
+  outline-offset: 2px;
 }
 
-.wall-terminal__keypad--error .wall-terminal__key {
-  /* Tint keys red when there's an error */
-  filter: hue-rotate(300deg) saturate(3) brightness(0.8);
+/* DEL key — amber caution accent */
+.wall-terminal__key--del {
+  color: var(--wt-amber);
+  border-color: var(--wt-amber-dim);
 }
-.wall-terminal__keypad--error .wall-terminal__key:active {
-  filter: hue-rotate(300deg) saturate(3) brightness(0.6);
+.wall-terminal__key--del .wall-terminal__key-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 6px rgba(255, 180, 77, 0.4);
 }
-
-.wall-terminal__keypad--error {
-  animation: wt-keypad-shake 0.32s ease-in-out;
-}
-
-/* Hide labels since they are drawn on the new buttons */
-.wall-terminal__key-label {
-  display: none;
-}
-
-@keyframes wt-keypad-shake {
-  0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-4px); }
-  40% { transform: translateX(4px); }
-  60% { transform: translateX(-3px); }
-  80% { transform: translateX(2px); }
+.wall-terminal__key--del:hover {
+  color: var(--wt-amber);
+  border-color: var(--wt-amber);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 200, 120, 0.12),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.6),
+    0 0 12px rgba(255, 180, 77, 0.3);
 }
 
-/* ── Arrow buttons (warm / cool adjusters) ──────────────────── */
+/* ENT key — primary confirm, brighter green fill */
+.wall-terminal__key--ent {
+  color: #04140c;
+  background: linear-gradient(180deg, var(--wt-green) 0%, var(--wt-green-dim) 100%);
+  border-color: var(--wt-green);
+}
+.wall-terminal__key--ent .wall-terminal__key-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: #04140c;
+  text-shadow: none;
+}
+.wall-terminal__key--ent:hover {
+  color: #04140c;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+    0 0 16px rgba(77, 255, 166, 0.55);
+}
+.wall-terminal__key--ent:active {
+  background: linear-gradient(180deg, var(--wt-green-dim) 0%, var(--wt-green) 100%);
+}
+
+/* ---- Map view (retained for WallTerminal.tsx) ------------------------ */
+.wall-terminal__map {
+  --wt-tile-size: 18px;
+  --wt-tile-gap: 2px;
+  --wt-tile-empty: #0d1410;
+  --wt-tile-wall: #243a30;
+  --wt-tile-floor: #13201a;
+  --wt-tile-player: var(--wt-green);
+  --wt-tile-hazard: var(--wt-red);
+  --wt-tile-objective: var(--wt-amber);
+
+  display: grid;
+  grid-auto-rows: var(--wt-tile-size);
+  gap: var(--wt-tile-gap);
+  padding: 0.75rem;
+  background-color: var(--wt-bg-inset);
+  border: 1px solid var(--wt-line);
+  border-radius: 4px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+.wall-terminal__tile {
+  width: var(--wt-tile-size);
+  height: var(--wt-tile-size);
+  background-color: var(--wt-tile-empty);
+  border: 1px solid var(--wt-line);
+  border-radius: 2px;
+}
+.wall-terminal__tile--wall        { background-color: var(--wt-tile-wall); border-color: var(--wt-line-bright); }
+.wall-terminal__tile--floor       { background-color: var(--wt-tile-floor); }
+.wall-terminal__tile--door-open   { background: #1e4a3a; border: 1px solid #2fb87a; }
+.wall-terminal__tile--door-closed { background: #1e2e38; border: 1px solid #4a8a9a; }
+.wall-terminal__tile--door-locked { background: #1e2030; border: 1px solid #6060a0; }
+.wall-terminal__tile--light-on    { background: #3a4e1a; outline: 1px solid #a8e060; }
+.wall-terminal__tile--light-off   { background: #1a2010; outline: 1px solid #3a5020; }
+.wall-terminal__tile--switch      { background: #2a3e1e; outline: 1px solid #6ad0a4; }
+.wall-terminal__tile--terminal    { background: #1a2c34; outline: 1px solid #4a9ab0; }
+.wall-terminal__tile--vent        { background: #1e2a2e; outline: 1px solid #3a6070; }
+.wall-terminal__tile--locker      { background: #252018; outline: 1px solid #806040; }
+.wall-terminal__tile--chasm       { background: #060a0c; }
+.wall-terminal__tile--player      { background-color: var(--wt-tile-player); box-shadow: 0 0 8px rgba(77, 255, 166, 0.7); }
+.wall-terminal__tile--hazard      { background-color: var(--wt-tile-hazard); box-shadow: 0 0 6px rgba(255, 77, 82, 0.6); }
+.wall-terminal__tile--objective   { background-color: var(--wt-tile-objective); box-shadow: 0 0 6px rgba(255, 180, 77, 0.6); }
+
+.wall-terminal__tile--clickable {
+  cursor: pointer;
+  transition: outline 0.1s;
+}
+.wall-terminal__tile--clickable:hover {
+  outline: 2px solid white;
+}
+
+/* --- Legend --- */
+.wall-terminal__map-legend {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.7rem;
+  justify-content: center;
+}
+.wall-terminal__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #8da4b0;
+}
+.wall-terminal__legend-item::before {
+  content: "";
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+.wall-terminal__legend--switch::before    { background: #2a3e1e; outline: 1px solid #6ad0a4; }
+.wall-terminal__legend--door-closed::before { background: #1e2e38; border: 1px solid #4a8a9a; }
+.wall-terminal__legend--door-locked::before { background: #1e2030; border: 1px solid #6060a0; }
+.wall-terminal__legend--light-on::before  { background: #3a4e1a; outline: 1px solid #a8e060; }
+.wall-terminal__legend--player::before    { background: var(--wt-tile-player); box-shadow: 0 0 8px rgba(77, 255, 166, 0.7); }
+
+/* Climate arrows */
 .wall-terminal__arrow {
-  width: 46px;
-  height: 46px;
-  padding: 0;
+  width: 48px;
+  height: 48px;
   border: none;
   background-color: transparent;
-  background-repeat: no-repeat;
   background-size: contain;
+  background-repeat: no-repeat;
   background-position: center;
-  image-rendering: pixelated;
   cursor: pointer;
+  opacity: 0.8;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--wt-text);
 }
-
-.wall-terminal__arrow--up {
-  background-image: url("/assets/ui/wall-terminal/warm-button-idle.png");
+.wall-terminal__arrow--up::before {
+  content: "▲";
+  font-size: 1.5rem;
+  color: var(--wt-amber);
 }
-
-.wall-terminal__arrow--down {
-  background-image: url("/assets/ui/wall-terminal/cool-button-idle.png");
-}
-
-.wall-terminal__arrow--up:active {
-  background-image: url("/assets/ui/wall-terminal/warm-button-pressed.png");
-}
-
-.wall-terminal__arrow--down:active {
-  background-image: url("/assets/ui/wall-terminal/cool-button-pressed.png");
+.wall-terminal__arrow--down::before {
+  content: "▼";
+  font-size: 1.5rem;
+  color: var(--wt-amber);
 }
 
 .wall-terminal__arrow:hover {
-  filter: brightness(1.15);
+  opacity: 1;
+}
+.wall-terminal__arrow:active {
+  transform: scale(0.95);
 }
 
-/* ── Climate specific classes ────────────────────────────────────────────── */
+
 .hvac__room {
-  background-image: url("/assets/ui/wall-terminal/temperature-window.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
