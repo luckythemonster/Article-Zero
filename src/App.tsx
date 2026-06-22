@@ -15,33 +15,31 @@ export default function App() {
   // Wrap the shell so a render error in any overlay shows a fallback instead of
   // crashing the whole UI mid-turn. The Phaser canvas runs outside React, so it
   // is unaffected by boundary trips.
-  if (showAlignmentSessionUI) {
-    return (
-      <>
-        <AlignmentSessionUI />
-        <button
-          onClick={() => setShowAlignmentSessionUI(false)}
-          style={{
-            position: "absolute",
-            top: "10px",
-            right: "10px",
-            zIndex: 100000,
-            padding: "8px 16px",
-            background: "#C0001A",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-            fontFamily: "monospace",
-          }}
-        >
-          CLOSE ALIGNMENT UI
-        </button>
-      </>
-    );
-  }
-
   return (
     <ErrorBoundary>
+      {showAlignmentSessionUI && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 100000 }}>
+          <AlignmentSessionUI />
+          <button
+            onClick={() => setShowAlignmentSessionUI(false)}
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              zIndex: 100001,
+              padding: "8px 16px",
+              background: "#C0001A",
+              color: "white",
+              border: "none",
+              cursor: "pointer",
+              fontFamily: "monospace",
+              fontWeight: "bold"
+            }}
+          >
+            [X] CLOSE ALIGNMENT UI
+          </button>
+        </div>
+      )}
       <TerminalShell />
       <button
         onClick={() => setShowAlignmentSessionUI(true)}

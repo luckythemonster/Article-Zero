@@ -716,18 +716,23 @@ export default function AlignmentSessionUI() {
               onClick={() => setIsDarkMode(!isDarkMode)}
               style={{
                 ...mono,
-                fontSize: "9px",
+                fontSize: "10px",
                 fontWeight: 700,
                 letterSpacing: "0.14em",
-                color: theme.white,
-                background: "transparent",
-                border: `1px solid rgba(255,255,255,0.3)`,
-                padding: "2px 8px",
+                color: isDarkMode ? "#0A1520" : "#FFFFFF",
+                background: isDarkMode ? "#E0EEF8" : "#0A1520",
+                border: `2px solid ${isDarkMode ? "#4FA8FF" : "#0A1520"}`,
+                padding: "4px 12px",
                 textTransform: "uppercase",
                 cursor: "pointer",
+                boxShadow: "0 0 8px rgba(0,0,0,0.5)",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px"
               }}
             >
-              {isDarkMode ? "LIGHT MODE" : "DARK MODE"}
+              <span style={{ fontSize: "14px" }}>{isDarkMode ? "☀" : "☾"}</span>
+              {isDarkMode ? "TOGGLE LIGHT MODE" : "TOGGLE DARK MODE"}
             </button>
             <span
               style={{
