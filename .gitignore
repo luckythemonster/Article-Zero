@@ -21,3 +21,7 @@ tsconfig.tsbuildinfo
 
 # Build artefacts
 coverage
+rowan_tmp/
+/npm_art.log
+/rowan.zip
+/rowan_tmp/
