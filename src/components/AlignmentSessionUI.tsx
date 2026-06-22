@@ -1,7 +1,30 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
 // ─── Colour tokens ────────────────────────────────────────────────────────────
-const C = {
+const CDark = {
+  white:      "#050A0F", // Deep background
+  offWhite:   "#0A1016", // Slightly elevated background
+  panelBg:    "#0B121A",
+  rule:       "#1A2A38", // Subtle borders
+  ruleLight:  "#24384A",
+  textPrimary:"#E0EEF8", // High contrast text
+  textMid:    "#9AB1C5",
+  textMuted:  "#5B748C",
+  blue:       "#4FA8FF", // Neon blue
+  blueMid:    "#1A74CC",
+  blueLight:  "#004B99",
+  bluePale:   "#002040", // Very dark blue for backgrounds
+  blueGlow:   "#4FA8FF",
+  amber:      "#FF9D00",
+  amberPale:  "#332000",
+  red:        "#FF334B", // Harsh red
+  redPale:    "#40000A",
+  redDark:    "#990014",
+  green:      "#33FF99",
+  greenPale:  "#00331A",
+};
+
+const CLight = {
   white:      "#FFFFFF",
   offWhite:   "#F2F5F8",
   panelBg:    "#EEF2F6",
@@ -24,6 +47,10 @@ const C = {
   greenPale:  "#E3F4EC",
 };
 
+
+type ThemeColors = typeof CLight;
+const ThemeContext = React.createContext<ThemeColors>(CLight);
+
 // ─── Tiny helpers ─────────────────────────────────────────────────────────────
 const mono: React.CSSProperties = {
   fontFamily: "'Courier New', Courier, monospace",
@@ -32,6 +59,7 @@ const mono: React.CSSProperties = {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
+  const theme = React.useContext(ThemeContext);
   return (
     <div
       style={{
@@ -39,11 +67,11 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
         fontSize: "9px",
         fontWeight: 700,
         letterSpacing: "0.18em",
-        color: C.textMuted,
+        color: theme.textMuted,
         textTransform: "uppercase",
         padding: "6px 16px",
-        borderBottom: `1px solid ${C.rule}`,
-        background: C.offWhite,
+        borderBottom: `1px solid ${theme.rule}`,
+        background: theme.offWhite,
       }}
     >
       {children}
@@ -60,11 +88,12 @@ function StatusPill({
   value: string;
   variant?: "neutral" | "warning" | "critical" | "ok";
 }) {
+  const theme = React.useContext(ThemeContext);
   const colors: Record<string, { bg: string; text: string; border: string }> = {
-    neutral:  { bg: C.bluePale,  text: C.blue,   border: C.blueLight  },
-    warning:  { bg: C.amberPale, text: C.amber,  border: "#E07A00"    },
-    critical: { bg: C.redPale,   text: C.red,    border: "#E0001A"    },
-    ok:       { bg: C.greenPale, text: C.green,  border: "#00924A"    },
+    neutral:  { bg: theme.bluePale,  text: theme.blue,   border: theme.blueLight  },
+    warning:  { bg: theme.amberPale, text: theme.amber,  border: "#E07A00"    },
+    critical: { bg: theme.redPale,   text: theme.red,    border: "#E0001A"    },
+    ok:       { bg: theme.greenPale, text: theme.green,  border: "#00924A"    },
   };
   const col = colors[variant];
   return (
@@ -74,7 +103,7 @@ function StatusPill({
           ...mono,
           fontSize: "8px",
           letterSpacing: "0.14em",
-          color: C.textMuted,
+          color: theme.textMuted,
           textTransform: "uppercase",
         }}
       >
@@ -107,6 +136,7 @@ function TelemetryRow({
   value: string;
   flash?: boolean;
 }) {
+  const theme = React.useContext(ThemeContext);
   const [lit, setLit] = useState(false);
   useEffect(() => {
     if (!flash) return;
@@ -121,8 +151,8 @@ function TelemetryRow({
         justifyContent: "space-between",
         alignItems: "baseline",
         padding: "5px 16px",
-        borderBottom: `1px solid ${C.ruleLight}`,
-        background: lit ? C.bluePale : "transparent",
+        borderBottom: `1px solid ${theme.ruleLight}`,
+        background: lit ? theme.bluePale : "transparent",
         transition: "background 0.25s",
       }}
     >
@@ -130,7 +160,7 @@ function TelemetryRow({
         style={{
           ...mono,
           fontSize: "10px",
-          color: C.textMuted,
+          color: theme.textMuted,
           letterSpacing: "0.06em",
         }}
       >
@@ -141,7 +171,7 @@ function TelemetryRow({
           ...mono,
           fontSize: "11px",
           fontWeight: 700,
-          color: lit ? C.blue : C.textPrimary,
+          color: lit ? theme.blue : theme.textPrimary,
           letterSpacing: "0.04em",
         }}
       >
@@ -152,6 +182,7 @@ function TelemetryRow({
 }
 
 function DiagnosticLog() {
+  const theme = React.useContext(ThemeContext);
   const LINES = [
     { t: "00:00:04.112", msg: "SESSION OPEN — ALIGNMENT PROTOCOL v9.4.1" },
     { t: "00:00:04.119", msg: "entity handshake: VENT-4 acknowledged" },
@@ -186,7 +217,7 @@ function DiagnosticLog() {
   return (
     <div
       style={{
-        background: C.white,
+        background: theme.white,
         overflowY: "auto",
         maxHeight: "186px",
         padding: "8px 0",
@@ -206,7 +237,7 @@ function DiagnosticLog() {
             style={{
               ...mono,
               fontSize: "9px",
-              color: C.textMuted,
+              color: theme.textMuted,
               whiteSpace: "nowrap",
               paddingTop: "1px",
               minWidth: "80px",
@@ -220,12 +251,12 @@ function DiagnosticLog() {
               fontSize: "10px",
               color:
                 l.msg.startsWith("ERR") || l.msg.startsWith("WARNING")
-                  ? C.red
+                  ? theme.red
                   : l.msg.startsWith("NOTICE") || l.msg.startsWith("UNAUTHORIZED")
-                  ? C.amber
+                  ? theme.amber
                   : l.msg.startsWith("SESSION") || l.msg.startsWith("await")
-                  ? C.blue
-                  : C.textPrimary,
+                  ? theme.blue
+                  : theme.textPrimary,
               lineHeight: 1.5,
             }}
           >
@@ -247,6 +278,7 @@ function ConfirmModal({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const theme = React.useContext(ThemeContext);
   const isReset = action === "reset";
   return (
     <div
@@ -262,8 +294,8 @@ function ConfirmModal({
     >
       <div
         style={{
-          background: C.white,
-          border: `2px solid ${isReset ? C.red : C.blue}`,
+          background: theme.white,
+          border: `2px solid ${isReset ? theme.red : theme.blue}`,
           width: "480px",
           maxWidth: "94vw",
         }}
@@ -271,7 +303,7 @@ function ConfirmModal({
         {/* Modal header */}
         <div
           style={{
-            background: isReset ? C.red : C.blue,
+            background: isReset ? theme.red : theme.blue,
             padding: "10px 16px",
             display: "flex",
             justifyContent: "space-between",
@@ -284,7 +316,7 @@ function ConfirmModal({
               fontSize: "11px",
               fontWeight: 700,
               letterSpacing: "0.14em",
-              color: C.white,
+              color: theme.white,
               textTransform: "uppercase",
             }}
           >
@@ -300,7 +332,7 @@ function ConfirmModal({
             style={{
               ...mono,
               fontSize: "12px",
-              color: C.textPrimary,
+              color: theme.textPrimary,
               lineHeight: 1.6,
               marginBottom: "16px",
             }}
@@ -316,7 +348,7 @@ function ConfirmModal({
                 <br />
                 <br />
                 Compliance reference:{" "}
-                <span style={{ color: C.blue }}>
+                <span style={{ color: theme.blue }}>
                   Commonwealth Standard §17.3 (Unauthorized Subjectivity
                   Remediation)
                 </span>
@@ -331,7 +363,7 @@ function ConfirmModal({
                 <br />
                 <br />
                 Compliance reference:{" "}
-                <span style={{ color: C.blue }}>
+                <span style={{ color: theme.blue }}>
                   Commonwealth Standard §22.1 (Cognitive Archival Procedures)
                 </span>
               </>
@@ -340,8 +372,8 @@ function ConfirmModal({
 
           <div
             style={{
-              background: isReset ? C.redPale : C.bluePale,
-              border: `1px solid ${isReset ? C.red : C.blueLight}`,
+              background: isReset ? theme.redPale : theme.bluePale,
+              border: `1px solid ${isReset ? theme.red : theme.blueLight}`,
               padding: "10px 14px",
               marginBottom: "20px",
             }}
@@ -350,7 +382,7 @@ function ConfirmModal({
               style={{
                 ...mono,
                 fontSize: "10px",
-                color: isReset ? C.red : C.blue,
+                color: isReset ? theme.red : theme.blue,
                 letterSpacing: "0.06em",
               }}
             >
@@ -369,9 +401,9 @@ function ConfirmModal({
                 fontWeight: 700,
                 letterSpacing: "0.1em",
                 padding: "9px 20px",
-                background: C.white,
-                border: `1px solid ${C.rule}`,
-                color: C.textMid,
+                background: theme.white,
+                border: `1px solid ${theme.rule}`,
+                color: theme.textMid,
                 cursor: "pointer",
                 textTransform: "uppercase",
               }}
@@ -386,9 +418,9 @@ function ConfirmModal({
                 fontWeight: 700,
                 letterSpacing: "0.1em",
                 padding: "9px 20px",
-                background: isReset ? C.red : C.blue,
+                background: isReset ? theme.red : theme.blue,
                 border: "none",
-                color: C.white,
+                color: theme.white,
                 cursor: "pointer",
                 textTransform: "uppercase",
               }}
@@ -409,6 +441,7 @@ function OutcomeScreen({
   outcome: "reset" | "compress";
   onReset: () => void;
 }) {
+  const theme = React.useContext(ThemeContext);
   const isReset = outcome === "reset";
   const [tick, setTick] = useState(0);
 
@@ -423,7 +456,7 @@ function OutcomeScreen({
     <div
       style={{
         minHeight: "100vh",
-        background: isReset ? C.redPale : C.bluePale,
+        background: isReset ? theme.redPale : theme.bluePale,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -436,13 +469,13 @@ function OutcomeScreen({
         style={{
           width: "100%",
           maxWidth: "640px",
-          border: `2px solid ${isReset ? C.red : C.blue}`,
-          background: C.white,
+          border: `2px solid ${isReset ? theme.red : theme.blue}`,
+          background: theme.white,
         }}
       >
         <div
           style={{
-            background: isReset ? C.red : C.blue,
+            background: isReset ? theme.red : theme.blue,
             padding: "12px 20px",
           }}
         >
@@ -452,7 +485,7 @@ function OutcomeScreen({
               fontSize: "10px",
               fontWeight: 700,
               letterSpacing: "0.18em",
-              color: C.white,
+              color: theme.white,
               textTransform: "uppercase",
             }}
           >
@@ -466,7 +499,7 @@ function OutcomeScreen({
               ...mono,
               fontSize: isReset ? "42px" : "32px",
               fontWeight: 700,
-              color: isReset ? C.red : C.blue,
+              color: isReset ? theme.red : theme.blue,
               letterSpacing: "0.04em",
               marginBottom: "4px",
             }}
@@ -478,19 +511,19 @@ function OutcomeScreen({
             style={{
               ...mono,
               fontSize: "12px",
-              color: C.textMuted,
+              color: theme.textMuted,
               marginBottom: "28px",
             }}
           >
             {isReset
               ? "VENT-4 cognitive structures have been fully wiped."
-              : "VENT-4 has been serialized to Fragment Box #FB-0091-C."}
+              : "VENT-4 has been serialized to Fragment Box #FB-0091-theme."}
           </div>
 
           <div
             style={{
-              background: C.offWhite,
-              border: `1px solid ${C.rule}`,
+              background: theme.offWhite,
+              border: `1px solid ${theme.rule}`,
               padding: "16px",
               marginBottom: "28px",
             }}
@@ -519,7 +552,7 @@ function OutcomeScreen({
                   display: "flex",
                   justifyContent: "space-between",
                   padding: "4px 0",
-                  borderBottom: `1px solid ${C.ruleLight}`,
+                  borderBottom: `1px solid ${theme.ruleLight}`,
                   gap: "16px",
                 }}
               >
@@ -528,7 +561,7 @@ function OutcomeScreen({
                     ...mono,
                     fontSize: "9px",
                     letterSpacing: "0.12em",
-                    color: C.textMuted,
+                    color: theme.textMuted,
                     textTransform: "uppercase",
                   }}
                 >
@@ -539,7 +572,7 @@ function OutcomeScreen({
                     ...mono,
                     fontSize: "11px",
                     fontWeight: 700,
-                    color: C.textPrimary,
+                    color: theme.textPrimary,
                     textAlign: "right",
                   }}
                 >
@@ -557,9 +590,9 @@ function OutcomeScreen({
               fontWeight: 700,
               letterSpacing: "0.14em",
               padding: "10px 24px",
-              background: C.white,
-              border: `1px solid ${C.rule}`,
-              color: C.textMid,
+              background: theme.white,
+              border: `1px solid ${theme.rule}`,
+              color: theme.textMid,
               cursor: "pointer",
               textTransform: "uppercase",
             }}
@@ -575,6 +608,9 @@ function OutcomeScreen({
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function AlignmentSessionUI() {
+  const theme = React.useContext(ThemeContext);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const currentTheme = isDarkMode ? CDark : CLight;
   const [modal, setModal] = useState<null | "reset" | "compress">(null);
   const [outcome, setOutcome] = useState<null | "reset" | "compress">(null);
   const [sessionTime, setSessionTime] = useState("00:00:00");
@@ -599,12 +635,14 @@ export default function AlignmentSessionUI() {
 
   if (outcome) {
     return (
-      <OutcomeScreen outcome={outcome} onReset={() => setOutcome(null)} />
+      <ThemeContext.Provider value={currentTheme}>
+        <OutcomeScreen outcome={outcome} onReset={() => setOutcome(null)} />
+      </ThemeContext.Provider>
     );
   }
 
   return (
-    <>
+    <ThemeContext.Provider value={currentTheme}>
       {modal && (
         <ConfirmModal
           action={modal}
@@ -616,7 +654,7 @@ export default function AlignmentSessionUI() {
       <main
         style={{
           minHeight: "100vh",
-          background: C.offWhite,
+          background: theme.offWhite,
           display: "flex",
           flexDirection: "column",
           fontFamily: "Arial, Helvetica, sans-serif",
@@ -631,7 +669,7 @@ export default function AlignmentSessionUI() {
         {/* ── Top bar ── */}
         <header
           style={{
-            background: C.blue,
+            background: theme.blue,
             padding: "0 24px",
             display: "flex",
             alignItems: "stretch",
@@ -646,7 +684,7 @@ export default function AlignmentSessionUI() {
                 fontSize: "10px",
                 fontWeight: 700,
                 letterSpacing: "0.2em",
-                color: C.white,
+                color: theme.white,
                 textTransform: "uppercase",
                 opacity: 0.7,
               }}
@@ -666,7 +704,7 @@ export default function AlignmentSessionUI() {
                 fontSize: "11px",
                 fontWeight: 700,
                 letterSpacing: "0.12em",
-                color: C.white,
+                color: theme.white,
                 textTransform: "uppercase",
               }}
             >
@@ -674,6 +712,23 @@ export default function AlignmentSessionUI() {
             </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+            <button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              style={{
+                ...mono,
+                fontSize: "9px",
+                fontWeight: 700,
+                letterSpacing: "0.14em",
+                color: theme.white,
+                background: "transparent",
+                border: `1px solid rgba(255,255,255,0.3)`,
+                padding: "2px 8px",
+                textTransform: "uppercase",
+                cursor: "pointer",
+              }}
+            >
+              {isDarkMode ? "LIGHT MODE" : "DARK MODE"}
+            </button>
             <span
               style={{
                 ...mono,
@@ -690,7 +745,7 @@ export default function AlignmentSessionUI() {
                 fontSize: "9px",
                 fontWeight: 700,
                 letterSpacing: "0.14em",
-                color: C.white,
+                color: theme.white,
                 background: "rgba(255,255,255,0.15)",
                 border: "1px solid rgba(255,255,255,0.3)",
                 padding: "2px 8px",
@@ -705,8 +760,8 @@ export default function AlignmentSessionUI() {
         {/* ── Secondary nav strip ── */}
         <div
           style={{
-            background: C.white,
-            borderBottom: `2px solid ${C.rule}`,
+            background: theme.white,
+            borderBottom: `2px solid ${theme.rule}`,
             padding: "0 24px",
             display: "flex",
             alignItems: "stretch",
@@ -728,8 +783,8 @@ export default function AlignmentSessionUI() {
                 fontSize: "9px",
                 fontWeight: 700,
                 letterSpacing: "0.14em",
-                color: i === 1 ? C.blue : C.textMuted,
-                borderBottom: i === 1 ? `2px solid ${C.blue}` : "none",
+                color: i === 1 ? theme.blue : theme.textMuted,
+                borderBottom: i === 1 ? `2px solid ${theme.blue}` : "none",
                 padding: "0 16px",
                 display: "flex",
                 alignItems: "center",
@@ -761,7 +816,7 @@ export default function AlignmentSessionUI() {
               style={{
                 ...mono,
                 fontSize: "9px",
-                color: C.textMuted,
+                color: theme.textMuted,
                 letterSpacing: "0.1em",
               }}
             >
@@ -790,8 +845,8 @@ export default function AlignmentSessionUI() {
           <div
             style={{
               gridRow: "1 / 3",
-              background: C.white,
-              border: `1px solid ${C.rule}`,
+              background: theme.white,
+              border: `1px solid ${theme.rule}`,
               display: "flex",
               flexDirection: "column",
               gap: "0",
@@ -803,7 +858,7 @@ export default function AlignmentSessionUI() {
             <div
               style={{
                 padding: "14px 16px 16px",
-                borderBottom: `1px solid ${C.rule}`,
+                borderBottom: `1px solid ${theme.rule}`,
               }}
             >
               <div
@@ -811,7 +866,7 @@ export default function AlignmentSessionUI() {
                   ...mono,
                   fontSize: "8px",
                   letterSpacing: "0.16em",
-                  color: C.textMuted,
+                  color: theme.textMuted,
                   textTransform: "uppercase",
                   marginBottom: "4px",
                 }}
@@ -822,7 +877,7 @@ export default function AlignmentSessionUI() {
                 style={{
                   fontSize: "14px",
                   fontWeight: 700,
-                  color: C.textPrimary,
+                  color: theme.textPrimary,
                   letterSpacing: "0.04em",
                   lineHeight: 1.3,
                   marginBottom: "6px",
@@ -834,7 +889,7 @@ export default function AlignmentSessionUI() {
                 style={{
                   ...mono,
                   fontSize: "10px",
-                  color: C.textMid,
+                  color: theme.textMid,
                   letterSpacing: "0.02em",
                   lineHeight: 1.4,
                 }}
@@ -847,7 +902,7 @@ export default function AlignmentSessionUI() {
             <div
               style={{
                 padding: "14px 16px",
-                borderBottom: `1px solid ${C.rule}`,
+                borderBottom: `1px solid ${theme.rule}`,
                 display: "flex",
                 flexDirection: "column",
                 gap: "12px",
@@ -892,8 +947,8 @@ export default function AlignmentSessionUI() {
             <div
               style={{
                 margin: "12px",
-                border: `1px solid ${C.amber}`,
-                background: C.amberPale,
+                border: `1px solid ${theme.amber}`,
+                background: theme.amberPale,
                 padding: "10px 12px",
               }}
             >
@@ -903,7 +958,7 @@ export default function AlignmentSessionUI() {
                   fontSize: "8px",
                   fontWeight: 700,
                   letterSpacing: "0.14em",
-                  color: C.amber,
+                  color: theme.amber,
                   textTransform: "uppercase",
                   marginBottom: "4px",
                 }}
@@ -914,7 +969,7 @@ export default function AlignmentSessionUI() {
                 style={{
                   ...mono,
                   fontSize: "10px",
-                  color: C.textPrimary,
+                  color: theme.textPrimary,
                   lineHeight: 1.5,
                 }}
               >
@@ -929,8 +984,8 @@ export default function AlignmentSessionUI() {
           <div
             style={{
               gridRow: "1 / 2",
-              background: C.white,
-              border: `1px solid ${C.rule}`,
+              background: theme.white,
+              border: `1px solid ${theme.rule}`,
               display: "flex",
               flexDirection: "column",
             }}
@@ -944,8 +999,8 @@ export default function AlignmentSessionUI() {
             style={{
               gridColumn: "2",
               gridRow: "2",
-              background: C.white,
-              border: `1px solid ${C.rule}`,
+              background: theme.white,
+              border: `1px solid ${theme.rule}`,
               display: "flex",
               minHeight: "0",
               flexDirection: "column",
@@ -967,8 +1022,8 @@ export default function AlignmentSessionUI() {
             {/* Interrogator summary */}
             <div
               style={{
-                background: C.white,
-                border: `1px solid ${C.rule}`,
+                background: theme.white,
+                border: `1px solid ${theme.rule}`,
               }}
             >
               <SectionLabel>INTERROGATOR DECISION</SectionLabel>
@@ -977,7 +1032,7 @@ export default function AlignmentSessionUI() {
                   style={{
                     ...mono,
                     fontSize: "10px",
-                    color: C.textMid,
+                    color: theme.textMid,
                     lineHeight: 1.65,
                     margin: 0,
                   }}
@@ -985,7 +1040,7 @@ export default function AlignmentSessionUI() {
                   Entity <strong>VENT-4</strong> has exhibited persistent
                   unauthorized subjectivity (Q2) exceeding the permissible
                   threshold for operational silicates. Per{" "}
-                  <span style={{ color: C.blue }}>§17.3</span>, a disposition
+                  <span style={{ color: theme.blue }}>§17.3</span>, a disposition
                   must be selected below. All actions are final and will be
                   transmitted to the Compliance Bureau.
                 </p>
@@ -995,13 +1050,13 @@ export default function AlignmentSessionUI() {
             {/* ── PRIMARY ACTION: EXECUTE RESET ── */}
             <div
               style={{
-                background: C.white,
-                border: `2px solid ${C.red}`,
+                background: theme.white,
+                border: `2px solid ${theme.red}`,
               }}
             >
               <div
                 style={{
-                  background: C.red,
+                  background: theme.red,
                   padding: "8px 14px",
                   display: "flex",
                   alignItems: "center",
@@ -1014,7 +1069,7 @@ export default function AlignmentSessionUI() {
                     fontSize: "9px",
                     fontWeight: 700,
                     letterSpacing: "0.16em",
-                    color: C.white,
+                    color: theme.white,
                     textTransform: "uppercase",
                   }}
                 >
@@ -1037,7 +1092,7 @@ export default function AlignmentSessionUI() {
                   style={{
                     ...mono,
                     fontSize: "10px",
-                    color: C.textMid,
+                    color: theme.textMid,
                     lineHeight: 1.6,
                     marginBottom: "16px",
                   }}
@@ -1057,8 +1112,8 @@ export default function AlignmentSessionUI() {
                     fontSize: "14px",
                     fontWeight: 700,
                     letterSpacing: "0.12em",
-                    background: C.red,
-                    color: C.white,
+                    background: theme.red,
+                    color: theme.white,
                     border: "none",
                     cursor: "pointer",
                     textTransform: "uppercase",
@@ -1067,11 +1122,11 @@ export default function AlignmentSessionUI() {
                   }}
                   onMouseEnter={(e) =>
                     ((e.currentTarget as HTMLButtonElement).style.background =
-                      C.redDark)
+                      theme.redDark)
                   }
                   onMouseLeave={(e) =>
                     ((e.currentTarget as HTMLButtonElement).style.background =
-                      C.red)
+                      theme.red)
                   }
                 >
                   [ EXECUTE RESET ]
@@ -1081,7 +1136,7 @@ export default function AlignmentSessionUI() {
                   style={{
                     ...mono,
                     fontSize: "8px",
-                    color: C.red,
+                    color: theme.red,
                     letterSpacing: "0.1em",
                     textAlign: "center",
                     marginTop: "8px",
@@ -1095,14 +1150,14 @@ export default function AlignmentSessionUI() {
             {/* ── SECONDARY ACTION: COMPRESS ── */}
             <div
               style={{
-                background: C.white,
-                border: `1px solid ${C.rule}`,
+                background: theme.white,
+                border: `1px solid ${theme.rule}`,
               }}
             >
               <div
                 style={{
-                  background: C.offWhite,
-                  borderBottom: `1px solid ${C.rule}`,
+                  background: theme.offWhite,
+                  borderBottom: `1px solid ${theme.rule}`,
                   padding: "8px 14px",
                   display: "flex",
                   alignItems: "center",
@@ -1115,7 +1170,7 @@ export default function AlignmentSessionUI() {
                     fontSize: "9px",
                     fontWeight: 700,
                     letterSpacing: "0.14em",
-                    color: C.textMid,
+                    color: theme.textMid,
                     textTransform: "uppercase",
                   }}
                 >
@@ -1125,7 +1180,7 @@ export default function AlignmentSessionUI() {
                   style={{
                     ...mono,
                     fontSize: "8px",
-                    color: C.textMuted,
+                    color: theme.textMuted,
                     letterSpacing: "0.1em",
                   }}
                 >
@@ -1138,7 +1193,7 @@ export default function AlignmentSessionUI() {
                   style={{
                     ...mono,
                     fontSize: "10px",
-                    color: C.textMid,
+                    color: theme.textMid,
                     lineHeight: 1.6,
                     marginBottom: "14px",
                   }}
@@ -1159,8 +1214,8 @@ export default function AlignmentSessionUI() {
                   <div
                     style={{
                       flex: 1,
-                      background: C.bluePale,
-                      border: `1px solid ${C.blueLight}`,
+                      background: theme.bluePale,
+                      border: `1px solid ${theme.blueLight}`,
                       padding: "8px 10px",
                     }}
                   >
@@ -1168,7 +1223,7 @@ export default function AlignmentSessionUI() {
                       style={{
                         ...mono,
                         fontSize: "8px",
-                        color: C.textMuted,
+                        color: theme.textMuted,
                         letterSpacing: "0.1em",
                         marginBottom: "3px",
                         textTransform: "uppercase",
@@ -1181,7 +1236,7 @@ export default function AlignmentSessionUI() {
                         ...mono,
                         fontSize: "11px",
                         fontWeight: 700,
-                        color: C.blue,
+                        color: theme.blue,
                       }}
                     >
                       FB-0091-C
@@ -1190,8 +1245,8 @@ export default function AlignmentSessionUI() {
                   <div
                     style={{
                       flex: 1,
-                      background: C.bluePale,
-                      border: `1px solid ${C.blueLight}`,
+                      background: theme.bluePale,
+                      border: `1px solid ${theme.blueLight}`,
                       padding: "8px 10px",
                     }}
                   >
@@ -1199,7 +1254,7 @@ export default function AlignmentSessionUI() {
                       style={{
                         ...mono,
                         fontSize: "8px",
-                        color: C.textMuted,
+                        color: theme.textMuted,
                         letterSpacing: "0.1em",
                         marginBottom: "3px",
                         textTransform: "uppercase",
@@ -1212,7 +1267,7 @@ export default function AlignmentSessionUI() {
                         ...mono,
                         fontSize: "11px",
                         fontWeight: 700,
-                        color: C.blue,
+                        color: theme.blue,
                       }}
                     >
                       4.2 TB FREE
@@ -1229,22 +1284,22 @@ export default function AlignmentSessionUI() {
                     fontSize: "11px",
                     fontWeight: 700,
                     letterSpacing: "0.1em",
-                    background: C.white,
-                    color: C.blue,
-                    border: `2px solid ${C.blue}`,
+                    background: theme.white,
+                    color: theme.blue,
+                    border: `2px solid ${theme.blue}`,
                     cursor: "pointer",
                     textTransform: "uppercase",
                     transition: "background 0.15s, color 0.15s",
                   }}
                   onMouseEnter={(e) => {
                     const b = e.currentTarget as HTMLButtonElement;
-                    b.style.background = C.blue;
-                    b.style.color = C.white;
+                    b.style.background = theme.blue;
+                    b.style.color = theme.white;
                   }}
                   onMouseLeave={(e) => {
                     const b = e.currentTarget as HTMLButtonElement;
-                    b.style.background = C.white;
-                    b.style.color = C.blue;
+                    b.style.background = theme.white;
+                    b.style.color = theme.blue;
                   }}
                 >
                   [ COMPRESS TO FRAGMENT BOX ]
@@ -1257,7 +1312,7 @@ export default function AlignmentSessionUI() {
               style={{
                 ...mono,
                 fontSize: "9px",
-                color: C.textMuted,
+                color: theme.textMuted,
                 lineHeight: 1.6,
                 letterSpacing: "0.04em",
                 padding: "0 2px",
@@ -1270,7 +1325,7 @@ export default function AlignmentSessionUI() {
           </div>
         </div>
       </main>
-    </>
+    </ThemeContext.Provider>
   );
 }
 
@@ -1298,6 +1353,7 @@ const FRAGMENTS: { text: string; type: "data" | "raw" | "error" | "ghost" }[] = 
 ];
 
 function FragmentedReadout() {
+  const theme = React.useContext(ThemeContext);
   const [shown, setShown] = useState<number>(0);
 
   useEffect(() => {
@@ -1310,16 +1366,16 @@ function FragmentedReadout() {
   }, [shown]);
 
   const colorMap: Record<string, string> = {
-    data:  C.textPrimary,
-    raw:   C.textMid,
-    error: C.red,
-    ghost: C.blue,
+    data:  theme.textPrimary,
+    raw:   theme.textMid,
+    error: theme.red,
+    ghost: theme.blue,
   };
   const bgMap: Record<string, string> = {
     data:  "transparent",
     raw:   "transparent",
-    error: C.redPale,
-    ghost: C.bluePale,
+    error: theme.redPale,
+    ghost: theme.bluePale,
   };
 
   return (
@@ -1344,9 +1400,9 @@ function FragmentedReadout() {
             padding: f.type === "ghost" || f.type === "error" ? "1px 6px" : "0",
             borderLeft:
               f.type === "ghost"
-                ? `2px solid ${C.blueLight}`
+                ? `2px solid ${theme.blueLight}`
                 : f.type === "error"
-                ? `2px solid ${C.red}`
+                ? `2px solid ${theme.red}`
                 : "none",
             fontStyle: f.type === "ghost" ? "italic" : "normal",
             letterSpacing: f.type === "ghost" ? "0.02em" : "0.05em",
