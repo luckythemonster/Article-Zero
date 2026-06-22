@@ -9,14 +9,14 @@
 // Visibility is gated by @media (pointer: coarse) — desktops with a mouse
 // don't see the overlay; iPads / phones / touch laptops do.
 
-import { useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useState } from "react";
 import { worldEngine } from "../engine/WorldEngine";
 import { useDebugStore } from "../state/useDebugStore";
 import { useTargetingStore } from "../state/useTargetingStore";
 import { useTerminalStore } from "../state/useTerminalStore";
 
 function tap(fn: () => void) {
-  return (e: ReactPointerEvent<HTMLButtonElement>) => {
+  return (e: React.PointerEvent<HTMLButtonElement>) => {
     e.preventDefault();
     fn();
   };
@@ -28,7 +28,7 @@ function tap(fn: () => void) {
  *  ExecuteReset overlay is up, mirroring the early-return at
  *  src/hooks/useInput.ts:85. */
 function gameTap(fn: () => void) {
-  return (e: ReactPointerEvent<HTMLButtonElement>) => {
+  return (e: React.PointerEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const term = useTerminalStore.getState();
     if (term.phase !== "FLOOR" && term.phase !== "CLIMAX") return;
@@ -42,7 +42,7 @@ function gameTap(fn: () => void) {
  *  inventoryOpen check that gameTap enforces. ExecuteReset still blocks
  *  (it owns the screen until confirmed/cancelled). */
 function inventoryTap(fn: () => void) {
-  return (e: ReactPointerEvent<HTMLButtonElement>) => {
+  return (e: React.PointerEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const term = useTerminalStore.getState();
     if (term.phase !== "FLOOR" && term.phase !== "CLIMAX") return;
@@ -57,7 +57,9 @@ export default function TouchControls() {
   const phase = useTerminalStore((s) => s.phase);
   const vent4Choice = useTerminalStore((s) => s.runFlags.vent4Choice);
   const targetingActive = useTargetingStore((s) => s.active);
-  const [turnArmed, setTurnArmed] = useState(false);
+
+  // For slide-to-turn mechanics on the center d-pad button
+  const [turnStartPos, setTurnStartPos] = useState<{ x: number; y: number } | null>(null);
 
   // ALIGNMENT/INTERROGATION/FORGERY mount a full-screen blocking modal and
   // pause movement (gameTap already swallows taps in these phases). Leaving the
@@ -70,22 +72,15 @@ export default function TouchControls() {
   // D-pad direction handler — context-sensitive:
   //   * targeting active → nudge the throw cursor (matches arrow-key path in
   //     useInput.ts while tgt.active);
-  //   * TURN armed       → rotate facing without stepping, then disarm;
   //   * otherwise        → step one tile.
   const dpad = (
     dx: number,
     dy: number,
-    facing: "north" | "south" | "east" | "west",
   ) =>
     gameTap(() => {
       const tgt = useTargetingStore.getState();
       if (tgt.active) {
         tgt.moveCursor(dx, dy);
-        return;
-      }
-      if (turnArmed) {
-        worldEngine.turn(facing);
-        setTurnArmed(false);
         return;
       }
       worldEngine.move(dx, dy);
@@ -113,35 +108,80 @@ export default function TouchControls() {
   // nothing on tap, so hide it.
   const showPry = phase === "CLIMAX" && vent4Choice === "UPLOAD";
 
+  const handleTurnPointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const term = useTerminalStore.getState();
+    if (term.phase !== "FLOOR" && term.phase !== "CLIMAX") return;
+    if (term.phase === "CLIMAX" && term.runFlags.vent4Choice === null) return;
+    if (term.inventoryOpen || term.executeResetOpen) return;
+
+    const target = e.currentTarget;
+    target.setPointerCapture(e.pointerId);
+    setTurnStartPos({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleTurnPointerMove = (e: React.PointerEvent<HTMLButtonElement>) => {
+    if (!turnStartPos) return;
+
+    const dx = e.clientX - turnStartPos.x;
+    const dy = e.clientY - turnStartPos.y;
+
+    // Threshold for slide-to-turn
+    if (Math.abs(dx) > 20 || Math.abs(dy) > 20) {
+      if (Math.abs(dx) > Math.abs(dy)) {
+        worldEngine.turn(dx > 0 ? "east" : "west");
+      } else {
+        worldEngine.turn(dy > 0 ? "south" : "north");
+      }
+
+      // Stop tracking after turn triggers
+      setTurnStartPos(null);
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+  };
+
+  const handleTurnPointerUp = (e: React.PointerEvent<HTMLButtonElement>) => {
+    setTurnStartPos(null);
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  };
+
   return (
     <div className="touch-controls" aria-hidden="false">
       <div className="touch-dpad-container">
         <div className="touch-dpad">
           <button
             className="touch-dpad__btn touch-dpad__btn--up"
-            aria-label={turnArmed ? "Face up" : "Move up"}
-            onPointerDown={dpad(0, -1, "north")}
+            aria-label="Move up"
+            onPointerDown={dpad(0, -1)}
           />
           <button
             className="touch-dpad__btn touch-dpad__btn--left"
-            aria-label={turnArmed ? "Face left" : "Move left"}
-            onPointerDown={dpad(-1, 0, "west")}
+            aria-label="Move left"
+            onPointerDown={dpad(-1, 0)}
           />
           <button
             className="touch-dpad__btn touch-dpad__btn--right"
-            aria-label={turnArmed ? "Face right" : "Move right"}
-            onPointerDown={dpad(1, 0, "east")}
+            aria-label="Move right"
+            onPointerDown={dpad(1, 0)}
           />
           <button
             className="touch-dpad__btn touch-dpad__btn--down"
-            aria-label={turnArmed ? "Face down" : "Move down"}
-            onPointerDown={dpad(0, 1, "south")}
+            aria-label="Move down"
+            onPointerDown={dpad(0, 1)}
+          />
+          <button
+            className="touch-dpad__btn touch-dpad__btn--center"
+            aria-label="Slide to turn"
+            onPointerDown={handleTurnPointerDown}
+            onPointerMove={handleTurnPointerMove}
+            onPointerUp={handleTurnPointerUp}
+            onPointerCancel={handleTurnPointerUp}
           />
         </div>
       </div>
 
       {targetingActive ? (
-        <div className="touch-actions">
+        <div className="touch-actions-misc">
           <button
             className="touch-actions__btn touch-actions__btn--wide"
             aria-label="Throw"
@@ -158,83 +198,67 @@ export default function TouchControls() {
           </button>
         </div>
       ) : (
-        <div className="touch-actions">
+        <>
+          <div className="touch-action-cluster">
+            <button
+              className="touch-action-btn touch-action-btn--peek"
+              aria-label="Peek"
+              onPointerDown={gameTap(() => worldEngine.peek())}
+            />
+            <button
+              className="touch-action-btn touch-action-btn--knock"
+              aria-label="Knock"
+              onPointerDown={gameTap(() => worldEngine.knock())}
+            />
+            <button
+              className="touch-action-btn touch-action-btn--crouch"
+              aria-label="Toggle stance"
+              onPointerDown={gameTap(() => worldEngine.toggleStance())}
+            />
+            <button
+              className="touch-action-btn touch-action-btn--flashlight"
+              aria-label="Toggle flashlight"
+              onPointerDown={gameTap(() => worldEngine.toggleFlashlight())}
+            />
+            <button
+              className="touch-action-btn touch-action-btn--interact"
+              aria-label="Interact"
+              onPointerDown={gameTap(() => worldEngine.interact())}
+            />
+          </div>
+
           <button
-            className="touch-actions__btn"
-            aria-label="Interact"
-            onPointerDown={gameTap(() => worldEngine.interact())}
-          >
-            E
-          </button>
-          <button
-            className="touch-actions__btn"
+            className="touch-inventory-btn"
             aria-label="Inventory"
             onPointerDown={inventoryTap(toggleInventory)}
-          >
-            I
-          </button>
-          <button
-            className="touch-actions__btn"
-            aria-label="Knock"
-            onPointerDown={gameTap(() => worldEngine.knock())}
-          >
-            K
-          </button>
-          <button
-            className="touch-actions__btn"
-            aria-label="Peek"
-            onPointerDown={gameTap(() => worldEngine.peek())}
-          >
-            Q
-          </button>
-          <button
-            className="touch-actions__btn"
-            aria-label="Toggle stance"
-            onPointerDown={gameTap(() => worldEngine.toggleStance())}
-          >
-            C
-          </button>
-          <button
-            className="touch-actions__btn"
-            aria-label="Toggle flashlight"
-            onPointerDown={gameTap(() => worldEngine.toggleFlashlight())}
-          >
-            L
-          </button>
-          <button
-            className={`touch-actions__btn touch-actions__btn--wide${
-              turnArmed ? " touch-actions__btn--armed" : ""
-            }`}
-            aria-label={turnArmed ? "Cancel turn-in-place" : "Turn in place"}
-            aria-pressed={turnArmed}
-            onPointerDown={gameTap(() => setTurnArmed((v) => !v))}
-          >
-            {turnArmed ? "TURN ▸ TAP DIR" : "TURN"}
-          </button>
-          {showPry && (
+          />
+
+          <div className="touch-actions-misc">
+            {showPry && (
+              <button
+                className="touch-actions__btn touch-actions__btn--wide"
+                aria-label="Pry blast door"
+                onPointerDown={gameTap(() => worldEngine.pryDoor(5))}
+              >
+                PRY
+              </button>
+            )}
             <button
               className="touch-actions__btn touch-actions__btn--wide"
-              aria-label="Pry blast door"
-              onPointerDown={gameTap(() => worldEngine.pryDoor(5))}
+              aria-label="End turn"
+              onPointerDown={gameTap(() => worldEngine.endTurn())}
             >
-              PRY
+              END TURN
             </button>
-          )}
-          <button
-            className="touch-actions__btn touch-actions__btn--wide"
-            aria-label="End turn"
-            onPointerDown={gameTap(() => worldEngine.endTurn())}
-          >
-            END TURN
-          </button>
-          <button
-            className="touch-actions__btn"
-            aria-label="Toggle debug overlay"
-            onPointerDown={tap(toggleDebug)}
-          >
-            ~
-          </button>
-        </div>
+            <button
+              className="touch-actions__btn"
+              aria-label="Toggle debug overlay"
+              onPointerDown={tap(toggleDebug)}
+            >
+              ~
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
