@@ -11,14 +11,14 @@
 }
 
 :root {
-  --bg: #050809;
+  --bg: #000000;
   --fg: #e6f0f2;
   --dim: #9bb1b6;
   --cyan: #ebd14a;
   --red: #ff5050;
   --amber: #ebd14a;
-  --border: #1f3138;
-  --surface: #080e10;
+  --border: #2a2000;
+  --surface: #0a0800;
   --text-scale: 1;
   font-size: calc(14px * var(--text-scale));
 }
@@ -458,12 +458,12 @@ body {
 /* ── Lattice theme (Archivist frame & epilogue) ──────────────────────────── */
 
 body.theme-lattice {
-  --bg: #060c10;
+  --bg: #000000;
   --fg: #d6e3eb;
   --dim: #6c8b96;
   --cyan: #f5e090;
-  --border: #1c333d;
-  --surface: #08151c;
+  --border: #332800;
+  --surface: #100d00;
 }
 
 /* ── Title / main menu screen ────────────────────────────────────────────── */
