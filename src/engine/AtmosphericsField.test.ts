@@ -209,6 +209,31 @@ describe("AtmosphericsField.propagate", () => {
     atmosphericsField.propagate(s);
     expect(atmosphericsField.getFoggedTiles(s, a).size).toBe(0);
   });
+
+  it("nudges airflow by AIRFLOW_RATE towards the target", () => {
+    // Initial airflow is NORMAL_AIRFLOW (50)
+    // Target airflow for MAX_COOL is 100
+    // AIRFLOW_RATE is 8
+    const s = makeState(
+      [room("a")],
+      [zone("z", ["a"], "MAX_COOL")],
+      [defaultAtmo("a", "z")],
+    );
+
+    // One tick should increase airflow by AIRFLOW_RATE
+    atmosphericsField.propagate(s);
+    expect(s.atmosphere.get("a")!.airflow).toBe(NORMAL_AIRFLOW + 8); // 58
+
+    // Multiple ticks should eventually cap at 100
+    for (let i = 0; i < 20; i++) atmosphericsField.propagate(s);
+    expect(s.atmosphere.get("a")!.airflow).toBe(100);
+
+    // Now switch to NORMAL mode (target 50) and test decrease
+    const z = s.hvacZones.get("z")!;
+    z.mode = "NORMAL";
+    atmosphericsField.propagate(s);
+    expect(s.atmosphere.get("a")!.airflow).toBe(100 - 8); // 92
+  });
 });
 
 describe("AtmosphericsField.tick — oxygen incapacitation", () => {
