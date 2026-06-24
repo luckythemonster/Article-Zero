@@ -55,7 +55,8 @@ The following sub-routines and artifact fragments have been
 detected in the asset cache. Their provenance is currently
 under audit by the Enforcers.
 
-// TODO: Review and attribute the following internet-sourced materials:
 * Thermodynamic Particle Effects (vfx/*): Warp gates, lightning, sparks, and charge signatures
+  (Sourced from OpenGameArt.org, Itch.io, and PixelLab)
 * Auditory Logs (audio/*): Footsteps, UI sounds, ambient mechanical noise
+  (Sourced from OpenGameArt.org, Itch.io, and PixelLab)
 `;

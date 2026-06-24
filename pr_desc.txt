@@ -1,5 +1,0 @@
-🧪 Add tests for TerminalStore
-
-🎯 **What:** The testing gap for useTerminalStore was addressed.
-📊 **Coverage:** Covered log, pushCommand, decryptModule, setActiveModule, stashSnapshot, RunFlags mutations, and UI modals mutations. 100% statement/branch coverage achieved.
-✨ **Result:** Improved state stability and prevented unexpected behavior by bringing the state under unit tests.
