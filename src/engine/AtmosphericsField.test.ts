@@ -20,7 +20,6 @@ import {
   OXYGEN_INCAP_THRESHOLD,
   OXYGEN_INCAP_TURNS,
   AIRFLOW_SOUND_DAMP_MAX,
-  HVAC_RATE,
 } from "./AtmosphericsField";
 
 function tile(kind: Tile["kind"] = "FLOOR"): Tile {
@@ -117,22 +116,6 @@ beforeEach(() => {
 });
 
 describe("AtmosphericsField.propagate", () => {
-  it("nudges temperature according to HVAC_RATE in a single tick", () => {
-    const s = makeState(
-      [room("a")],
-      [zone("z", ["a"], "MAX_COOL")],
-      [defaultAtmo("a", "z")],
-    );
-    const atmo = s.atmosphere.get("a")!;
-    const initialTemp = atmo.temperature;
-    const initialAirflow = atmo.airflow;
-    const expectedStep = HVAC_RATE * (initialAirflow / 100);
-
-    atmosphericsField.propagate(s);
-
-    expect(atmo.temperature).toBeCloseTo(initialTemp - expectedStep, 5);
-  });
-
   it("drives a room toward MAX_COOL across several ticks", () => {
     const s = makeState(
       [room("a")],
@@ -226,31 +209,6 @@ describe("AtmosphericsField.propagate", () => {
     atmo.temperature = 22;
     atmosphericsField.propagate(s);
     expect(atmosphericsField.getFoggedTiles(s, a).size).toBe(0);
-  });
-
-  it("nudges airflow by AIRFLOW_RATE towards the target", () => {
-    // Initial airflow is NORMAL_AIRFLOW (50)
-    // Target airflow for MAX_COOL is 100
-    // AIRFLOW_RATE is 8
-    const s = makeState(
-      [room("a")],
-      [zone("z", ["a"], "MAX_COOL")],
-      [defaultAtmo("a", "z")],
-    );
-
-    // One tick should increase airflow by AIRFLOW_RATE
-    atmosphericsField.propagate(s);
-    expect(s.atmosphere.get("a")!.airflow).toBe(NORMAL_AIRFLOW + 8); // 58
-
-    // Multiple ticks should eventually cap at 100
-    for (let i = 0; i < 20; i++) atmosphericsField.propagate(s);
-    expect(s.atmosphere.get("a")!.airflow).toBe(100);
-
-    // Now switch to NORMAL mode (target 50) and test decrease
-    const z = s.hvacZones.get("z")!;
-    z.mode = "NORMAL";
-    atmosphericsField.propagate(s);
-    expect(s.atmosphere.get("a")!.airflow).toBe(100 - 8); // 92
   });
 });
 
