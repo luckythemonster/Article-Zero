@@ -84,6 +84,7 @@ export function emptyState(era: Era): WorldState {
     rooms: new Map(),
     entities: new Map(),
     items: new Map(),
+    itemsByPos: new Map(),
     visibleTiles: new Set(),
     alignmentLightActive: false,
     detected: false,
@@ -137,6 +138,9 @@ export function seedToWorldState(seed: EraSeed): WorldState {
   }
   for (const item of seed.items ?? []) {
     state.items.set(item.id, item);
+    if (item.roomId && item.pos) {
+      state.itemsByPos.set(`${item.roomId}:${item.pos.x},${item.pos.y}`, item);
+    }
   }
 
   // Atmospherics seed. If the era declared zones, use them; otherwise mint a

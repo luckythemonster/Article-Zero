@@ -145,12 +145,7 @@ function toggleDoorTileAt(room: Room, pos: Vec2, open?: boolean): boolean | null
 }
 
 function findItemAt(state: WorldState, roomId: string, p: Vec2): ItemInstance | undefined {
-  for (const item of state.items.values()) {
-    if (item.roomId !== roomId) continue;
-    if (!item.pos) continue;
-    if (item.pos.x === p.x && item.pos.y === p.y) return item;
-  }
-  return undefined;
+  return state.itemsByPos.get(`${roomId}:${p.x},${p.y}`);
 }
 
 function findEntityInFacingCone(
@@ -1153,6 +1148,7 @@ export const actions = {
         // Already carrying a cube — refuse silently.
       } else {
         state.items.delete(itemHere.id);
+        if (itemHere.roomId && itemHere.pos) state.itemsByPos.delete(`${itemHere.roomId}:${itemHere.pos.x},${itemHere.pos.y}`);
         const held: ItemInstance = { ...itemHere, roomId: undefined, pos: undefined };
         state.player.inventory.push(held);
         const previousAp = state.player.ap;

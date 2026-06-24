@@ -80,6 +80,7 @@ function makeState(
     rooms: roomMap,
     entities: entityMap,
     items: new Map(),
+    itemsByPos: new Map(),
     visibleTiles: new Set(),
     alignmentLightActive: false,
     detected: false,

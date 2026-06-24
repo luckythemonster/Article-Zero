@@ -360,6 +360,7 @@ class WorldEngine {
     s.detained = false;
     s.terminalsRead.clear();
     s.items.clear();
+    s.itemsByPos.clear();
     s.player.spoofTurnsRemaining = undefined;
     s.activeEmitters = [];
     s.activeMines = [];

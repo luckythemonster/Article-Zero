@@ -140,7 +140,7 @@ export function slicesToWorldState(
     });
   }
 
-  return {
+  const out: WorldState = {
     era: physical.era,
     turn: physical.turn,
     player: {
@@ -166,6 +166,7 @@ export function slicesToWorldState(
     rooms: new Map(physical.rooms),
     entities,
     items: new Map(subjective.worldItems),
+    itemsByPos: new Map(),
     visibleTiles: new Set(subjective.visibleTiles),
     alignmentLightActive: subjective.alignmentLightActive,
     detected: subjective.detected,
@@ -187,4 +188,12 @@ export function slicesToWorldState(
       ]),
     ),
   };
+
+  for (const item of out.items.values()) {
+    if (item.roomId && item.pos) {
+      out.itemsByPos.set(`${item.roomId}:${item.pos.x},${item.pos.y}`, item);
+    }
+  }
+
+  return out;
 }
