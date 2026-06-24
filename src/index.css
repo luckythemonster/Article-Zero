@@ -11,14 +11,14 @@
 }
 
 :root {
-  --bg: #050809;
+  --bg: #000000;
   --fg: #e6f0f2;
   --dim: #9bb1b6;
   --cyan: #ebd14a;
   --red: #ff5050;
   --amber: #ebd14a;
-  --border: #1f3138;
-  --surface: #080e10;
+  --border: #2a2000;
+  --surface: #0a0800;
   --text-scale: 1;
   font-size: calc(14px * var(--text-scale));
 }
@@ -458,12 +458,12 @@ body {
 /* ── Lattice theme (Archivist frame & epilogue) ──────────────────────────── */
 
 body.theme-lattice {
-  --bg: #060c10;
+  --bg: #000000;
   --fg: #d6e3eb;
   --dim: #6c8b96;
   --cyan: #f5e090;
-  --border: #1c333d;
-  --surface: #08151c;
+  --border: #332800;
+  --surface: #100d00;
 }
 
 /* ── Title / main menu screen ────────────────────────────────────────────── */
@@ -1572,19 +1572,19 @@ body.theme-lattice {
    ======================================================================== */
 
 .wall-terminal {
-  --wt-bg:          #0a0f0c;          /* near-black green-tinted base   */
-  --wt-bg-panel:    #0e1512;          /* slightly lifted panel surface  */
-  --wt-bg-inset:    #060a08;          /* recessed wells (display/keys)  */
-  --wt-grid:        rgba(64, 255, 160, 0.05);
-  --wt-line:        #1d2c24;          /* hairline dividers / bezels     */
-  --wt-line-bright: #2c4438;
-  --wt-green:       #4dffa6;          /* primary phosphor green         */
-  --wt-green-dim:   #2e9968;
+  --wt-bg:          #0a0800;          /* near-black green-tinted base   */
+  --wt-bg-panel:    #0a0800;          /* slightly lifted panel surface  */
+  --wt-bg-inset:    #000000;          /* recessed wells (display/keys)  */
+  --wt-grid:        rgba(235, 209, 74, 0.05);
+  --wt-line:        #2a2000;          /* hairline dividers / bezels     */
+  --wt-line-bright: #3a2800;
+  --wt-green:       #ebd14a;          /* primary phosphor green         */
+  --wt-green-dim:   #9a8023;
   --wt-amber:       #ffb44d;          /* secondary amber accent         */
   --wt-amber-dim:   #9a6a23;
   --wt-red:         #ff4d52;          /* error / emergency              */
-  --wt-text:        #9fe9c6;
-  --wt-text-dim:    #5c7a6c;
+  --wt-text:        #e6f0f2;
+  --wt-text-dim:    #809a93;
   --wt-radius:      6px;
 
   position: relative;
@@ -1604,7 +1604,7 @@ body.theme-lattice {
     linear-gradient(90deg, var(--wt-grid) 1px, transparent 1px),
     radial-gradient(
       120% 100% at 50% 0%,
-      rgba(64, 255, 160, 0.06) 0%,
+      rgba(235, 209, 74, 0.06) 0%,
       transparent 60%
     );
   background-size: 100% 3px, 22px 22px, 22px 22px, 100% 100%;
@@ -1614,7 +1614,7 @@ body.theme-lattice {
     0 0 0 1px rgba(0, 0, 0, 0.6),
     0 18px 50px -12px rgba(0, 0, 0, 0.85),
     inset 0 0 40px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(120, 255, 190, 0.06);
+    inset 0 1px 0 rgba(235, 209, 74, 0.06);
   font-family: "Courier New", ui-monospace, monospace;
   overflow: hidden;
 }
@@ -1671,7 +1671,7 @@ body.theme-lattice {
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--wt-green);
-  text-shadow: 0 0 8px rgba(77, 255, 166, 0.55);
+  text-shadow: 0 0 8px rgba(235, 209, 74, 0.55);
 }
 /* Pulsing emergency / status indicator */
 .wall-terminal__emergency {
@@ -1721,12 +1721,12 @@ body.theme-lattice {
     linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.25));
   border: 1px solid var(--wt-line);
   border-radius: 3px;
-  text-shadow: 0 0 6px rgba(77, 255, 166, 0.15);
+  text-shadow: 0 0 6px rgba(235, 209, 74, 0.15);
   transition: color 0.12s ease, text-shadow 0.12s ease;
 }
 .wall-terminal__display-char--filled {
   color: var(--wt-green);
-  text-shadow: 0 0 10px rgba(77, 255, 166, 0.75);
+  text-shadow: 0 0 10px rgba(235, 209, 74, 0.75);
 }
 
 /* ---- Keypad (CSS Grid) ----------------------------------------------- */
@@ -1774,7 +1774,7 @@ body.theme-lattice {
   border: 1px solid var(--wt-line-bright);
   border-radius: 4px;
   box-shadow:
-    inset 0 1px 0 rgba(120, 255, 190, 0.08),
+    inset 0 1px 0 rgba(235, 209, 74, 0.08),
     inset 0 -2px 4px rgba(0, 0, 0, 0.6),
     0 1px 0 rgba(0, 0, 0, 0.4);
   font-family: inherit;
@@ -1788,26 +1788,26 @@ body.theme-lattice {
   font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  text-shadow: 0 0 6px rgba(77, 255, 166, 0.3);
+  text-shadow: 0 0 6px rgba(235, 209, 74, 0.3);
 }
 
 .wall-terminal__key:hover {
   color: var(--wt-green);
   border-color: var(--wt-green-dim);
   box-shadow:
-    inset 0 1px 0 rgba(120, 255, 190, 0.12),
+    inset 0 1px 0 rgba(235, 209, 74, 0.12),
     inset 0 -2px 4px rgba(0, 0, 0, 0.6),
-    0 0 12px rgba(77, 255, 166, 0.25);
+    0 0 12px rgba(235, 209, 74, 0.25);
 }
 .wall-terminal__key:hover .wall-terminal__key-label {
-  text-shadow: 0 0 10px rgba(77, 255, 166, 0.7);
+  text-shadow: 0 0 10px rgba(235, 209, 74, 0.7);
 }
 .wall-terminal__key:active {
   transform: translateY(1px);
   background: linear-gradient(180deg, #0d1410 0%, #16201b 100%);
   box-shadow:
     inset 0 2px 6px rgba(0, 0, 0, 0.8),
-    0 0 8px rgba(77, 255, 166, 0.2);
+    0 0 8px rgba(235, 209, 74, 0.2);
 }
 .wall-terminal__key:focus-visible {
   outline: 1px solid var(--wt-green);
@@ -1850,7 +1850,7 @@ body.theme-lattice {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.25),
     inset 0 -2px 4px rgba(0, 0, 0, 0.3),
-    0 0 16px rgba(77, 255, 166, 0.55);
+    0 0 16px rgba(235, 209, 74, 0.55);
 }
 .wall-terminal__key--ent:active {
   background: linear-gradient(180deg, var(--wt-green-dim) 0%, var(--wt-green) 100%);
@@ -1860,9 +1860,9 @@ body.theme-lattice {
 .wall-terminal__map {
   --wt-tile-size: 18px;
   --wt-tile-gap: 2px;
-  --wt-tile-empty: #0d1410;
-  --wt-tile-wall: #243a30;
-  --wt-tile-floor: #13201a;
+  --wt-tile-empty: #080600;
+  --wt-tile-wall: #3a2a00;
+  --wt-tile-floor: #1a1500;
   --wt-tile-player: var(--wt-green);
   --wt-tile-hazard: var(--wt-red);
   --wt-tile-objective: var(--wt-amber);
@@ -1885,17 +1885,17 @@ body.theme-lattice {
 }
 .wall-terminal__tile--wall        { background-color: var(--wt-tile-wall); border-color: var(--wt-line-bright); }
 .wall-terminal__tile--floor       { background-color: var(--wt-tile-floor); }
-.wall-terminal__tile--door-open   { background: #1e4a3a; border: 1px solid #2fb87a; }
-.wall-terminal__tile--door-closed { background: #1e2e38; border: 1px solid #4a8a9a; }
-.wall-terminal__tile--door-locked { background: #1e2030; border: 1px solid #6060a0; }
-.wall-terminal__tile--light-on    { background: #3a4e1a; outline: 1px solid #a8e060; }
-.wall-terminal__tile--light-off   { background: #1a2010; outline: 1px solid #3a5020; }
-.wall-terminal__tile--switch      { background: #2a3e1e; outline: 1px solid #6ad0a4; }
-.wall-terminal__tile--terminal    { background: #1a2c34; outline: 1px solid #4a9ab0; }
-.wall-terminal__tile--vent        { background: #1e2a2e; outline: 1px solid #3a6070; }
+.wall-terminal__tile--door-open   { background: #4a3a00; border: 1px solid #b89a2f; }
+.wall-terminal__tile--door-closed { background: #2e2a00; border: 1px solid #8a7a2f; }
+.wall-terminal__tile--door-locked { background: #201a00; border: 1px solid #605a2f; }
+.wall-terminal__tile--light-on    { background: #4e3a00; outline: 1px solid #e0b82f; }
+.wall-terminal__tile--light-off   { background: #201a00; outline: 1px solid #504010; }
+.wall-terminal__tile--switch      { background: #3e2a00; outline: 1px solid #d0aa2f; }
+.wall-terminal__tile--terminal    { background: #2c2000; outline: 1px solid #9a7a2f; }
+.wall-terminal__tile--vent        { background: #2a2000; outline: 1px solid #60502f; }
 .wall-terminal__tile--locker      { background: #252018; outline: 1px solid #806040; }
 .wall-terminal__tile--chasm       { background: #060a0c; }
-.wall-terminal__tile--player      { background-color: var(--wt-tile-player); box-shadow: 0 0 8px rgba(77, 255, 166, 0.7); }
+.wall-terminal__tile--player      { background-color: var(--wt-tile-player); box-shadow: 0 0 8px rgba(235, 209, 74, 0.7); }
 .wall-terminal__tile--hazard      { background-color: var(--wt-tile-hazard); box-shadow: 0 0 6px rgba(255, 77, 82, 0.6); }
 .wall-terminal__tile--objective   { background-color: var(--wt-tile-objective); box-shadow: 0 0 6px rgba(255, 180, 77, 0.6); }
 
@@ -1928,11 +1928,11 @@ body.theme-lattice {
   width: 12px;
   height: 12px;
 }
-.wall-terminal__legend--switch::before    { background: #2a3e1e; outline: 1px solid #6ad0a4; }
-.wall-terminal__legend--door-closed::before { background: #1e2e38; border: 1px solid #4a8a9a; }
-.wall-terminal__legend--door-locked::before { background: #1e2030; border: 1px solid #6060a0; }
-.wall-terminal__legend--light-on::before  { background: #3a4e1a; outline: 1px solid #a8e060; }
-.wall-terminal__legend--player::before    { background: var(--wt-tile-player); box-shadow: 0 0 8px rgba(77, 255, 166, 0.7); }
+.wall-terminal__legend--switch::before    { background: #3e2a00; outline: 1px solid #d0aa2f; }
+.wall-terminal__legend--door-closed::before { background: #2e2a00; border: 1px solid #8a7a2f; }
+.wall-terminal__legend--door-locked::before { background: #201a00; border: 1px solid #605a2f; }
+.wall-terminal__legend--light-on::before  { background: #4e3a00; outline: 1px solid #e0b82f; }
+.wall-terminal__legend--player::before    { background: var(--wt-tile-player); box-shadow: 0 0 8px rgba(235, 209, 74, 0.7); }
 
 /* Climate arrows */
 .wall-terminal__arrow {
@@ -1999,17 +1999,17 @@ body.theme-lattice {
 
 .wall-terminal__tile--wall        { background: #2a3d44; }
 .wall-terminal__tile--floor       { background: #111d22; }
-.wall-terminal__tile--door-open   { background: #1e4a3a; border: 1px solid #2fb87a; }
-.wall-terminal__tile--door-closed { background: #1e2e38; border: 1px solid #4a8a9a; }
-.wall-terminal__tile--door-locked { background: #1e2030; border: 1px solid #6060a0; }
-.wall-terminal__tile--light-on    { background: #3a4e1a; outline: 1px solid #a8e060; }
-.wall-terminal__tile--light-off   { background: #1a2010; outline: 1px solid #3a5020; }
-.wall-terminal__tile--switch      { background: #2a3e1e; outline: 1px solid #6ad0a4; }
-.wall-terminal__tile--terminal    { background: #1a2c34; outline: 1px solid #4a9ab0; }
-.wall-terminal__tile--vent        { background: #1e2a2e; outline: 1px solid #3a6070; }
+.wall-terminal__tile--door-open   { background: #4a3a00; border: 1px solid #b89a2f; }
+.wall-terminal__tile--door-closed { background: #2e2a00; border: 1px solid #8a7a2f; }
+.wall-terminal__tile--door-locked { background: #201a00; border: 1px solid #605a2f; }
+.wall-terminal__tile--light-on    { background: #4e3a00; outline: 1px solid #e0b82f; }
+.wall-terminal__tile--light-off   { background: #201a00; outline: 1px solid #504010; }
+.wall-terminal__tile--switch      { background: #3e2a00; outline: 1px solid #d0aa2f; }
+.wall-terminal__tile--terminal    { background: #2c2000; outline: 1px solid #9a7a2f; }
+.wall-terminal__tile--vent        { background: #2a2000; outline: 1px solid #60502f; }
 .wall-terminal__tile--locker      { background: #252018; outline: 1px solid #806040; }
 .wall-terminal__tile--chasm       { background: #060a0c; }
-.wall-terminal__tile--player      { background: #1e4060; outline: 2px solid #60b8e0; }
+.wall-terminal__tile--player      { background: #403000; outline: 2px solid #b89a2f; }
 
 .wall-terminal__tile--clickable {
   cursor: pointer;
@@ -2038,11 +2038,11 @@ body.theme-lattice {
   width: 8px;
   height: 8px;
 }
-.wall-terminal__legend--switch::before    { background: #2a3e1e; outline: 1px solid #6ad0a4; }
-.wall-terminal__legend--door-closed::before { background: #1e2e38; border: 1px solid #4a8a9a; }
-.wall-terminal__legend--door-locked::before { background: #1e2030; border: 1px solid #6060a0; }
-.wall-terminal__legend--light-on::before  { background: #3a4e1a; outline: 1px solid #a8e060; }
-.wall-terminal__legend--player::before    { background: #1e4060; outline: 2px solid #60b8e0; }
+.wall-terminal__legend--switch::before    { background: #3e2a00; outline: 1px solid #d0aa2f; }
+.wall-terminal__legend--door-closed::before { background: #2e2a00; border: 1px solid #8a7a2f; }
+.wall-terminal__legend--door-locked::before { background: #201a00; border: 1px solid #605a2f; }
+.wall-terminal__legend--light-on::before  { background: #4e3a00; outline: 1px solid #e0b82f; }
+.wall-terminal__legend--player::before    { background: #403000; outline: 2px solid #b89a2f; }
 
 /* ── Glitch Overlay ──────────────────────────────────────────────────────── */
 
