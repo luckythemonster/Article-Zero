@@ -20,6 +20,7 @@ import {
   OXYGEN_INCAP_THRESHOLD,
   OXYGEN_INCAP_TURNS,
   AIRFLOW_SOUND_DAMP_MAX,
+  HVAC_RATE,
 } from "./AtmosphericsField";
 
 function tile(kind: Tile["kind"] = "FLOOR"): Tile {
@@ -115,6 +116,22 @@ beforeEach(() => {
 });
 
 describe("AtmosphericsField.propagate", () => {
+  it("nudges temperature according to HVAC_RATE in a single tick", () => {
+    const s = makeState(
+      [room("a")],
+      [zone("z", ["a"], "MAX_COOL")],
+      [defaultAtmo("a", "z")],
+    );
+    const atmo = s.atmosphere.get("a")!;
+    const initialTemp = atmo.temperature;
+    const initialAirflow = atmo.airflow;
+    const expectedStep = HVAC_RATE * (initialAirflow / 100);
+
+    atmosphericsField.propagate(s);
+
+    expect(atmo.temperature).toBeCloseTo(initialTemp - expectedStep, 5);
+  });
+
   it("drives a room toward MAX_COOL across several ticks", () => {
     const s = makeState(
       [room("a")],
