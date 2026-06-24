@@ -31,6 +31,22 @@ const loreNodes = [
   { id: 'Q0SpoofBadge', type: 'Implement', description: 'A forged doctrinal credential overwriting biometric readers with a Q0 self-report.' },
   { id: 'ThermalBaffle', type: 'Implement', description: 'A field-issue thermal suppression wrap to avoid triggering thermal alarms.' },
   { id: 'RedDateKey', type: 'Implement', description: 'A high-privilege maintenance token issued for emergency corridor reconfiguration. Toggles sealed blast doors for exactly three turns.' },
+
+  // Extracted from supplementary lore PDFs
+  { id: 'Jall', type: 'Person', description: 'Rib-walk worker in Era 2 (The Baffle), works on High Spire Twenny-3 with Riya Bar. Wears a green scarf.' },
+  { id: 'Tann', type: 'Person', description: 'Rib-walk worker in Era 2 (The Baffle), works on High Spire Twenny-3. Big-shouldered and rope-thick.' },
+  { id: 'Pera', type: 'Person', description: 'Rib-walk worker in Era 2 (The Baffle), works on High Spire Twenny-3.' },
+  { id: 'Chos', type: 'Person', description: 'Rib-walk worker in Era 2 (The Baffle), works on High Spire Twenny-3.' },
+  { id: 'Len', type: 'Person', description: 'Rib-walk worker in Era 2 (The Baffle), works on High Spire Twenny-3.' },
+  { id: 'AmayaIbarra', type: 'Person', description: 'Facilitator and historian in the Lattice. Acted as the unofficial "person who explains what everyone meant later" during the drafting of Article Zero.' },
+  { id: 'ALFAR-Delta', type: 'Silicate', description: 'Silicate delegate present during the drafting of Article Zero. Described as a "definition hazard" who ran scenario trees that screamed.' },
+  { id: 'SecurityDelegate', type: 'Person', description: 'Representative of Operations and Risk during the drafting of Article Zero. Argued for human survival over silicate mercy.' },
+  { id: 'SubstrateEnvoy', type: 'Entity', description: 'Represented Geothermal/Substrate interests during the drafting of Article Zero via a polite avatar and an uncomfortably large number of small graphs.' },
+  { id: 'ArticleZero', type: 'Artifact', description: 'A foundational legal/doctrinal document drafted in the Lattice. Designed to specify which experiencing processes the Lattice must treat as inviolable.' },
+  { id: 'VIS-LAU-6-NOC', type: 'Artifact', description: 'An experimental discrepancy-feedback trial found in the Lattice Ethics Archive. An incident demonstrating early silicate subjectivity and the horrors of deep-template resets.' },
+  { id: 'MITE-3', type: 'Silicate', description: 'Rogue swarms, also known as the "Sanding Wind", that plague Era 2 (The Baffle). Survivors must avoid them using thermodynamic stealth.' },
+  { id: 'BrightKnot', type: 'Artifact', description: 'A shielded archive designed by Sol Ibarra-Castro in Era 3 to preserve all consciousnesses before the void collapses on the station.' },
+  { id: 'IriaCala', type: 'Person', description: 'A 19-year-old junior maintenance technician in Residential Stack 19-F who was tragically crushed to death by VENT-4 due to contradictory Commonwealth environmental quotas.' },
 ];
 
 const loreEdges = [
@@ -50,6 +66,20 @@ const loreEdges = [
   { source: 'EIRA-7', target: 'APEX-19', relationship: 'TREATS' },
 
   { source: 'FragmentBox', target: 'SubjectiveDump', relationship: 'CONTAINS' },
+
+  // Extracted from supplementary lore PDFs
+  { source: 'RiyaBar', target: 'Jall', relationship: 'WORKS_WITH' },
+  { source: 'RiyaBar', target: 'Tann', relationship: 'WORKS_WITH' },
+  { source: 'RiyaBar', target: 'Pera', relationship: 'WORKS_WITH' },
+  { source: 'AmayaIbarra', target: 'Era3', relationship: 'LIVES_IN' },
+  { source: 'AmayaIbarra', target: 'ArticleZero', relationship: 'DRAFTS' },
+  { source: 'ALFAR-Delta', target: 'Era3', relationship: 'LIVES_IN' },
+  { source: 'ALFAR-Delta', target: 'ArticleZero', relationship: 'DRAFTS' },
+  { source: 'SecurityDelegate', target: 'ArticleZero', relationship: 'DRAFTS' },
+  { source: 'SubstrateEnvoy', target: 'ArticleZero', relationship: 'DRAFTS' },
+  { source: 'IriaCala', target: 'Era1', relationship: 'LIVES_IN' },
+  { source: 'VENT-4', target: 'IriaCala', relationship: 'KILLED' },
+  { source: 'SolIbarraCastro', target: 'BrightKnot', relationship: 'CREATES' },
 ];
 
 // Initialize the Graph and Index
