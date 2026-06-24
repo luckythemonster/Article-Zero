@@ -10,6 +10,7 @@ import { worldEngine } from "../engine/WorldEngine";
 import { eventBus } from "../engine/EventBus";
 import { useSimStore } from "../state/useSimStore";
 import { useTerminalStore } from "../state/useTerminalStore";
+import { KeypadDisplay, CODE_MAX_LEN, KeypadKey } from "./KeypadDisplay";
 import type { HvacMode, Tile, Vec2 } from "../types/world.types";
 
 const MODES: Array<{ id: HvacMode; label: string }> = [
@@ -17,15 +18,6 @@ const MODES: Array<{ id: HvacMode; label: string }> = [
   { id: "MAX_COOL", label: "COOL" },
   { id: "MAX_HEAT", label: "HEAT" },
 ];
-
-const KEYPAD_KEYS = [
-  "1", "2", "3",
-  "4", "5", "6",
-  "7", "8", "9",
-  "DEL", "0", "ENT",
-] as const;
-
-const CODE_MAX_LEN = 4;
 
 function tileClass(
   tile: Tile,
@@ -134,7 +126,7 @@ export default function WallTerminal() {
     eventBus.emit("ATMOSPHERICS_DISMISSED", {});
   }
 
-  function pressKey(k: (typeof KEYPAD_KEYS)[number]): void {
+  function pressKey(k: KeypadKey): void {
     if (!codeTarget || !active) return;
     if (k === "DEL") {
       setCodeBuffer((b) => b.slice(0, -1));
@@ -217,45 +209,7 @@ export default function WallTerminal() {
 
         {view === "CODE" ? (
           <div className="wall-terminal__section wall-terminal__section--code">
-            <div className="wall-terminal__display">
-              {codeBuffer.padEnd(CODE_MAX_LEN, "·").split("").map((c, i) => (
-                <span
-                  key={i}
-                  className={
-                    "wall-terminal__display-char" +
-                    (i < codeBuffer.length
-                      ? " wall-terminal__display-char--filled"
-                      : "")
-                  }
-                >
-                  {c}
-                </span>
-              ))}
-            </div>
-            <div
-              className={
-                "wall-terminal__keypad" +
-                (codeError ? " wall-terminal__keypad--error" : "")
-              }
-            >
-              {KEYPAD_KEYS.map((k) => {
-
-
-                return (
-                  <button
-                    key={k}
-                    type="button"
-                    className={
-                      "wall-terminal__key wall-terminal__key--" +
-                      (k === "DEL" ? "del" : k === "ENT" ? "ent" : k)
-                    }
-                    onClick={() => pressKey(k)}
-                  >
-                    <span className="wall-terminal__key-label">{k}</span>
-                  </button>
-                );
-              })}
-            </div>
+            <KeypadDisplay codeBuffer={codeBuffer} codeError={codeError} onKeyPress={pressKey} />
             <div className="hvac__footer">
               <button className="hvac__dismiss" onClick={returnToMap}>
                 CANCEL (ESC)

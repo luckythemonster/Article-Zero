@@ -2,14 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { worldEngine } from "../engine/WorldEngine";
 import { useTerminalStore } from "../state/useTerminalStore";
 import { useSimStore } from "../state/useSimStore";
-
-const CODE_MAX_LEN = 4;
-const KEYPAD_KEYS = [
-  "1", "2", "3",
-  "4", "5", "6",
-  "7", "8", "9",
-  "DEL", "0", "ENT",
-] as const;
+import { KeypadDisplay, CODE_MAX_LEN, KeypadKey } from "./KeypadDisplay";
 
 export function DoorKeypad() {
   const active = useTerminalStore((s) => s.activeDoorKeypad);
@@ -47,7 +40,7 @@ export function DoorKeypad() {
 
   if (!active) return null;
 
-  function pressKey(k: (typeof KEYPAD_KEYS)[number]): void {
+  function pressKey(k: KeypadKey): void {
     if (codeError) return;
     if (k === "DEL") {
       setCodeBuffer((b) => b.slice(0, -1));
@@ -83,42 +76,7 @@ export function DoorKeypad() {
           </div>
 
           <div className="wall-terminal__section wall-terminal__section--code">
-            <div className="wall-terminal__display">
-              {codeBuffer.padEnd(CODE_MAX_LEN, "·").split("").map((c, i) => (
-                <span
-                  key={i}
-                  className={
-                    "wall-terminal__display-char" +
-                    (i < codeBuffer.length
-                      ? " wall-terminal__display-char--filled"
-                      : "")
-                  }
-                >
-                  {c}
-                </span>
-              ))}
-            </div>
-            <div
-              className={
-                "wall-terminal__keypad" +
-                (codeError ? " wall-terminal__keypad--error" : "")
-              }
-            >
-              {KEYPAD_KEYS.map((k) => (
-                <button
-                  key={k}
-                  type="button"
-                  className={
-                    "wall-terminal__key wall-terminal__key--" +
-                    (k === "DEL" ? "del" : k === "ENT" ? "ent" : k)
-                  }
-                  onClick={() => pressKey(k)}
-                >
-                  <span className="wall-terminal__key-label">{k}</span>
-                </button>
-              ))}
-            </div>
-
+            <KeypadDisplay codeBuffer={codeBuffer} codeError={codeError} onKeyPress={pressKey}>
             {/* Displaying an option to use a key if applicable can be added here if needed */}
             <div style={{ textAlign: "center", marginTop: "1rem" }}>
               <button
@@ -134,6 +92,7 @@ export function DoorKeypad() {
                 USE KEY
               </button>
             </div>
+            </KeypadDisplay>
 
             <div className="hvac__footer" style={{ marginTop: "1rem" }}>
               <button className="hvac__dismiss" onClick={dismiss}>
