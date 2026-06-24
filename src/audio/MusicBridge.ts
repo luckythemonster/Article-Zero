@@ -86,9 +86,7 @@ function updatePlayback(moduleId?: string): void {
     if (ambientPlayer) ambientPlayer.stop();
     void ensureChasePlayer().then((p) => {
       if (!p) return;
-      // Because we may switch from ambient to chase, and stats.playing might be true
-      // from ambient playing, we shouldn't rely solely on stats.playing to determine
-      // if chase should start playing. It's safer to always call play() since BeepBoxPlayer play is idempotent.
+      // p.play() is safe to call repeatedly.
       p.play();
       stats.playing = true;
     });
@@ -96,11 +94,9 @@ function updatePlayback(moduleId?: string): void {
     if (chasePlayer) chasePlayer.stop();
     void ensureAmbientPlayer().then((p) => {
       if (!p) return;
-      // We rely on p.play() being safe to call repeatedly.
-        // It's not fully idempotent unless we check its internal state, but BeepBoxPlayer implementation
-        // in audio/BeepBox.ts has `if (this.playing) return;` in `play()`, so calling play() repeatedly is safe.
-        p.play();
-        stats.playing = true;
+      // p.play() is safe to call repeatedly.
+      p.play();
+      stats.playing = true;
     });
   } else {
     if (chasePlayer) chasePlayer.stop();
