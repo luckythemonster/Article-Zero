@@ -35,7 +35,7 @@ interface AtlasJson {
 }
 
 let atlasPromise: Promise<Record<string, FrameRect>> | null = null;
-function loadAtlasFrames(): Promise<Record<string, FrameRect>> {
+export function loadAtlasFrames(): Promise<Record<string, FrameRect>> {
   if (atlasPromise) return atlasPromise;
   atlasPromise = fetch(ATLAS_JSON)
     .then((r) => r.json() as Promise<AtlasJson>)
@@ -49,6 +49,10 @@ function loadAtlasFrames(): Promise<Record<string, FrameRect>> {
       return {};
     });
   return atlasPromise;
+}
+
+export function _resetAtlasPromiseForTest() {
+  atlasPromise = null;
 }
 
 const sheetSizeCache = new Map<string, Promise<{ w: number; h: number }>>();
