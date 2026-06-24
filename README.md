@@ -27,6 +27,8 @@ runs `npm install`. Then run `npm run dev`. If you opened the Codespace before
 `.devcontainer/` existed, run **Codespaces: Rebuild Container** so the new
 config takes effect.
 
+*Note for Safari users: WebContainers (like StackBlitz) and similar browser-based environments may fail to install dependencies on Safari due to a protocol error (`ERR_INVALID_PROTOCOL: Protocol "https:" not supported. Expected "http:"`). We recommend using Chrome or Firefox when running in these environments.*
+
 ### Optional LLM dialogue
 
 Dialogue is scripted by default and works fully offline. To enable live LLM
