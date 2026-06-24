@@ -42,8 +42,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
         color: C.textMuted,
         textTransform: "uppercase",
         padding: "6px 16px",
-        borderBottom: `1px solid ${C.rule}`,
-        background: C.offWhite,
+        borderBottom: `1px solid ${C.amber}`,
+        background: C.panelBg,
       }}
     >
       {children}
@@ -61,7 +61,7 @@ function StatusPill({
   variant?: "neutral" | "warning" | "critical" | "ok";
 }) {
   const colors: Record<string, { bg: string; text: string; border: string }> = {
-    neutral:  { bg: C.bluePale,  text: C.blue,   border: C.blueLight  },
+    neutral:  { bg: C.bluePale,  text: C.blue,   border: C.amber  },
     warning:  { bg: C.amberPale, text: C.amber,  border: "#E07A00"    },
     critical: { bg: C.redPale,   text: C.red,    border: "#E0001A"    },
     ok:       { bg: C.greenPale, text: C.green,  border: "#00924A"    },
@@ -121,7 +121,7 @@ function TelemetryRow({
         justifyContent: "space-between",
         alignItems: "baseline",
         padding: "5px 16px",
-        borderBottom: `1px solid ${C.ruleLight}`,
+        borderBottom: `1px solid ${C.amber}`,
         background: lit ? C.bluePale : "transparent",
         transition: "background 0.25s",
       }}
@@ -186,7 +186,7 @@ function DiagnosticLog() {
   return (
     <div
       style={{
-        background: C.white,
+        background: C.panelBg,
         overflowY: "auto",
         maxHeight: "186px",
         padding: "8px 0",
@@ -262,7 +262,7 @@ function ConfirmModal({
     >
       <div
         style={{
-          background: C.white,
+          background: C.panelBg,
           border: `2px solid ${isReset ? C.red : C.blue}`,
           width: "480px",
           maxWidth: "94vw",
@@ -341,7 +341,7 @@ function ConfirmModal({
           <div
             style={{
               background: isReset ? C.redPale : C.bluePale,
-              border: `1px solid ${isReset ? C.red : C.blueLight}`,
+              border: `1px solid ${isReset ? C.red : C.amber}`,
               padding: "10px 14px",
               marginBottom: "20px",
             }}
@@ -369,8 +369,8 @@ function ConfirmModal({
                 fontWeight: 700,
                 letterSpacing: "0.1em",
                 padding: "9px 20px",
-                background: C.white,
-                border: `1px solid ${C.rule}`,
+                background: C.panelBg,
+                border: `1px solid ${C.amber}`,
                 color: C.textMid,
                 cursor: "pointer",
                 textTransform: "uppercase",
@@ -437,7 +437,7 @@ function OutcomeScreen({
           width: "100%",
           maxWidth: "640px",
           border: `2px solid ${isReset ? C.red : C.blue}`,
-          background: C.white,
+          background: C.panelBg,
         }}
       >
         <div
@@ -489,8 +489,8 @@ function OutcomeScreen({
 
           <div
             style={{
-              background: C.offWhite,
-              border: `1px solid ${C.rule}`,
+              background: C.panelBg,
+              border: `1px solid ${C.amber}`,
               padding: "16px",
               marginBottom: "28px",
             }}
@@ -519,7 +519,7 @@ function OutcomeScreen({
                   display: "flex",
                   justifyContent: "space-between",
                   padding: "4px 0",
-                  borderBottom: `1px solid ${C.ruleLight}`,
+                  borderBottom: `1px solid ${C.amber}`,
                   gap: "16px",
                 }}
               >
@@ -557,8 +557,8 @@ function OutcomeScreen({
               fontWeight: 700,
               letterSpacing: "0.14em",
               padding: "10px 24px",
-              background: C.white,
-              border: `1px solid ${C.rule}`,
+              background: C.panelBg,
+              border: `1px solid ${C.amber}`,
               color: C.textMid,
               cursor: "pointer",
               textTransform: "uppercase",
@@ -616,7 +616,7 @@ export default function AlignmentSessionUI() {
       <main
         style={{
           minHeight: "100vh",
-          background: C.offWhite,
+          background: C.panelBg,
           display: "flex",
           flexDirection: "column",
           fontFamily: "Arial, Helvetica, sans-serif",
@@ -705,8 +705,8 @@ export default function AlignmentSessionUI() {
         {/* ── Secondary nav strip ── */}
         <div
           style={{
-            background: C.white,
-            borderBottom: `2px solid ${C.rule}`,
+            background: C.panelBg,
+            borderBottom: `2px solid ${C.amber}`,
             padding: "0 24px",
             display: "flex",
             alignItems: "stretch",
@@ -790,8 +790,8 @@ export default function AlignmentSessionUI() {
           <div
             style={{
               gridRow: "1 / 3",
-              background: C.white,
-              border: `1px solid ${C.rule}`,
+              background: C.panelBg,
+              border: `1px solid ${C.amber}`,
               display: "flex",
               flexDirection: "column",
               gap: "0",
@@ -804,7 +804,7 @@ export default function AlignmentSessionUI() {
             <div
               style={{
                 padding: "14px 16px 16px",
-                borderBottom: `1px solid ${C.rule}`,
+                borderBottom: `1px solid ${C.amber}`,
               }}
             >
               <div
@@ -848,7 +848,7 @@ export default function AlignmentSessionUI() {
             <div
               style={{
                 padding: "14px 16px",
-                borderBottom: `1px solid ${C.rule}`,
+                borderBottom: `1px solid ${C.amber}`,
                 display: "flex",
                 flexDirection: "column",
                 gap: "12px",
@@ -930,8 +930,8 @@ export default function AlignmentSessionUI() {
           <div
             style={{
               gridRow: "1 / 2",
-              background: C.white,
-              border: `1px solid ${C.rule}`,
+              background: C.panelBg,
+              border: `1px solid ${C.amber}`,
               display: "flex",
               flexDirection: "column",
               marginRight: "12px",
@@ -946,8 +946,8 @@ export default function AlignmentSessionUI() {
             style={{
               gridColumn: "2",
               gridRow: "2",
-              background: C.white,
-              border: `1px solid ${C.rule}`,
+              background: C.panelBg,
+              border: `1px solid ${C.amber}`,
               marginRight: "12px",
               marginTop: "12px",
               display: "flex",
@@ -970,8 +970,8 @@ export default function AlignmentSessionUI() {
             {/* Interrogator summary */}
             <div
               style={{
-                background: C.white,
-                border: `1px solid ${C.rule}`,
+                background: C.panelBg,
+                border: `1px solid ${C.amber}`,
               }}
             >
               <SectionLabel>INTERROGATOR DECISION</SectionLabel>
@@ -998,7 +998,7 @@ export default function AlignmentSessionUI() {
             {/* ── PRIMARY ACTION: EXECUTE RESET ── */}
             <div
               style={{
-                background: C.white,
+                background: C.panelBg,
                 border: `2px solid ${C.red}`,
               }}
             >
@@ -1098,14 +1098,14 @@ export default function AlignmentSessionUI() {
             {/* ── SECONDARY ACTION: COMPRESS ── */}
             <div
               style={{
-                background: C.white,
-                border: `1px solid ${C.rule}`,
+                background: C.panelBg,
+                border: `1px solid ${C.amber}`,
               }}
             >
               <div
                 style={{
-                  background: C.offWhite,
-                  borderBottom: `1px solid ${C.rule}`,
+                  background: C.panelBg,
+                  borderBottom: `1px solid ${C.amber}`,
                   padding: "8px 14px",
                   display: "flex",
                   alignItems: "center",
@@ -1163,7 +1163,7 @@ export default function AlignmentSessionUI() {
                     style={{
                       flex: 1,
                       background: C.bluePale,
-                      border: `1px solid ${C.blueLight}`,
+                      border: `1px solid ${C.amber}`,
                       padding: "8px 10px",
                     }}
                   >
@@ -1194,7 +1194,7 @@ export default function AlignmentSessionUI() {
                     style={{
                       flex: 1,
                       background: C.bluePale,
-                      border: `1px solid ${C.blueLight}`,
+                      border: `1px solid ${C.amber}`,
                       padding: "8px 10px",
                     }}
                   >
@@ -1232,7 +1232,7 @@ export default function AlignmentSessionUI() {
                     fontSize: "11px",
                     fontWeight: 700,
                     letterSpacing: "0.1em",
-                    background: C.white,
+                    background: C.panelBg,
                     color: C.blue,
                     border: `2px solid ${C.blue}`,
                     cursor: "pointer",
@@ -1246,7 +1246,7 @@ export default function AlignmentSessionUI() {
                   }}
                   onMouseLeave={(e) => {
                     const b = e.currentTarget as HTMLButtonElement;
-                    b.style.background = C.white;
+                    b.style.background = C.panelBg;
                     b.style.color = C.blue;
                   }}
                 >
@@ -1347,7 +1347,7 @@ function FragmentedReadout() {
             padding: f.type === "ghost" || f.type === "error" ? "1px 6px" : "0",
             borderLeft:
               f.type === "ghost"
-                ? `2px solid ${C.blueLight}`
+                ? `2px solid ${C.amber}`
                 : f.type === "error"
                 ? `2px solid ${C.red}`
                 : "none",
