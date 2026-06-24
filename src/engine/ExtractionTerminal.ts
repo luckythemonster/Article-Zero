@@ -109,6 +109,7 @@ class ExtractionTerminalSystem {
         payload: { title: doc.title, body: doc.body, terminalId: term.terminalId },
       };
       state.items.set(cube.id, cube);
+      if (cube.roomId && cube.pos) state.itemsByPos.set(`${cube.roomId}:${cube.pos.x},${cube.pos.y}`, cube);
       eventBus.emit("ITEM_SPAWNED", {
         itemId: cube.id,
         itemType: cube.itemType,

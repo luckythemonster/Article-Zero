@@ -548,6 +548,8 @@ export interface WorldState {
   entities: Map<EntityId, Entity>;
   /** World-floor items keyed by id. Held items live on player.inventory. */
   items: Map<string, ItemInstance>;
+  /** Spatial index of world-floor items keyed by "roomId:x,y" for O(1) lookups. */
+  itemsByPos: Map<string, ItemInstance>;
   /** Tiles in the current room visible to the player THIS turn. "x,y" keys. */
   visibleTiles: Set<string>;
   /** True while a silicate's interrogation light is broadcasting. */
