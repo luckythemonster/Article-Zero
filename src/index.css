@@ -1981,69 +1981,6 @@ body.theme-lattice {
   justify-content: center;
   margin-bottom: 0.5rem;
 }
-
-.wall-terminal__map {
-  display: grid;
-  gap: 1px;
-  background: #0b1417;
-  border: 1px solid var(--border, #2a3d44);
-  padding: 2px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.wall-terminal__tile {
-  aspect-ratio: 1;
-  background: #111d22;
-}
-
-.wall-terminal__tile--wall        { background: #2a3d44; }
-.wall-terminal__tile--floor       { background: #111d22; }
-.wall-terminal__tile--door-open   { background: #4a3a00; border: 1px solid #b89a2f; }
-.wall-terminal__tile--door-closed { background: #2e2a00; border: 1px solid #8a7a2f; }
-.wall-terminal__tile--door-locked { background: #201a00; border: 1px solid #605a2f; }
-.wall-terminal__tile--light-on    { background: #4e3a00; outline: 1px solid #e0b82f; }
-.wall-terminal__tile--light-off   { background: #201a00; outline: 1px solid #504010; }
-.wall-terminal__tile--switch      { background: #3e2a00; outline: 1px solid #d0aa2f; }
-.wall-terminal__tile--terminal    { background: #2c2000; outline: 1px solid #9a7a2f; }
-.wall-terminal__tile--vent        { background: #2a2000; outline: 1px solid #60502f; }
-.wall-terminal__tile--locker      { background: #252018; outline: 1px solid #806040; }
-.wall-terminal__tile--chasm       { background: #060a0c; }
-.wall-terminal__tile--player      { background: #403000; outline: 2px solid #b89a2f; }
-
-.wall-terminal__tile--clickable {
-  cursor: pointer;
-}
-.wall-terminal__tile--clickable:hover {
-  filter: brightness(1.5);
-}
-
-.wall-terminal__map-legend {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.3rem;
-  font-size: 0.6rem;
-  letter-spacing: 0.08em;
-  color: var(--fg-dim, #5a7a80);
-}
-
-.wall-terminal__legend-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-}
-.wall-terminal__legend-item::before {
-  content: "";
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-}
-.wall-terminal__legend--switch::before    { background: #3e2a00; outline: 1px solid #d0aa2f; }
-.wall-terminal__legend--door-closed::before { background: #2e2a00; border: 1px solid #8a7a2f; }
-.wall-terminal__legend--door-locked::before { background: #201a00; border: 1px solid #605a2f; }
-.wall-terminal__legend--light-on::before  { background: #4e3a00; outline: 1px solid #e0b82f; }
-.wall-terminal__legend--player::before    { background: #403000; outline: 2px solid #b89a2f; }
-
 /* ── Glitch Overlay ──────────────────────────────────────────────────────── */
 
 .glitch-overlay-container {
