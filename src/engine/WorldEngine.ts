@@ -40,7 +40,7 @@ import { slicesToWorldState } from "../state/eraToSim";
 import { deserializePhysical, deserializeSubjective } from "../state/serialize";
 import type { PhysicalState, SimSnapshot, SubjectiveState } from "../state/sim.types";
 
-class WorldEngine {
+export class WorldEngine {
   private state: WorldState | null = null;
 
   // ── initWorld lifecycle (subsystem reset + recompute order) ───────────────
