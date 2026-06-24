@@ -51,10 +51,6 @@ export function loadAtlasFrames(): Promise<Record<string, FrameRect>> {
   return atlasPromise;
 }
 
-export function _resetAtlasPromiseForTest() {
-  atlasPromise = null;
-}
-
 const sheetSizeCache = new Map<string, Promise<{ w: number; h: number }>>();
 function loadSheetSize(url: string): Promise<{ w: number; h: number }> {
   const cached = sheetSizeCache.get(url);
@@ -610,4 +606,8 @@ function SpriteGalleryBody(): React.ReactElement {
       </div>
     </div>
   );
+}
+
+export function _resetAtlasPromiseForTest() {
+  atlasPromise = null;
 }

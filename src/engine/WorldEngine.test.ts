@@ -65,7 +65,7 @@ const mockWorldEngineActions = vi.hoisted(() => ({
 }));
 vi.mock("./WorldEngineActions", () => ({ actions: mockWorldEngineActions }));
 
-import { WorldEngine } from "./WorldEngine";
+import { worldEngine } from "./WorldEngine";
 
 describe("WorldEngine", () => {
   beforeEach(() => {
@@ -73,13 +73,13 @@ describe("WorldEngine", () => {
   });
 
   it("throws if getting state before init", () => {
-    const engine = new WorldEngine();
+    const engine = worldEngine; (engine as any).state = null;
     expect(engine.hasState()).toBe(false);
     expect(() => engine.getState()).toThrow("WorldEngine not initialised");
   });
 
   it("initializes world correctly", () => {
-    const engine = new WorldEngine();
+    const engine = worldEngine; (engine as any).state = null;
     engine.initWorld("TEST_MAP" as any);
 
     expect(engine.hasState()).toBe(true);
@@ -94,7 +94,7 @@ describe("WorldEngine", () => {
   });
 
   it("gets room and current room", () => {
-    const engine = new WorldEngine();
+    const engine = worldEngine; (engine as any).state = null;
     engine.initWorld("TEST_MAP" as any);
 
     const room = engine.getRoom("test-room");
@@ -109,7 +109,7 @@ describe("WorldEngine", () => {
   });
 
   it("can perform move action", () => {
-    const engine = new WorldEngine();
+    const engine = worldEngine; (engine as any).state = null;
     engine.initWorld("TEST_MAP" as any);
 
     // We mock the action to return true (success)
@@ -122,7 +122,7 @@ describe("WorldEngine", () => {
     expect(mockEnforcerSystem.maybeInterrogateOnMove).toHaveBeenCalled();
   });
   it("can perform knock action", () => {
-    const engine = new WorldEngine();
+    const engine = worldEngine; (engine as any).state = null;
     engine.initWorld("TEST_MAP" as any);
 
     mockWorldEngineActions.knock.mockReturnValue(true);
@@ -134,7 +134,7 @@ describe("WorldEngine", () => {
   });
 
   it("can toggle flashlight", () => {
-    const engine = new WorldEngine();
+    const engine = worldEngine; (engine as any).state = null;
     engine.initWorld("TEST_MAP" as any);
 
     engine.toggleFlashlight();
@@ -142,7 +142,7 @@ describe("WorldEngine", () => {
   });
 
   it("can interact", () => {
-    const engine = new WorldEngine();
+    const engine = worldEngine; (engine as any).state = null;
     engine.initWorld("TEST_MAP" as any);
 
     mockWorldEngineActions.interact.mockReturnValue(true);
@@ -153,7 +153,7 @@ describe("WorldEngine", () => {
   });
 
   it("can test isVisible", () => {
-    const engine = new WorldEngine();
+    const engine = worldEngine; (engine as any).state = null;
     engine.initWorld("TEST_MAP" as any);
 
     // Test that the player's initial position is not visible

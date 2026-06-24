@@ -68,15 +68,10 @@ export default function InventoryOverlay() {
 
   // Deduplicate by type to show one row per distinct ItemType in inventory.
   // USABLE items that aren't in inventory are shown greyed-out.
-  const heldUsable = new Set<ItemType>();
-  const passiveHeld = inventory.reduce((acc, item) => {
-    if (USABLE.includes(item.itemType)) {
-      heldUsable.add(item.itemType);
-    } else {
-      acc.push(item);
-    }
-    return acc;
-  }, [] as typeof inventory);
+  const heldUsable = new Set(
+    inventory.filter((i) => USABLE.includes(i.itemType)).map((i) => i.itemType),
+  );
+  const passiveHeld = inventory.filter((i) => !USABLE.includes(i.itemType));
 
   return (
     <div className="overlay-root overlay-root--inventory" onClick={() => setInventoryOpen(false)}>
