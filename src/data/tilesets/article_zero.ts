@@ -10,6 +10,7 @@ export const ARTICLE_ZERO_FRAME_WIDTH = 32;
 export const ARTICLE_ZERO_FRAME_HEIGHT = 32;
 export const ARTICLE_ZERO_SPACING = 1;
 
+// @ts-ignore — large generated literal; union complexity exceeds TS limit but runtime types are correct.
 export const ARTICLE_ZERO_FRAMES: MooseSpriteFrame[] = [
   {
     "index": 0,
