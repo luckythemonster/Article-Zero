@@ -95,16 +95,38 @@ async function initializeData() {
 
   // Try to load from IndexedDB
   const storedGraphData = await get(GRAPH_STORAGE_KEY);
+  let loadedSuccessfully = false;
 
   if (storedGraphData) {
-    // Deserialize
-    graph.import(JSON.parse(storedGraphData));
+    try {
+      // Deserialize
+      graph.import(JSON.parse(storedGraphData));
 
     // Re-index
     graph.forEachNode((node, attributes) => {
       insert(entityIndex, { id: node, description: attributes.description });
     });
   } else {
+      // Re-index
+      graph.forEachNode((node, attributes) => {
+        insert(entityIndex, { id: node, description: attributes.description });
+      });
+      console.log("Graph loaded from IndexedDB.");
+      loadedSuccessfully = true;
+    } catch (e) {
+      console.error("Failed to parse and import graph from IndexedDB. Corrupt data. Falling back to fresh population.", e);
+      // Reset graph and index since partial import might have happened
+      graph = new Graph();
+      entityIndex = await create({
+        schema: {
+          id: 'string',
+          description: 'string',
+        },
+      });
+    }
+  }
+
+  if (!loadedSuccessfully) {
     // Populate fresh
     loreNodes.forEach(node => {
       graph.addNode(node.id, { type: node.type, description: node.description });
