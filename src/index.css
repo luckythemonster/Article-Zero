@@ -2124,7 +2124,7 @@ body.theme-lattice {
   left: 0;
   width: 100%;
   height: 393px;
-  background-image: url('/assets/ui/wall-terminal/Article Zero UI-wall terminal chassis upper.png');
+  background-image: url('/assets/ui/wall-terminal/Article_Zero_UI-wall_terminal_chassis_upper.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
 }
@@ -2135,7 +2135,7 @@ body.theme-lattice {
   left: 0;
   width: 100%;
   height: 240px;
-  background-image: url('/assets/ui/wall-terminal/Article Zero UI-wall terminal chassis lower.png');
+  background-image: url('/assets/ui/wall-terminal/Article_Zero_UI-wall_terminal_chassis_lower.png');
   background-size: 100% 100%;
   background-repeat: no-repeat;
   background-position: bottom left;
@@ -2147,7 +2147,7 @@ body.theme-lattice {
   bottom: 240px;
   left: 0;
   width: 100%;
-  background-image: url('/assets/ui/wall-terminal/Article Zero UI-wall terminal chassis sides.png');
+  background-image: url('/assets/ui/wall-terminal/Article_Zero_UI-wall_terminal_chassis_sides.png');
   background-size: 100% 161px;
   background-repeat: repeat-y;
   background-position: top left;
@@ -2156,7 +2156,7 @@ body.theme-lattice {
 .wall-terminal__viewscreen {
   position: absolute;
   inset: 56px 238px 50px 238px;
-  background-image: url('/assets/ui/wall-terminal/Article Zero UI-wall terminal viewscreen grid background.png');
+  background-image: url('/assets/ui/wall-terminal/Article_Zero_UI-wall_terminal_viewscreen_grid_background.png');
   background-size: 100% 100%;
   background-position: center;
   z-index: 1; /* Below content and chassis */
@@ -2164,7 +2164,7 @@ body.theme-lattice {
 
 .wall-terminal__emergency-button {
   position: absolute;
-  background-image: url('/assets/ui/wall-terminal/Article Zero UI-emergency lockdown button-idle.png');
+  background-image: url('/assets/ui/wall-terminal/Article_Zero_UI-emergency_lockdown_button-idle.png');
   background-size: contain;
   background-repeat: no-repeat;
   width: 168px;
@@ -2179,12 +2179,12 @@ body.theme-lattice {
 
 .wall-terminal__emergency-button--lit {
   /* Use flash if it existed, otherwise can keep idle */
-  background-image: url('/assets/ui/wall-terminal/Article Zero UI-emergency lockdown button-flash on.png');
+  background-image: url('/assets/ui/wall-terminal/Article_Zero_UI-emergency_lockdown_button-flash_on.png');
 }
 
 .wall-terminal__scanner {
   position: absolute;
-  background-image: url('/assets/ui/wall-terminal/Article Zero UI-wall terminal keycard scanner.png');
+  background-image: url('/assets/ui/wall-terminal/Article_Zero_UI-wall_terminal_keycard_scanner.png');
   background-size: contain;
   background-repeat: no-repeat;
   width: 141px;
@@ -2210,14 +2210,14 @@ body.theme-lattice {
 .wall-terminal__pip--3 { right: 91px; }
 
 /* Pip states */
-.wall-terminal__pip--off { background-image: url('/assets/ui/wall-terminal/LED pip-rectangular-off.png'); }
-.wall-terminal__pip--green { background-image: url('/assets/ui/wall-terminal/LED pip-rectangular-on-green.png'); }
-.wall-terminal__pip--yellow { background-image: url('/assets/ui/wall-terminal/LED pip-rectangular-on-yellow.png'); }
-.wall-terminal__pip--red { background-image: url('/assets/ui/wall-terminal/LED pip-rectangular-on-red.png'); }
+.wall-terminal__pip--off { background-image: url('/assets/ui/wall-terminal/LED_pip-rectangular-off.png'); }
+.wall-terminal__pip--green { background-image: url('/assets/ui/wall-terminal/LED_pip-rectangular-on-green.png'); }
+.wall-terminal__pip--yellow { background-image: url('/assets/ui/wall-terminal/LED_pip-rectangular-on-yellow.png'); }
+.wall-terminal__pip--red { background-image: url('/assets/ui/wall-terminal/LED_pip-rectangular-on-red.png'); }
 
 .wall-terminal__placard {
   position: absolute;
-  background-image: url('/assets/ui/wall-terminal/Article Zero UI-wall terminal number placard.png');
+  background-image: url('/assets/ui/wall-terminal/Article_Zero_UI-wall_terminal_number_placard.png');
   background-size: contain;
   background-repeat: no-repeat;
   width: 130px;
