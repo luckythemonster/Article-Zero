@@ -104,7 +104,6 @@ async function initializeData() {
     graph.forEachNode((node, attributes) => {
       insert(entityIndex, { id: node, description: attributes.description });
     });
-    console.log("Graph loaded from IndexedDB.");
   } else {
     // Populate fresh
     loreNodes.forEach(node => {
@@ -119,7 +118,6 @@ async function initializeData() {
     // Save to IndexedDB
     const serializedGraph = JSON.stringify(graph.export());
     await set(GRAPH_STORAGE_KEY, serializedGraph);
-    console.log("Graph populated and saved to IndexedDB.");
   }
 }
 
