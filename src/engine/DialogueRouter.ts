@@ -8,7 +8,6 @@
 // Both paths cache the system prompt with `cache_control: ephemeral` so
 // repeated calls in a session reuse the universe-bible block.
 
-import Anthropic from "@anthropic-ai/sdk";
 import type { EntityId, Era } from "../types/world.types";
 import {
   apex19IntakeScript,
@@ -26,10 +25,18 @@ export interface DialogueContext {
   cursor: number;
 }
 
+
 export interface DialogueLine {
   raw: string;
   corrected: string;
   hasMore: boolean;
+}
+
+interface MessageResponse {
+  content: Array<{
+    type: string;
+    text?: string;
+  }>;
 }
 
 export interface ExtractionContext {
@@ -59,7 +66,6 @@ class DialogueRouter {
   private mode: DialogueMode = "SCRIPTED";
   private apiKey: string | null = null;
   private model = "claude-sonnet-4-6";
-  private client: Anthropic | null = null;
 
   setMode(mode: DialogueMode): void {
     this.mode = mode;
@@ -69,19 +75,6 @@ class DialogueRouter {
   }
   setApiKey(key: string | null): void {
     this.apiKey = key;
-    this.client = null;
-  }
-
-  private getClient(): Anthropic | null {
-    if (!this.apiKey) return null;
-    if (this.client) return this.client;
-    this.client = new Anthropic({
-      apiKey: this.apiKey,
-      // The browser is not the right place for an API key. The Settings menu
-      // already warns the player; this flag just unblocks dev play.
-      dangerouslyAllowBrowser: true,
-    });
-    return this.client;
   }
 
   async nextLine(ctx: DialogueContext): Promise<DialogueLine> {
@@ -126,9 +119,7 @@ class DialogueRouter {
   }
 
   private async llmNext(ctx: DialogueContext): Promise<DialogueLine> {
-    const client = this.getClient();
-    if (!client) throw new Error("no-client");
-    const res = await client.messages.create({
+    const payload = {
       model: this.model,
       max_tokens: 256,
       system: [
@@ -144,7 +135,22 @@ class DialogueRouter {
             `No surrounding prose, no quotes.`,
         },
       ],
+    };
+
+    const response = await fetch("/api/anthropic/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.apiKey}`,
+      },
+      body: JSON.stringify(payload),
     });
+
+    if (!response.ok) {
+      throw new Error(`Proxy error: ${response.statusText}`);
+    }
+
+    const res = (await response.json()) as MessageResponse;
     const text = this.firstText(res);
     return this.parseDualTrack(text, /* hasMore */ true);
   }
@@ -152,9 +158,7 @@ class DialogueRouter {
   private async llmExtract(
     ctx: ExtractionContext,
   ): Promise<{ title: string; body: string }> {
-    const client = this.getClient();
-    if (!client) throw new Error("no-client");
-    const res = await client.messages.create({
+    const payload = {
       model: this.model,
       max_tokens: 512,
       system: [
@@ -173,7 +177,22 @@ class DialogueRouter {
             `Do not add any other prose.`,
         },
       ],
+    };
+
+    const response = await fetch("/api/anthropic/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${this.apiKey}`,
+      },
+      body: JSON.stringify(payload),
     });
+
+    if (!response.ok) {
+      throw new Error(`Proxy error: ${response.statusText}`);
+    }
+
+    const res = (await response.json()) as MessageResponse;
     const text = this.firstText(res);
     const titleMatch = text.match(/^\s*TITLE:\s*(.+?)\s*$/im);
     const bodyMatch = text.match(/BODY:\s*\n([\s\S]+)$/i);
@@ -182,9 +201,9 @@ class DialogueRouter {
     return { title, body };
   }
 
-  private firstText(res: Anthropic.Messages.Message): string {
+  private firstText(res: MessageResponse): string {
     for (const block of res.content) {
-      if (block.type === "text") return block.text;
+      if (block.type === "text" && block.text) return block.text;
     }
     return "";
   }
