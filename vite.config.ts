@@ -18,6 +18,20 @@ export default defineConfig({
           protocol: "wss",
         }
       : undefined,
+    proxy: {
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
+  },
+  preview: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
   },
   build: {
     target: "es2022",
