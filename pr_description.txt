@@ -1,0 +1,6 @@
+🎯 **What:** The testing gap for the `ErrorBoundary` component has been addressed.
+📊 **Coverage:**
+  - Rendering of normal component without errors
+  - Rendering of fallback UI ("TERMINAL ERROR") when a child throws an error
+  - Error logs correctly propagated via `console.error`
+✨ **Result:** Full test coverage for the React `ErrorBoundary` component, ensuring reliable behavior.
