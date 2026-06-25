@@ -139,7 +139,6 @@ export async function initGraphRAG(initProgressCallback?: (progress: webllm.Init
     { initProgressCallback }
   );
 
-  console.log("WebLLM Engine initialized.");
 }
 
 /**

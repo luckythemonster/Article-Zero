@@ -1,5 +1,6 @@
-🧪 Add tests for TerminalStore
+🧹 Remove verbose WebLLM engine initialization log
 
-🎯 **What:** The testing gap for useTerminalStore was addressed.
-📊 **Coverage:** Covered log, pushCommand, decryptModule, setActiveModule, stashSnapshot, RunFlags mutations, and UI modals mutations. 100% statement/branch coverage achieved.
-✨ **Result:** Improved state stability and prevented unexpected behavior by bringing the state under unit tests.
+🎯 **What:** Removed the unnecessary `console.log("WebLLM Engine initialized.");` from `src/engine/GraphRAG.ts`.
+💡 **Why:** This reduces unnecessary console noise, which improves logging clarity, especially during application startup or when WebLLM starts multiple times.
+✅ **Verification:** I've run `npm run typecheck`, `npm run lint` and `npm run test` successfully.
+✨ **Result:** A slightly cleaner codebase and quieter console output on startup.
