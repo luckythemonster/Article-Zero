@@ -73,13 +73,23 @@ export function DoorKeypad() {
   return (
     <div className="overlay-root">
       <div className="overlay-panel overlay-panel--terminal wall-terminal">
-        <div className="wall-terminal__frame" />
+                <div className="wall-terminal__chassis-upper" />
+        <div className="wall-terminal__chassis-lower" />
+        <div className="wall-terminal__chassis-sides" />
+        <div className="wall-terminal__viewscreen" />
+
+        {/* Overlays */}
+        <div className="wall-terminal__scanner" />
+        <div className="wall-terminal__placard">
+          <span className="wall-terminal__placard-text">{active.roomId}</span>
+          <span className="wall-terminal__placard-braille">Braille</span>
+        </div>
         <div className="wall-terminal__content">
           <div className="wall-terminal__header">
             <span className="wall-terminal__title">
               DOOR KEYPAD
             </span>
-            <span className="wall-terminal__emergency" />
+            <span className="wall-terminal__emergency-button" />
           </div>
 
           <div className="wall-terminal__section wall-terminal__section--code">

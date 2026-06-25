@@ -1,28 +1,18 @@
-node_modules
-dist
-dist-ssr
-*.local
-.vite
+# Dependency directories
+node_modules/
+
+# Mac OS X hidden files
+__MACOSX/
 .DS_Store
-.env
-.env.local
-.env.*.local
-*.log
-npm-debug.log*
-tsconfig.tsbuildinfo
-*.tsbuildinfo
 
-# Editor
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.swp
-*.swo
+# Build artifacts
+dist/
+build/
 
-# Build artefacts
-coverage
-rowan_tmp/
-/npm_art.log
-/rowan.zip
-/rowan_tmp/
-node_modules
+# Other ignored files
+public/assets/ui/new\ assets/__MACOSX/
+
+# Ignore downloaded fonts and zip files extracted in place
+public/assets/ui/new\ assets/Fonts:typography/
+public/assets/fonts/Swell*
+public/assets/fonts/Swell\ Braille.png

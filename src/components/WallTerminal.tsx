@@ -161,11 +161,21 @@ export default function WallTerminal() {
     return (
       <div className="overlay-root">
         <div className="overlay-panel overlay-panel--terminal wall-terminal">
-          <div className="wall-terminal__frame" />
+                  <div className="wall-terminal__chassis-upper" />
+        <div className="wall-terminal__chassis-lower" />
+        <div className="wall-terminal__chassis-sides" />
+        <div className="wall-terminal__viewscreen" />
+
+        {/* Overlays */}
+        <div className="wall-terminal__scanner" />
+        <div className="wall-terminal__placard">
+          <span className="wall-terminal__placard-text">{active.roomId}</span>
+          <span className="wall-terminal__placard-braille">Braille</span>
+        </div>
           <div className="wall-terminal__content">
             <div className="wall-terminal__header">
               <span className="wall-terminal__title">WALL TERMINAL</span>
-              <span className="wall-terminal__emergency " />
+              <span className="wall-terminal__emergency-button " />
             </div>
             <div className="hvac__row">
               <em>ZONE NOT BOUND</em>
@@ -199,20 +209,23 @@ export default function WallTerminal() {
   return (
     <div className="overlay-root">
       <div className="overlay-panel overlay-panel--terminal wall-terminal">
-        <div className="wall-terminal__frame" />
+                <div className="wall-terminal__chassis-upper" />
+        <div className="wall-terminal__chassis-lower" />
+        <div className="wall-terminal__chassis-sides" />
+        <div className="wall-terminal__viewscreen" />
+
+        {/* Overlays */}
+        <div className="wall-terminal__scanner" />
+        <div className="wall-terminal__placard">
+          <span className="wall-terminal__placard-text">{active.roomId}</span>
+          <span className="wall-terminal__placard-braille">Braille</span>
+        </div>
         <div className="wall-terminal__content">
           <div className="wall-terminal__header">
           <span className="wall-terminal__title">
             {view === "CODE" ? "ENTER CODE" : `WALL TERMINAL — ${active.roomId}`}
           </span>
-          <span
-            className={
-              "wall-terminal__emergency " +
-              (emergencyLit
-                ? "wall-terminal__emergency--lit"
-                : "")
-            }
-          />
+          <span className={"wall-terminal__emergency-button " + (emergencyLit ? "wall-terminal__emergency-button--lit" : "")} />
         </div>
 
         {view === "CODE" ? (
