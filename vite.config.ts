@@ -22,6 +22,16 @@ export default defineConfig({
   build: {
     target: "es2022",
     sourcemap: true,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          phaser: ['phaser'],
+          react: ['react', 'react-dom'],
+          vendor: ['@mlc-ai/web-llm', '@orama/orama', 'graphology', 'idb-keyval'],
+        }
+      }
+    }
   },
   test: {
     environment: "jsdom",

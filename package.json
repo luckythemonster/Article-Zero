@@ -30,6 +30,7 @@
     "@mlc-ai/web-llm": "^0.2.84",
     "@orama/orama": "^3.1.18",
     "beepbox": "^4.2.0",
+    "graphology": "^0.26.0",
     "idb-keyval": "^6.2.5",
     "motion": "^10.18.0",
     "phaser": "^4.1.0",
