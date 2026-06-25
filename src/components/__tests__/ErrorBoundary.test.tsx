@@ -1,47 +1,58 @@
-// @vitest-environment jsdom
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import ErrorBoundary from '../ErrorBoundary';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { ErrorBoundary } from "../ErrorBoundary";
 
-describe('ErrorBoundary', () => {
-  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+describe("ErrorBoundary", () => {
+  const originalConsoleError = console.error;
 
   beforeEach(() => {
-    // Suppress console.error so our test output stays clean
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    // Suppress console.error during tests so we don't pollute test output with expected errors
+    console.error = vi.fn();
   });
 
   afterEach(() => {
-    consoleErrorSpy.mockRestore();
+    // Restore original console.error
+    console.error = originalConsoleError;
   });
 
-  it('renders children when there is no error', () => {
+  it("should render children when there is no error", () => {
     render(
       <ErrorBoundary>
-        <div>Test Child</div>
+        <div data-testid="child">Normal Component</div>
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('Test Child')).toBeInTheDocument();
+    expect(screen.getByTestId("child")).toBeInTheDocument();
+    expect(screen.getByText("Normal Component")).toBeInTheDocument();
   });
 
-  it('renders fallback UI when a child throws an error', () => {
-    const ThrowingChild = () => {
-      throw new Error('Test Error');
+  it("should render fallback UI when a child throws an error", () => {
+    const ThrowingComponent = () => {
+      throw new Error("Test error");
     };
 
     render(
       <ErrorBoundary>
-        <ThrowingChild />
+        <ThrowingComponent />
       </ErrorBoundary>
     );
 
-    // Verify the fallback UI is rendered
-    expect(screen.getByText('TERMINAL ERROR')).toBeInTheDocument();
-    expect(screen.getByText('The archive interface faulted. Refresh to continue.')).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toBeInTheDocument();
+    // Verify the fallback UI is displayed
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(screen.getByText("TERMINAL ERROR")).toBeInTheDocument();
+    expect(screen.getByText("The archive interface faulted. Refresh to continue.")).toBeInTheDocument();
 
-    // Verify console.error was called
-    expect(consoleErrorSpy).toHaveBeenCalled();
+    // Verify console.error was called by React (internally logging the error)
+    // and by our component. Our component should be the second call (or we can just check if any call matches).
+    expect(console.error).toHaveBeenCalled();
+    const mockCalls = (console.error as ReturnType<typeof vi.fn>).mock.calls;
+
+    // Find the call from our ErrorBoundary
+    const ourCall = mockCalls.find(call => call[0] === "[ErrorBoundary] UI render error:");
+    expect(ourCall).toBeDefined();
+    if (ourCall) {
+      expect(ourCall[1]).toBeInstanceOf(Error);
+      expect(ourCall[1].message).toBe("Test error");
+    }
   });
 });
