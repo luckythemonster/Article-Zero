@@ -494,10 +494,14 @@ function SpriteGalleryBody(): React.ReactElement {
   const charGroups = useMemo(() => {
     const map = new Map<string, CharAnim[]>();
     for (const a of CHAR_ANIMS) {
-      const id = a.key.split("_")[0];
-      const arr = map.get(id) ?? [];
-      arr.push(a);
-      map.set(id, arr);
+      const idx = a.key.indexOf("_");
+      const id = idx !== -1 ? a.key.substring(0, idx) : a.key;
+      const arr = map.get(id);
+      if (arr) {
+        arr.push(a);
+      } else {
+        map.set(id, [a]);
+      }
     }
     return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
   }, []);
