@@ -1,6 +1,7 @@
-🎯 **What:** The testing gap for the `ErrorBoundary` component has been addressed.
-📊 **Coverage:**
-  - Rendering of normal component without errors
-  - Rendering of fallback UI ("TERMINAL ERROR") when a child throws an error
-  - Error logs correctly propagated via `console.error`
-✨ **Result:** Full test coverage for the React `ErrorBoundary` component, ensuring reliable behavior.
+🧪 Add tests for jsfxr dump parsing error paths
+
+🎯 **What:** Adds missing tests to cover error paths when parsing JSFXR dump lines, specifically the catch block in `parseJsfxrDump`.
+
+📊 **Coverage:** Now tests the behavior when validly formatted blocks sit alongside malformed blocks (which should be skipped without throwing exceptions) and validates that perfectly formed sets still parse appropriately.
+
+✨ **Result:** Improved test coverage for audio file parsing and resilience against malformed JSFXR inputs, increasing overall codebase reliability.
