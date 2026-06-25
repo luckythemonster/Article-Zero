@@ -32,7 +32,7 @@ export function dispatch(raw: string): void {
 
   switch (cmd.toLowerCase()) {
     case "decrypt": {
-      const id = args[0]?.toUpperCase();
+      const id = args[0]?.toUpperCase().replace(/-/g, "_");
       if (!id || !isModule(id)) { log("WARN", `? unknown module: ${args[0] ?? ""}`); return; }
       term.decryptModule(id);
       log("INFO", `module ${id} decrypted — available for loading`);
@@ -40,7 +40,7 @@ export function dispatch(raw: string): void {
     }
 
     case "load": {
-      const id = args[0]?.toUpperCase();
+      const id = args[0]?.toUpperCase().replace(/-/g, "_");
       if (!id || !isModule(id)) { log("WARN", `? unknown module: ${args[0] ?? ""}`); return; }
       if (!term.modules[id]?.decrypted) { log("WARN", `module ${id} not yet decrypted`); return; }
       worldEngine.initWorld(id);
@@ -75,7 +75,7 @@ export function dispatch(raw: string): void {
     }
 
     case "load-slot": {
-      const id = (args[0]?.toUpperCase() ?? term.activeModuleId) as Module | null;
+      const id = (args[0]?.toUpperCase().replace(/-/g, "_") ?? term.activeModuleId) as Module | null;
       if (!id || !isModule(id)) { log("WARN", `? usage: load-slot <module>`); return; }
       const snap = term.modules[id]?.snapshot;
       if (!snap) { log("WARN", `no snapshot found for ${id}`); return; }

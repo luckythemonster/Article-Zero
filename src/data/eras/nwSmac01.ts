@@ -92,13 +92,8 @@ export function nwSmac01Era(): EraSeed {
   // Level handles — must match the names emitted by the Ed export verbatim.
   // Note the "main2" typo (no space) is intentional: that's how the author
   // named the board in Ed.
-  const lvMain1 = findLevel("main 1");
-  const lvMain2 = findLevel("main2");
-  const lvMain3 = findLevel("main 3");
-  const lvDuct1 = findLevel("duct 1");
-  const lvDuct2 = findLevel("duct 2");
-  const lvDuct3 = findLevel("duct 3");
-  const lvRoof = findLevel("roof");
+  const lvMain1 = findLevel("Main Floor");
+  const lvDuct1 = findLevel("Ducts");
 
   const doorways: MooseDoorwayMeta[] = [];
 
@@ -107,8 +102,6 @@ export function nwSmac01Era(): EraSeed {
   // main→duct as "vent" (crouch/drop), duct→main as "ladder" (climb up).
   const ventDuctPairs: Array<[string, MooseLevel | undefined, string, MooseLevel | undefined]> = [
     ["main_1", lvMain1, "duct_1", lvDuct1],
-    ["main_2", lvMain2, "duct_2", lvDuct2],
-    ["main_3", lvMain3, "duct_3", lvDuct3],
   ];
   for (const [mainId, mainLv, ductId, ductLv] of ventDuctPairs) {
     const pairs = pairNearest(
@@ -131,9 +124,6 @@ export function nwSmac01Era(): EraSeed {
   // don't exist in MooseDoorwayMeta — repurpose "ladder" (interior,
   // single-cell teleport) so the climb is at least traversable.
   const stairPairs: Array<[string, MooseLevel | undefined, string, MooseLevel | undefined]> = [
-    ["main_1", lvMain1, "main_2", lvMain2],
-    ["main_2", lvMain2, "main_3", lvMain3],
-    ["main_3", lvMain3, "roof", lvRoof],
   ];
   for (const [lowerId, lowerLv, upperId, upperLv] of stairPairs) {
     const pairs = pairNearest(
@@ -164,13 +154,8 @@ export function nwSmac01Era(): EraSeed {
     frameHeight: NW_SMAC_01_FRAME_HEIGHT,
     spacing: NW_SMAC_01_SPACING,
     rooms: [
-      { levelName: "main 1", id: "main_1", displayName: "NW-SMAC-01 // MAIN 1",  ambient: "DIM" },
-      { levelName: "duct 1", id: "duct_1", displayName: "NW-SMAC-01 // DUCT 1",  ambient: "DARK", crawlspace: true },
-      { levelName: "main2",  id: "main_2", displayName: "NW-SMAC-01 // MAIN 2",  ambient: "DIM" },
-      { levelName: "duct 2", id: "duct_2", displayName: "NW-SMAC-01 // DUCT 2",  ambient: "DARK", crawlspace: true },
-      { levelName: "main 3", id: "main_3", displayName: "NW-SMAC-01 // MAIN 3",  ambient: "DIM" },
-      { levelName: "duct 3", id: "duct_3", displayName: "NW-SMAC-01 // DUCT 3",  ambient: "DARK", crawlspace: true },
-      { levelName: "roof",   id: "roof",   displayName: "NW-SMAC-01 // ROOF",    ambient: "LIT" },
+      { levelName: "Main Floor", id: "main_1", displayName: "NW-SMAC-01 // MAIN 1",  ambient: "DIM" },
+      { levelName: "Ducts", id: "duct_1", displayName: "NW-SMAC-01 // DUCT 1",  ambient: "DARK", crawlspace: true },
     ],
     startRoomId: "main_1",
     player: {
@@ -213,9 +198,6 @@ export function nwSmac01Era(): EraSeed {
   // vision/alert AI (homeRoomId + alert are stamped at world-seed time).
   const enforcerRooms: Array<[string, MooseLevel | undefined]> = [
     ["main_1", lvMain1],
-    ["main_2", lvMain2],
-    ["main_3", lvMain3],
-    ["roof", lvRoof],
   ];
   for (const [roomId, lv] of enforcerRooms) {
     paintedCells(lv, "enforcers").forEach((pos, i) => {
@@ -242,9 +224,6 @@ export function nwSmac01Era(): EraSeed {
   // new paint on other levels.
   const cameraRooms: Array<[string, MooseLevel | undefined]> = [
     ["main_1", lvMain1],
-    ["main_2", lvMain2],
-    ["main_3", lvMain3],
-    ["roof", lvRoof],
   ];
   for (const [roomId, lv] of cameraRooms) {
     paintedCells(lv, "cameras").forEach((pos, i) => {
@@ -269,8 +248,6 @@ export function nwSmac01Era(): EraSeed {
   // "orderlies" layer in Ed (paintedCells) and drop the hardcoded block.
   const orderlyCells: Array<[string, Vec2]> = [
     ["main_1", { x: 12, y: 4 }],
-    ["main_2", { x: 20, y: 5 }],
-    ["main_3", { x: 21, y: 4 }],
   ];
   orderlyCells.forEach(([roomId, pos], i) => {
     const orderly: Entity = {
@@ -288,7 +265,7 @@ export function nwSmac01Era(): EraSeed {
 
   // Footstep surfaces: every duct crawlspace floor is sheet-metal lining;
   // mains/roof inherit the default surface.
-  for (const id of ["duct_1", "duct_2", "duct_3"]) {
+  for (const id of ["duct_1"]) {
     const r = seed.rooms.find((rm) => rm.id === id);
     if (r) r.floorSurface = "metalv2";
   }
