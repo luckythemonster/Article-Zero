@@ -1,3 +1,10 @@
+🧪 Add tests for jsfxr dump parsing error paths
+
+🎯 **What:** Adds missing tests to cover error paths when parsing JSFXR dump lines, specifically the catch block in `parseJsfxrDump`.
+
+📊 **Coverage:** Now tests the behavior when validly formatted blocks sit alongside malformed blocks (which should be skipped without throwing exceptions) and validates that perfectly formed sets still parse appropriately.
+
+✨ **Result:** Improved test coverage for audio file parsing and resilience against malformed JSFXR inputs, increasing overall codebase reliability.
 ⚡ Optimize `charGroups` `useMemo` in `SpriteGallery`
 
 💡 **What:** Optimized the creation of the `charGroups` map inside `src/components/SpriteGallery.tsx`. Replaced the array `.split("_")[0]` and `.get(...) ?? []` pattern with `indexOf`/`substring` to extract the ID and a direct `.get()` check with an `if/else` block.
