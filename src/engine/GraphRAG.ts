@@ -101,13 +101,6 @@ async function initializeData() {
     try {
       // Deserialize
       graph.import(JSON.parse(storedGraphData));
-
-    // Re-index
-    graph.forEachNode((node, attributes) => {
-      insert(entityIndex, { id: node, description: attributes.description });
-    });
-  } else {
-      // Re-index
       graph.forEachNode((node, attributes) => {
         insert(entityIndex, { id: node, description: attributes.description });
       });
