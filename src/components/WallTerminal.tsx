@@ -206,26 +206,43 @@ export default function WallTerminal() {
     atmo !== undefined &&
     (atmo.oxygen < 18 || atmo.temperature < 5 || atmo.temperature > 40);
 
+  // Determine LED pip states based on terminal view/state
+  // 1: Green if everything normal, Red if error/emergency
+  // 2: Yellow if CODE view is active
+  // 3: Red if emergency
+  const pip1State = emergencyLit || codeError ? "red" : "green";
+  const pip2State = view === "CODE" ? "yellow" : "off";
+  const pip3State = emergencyLit ? "red" : "off";
+
   return (
     <div className="overlay-root">
-      <div className="overlay-panel overlay-panel--terminal wall-terminal">
-                <div className="wall-terminal__chassis-upper" />
-        <div className="wall-terminal__chassis-lower" />
-        <div className="wall-terminal__chassis-sides" />
+      {/* We drop 'overlay-panel' base classes so our absolute chassis size isn't overridden */}
+      <div className="wall-terminal">
+        <div className="wall-terminal__chassis-layer">
+          <div className="wall-terminal__chassis-upper" />
+          <div className="wall-terminal__chassis-sides" />
+          <div className="wall-terminal__chassis-lower" />
+        </div>
         <div className="wall-terminal__viewscreen" />
 
-        {/* Overlays */}
+        {/* Overlays on top of the chassis */}
         <div className="wall-terminal__scanner" />
+        <div className={`wall-terminal__pip wall-terminal__pip--1 wall-terminal__pip--${pip1State}`} />
+        <div className={`wall-terminal__pip wall-terminal__pip--2 wall-terminal__pip--${pip2State}`} />
+        <div className={`wall-terminal__pip wall-terminal__pip--3 wall-terminal__pip--${pip3State}`} />
+
         <div className="wall-terminal__placard">
           <span className="wall-terminal__placard-text">{active.roomId}</span>
           <span className="wall-terminal__placard-braille">Braille</span>
         </div>
+
+        <div className={"wall-terminal__emergency-button " + (emergencyLit ? "wall-terminal__emergency-button--lit" : "")} />
+
         <div className="wall-terminal__content">
           <div className="wall-terminal__header">
           <span className="wall-terminal__title">
             {view === "CODE" ? "ENTER CODE" : `WALL TERMINAL — ${active.roomId}`}
           </span>
-          <span className={"wall-terminal__emergency-button " + (emergencyLit ? "wall-terminal__emergency-button--lit" : "")} />
         </div>
 
         {view === "CODE" ? (
