@@ -160,7 +160,7 @@ export default function WallTerminal() {
 
   if (!zone) {
     return (
-      <div className="overlay-root">
+      <div className="overlay-root overlay-root--transparent">
         <div className="overlay-panel overlay-panel--terminal wall-terminal">
                   <div className="wall-terminal__chassis-upper" />
         <div className="wall-terminal__chassis-lower" />
@@ -230,7 +230,7 @@ export default function WallTerminal() {
   const pip3State = emergencyLit ? "red" : "off";
 
   return (
-    <div className="overlay-root">
+    <div className="overlay-root overlay-root--transparent">
       {/* We drop 'overlay-panel' base classes so our absolute chassis size isn't overridden */}
       <div className="wall-terminal">
         <div className="wall-terminal__chassis-layer">
