@@ -675,6 +675,15 @@ body.theme-lattice {
   z-index: 60;
 }
 
+.overlay-root--transparent {
+  background: transparent;
+  pointer-events: none;
+}
+
+.overlay-root--transparent > * {
+  pointer-events: auto;
+}
+
 .overlay-panel {
   width: min(720px, 92%);
   max-height: 92%;
