@@ -1571,23 +1571,7 @@ body.theme-lattice {
    No raster assets. Grungy green/amber phosphor on dark grimy panels.
    ======================================================================== */
 
-.wall-terminal {
-  position: relative;
-  width: min(960px, 92vw);
-  aspect-ratio: 960 / 640;
-  color: var(--wt-text);
-  background-color: transparent;
-  background-image: none;
-  box-shadow: none;
-  border-radius: var(--wt-radius);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.6),
-    0 18px 50px -12px rgba(0, 0, 0, 0.85),
-    inset 0 0 40px rgba(0, 0, 0, 0.7),
-    inset 0 1px 0 rgba(235, 209, 74, 0.06);
-  font-family: "Courier New", ui-monospace, monospace;
-  overflow: hidden;
-}
+
 
 /* Decorative beveled frame + glitchy corner ticks */
 .wall-terminal__frame {
@@ -2090,13 +2074,12 @@ body.theme-lattice {
 .wall-terminal {
   position: relative;
   width: 928px;
-  max-width: 90vw; /* Responsive constraint */
-  /* Using aspect-ratio or min-height to ensure sides stretch if content needs it.
-     Base inner height ~400px -> total height ~800px. */
+  max-width: 90vw;
   min-height: 750px;
   display: flex;
   flex-direction: column;
   margin: auto;
+  font-family: "Courier New", ui-monospace, monospace;
 }
 
 .wall-terminal__chassis-layer {
@@ -2143,13 +2126,15 @@ body.theme-lattice {
 
 .wall-terminal__viewscreen {
   position: absolute;
-  inset: 56px 238px 50px 238px;
+  top: 56px; bottom: 50px; left: 238px; right: 238px;
   border-style: solid;
   border-width: 151px;
   border-image-source: url('/assets/ui/wall-terminal/Article_Zero_UI-wall_terminal_viewscreen_grid_background.png');
   border-image-slice: 151 fill;
   border-image-repeat: stretch;
+  background-color: #080600; /* Fallback rendering if border image fails */
   z-index: 1; /* Below content and chassis */
+  display: block;
 }
 
 .wall-terminal__emergency-button {
