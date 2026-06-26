@@ -2074,19 +2074,7 @@ body.theme-lattice {
   pointer-events: none;
 }
 
-@font-face {
-  font-family: 'DINAlternate-Bold';
-  src: url('/assets/fonts/DINAlternate-Bold.ttf') format('truetype');
-  font-weight: bold;
-  font-style: normal;
-}
 
-@font-face {
-  font-family: 'Synchro LET Plain';
-  src: url('/assets/fonts/Synchro LET Plain.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
 
 /* ── UI Layering for Image-based Terminal ────────────────────────────────── */
 
@@ -2156,9 +2144,11 @@ body.theme-lattice {
 .wall-terminal__viewscreen {
   position: absolute;
   inset: 56px 238px 50px 238px;
-  background-image: url('/assets/ui/wall-terminal/Article_Zero_UI-wall_terminal_viewscreen_grid_background.png');
-  background-size: 100% 100%;
-  background-position: center;
+  border-style: solid;
+  border-width: 151px;
+  border-image-source: url('/assets/ui/wall-terminal/Article_Zero_UI-wall_terminal_viewscreen_grid_background.png');
+  border-image-slice: 151 fill;
+  border-image-repeat: stretch;
   z-index: 1; /* Below content and chassis */
 }
 
@@ -2233,23 +2223,23 @@ body.theme-lattice {
 }
 
 .wall-terminal__placard-text {
-  font-family: 'DINAlternate-Bold', sans-serif;
+
   font-size: 24px;
   line-height: 1;
   margin-top: 5px;
 }
 
 .wall-terminal__placard-braille {
-  font-family: 'Synchro LET Plain', sans-serif;
+
   font-size: 14px;
   line-height: 1;
 }
 
 /* The actual interactive area that aligns perfectly inside the viewscreen */
 .wall-terminal__content {
-  position: relative;
+  position: absolute;
+  inset: 56px 238px 50px 238px;
   z-index: 5;
-  margin: 62px 244px 56px 244px; /* slightly smaller to clear the CRT bezel */
   padding: 2rem;
   overflow-y: auto;
   overflow-x: hidden;
