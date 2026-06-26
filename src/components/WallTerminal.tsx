@@ -1,3 +1,4 @@
+import { BitmapText } from "./BitmapText";
 // Wall terminal — climate control + clickable room map + keypad sub-view.
 // Mounts while phase === "WALL_TERMINAL". NORMAL/MAX_COOL/MAX_HEAT are
 // exposed in the climate section; PURGE and O₂ CUTOFF are console-only.
@@ -169,8 +170,22 @@ export default function WallTerminal() {
         {/* Overlays */}
         <div className="wall-terminal__scanner" />
         <div className="wall-terminal__placard">
-          <span className="wall-terminal__placard-text">{active.roomId}</span>
-          <span className="wall-terminal__placard-braille">Braille</span>
+          <BitmapText
+            text={active.roomId}
+            fontUrl="/assets/fonts/DIN_alt_bold_door_placard.fnt"
+            imageUrl="/assets/fonts/DIN_alt_bold_door_placard.png"
+            scale={0.25}
+            color="#fff"
+            className="wall-terminal__placard-text"
+          />
+          <BitmapText
+            text="Braille"
+            fontUrl="/assets/fonts/swell_braille_door_placard.xml"
+            imageUrl="/assets/fonts/swell_braille_door_placard.png"
+            scale={0.2}
+            color="#fff"
+            className="wall-terminal__placard-braille"
+          />
         </div>
           <div className="wall-terminal__content">
             <div className="wall-terminal__header">
@@ -232,8 +247,22 @@ export default function WallTerminal() {
         <div className={`wall-terminal__pip wall-terminal__pip--3 wall-terminal__pip--${pip3State}`} />
 
         <div className="wall-terminal__placard">
-          <span className="wall-terminal__placard-text">{active.roomId}</span>
-          <span className="wall-terminal__placard-braille">Braille</span>
+          <BitmapText
+            text={active.roomId}
+            fontUrl="/assets/fonts/DIN_alt_bold_door_placard.fnt"
+            imageUrl="/assets/fonts/DIN_alt_bold_door_placard.png"
+            scale={0.25}
+            color="#fff"
+            className="wall-terminal__placard-text"
+          />
+          <BitmapText
+            text="Braille"
+            fontUrl="/assets/fonts/swell_braille_door_placard.xml"
+            imageUrl="/assets/fonts/swell_braille_door_placard.png"
+            scale={0.2}
+            color="#fff"
+            className="wall-terminal__placard-braille"
+          />
         </div>
 
         <div className={"wall-terminal__emergency-button " + (emergencyLit ? "wall-terminal__emergency-button--lit" : "")} />
