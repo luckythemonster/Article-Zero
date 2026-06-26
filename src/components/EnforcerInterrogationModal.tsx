@@ -114,7 +114,7 @@ export default function EnforcerInterrogationModal() {
           <>
             <div className="interrogation__plea">ENFORCER: {step.enforcerPrompt}</div>
             <div className="interrogation__prompt">{step.prompt}</div>
-            <div className="interrogation__choices">
+            <div className="interrogation__choices" role="group" aria-label="Interrogation responses">
               {step.choices.map((c) => (
                 <button
                   key={c.label}
